@@ -35,8 +35,8 @@ public class UserEntityTest {
 	@Test
 	public void whenCreatingUser_rejectEmptyUserId() {
 
-		assertThrows(IllegalArgumentException.class, () -> new UserEntity("", "someclassid", "Atestingusername",
-				"", "player", "", 0, new Timestamp(0), "me@example.com", "login", false, false, 0, 1, 0, 0, 0));
+		assertThrows(IllegalArgumentException.class, () -> new UserEntity("", "someclassid", "Atestingusername", "",
+				"player", "", 0, new Timestamp(0), "me@example.com", "login", false, false, 0, 1, 0, 0, 0));
 
 	}
 
@@ -58,14 +58,14 @@ public class UserEntityTest {
 				"login@sso", 3, new Timestamp(999), "strange.email@example.com", "saml", false, true, 600, 400, 900,
 				100, 1);
 
-		assertTrue(user1 == user2, "Users with identical userid should be equal");
-		assertTrue(user1 == user3, "Users with identical userid should be equal");
-		assertTrue(user1 == user4, "Users with identical userid should be equal");
+		assertTrue(user1.equals(user2), "Users with identical userid should be equal");
+		assertTrue(user1.equals(user3), "Users with identical userid should be equal");
+		assertTrue(user1.equals(user4), "Users with identical userid should be equal");
 
-		assertTrue(user2 == user3, "Users with identical userid should be equal");
-		assertTrue(user2 == user4, "Users with identical userid should be equal");
+		assertTrue(user2.equals(user3), "Users with identical userid should be equal");
+		assertTrue(user2.equals(user4), "Users with identical userid should be equal");
 
-		assertTrue(user3 == user4, "Users with identical userid should be equal");
+		assertTrue(user3.equals(user4), "Users with identical userid should be equal");
 	}
 
 	@Test
@@ -84,14 +84,14 @@ public class UserEntityTest {
 				"login@sso", 3, new Timestamp(999), "strange.email@example.com", "saml", false, true, 600, 400, 900,
 				100, 1);
 
-		assertTrue(user1 != user2, "Users with identical userid should be equal");
-		assertTrue(user1 != user3, "Users with identical userid should be equal");
-		assertTrue(user1 != user4, "Users with identical userid should be equal");
+		assertTrue(!user1.equals(user2), "Users with different userid should not be equal");
+		assertTrue(!user1.equals(user3), "Users with different userid should not be equal");
+		assertTrue(!user1.equals(user4), "Users with different userid should not be equal");
 
-		assertTrue(user2 != user3, "Users with identical userid should be equal");
-		assertTrue(user2 != user4, "Users with identical userid should be equal");
+		assertTrue(!user2.equals(user3), "Users with different userid should not be equal");
+		assertTrue(!user2.equals(user4), "Users with different userid should not be equal");
 
-		assertTrue(user3 != user4, "Users with identical userid should be equal");
+		assertTrue(!user3.equals(user4), "Users with different userid should not be equal");
 
 	}
 

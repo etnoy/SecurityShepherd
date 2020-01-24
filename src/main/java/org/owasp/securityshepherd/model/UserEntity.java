@@ -28,38 +28,35 @@ public class UserEntity {
 			int badSubmissionCount) {
 
 		setUserId(userId);
-		this.classId = classId;
-		this.userName = userName;
-		this.userPass = userPass;
-		this.userRole = userRole;
-		this.ssoName = ssoName;
-		this.badLoginCount = badLoginCount;
-		this.suspendedUntil = suspendedUntil;
-		this.userAddress = userAddress;
-		this.loginType = loginType;
-		this.tempPassword = tempPassword;
-		this.tempUsername = tempUsername;
-		this.userScore = userScore;
-		this.goldMedalCount = goldMedalCount;
-		this.silverMedalCount = silverMedalCount;
-		this.bronzeMedalCount = bronzeMedalCount;
-		this.badSubmissionCount = badSubmissionCount;
+		setClassId(classId);
+		setUserName(userName);
+		setUserPass(userPass);
+		setUserRole(userRole);
+		setSsoName(ssoName);
+		setBadLoginCount(badLoginCount);
+		setSuspendedUntil(suspendedUntil);
+		setUserAddress(userAddress);
+		setLoginType(loginType);
+		setTempPassword(tempPassword);
+		setTempUsername(tempUsername);
+		setUserScore(userScore);
+		setGoldMedalCount(goldMedalCount);
+		setSilverMedalCount(silverMedalCount);
+		setBronzeMedalCount(bronzeMedalCount);
+		setBadSubmissionCount(badSubmissionCount);
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(Object o) {
 
-		if (this == obj) {
+		if (o == this)
 			return true;
-		}
-
-		if (obj == null || obj.getClass() != this.getClass()) {
+		if (!(o instanceof UserEntity)) {
 			return false;
 		}
+		UserEntity user = (UserEntity) o;
+		return (getUserId() == user.getUserId());
 
-		UserEntity user = (UserEntity) obj;
-
-		return (user.getUserId() == getUserId());
 	}
 
 	public String getUserId() {
