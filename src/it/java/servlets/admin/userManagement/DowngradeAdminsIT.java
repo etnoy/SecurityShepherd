@@ -10,7 +10,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletConfig;
 import dbProcs.Getter;
 import dbProcs.Setter;
-import testUtils.TestProperties;
+import org.owasp.securityshepherd.test.utils.TestProperties;
 
 /**
  * This class just tests the DowngradeAdmin servlet code.

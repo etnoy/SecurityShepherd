@@ -1,4 +1,4 @@
-package testUtils;
+package org.owasp.securityshepherd.test.utils;
 
 import static org.junit.Assert.fail;
 

@@ -8,7 +8,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletConfig;
 
-import testUtils.TestProperties;
+import org.owasp.securityshepherd.test.utils.TestProperties;
 
 import utils.InstallationException;
 
@@ -36,9 +36,9 @@ public class OpenAllModulesIT {
 	 */
 	@BeforeClass
 	public static void readyDb() throws SQLException, IOException {
-		testUtils.TestProperties.setTestPropertiesFileDirectory(log);
+		TestProperties.setTestPropertiesFileDirectory(log);
 
-		testUtils.TestProperties.executeSql(log);
+		TestProperties.executeSql(log);
 		log.debug("Creating - user: " + testUsers[0] + " password: " + testUsers[0]);
 		TestProperties.verifyTestAdmin(log, null, testUsers[0], testUsers[0]);
 		log.debug("Creating - user: " + testUsers[1] + " password: " + testUsers[1]);
@@ -97,7 +97,7 @@ public class OpenAllModulesIT {
 	public void testWithUserAuth() {
 
 		log.debug("Signing in as Normal User Through LoginServlet");
-		testUtils.TestProperties.loginDoPost(log, request, response, testUsers[1], testUsers[1], null, LANGUAGE_CODE);
+		TestProperties.loginDoPost(log, request, response, testUsers[1], testUsers[1], null, LANGUAGE_CODE);
 		log.debug("Login Servlet Complete, Getting CSRF Token");
 
 		String csrfToken = response.getCookie("token").getValue();

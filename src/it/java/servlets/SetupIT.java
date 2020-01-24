@@ -18,7 +18,7 @@ import org.junit.Test;
 import org.springframework.mock.web.MockServletConfig;
 
 import dbProcs.Constants;
-import testUtils.TestProperties;
+import org.owasp.securityshepherd.test.utils.TestProperties;
 
 public class SetupIT {
 	private static org.apache.log4j.Logger log = Logger.getLogger(SetupIT.class);

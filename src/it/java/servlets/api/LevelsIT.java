@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -17,7 +18,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletConfig;
 
-import testUtils.TestProperties;
+import org.owasp.securityshepherd.test.utils.TestProperties;
 import utils.ModulePlan;
 import dbProcs.Setter;
 
@@ -95,7 +96,7 @@ public class LevelsIT {
 	}
 
 	@Test
-	public void testCtfModeNoLevelsComplete() throws SQLException, ServletException, IOException {
+	public void testCtfModeNoLevelsComplete() throws SQLException, ServletException, IOException, JSONException {
 		String moduleId = new String("0dbea4cb5811fff0527184f99bd5034ca9286f11"); // Insecure Direct Object References
 																					// Module Id (First Challenge)
 		String userName = "ctfModeNoLevels";
@@ -166,7 +167,7 @@ public class LevelsIT {
 	}
 
 	@Test
-	public void testCtfModeLevelComplete() throws SQLException, ServletException, IOException {
+	public void testCtfModeLevelComplete() throws SQLException, ServletException, IOException, JSONException {
 		String moduleId = new String("0dbea4cb5811fff0527184f99bd5034ca9286f11"); // Insecure Direct Object References
 																					// Module Id (First Challenge)
 		String userName = "ctfModeWithLevel";

@@ -1,4 +1,4 @@
-package testUtils;
+package org.owasp.securityshepherd.test.utils;
 
 import org.apache.log4j.Logger;
 import org.junit.BeforeClass;
@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import utils.CountdownHandler;
 import utils.InvalidCountdownStateException;
-import testUtils.TestProperties;
+import org.owasp.securityshepherd.test.utils.TestProperties;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

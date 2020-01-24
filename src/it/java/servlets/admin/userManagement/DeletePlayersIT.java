@@ -17,7 +17,7 @@ import org.springframework.mock.web.MockServletConfig;
 import dbProcs.Getter;
 import dbProcs.Setter;
 
-import testUtils.TestProperties;
+import org.owasp.securityshepherd.test.utils.TestProperties;
 
 /**
  * This class just tests the servlet code. The Setter code is better tested in

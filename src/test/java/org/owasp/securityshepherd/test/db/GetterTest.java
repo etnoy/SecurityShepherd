@@ -1,4 +1,4 @@
-package dbProcs;
+package org.owasp.securityshepherd.test.db;
 
 import static org.junit.Assert.*;
 
@@ -18,9 +18,14 @@ import org.json.simple.JSONValue;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import dbProcs.Database;
+import dbProcs.Getter;
+import dbProcs.Setter;
+
 import org.junit.Ignore;
 
-import testUtils.TestProperties;
+import org.owasp.securityshepherd.test.utils.TestProperties;
 import utils.ScoreboardStatus;
 
 /**

@@ -1217,9 +1217,11 @@ if (request.getSession() != null)
 </html>
 <%
 	} else {
-			response.sendRedirect("login.jsp");
+		response.sendRedirect("login");
+
 		}
 	} else {
-		response.sendRedirect("login.jsp");
+		response.sendRedirect("login");
+
 	}
 %>

@@ -15,8 +15,8 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletConfig;
 
-import dbProcs.GetterTest;
-import testUtils.TestProperties;
+import org.owasp.securityshepherd.test.utils.TestProperties;
+import org.owasp.securityshepherd.test.db.GetterTest;
 
 public class LogoutIT
 {

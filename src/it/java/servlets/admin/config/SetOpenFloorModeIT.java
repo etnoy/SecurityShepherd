@@ -15,7 +15,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletConfig;
 
-import testUtils.TestProperties;
+import org.owasp.securityshepherd.test.utils.TestProperties;
 import utils.ModulePlan;
 
 public class SetOpenFloorModeIT {

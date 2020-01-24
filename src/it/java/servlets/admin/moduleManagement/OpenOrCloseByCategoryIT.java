@@ -16,7 +16,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletConfig;
 
 import dbProcs.Setter;
-import testUtils.TestProperties;
+import org.owasp.securityshepherd.test.utils.TestProperties;
 
 public class OpenOrCloseByCategoryIT {
 	private static org.apache.log4j.Logger log = Logger.getLogger(OpenOrCloseByCategoryIT.class);

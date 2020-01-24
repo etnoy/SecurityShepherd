@@ -1,4 +1,4 @@
-package dbProcs;
+package org.owasp.securityshepherd.test.db;
 
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -18,8 +18,11 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import dbProcs.Database;
+import dbProcs.Getter;
+import dbProcs.Setter;
 
-import testUtils.TestProperties;
+import org.owasp.securityshepherd.test.utils.TestProperties;
 import utils.ScoreboardStatus;
 
 public class SetterTest {

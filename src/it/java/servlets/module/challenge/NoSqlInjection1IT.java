@@ -17,9 +17,9 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletConfig;
 
-import dbProcs.GetterTest;
+import org.owasp.securityshepherd.test.utils.TestProperties;
+import org.owasp.securityshepherd.test.db.GetterTest;
 import dbProcs.Setter;
-import testUtils.TestProperties;
 
 public class NoSqlInjection1IT extends Mockito {
 

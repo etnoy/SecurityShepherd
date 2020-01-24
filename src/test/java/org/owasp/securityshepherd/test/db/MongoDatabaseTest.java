@@ -1,4 +1,4 @@
-package dbProcs;
+package org.owasp.securityshepherd.test.db;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
@@ -17,7 +17,9 @@ import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoCredential;
 
-import testUtils.TestProperties;
+import dbProcs.MongoDatabase;
+
+import org.owasp.securityshepherd.test.utils.TestProperties;
 
 public class MongoDatabaseTest {
 

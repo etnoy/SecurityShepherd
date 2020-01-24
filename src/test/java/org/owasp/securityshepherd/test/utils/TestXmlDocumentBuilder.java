@@ -1,4 +1,4 @@
-package testUtils;
+package org.owasp.securityshepherd.test.utils;
 
 import org.apache.log4j.Logger;
 import org.junit.jupiter.api.BeforeAll;
@@ -6,7 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import utils.XmlDocumentBuilder;
 
-import testUtils.TestProperties;
+import org.owasp.securityshepherd.test.utils.TestProperties;
 
 import javax.xml.parsers.DocumentBuilder;
 
