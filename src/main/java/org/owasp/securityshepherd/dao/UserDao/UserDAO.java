@@ -6,7 +6,7 @@ import org.owasp.securityshepherd.model.UserEntity;
 
 public interface UserDAO {
 
-	public void a(String userName);
+	public void create(UserEntity user);
 
 	public UserEntity getUser(String userID);
 

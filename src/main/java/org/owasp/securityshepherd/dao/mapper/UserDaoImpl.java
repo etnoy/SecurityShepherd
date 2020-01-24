@@ -19,8 +19,13 @@ public class UserDaoImpl implements UserDAO {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-	public void create(String userName) {
+	public void create(UserEntity user) {
 		// TODO Auto-generated method stub
+		jdbcTemplate.update(
+				"INSERT INTO core.users (userId, classId, userName, userPass, userRole, ssoName, userAddress, loginType, tempPassword, tempUsername ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ",
+				user.getUserId(), user.getClassId(), user.getUserName(), user.getUserPass(), user.getUserRole(),
+				user.getSsoName(), user.getUserAddress(), user.getLoginType(), user.isTempPassword(),
+				user.isTempUsername());
 
 	}
 
@@ -45,7 +50,7 @@ public class UserDaoImpl implements UserDAO {
 	}
 
 	public List<UserEntity> listUsers() {
-        return jdbcTemplate.query("select * from core.users", new UserRowMapper());
+		return jdbcTemplate.query("select * from core.users", new UserRowMapper());
 	}
 
 	public void delete(Integer id) {
@@ -76,9 +81,4 @@ public class UserDaoImpl implements UserDAO {
 
 	}
 
-	@Override
-	public void a(String userName) {
-		// TODO Auto-generated method stub
-		
-	}
 }
