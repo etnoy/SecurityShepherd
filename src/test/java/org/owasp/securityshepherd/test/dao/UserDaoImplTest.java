@@ -4,17 +4,16 @@ import java.sql.Timestamp;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.owasp.securityshepherd.AppConfig;
 import org.owasp.securityshepherd.dao.mapper.UserDaoImpl;
 import org.owasp.securityshepherd.model.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = AppConfig.class)
-@Transactional
+@SpringBootTest
 public class UserDaoImplTest {
 
 	@Autowired
@@ -28,7 +27,7 @@ public class UserDaoImplTest {
 		
 		userDao.create("mockuser");
 
-		userDao.getAllUsers();
+		userDao.listUsers().get(0);
 
 	}
 

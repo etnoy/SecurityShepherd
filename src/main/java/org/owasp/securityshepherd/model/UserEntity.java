@@ -6,7 +6,7 @@ public class UserEntity {
 
 	private String userId;
 	private String classId;
-	private String userName;
+	private String userName;	
 	private String userPass;
 	private String userRole;
 	private String ssoName;

@@ -45,7 +45,7 @@ public class UserDaoImpl implements UserDAO {
 	}
 
 	public List<UserEntity> listUsers() {
-        return jdbcTemplate.query("select * from users", new UserRowMapper());
+        return jdbcTemplate.query("select * from core.users", new UserRowMapper());
 	}
 
 	public void delete(Integer id) {
