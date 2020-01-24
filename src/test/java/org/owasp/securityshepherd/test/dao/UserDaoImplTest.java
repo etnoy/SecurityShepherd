@@ -1,18 +1,19 @@
 package org.owasp.securityshepherd.test.dao;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.sql.Timestamp;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.dao.mapper.UserDaoImpl;
 import org.owasp.securityshepherd.model.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @Transactional
 public class UserDaoImplTest {
@@ -30,7 +31,7 @@ public class UserDaoImplTest {
 
 		UserEntity returnedUser = userDao.listUsers().get(0);
 
-		Assert.isTrue(testUser == returnedUser, "returned user should equal added user");
+		assertTrue(testUser == returnedUser, "returned user should equal added user");
 
 	}
 

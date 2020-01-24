@@ -1,35 +1,97 @@
 package org.owasp.securityshepherd.test.domainmodel;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.sql.Timestamp;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.model.UserEntity;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
-@Transactional
 public class UserEntityTest {
 
 	@Test
-	public void testUsersEqual() {
+	public void whenCreatingUser_acceptValidData() {
 
-		UserEntity user1 = new UserEntity("userid123", "classid456", "user1", "hashedpass", "player", "", 0,
-				new Timestamp(0), "", "login", false, false, 0, 0, 0, 0, 0);
+		new UserEntity("myuserid", "someclassid", "Atestingusername", "", "player", "", 0, new Timestamp(0),
+				"me@example.com", "login", false, false, 0, 1, 0, 0, 0);
 
-		UserEntity user2 = new UserEntity("userid456", "classid456", "user2", "hashedpass", "player", "", 0,
-				new Timestamp(0), "", "login", false, false, 0, 0, 0, 0, 0);
+		new UserEntity("anotheruserid", "anotherclassid", "Anotherusername", "passwordhash", "player", "saml", 0,
+				new Timestamp(10), "another@example.com", "login", false, true, 99, 1, 2, 3, 5);
 
-		UserEntity user3 = new UserEntity("userid123", "classid456", "user3", "hashedpass", "player", "", 0,
-				new Timestamp(0), "", "login", false, false, 0, 0, 0, 0, 0);
+		new UserEntity("abc123", "newclass", "Athirdusername", "anotherhash", "admin", "", 3, new Timestamp(999),
+				"user3@example.com", "login", true, false, 500, 100, 200, 300, 99);
 
-		Assert.isTrue(user1 != user2, "Users with different userId should not be equal");
-		Assert.isTrue(user1 == user3, "Users with identical userid should be equal");
-		Assert.isTrue(user3 != user2, "Users with different userId should not be equal");
+		new UserEntity("def567", "anothernewclass", "Afourthusername", "anotherhash123", "admin", "login@sso", 3,
+				new Timestamp(999), "strange.email@example.com", "saml", false, true, 600, 400, 900, 100, 1);
+
+	}
+
+	@Test
+	public void whenCreatingUser_rejectEmptyUserId() {
+
+		assertThrows(IllegalArgumentException.class, () -> new UserEntity("", "someclassid", "Atestingusername",
+				"", "player", "", 0, new Timestamp(0), "me@example.com", "login", false, false, 0, 1, 0, 0, 0));
+
+	}
+
+	@Test
+	public void whenComparingUseres_equalIdsAreEqual() {
+
+		String userId = "areallylonguserid";
+
+		UserEntity user1 = new UserEntity(userId, "someclassid", "Atestingusername", "", "player", "", 0,
+				new Timestamp(0), "me@example.com", "login", false, false, 0, 1, 0, 0, 0);
+
+		UserEntity user2 = new UserEntity(userId, "anotherclassid", "Anotherusername", "passwordhash", "player", "saml",
+				0, new Timestamp(10), "another@example.com", "login", false, true, 99, 1, 2, 3, 5);
+
+		UserEntity user3 = new UserEntity(userId, "newclass", "Athirdusername", "anotherhash", "admin", "", 3,
+				new Timestamp(999), "user3@example.com", "login", true, false, 500, 100, 200, 300, 99);
+
+		UserEntity user4 = new UserEntity(userId, "anothernewclass", "Afourthusername", "anotherhash123", "admin",
+				"login@sso", 3, new Timestamp(999), "strange.email@example.com", "saml", false, true, 600, 400, 900,
+				100, 1);
+
+		assertTrue(user1 == user2, "Users with identical userid should be equal");
+		assertTrue(user1 == user3, "Users with identical userid should be equal");
+		assertTrue(user1 == user4, "Users with identical userid should be equal");
+
+		assertTrue(user2 == user3, "Users with identical userid should be equal");
+		assertTrue(user2 == user4, "Users with identical userid should be equal");
+
+		assertTrue(user3 == user4, "Users with identical userid should be equal");
+	}
+
+	@Test
+	public void testUsersNotEqual() {
+
+		UserEntity user1 = new UserEntity("firstuserid", "someclassid", "Atestingusername", "", "player", "", 0,
+				new Timestamp(0), "me@example.com", "login", false, false, 0, 1, 0, 0, 0);
+
+		UserEntity user2 = new UserEntity("seconduserid", "anotherclassid", "Anotherusername", "passwordhash", "player",
+				"saml", 0, new Timestamp(10), "another@example.com", "login", false, true, 99, 1, 2, 3, 5);
+
+		UserEntity user3 = new UserEntity("useridwithnumbers123", "newclass", "Athirdusername", "anotherhash", "admin",
+				"", 3, new Timestamp(999), "user3@example.com", "login", true, false, 500, 100, 200, 300, 99);
+
+		UserEntity user4 = new UserEntity("1", "anothernewclass", "Afourthusername", "anotherhash123", "admin",
+				"login@sso", 3, new Timestamp(999), "strange.email@example.com", "saml", false, true, 600, 400, 900,
+				100, 1);
+
+		assertTrue(user1 != user2, "Users with identical userid should be equal");
+		assertTrue(user1 != user3, "Users with identical userid should be equal");
+		assertTrue(user1 != user4, "Users with identical userid should be equal");
+
+		assertTrue(user2 != user3, "Users with identical userid should be equal");
+		assertTrue(user2 != user4, "Users with identical userid should be equal");
+
+		assertTrue(user3 != user4, "Users with identical userid should be equal");
 
 	}
 

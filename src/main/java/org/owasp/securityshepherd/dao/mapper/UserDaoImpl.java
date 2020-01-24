@@ -2,9 +2,7 @@ package org.owasp.securityshepherd.dao.mapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.List;
-import javax.sql.DataSource;
 
 import org.owasp.securityshepherd.dao.UserDao.UserDAO;
 import org.owasp.securityshepherd.model.UserEntity;

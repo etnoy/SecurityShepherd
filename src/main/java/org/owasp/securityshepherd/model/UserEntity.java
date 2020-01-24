@@ -6,7 +6,7 @@ public class UserEntity {
 
 	private String userId;
 	private String classId;
-	private String userName;	
+	private String userName;
 	private String userPass;
 	private String userRole;
 	private String ssoName;
@@ -27,7 +27,7 @@ public class UserEntity {
 			boolean tempUsername, int userScore, int goldMedalCount, int silverMedalCount, int bronzeMedalCount,
 			int badSubmissionCount) {
 
-		this.userId = userId;
+		setUserId(userId);
 		this.classId = classId;
 		this.userName = userName;
 		this.userPass = userPass;
@@ -46,11 +46,30 @@ public class UserEntity {
 		this.badSubmissionCount = badSubmissionCount;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+
+		if (this == obj) {
+			return true;
+		}
+
+		if (obj == null || obj.getClass() != this.getClass()) {
+			return false;
+		}
+
+		UserEntity user = (UserEntity) obj;
+
+		return (user.getUserId() == getUserId());
+	}
+
 	public String getUserId() {
 		return userId;
 	}
 
 	public void setUserId(String userId) {
+		if (userId.isEmpty()) {
+			throw new IllegalArgumentException("userId cannot be empty");
+		}
 		this.userId = userId;
 	}
 
