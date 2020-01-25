@@ -1,7 +1,6 @@
 package org.owasp.securityshepherd.test.domainmodel;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.Timestamp;
 
@@ -33,15 +32,27 @@ public class UserEntityTest {
 	}
 
 	@Test
-	public void whenCreatingUser_rejectEmptyUserId() {
+	public void createUser_invalidId_ThrowsIllegalArgumentException() {
 
 		assertThrows(IllegalArgumentException.class, () -> new UserEntity("", "someclassid", "Atestingusername", "",
+				"player", "", 0, new Timestamp(0), "me@example.com", "login", false, false, 0, 1, 0, 0, 0));
+
+		assertThrows(IllegalArgumentException.class, () -> new UserEntity(" ", "someclassid", "Atestingusername", "",
+				"player", "", 0, new Timestamp(0), "me@example.com", "login", false, false, 0, 1, 0, 0, 0));
+
+		assertThrows(IllegalArgumentException.class,
+				() -> new UserEntity(
+						"thisuseridisveryverylongandshouldnotbevalidandjusttomakesurewremakeitreallyreallylong",
+						"someclassid", "Atestingusername", "", "player", "", 0, new Timestamp(0), "me@example.com",
+						"login", false, false, 0, 1, 0, 0, 0));
+
+		assertThrows(IllegalArgumentException.class, () -> new UserEntity("\t", "someclassid", "Atestingusername", "",
 				"player", "", 0, new Timestamp(0), "me@example.com", "login", false, false, 0, 1, 0, 0, 0));
 
 	}
 
 	@Test
-	public void whenComparingUseres_equalIdsAreEqual() {
+	public void equals_equalIds_returnTrue() {
 
 		String userId = "areallylonguserid";
 
@@ -69,7 +80,7 @@ public class UserEntityTest {
 	}
 
 	@Test
-	public void testUsersNotEqual() {
+	public void equals_differentds_returnFalse() {
 
 		UserEntity user1 = new UserEntity("firstuserid", "someclassid", "Atestingusername", "", "player", "", 0,
 				new Timestamp(0), "me@example.com", "login", false, false, 0, 1, 0, 0, 0);
@@ -93,6 +104,26 @@ public class UserEntityTest {
 
 		assertTrue(!user3.equals(user4), "Users with different userid should not be equal");
 
+	}
+
+	@Test
+	public void builder_givenDefaultValues_defaultValuesPresent() {
+		UserEntity user = new UserEntity().toBuilder().build();
+
+		assertEquals(null, user.getClassId());
+		assertEquals(null, user.getUserPass());
+		assertEquals("player", user.getUserRole());
+		assertEquals(null, user.getSsoName());
+		assertEquals(0, user.getBadLoginCount());
+		assertEquals(new Timestamp(0), user.getSuspendedUntil());
+		assertEquals(null, user.getUserAddress());
+		assertEquals("login", user.getLoginType());
+		assertEquals(false, user.isTempPassword()); 
+		assertEquals(false, user.isTempUsername());
+		assertEquals(0, user.getGoldMedalCount());
+		assertEquals(0, user.getSilverMedalCount());
+		assertEquals(0, user.getBronzeMedalCount());
+		assertEquals(0, user.getBadSubmissionCount());
 	}
 
 }

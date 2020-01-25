@@ -11,7 +11,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
-import utils.Hash;
+import org.owasp.securityshepherd.utils.Hash;
 import utils.LoginMethod;
 import utils.ShepherdLogManager;
 import utils.UserKicker;

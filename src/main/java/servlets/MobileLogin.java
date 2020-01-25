@@ -13,7 +13,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import utils.Hash;
+import org.owasp.securityshepherd.utils.Hash;
 import utils.ShepherdLogManager;
 import utils.UserKicker;
 import dbProcs.Getter;

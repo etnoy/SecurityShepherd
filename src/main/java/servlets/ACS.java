@@ -22,7 +22,7 @@ import com.onelogin.saml2.Auth;
 import com.onelogin.saml2.exception.Error;
 import com.onelogin.saml2.exception.SettingsException;
 
-import utils.Hash;
+import org.owasp.securityshepherd.utils.Hash;
 import utils.ShepherdLogManager;
 import utils.UserKicker;
 import dbProcs.Getter;

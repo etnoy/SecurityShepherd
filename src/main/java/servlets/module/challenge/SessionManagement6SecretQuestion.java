@@ -21,7 +21,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.owasp.encoder.Encode;
 
 
-import utils.Hash;
+import org.owasp.securityshepherd.utils.Hash;
 import utils.ShepherdLogManager;
 import utils.Validate;
 import dbProcs.Database;

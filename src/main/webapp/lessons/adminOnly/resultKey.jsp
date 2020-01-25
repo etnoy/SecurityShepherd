@@ -1,4 +1,4 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" language="java" import="utils.*" errorPage="" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" language="java" import="utils.*,org.owasp.securityshepherd.utils.*" errorPage="" %>
 <%@ page import="java.util.Locale, java.util.ResourceBundle"%>
 <%
 String levelName = "Failure To Restrict URL Access Lesson Target";

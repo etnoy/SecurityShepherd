@@ -1,4 +1,4 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" language="java" import="utils.*,org.owasp.encoder.Encode" errorPage="" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" language="java" import="utils.*,org.owasp.securityshepherd.utils.*,org.owasp.encoder.Encode" errorPage="" %>
 <%@ include file="translation.jsp" %>
 <%
 	ShepherdLogManager.logEvent(request.getRemoteAddr(), request.getHeader("X-Forwarded-For"), "DEBUG: register.jsp *************************");

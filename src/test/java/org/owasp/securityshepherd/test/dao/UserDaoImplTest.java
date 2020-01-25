@@ -25,18 +25,18 @@ public class UserDaoImplTest {
 	private UserDaoImpl userDao;
 
 	@Test
-	public void whenAddingUser_checkReturnEquals() {
+	public void addUser_ValidUser_canListUsers() {
 
-		UserEntity testUser1 = new UserEntity("userid123", "classid456", "addValidUser1", "hashedpass", "player", "", 0,
-				new Timestamp(0), "", "login", false, false, 0, 0, 0, 0, 0);
-		UserEntity testUser2 = new UserEntity("userid456", "classid456", "addValidUser2", "hashedpass2", "player", "", 0,
-				new Timestamp(99), "", "login", false, false, 0, 3, 0, 0, 0);
+		UserEntity testUser1 = new UserEntity("userid123", "classid456", "addValidUser1", "hashedpass", "player", null,
+				0, new Timestamp(0), "", "login", false, false, 0, 0, 0, 0, 0);
+		UserEntity testUser2 = new UserEntity("userid456", "classid456", "addValidUser2", "hashedpass2", "player", null,
+				0, new Timestamp(99), "", "login", false, false, 0, 3, 0, 0, 0);
 		UserEntity testUser3 = new UserEntity("anotheruser789", "anotherclass", "addValidUser3", "ahashedpass3",
-				"player", "", 0, new Timestamp(99), "", "login", false, false, 0, 3, 0, 0, 0);
+				"player", null, 0, new Timestamp(99), "", "login", false, false, 0, 3, 0, 0, 0);
 
-		userDao.create(testUser1);
-		userDao.create(testUser2);
-		userDao.create(testUser3);
+		userDao.addUser(testUser1);
+		userDao.addUser(testUser2);
+		userDao.addUser(testUser3);
 
 		List<UserEntity> allUsers = userDao.listUsers();
 
@@ -47,32 +47,97 @@ public class UserDaoImplTest {
 	}
 
 	@Test
-	public void addUser_IdsMustBeUnique() {
+	public void addUser_duplicateUserId_ThrowsException() {
 
-		UserEntity testUser = new UserEntity("userid123", "classid456", "duplicateUserId", "hashedpass", "player", "", 0,
-				new Timestamp(0), "", "login", false, false, 0, 0, 0, 0, 0);
+		UserEntity testUser = new UserEntity("userid123", "classid456", "duplicateUserId", "hashedpass", "player", null,
+				0, new Timestamp(0), "", "login", false, false, 0, 0, 0, 0, 0);
 
-		userDao.create(testUser);
+		userDao.addUser(testUser);
 
 		assertThrows(DuplicateKeyException.class, () -> {
-			userDao.create(testUser);
+			userDao.addUser(testUser);
 		});
 
 	}
-	
+
 	@Test
-	public void addUser_UserNamesMustBeUnique() {
+	public void addUser_duplicateUserName_ThrowsException() {
 
-		UserEntity duplicateUserName1 = new UserEntity("userid123", "classid456", "duplicateUsername", "hashedpass", "player", "", 0,
-				new Timestamp(0), "", "login", false, false, 0, 0, 0, 0, 0);
-		UserEntity duplicateUserName2 = new UserEntity("userid456", "classid456", "duplicateUsername", "hashedpass", "player", "", 0,
-				new Timestamp(0), "", "login", false, false, 0, 0, 0, 0, 0);
+		UserEntity duplicateUserName1 = new UserEntity("userid123", "classid456", "duplicateUsername", "hashedpass",
+				"player", null, 0, new Timestamp(0), "", "login", false, false, 0, 0, 0, 0, 0);
+		UserEntity duplicateUserName2 = new UserEntity("userid456", "classid456", "duplicateUsername", "hashedpass",
+				"player", null, 0, new Timestamp(0), "", "login", false, false, 0, 0, 0, 0, 0);
 
-		userDao.create(duplicateUserName1);
-		
+		userDao.addUser(duplicateUserName1);
+
 		assertThrows(DuplicateKeyException.class, () -> {
-			userDao.create(duplicateUserName2);
+			userDao.addUser(duplicateUserName2);
 		});
+
+	}
+
+	@Test
+	public void addUser_duplicateSsoName_ThrowsException() {
+
+		UserEntity duplicateSsoName1 = new UserEntity("userid123", "classid456", "duplicateSsoName1", "hashedpass",
+				"player", "duplicateSSO", 0, new Timestamp(0), "", "login", false, false, 0, 0, 0, 0, 0);
+		UserEntity duplicateSsoName2 = new UserEntity("userid456", "classid456", "duplicateSsoName2", "hashedpass",
+				"player", "duplicateSSO", 0, new Timestamp(0), "", "login", false, false, 0, 0, 0, 0, 0);
+
+		userDao.addUser(duplicateSsoName1);
+
+		assertThrows(DuplicateKeyException.class, () -> {
+			userDao.addUser(duplicateSsoName2);
+		});
+
+	}
+
+	@Test
+	public void getUserById_validId_CanFindUser() {
+
+		UserEntity validUser = new UserEntity("wanttofindthisuserid", "classid456", "getUserById_validId", "hashedpass",
+				"player", null, 0, new Timestamp(0), "", "login", false, false, 0, 0, 0, 0, 0);
+
+		userDao.addUser(validUser);
+
+		UserEntity returnedUser = userDao.getUserById("wanttofindthisuserid");
+
+		assertTrue(returnedUser == validUser);
+
+	}
+
+	@Test
+	public void getUserById_invalidId_ThrowsIllegalArgumentException() {
+
+		assertThrows(IllegalArgumentException.class, () -> {
+			userDao.getUserById("");
+		});
+
+		assertThrows(IllegalArgumentException.class, () -> {
+			userDao.getUserById(
+					"thisuseridisveryverylongandshouldnotbevalidandjusttomakesurewremakeitreallyreallylong");
+		});
+
+		assertThrows(IllegalArgumentException.class, () -> {
+			userDao.getUserById(" ");
+		});
+
+		assertThrows(IllegalArgumentException.class, () -> {
+			userDao.getUserById("\t");
+		});
+
+		assertThrows(IllegalArgumentException.class, () -> {
+			userDao.getUserById("\n");
+		});
+
+	}
+
+	@Test
+	public void getUserById_nonExistentId_ReturnsNull() {
+
+		UserEntity returnedUser = userDao.getUserById("thisuserdoesnotexist");
+
+		assertTrue(returnedUser == null);
 
 	}
 

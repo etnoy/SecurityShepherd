@@ -1,4 +1,4 @@
-package utils;
+package org.owasp.securityshepherd.utils;
 
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
@@ -110,7 +110,7 @@ public class Hash {
 	}
 
 	/**
-	 * Creates a psedorandom string
+	 * Creates a pseudorandom string 16 bytes long
 	 * 
 	 * @return Random String
 	 */

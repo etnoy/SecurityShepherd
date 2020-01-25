@@ -6,9 +6,9 @@ import org.owasp.securityshepherd.model.UserEntity;
 
 public interface UserDAO {
 
-	public void create(UserEntity user);
+	public void addUser(UserEntity user);
 
-	public UserEntity getUser(String userID);
+	public UserEntity getUserById(String userID);
 
 	public List<UserEntity> getAllUsers();
 

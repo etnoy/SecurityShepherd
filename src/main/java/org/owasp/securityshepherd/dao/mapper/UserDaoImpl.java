@@ -17,7 +17,7 @@ public class UserDaoImpl implements UserDAO {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-	public void create(UserEntity user) {
+	public void addUser(UserEntity user) {
 		// TODO Auto-generated method stub
 		jdbcTemplate.update(
 				"INSERT INTO core.users (userId, classId, userName, userPass, userRole, ssoName, userAddress, loginType, tempPassword, tempUsername ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ",
@@ -27,7 +27,7 @@ public class UserDaoImpl implements UserDAO {
 
 	}
 
-	public UserEntity getUser(String userID) {
+	public UserEntity getUserById(String userID) {
 		// TODO Auto-generated method stub
 		return null;
 	}

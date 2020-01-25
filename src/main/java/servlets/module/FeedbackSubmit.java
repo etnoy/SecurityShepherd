@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 import org.jsoup.parser.Parser;
 import org.owasp.encoder.Encode;
 
-import utils.Hash;
+import org.owasp.securityshepherd.utils.Hash;
 import utils.ShepherdLogManager;
 import utils.Validate;
 import dbProcs.Getter;

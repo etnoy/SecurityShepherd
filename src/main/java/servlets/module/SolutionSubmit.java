@@ -17,7 +17,7 @@ import org.owasp.encoder.Encode;
 
 import utils.CountdownHandler;
 import utils.FeedbackStatus;
-import utils.Hash;
+import org.owasp.securityshepherd.utils.Hash;
 import utils.InvalidCountdownStateException;
 import utils.ShepherdLogManager;
 import utils.Validate;

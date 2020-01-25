@@ -19,7 +19,7 @@ import org.owasp.encoder.Encode;
 
 
 import utils.FindXSS;
-import utils.Hash;
+import org.owasp.securityshepherd.utils.Hash;
 import utils.ShepherdLogManager;
 import utils.Validate;
 import dbProcs.Getter;
