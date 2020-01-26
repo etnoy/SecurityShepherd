@@ -36,32 +36,12 @@ public class UserTest {
 
 		assertThrows(IllegalArgumentException.class, () -> User.builder().id("").build());
 
-		assertThrows(IllegalArgumentException.class, () -> User.builder().id(" ").build());
-
-		assertThrows(IllegalArgumentException.class, () -> User.builder().id("\t").build());
-
-		assertThrows(IllegalArgumentException.class, () -> User.builder().id("1+1").build());
-
-		assertThrows(IllegalArgumentException.class, () -> User.builder().id("åäö").build());
-
-		assertThrows(IllegalArgumentException.class, () -> User.builder().id("åäö").build());
-
 	}
 
 	@Test
 	public void createUser_invalidClassId_ThrowsIllegalArgumentException() {
 
 		assertThrows(IllegalArgumentException.class, () -> User.builder().classId("").build());
-
-		assertThrows(IllegalArgumentException.class, () -> User.builder().classId(" ").build());
-
-		assertThrows(IllegalArgumentException.class, () -> User.builder().classId("\t").build());
-
-		assertThrows(IllegalArgumentException.class, () -> User.builder().classId("1+1").build());
-
-		assertThrows(IllegalArgumentException.class, () -> User.builder().classId("åäö").build());
-
-		assertThrows(IllegalArgumentException.class, () -> User.builder().classId("åäö").build());
 
 	}
 
@@ -129,8 +109,6 @@ public class UserTest {
 	public void builder_ZeroArguments_DefaultValuesPresent() {
 		User user = User.builder().build();
 
-		System.out.println(user);
-		
 		assertNotNull(user.getId());
 		assertEquals(null, user.getClassId());
 		assertNotNull(user.getName());

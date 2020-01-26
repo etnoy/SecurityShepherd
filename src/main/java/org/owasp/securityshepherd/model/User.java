@@ -14,6 +14,7 @@ import org.owasp.securityshepherd.utils.Hash;
 import org.springframework.data.annotation.Id;
 
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder(builderClassName = "UserBuilder", buildMethodName = "build")
 public class User {
 
@@ -65,5 +66,41 @@ public class User {
 	int bronzeMedalCount = 0;
 	@Builder.Default
 	int badSubmissionCount = 0;
+
+	/**
+	 * 
+	 */
+	public static UserBuilder builder() {
+		return new ValidatingUserBuilder();
+	}
+
+	// This class adds validation logic to the builder
+	private static class ValidatingUserBuilder extends UserBuilder {
+
+		@Override
+		public UserBuilder id(String id) {
+			if (id.isEmpty()) {
+				throw new IllegalArgumentException();
+			}
+			return super.id(id);
+		}
+
+		@Override
+		public UserBuilder ssoId(String ssoId) {
+			if (ssoId.isEmpty()) {
+				throw new IllegalArgumentException();
+			}
+			return super.ssoId(ssoId);
+		}
+		
+		@Override
+		public UserBuilder classId(String classId) {
+			if (classId.isEmpty()) {
+				throw new IllegalArgumentException();
+			}
+			return super.classId(classId);
+		}
+
+	}
 
 }
