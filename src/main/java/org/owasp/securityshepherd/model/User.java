@@ -2,15 +2,12 @@ package org.owasp.securityshepherd.model;
 
 import java.sql.Timestamp;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-import org.apache.commons.lang3.StringUtils;
-import org.owasp.securityshepherd.utils.Hash;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.annotation.Id;
 
 @Data
@@ -22,36 +19,35 @@ public class User {
 	@Id
 	@Builder.Default
 	@NonNull
-	private final String id = Hash.randomString();
+	private final String id = RandomStringUtils.randomAlphanumeric(20);
 
-	@Builder.Default
-	String classId = null;
+	String classId;
 
 	@Builder.Default
 	@NonNull
-	private final String name = Hash.randomString();
+	private final String name = RandomStringUtils.randomAlphanumeric(20);
 
-	@Builder.Default
-	private final String password = null;
+	private final String password;
 
 	@Builder.Default
 	@NonNull
 	String role = "player";
-	@Builder.Default
-	String ssoId = null;
+
+	// TODO: ssoId should be deprecated and merged into id
+	String ssoId;
 
 	@Builder.Default
 	int badLoginCount = 0;
 
 	@Builder.Default
-	@NonNull
-	Timestamp suspendedUntil = new Timestamp(0);
+	Timestamp suspendedUntil = null;
 
-	@Builder.Default
-	String email = null;
+	String email;
+
 	@Builder.Default
 	@NonNull
 	String loginType = "login";
+
 	@Builder.Default
 	boolean temporaryPassword = false;
 	@Builder.Default
@@ -67,9 +63,6 @@ public class User {
 	@Builder.Default
 	int badSubmissionCount = 0;
 
-	/**
-	 * 
-	 */
 	public static UserBuilder builder() {
 		return new ValidatingUserBuilder();
 	}
@@ -79,28 +72,49 @@ public class User {
 
 		@Override
 		public UserBuilder id(String id) {
-			if (id.isEmpty()) {
-				throw new IllegalArgumentException();
+			if (id == null) {
+				id = RandomStringUtils.randomAlphanumeric(20);
+			} else {
+				validateId(id);
 			}
 			return super.id(id);
 		}
 
 		@Override
+		public UserBuilder name(String name) {
+			if (name == null) {
+				name = RandomStringUtils.randomAlphanumeric(20);
+			} else if (name.isEmpty()) {
+				throw new IllegalArgumentException();
+			}
+			return super.name(name);
+		}
+
+		@Override
 		public UserBuilder ssoId(String ssoId) {
-			if (ssoId.isEmpty()) {
+			if (ssoId != null && ssoId.isEmpty()) {
 				throw new IllegalArgumentException();
 			}
 			return super.ssoId(ssoId);
 		}
-		
+
 		@Override
 		public UserBuilder classId(String classId) {
-			if (classId.isEmpty()) {
+
+			if (classId != null && classId.isEmpty()) {
 				throw new IllegalArgumentException();
 			}
 			return super.classId(classId);
 		}
 
+	}
+
+	public static boolean validateId(String id) {
+		if (id.isEmpty()) {
+			throw new IllegalArgumentException("User id cannot be an empty string");
+		}
+
+		return true;
 	}
 
 }

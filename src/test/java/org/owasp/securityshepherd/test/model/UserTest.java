@@ -20,14 +20,23 @@ public class UserTest {
 		User.builder().id("myuserid").build();
 
 		User.builder().id("anotheruserid").classId("aclassid").name("Anotherusername").password("password")
-				.role("player").ssoId("anssoid").suspendedUntil(new Timestamp(0)).email("me@example.com")
-				.loginType("saml").temporaryPassword(false).temporaryPassword(false).goldMedalCount(0)
-				.silverMedalCount(0).bronzeMedalCount(0).badSubmissionCount(0).build();
+				.role("player").ssoId("anssoid").badLoginCount(1).suspendedUntil(new Timestamp(0))
+				.email("me@example.com").loginType("saml").temporaryPassword(false).temporaryUsername(false).score(1000)
+				.goldMedalCount(0).silverMedalCount(0).bronzeMedalCount(0).badSubmissionCount(0).build();
 
 		User.builder().id("abc123").classId("newclass").name("A third name with nönlätiñchåracters")
-				.password("hashedpassword").role("admin").ssoId("anotherssoid").suspendedUntil(new Timestamp(12345000))
-				.email("").loginType("login").temporaryPassword(true).temporaryPassword(true).goldMedalCount(999)
-				.silverMedalCount(999).bronzeMedalCount(9).badSubmissionCount(999).build();
+				.password("hashedpassword").role("admin").ssoId("anotherssoid").badLoginCount(123)
+				.suspendedUntil(new Timestamp(12345000)).email("").loginType("login").temporaryPassword(true)
+				.temporaryUsername(false).score(1337).goldMedalCount(999).silverMedalCount(999).bronzeMedalCount(9)
+				.badSubmissionCount(999).build();
+
+		User.builder().classId(null).build();
+		
+		User.builder().ssoId(null).build();
+		
+		User.builder().suspendedUntil(null).build();
+
+		User.builder().id(null).classId(null).name(null).password(null).ssoId(null).email(null).build();
 
 	}
 
@@ -42,6 +51,13 @@ public class UserTest {
 	public void createUser_invalidClassId_ThrowsIllegalArgumentException() {
 
 		assertThrows(IllegalArgumentException.class, () -> User.builder().classId("").build());
+
+	}
+	
+	@Test
+	public void createUser_invalidName_ThrowsIllegalArgumentException() {
+
+		assertThrows(IllegalArgumentException.class, () -> User.builder().name("").build());
 
 	}
 
@@ -116,15 +132,44 @@ public class UserTest {
 		assertEquals("player", user.getRole());
 		assertEquals(null, user.getSsoId());
 		assertEquals(0, user.getBadLoginCount());
-		assertEquals(new Timestamp(0), user.getSuspendedUntil());
+		assertEquals(null, user.getSuspendedUntil());
 		assertEquals(null, user.getEmail());
 		assertEquals("login", user.getLoginType());
 		assertEquals(false, user.isTemporaryPassword());
 		assertEquals(false, user.isTemporaryUsername());
+		assertEquals(0, user.getScore());
 		assertEquals(0, user.getGoldMedalCount());
 		assertEquals(0, user.getSilverMedalCount());
 		assertEquals(0, user.getBronzeMedalCount());
 		assertEquals(0, user.getBadSubmissionCount());
+	}
+
+	@Test
+	public void builder_AllArguments_SuppliedValuesPresent() {
+		User user = User.builder().id("builder_AllArguments_id").classId("builder_AllArguments_classid")
+				.name("builder_AllArguments_username").password("builder_AllArguments_password").role("admin")
+				.ssoId("builder_AllArguments_ssoid").badLoginCount(123).suspendedUntil(new Timestamp(1003))
+				.email("builder_AllArguments@example.com").loginType("saml").temporaryPassword(true)
+				.temporaryUsername(true).score(199).goldMedalCount(10).silverMedalCount(11).bronzeMedalCount(12)
+				.badSubmissionCount(13).build();
+
+		assertEquals("builder_AllArguments_id", user.getId());
+		assertEquals("builder_AllArguments_classid", user.getClassId());
+		assertEquals("builder_AllArguments_username", user.getName());
+		assertEquals("builder_AllArguments_password", user.getPassword());
+		assertEquals("admin", user.getRole());
+		assertEquals("builder_AllArguments_ssoid", user.getSsoId());
+		assertEquals(123, user.getBadLoginCount());
+		assertEquals(new Timestamp(1003), user.getSuspendedUntil());
+		assertEquals("builder_AllArguments@example.com", user.getEmail());
+		assertEquals("saml", user.getLoginType());
+		assertEquals(true, user.isTemporaryPassword());
+		assertEquals(true, user.isTemporaryUsername());
+		assertEquals(199, user.getScore());
+		assertEquals(10, user.getGoldMedalCount());
+		assertEquals(11, user.getSilverMedalCount());
+		assertEquals(12, user.getBronzeMedalCount());
+		assertEquals(13, user.getBadSubmissionCount());
 	}
 
 }

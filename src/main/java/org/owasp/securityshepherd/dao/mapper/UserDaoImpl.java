@@ -9,6 +9,9 @@ import org.owasp.securityshepherd.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -16,6 +19,9 @@ public class UserDaoImpl implements UserDAO {
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
+
+	@Autowired
+	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
 	public void addUser(User user) {
 		// TODO Auto-generated method stub
@@ -28,9 +34,15 @@ public class UserDaoImpl implements UserDAO {
 
 	}
 
-	public User getUserById(String userID) {
-		// TODO Auto-generated method stub
-		return null;
+	public User getUserById(String id) {
+
+		User.validateId(id);
+
+		SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("id", 1);
+
+		return namedParameterJdbcTemplate.queryForObject("SELECT * FROM core.users WHERE userID = :id", namedParameters,
+				new UserRowMapper());
+
 	}
 
 	class UserRowMapper implements RowMapper<User> {
@@ -41,7 +53,7 @@ public class UserDaoImpl implements UserDAO {
 					.ssoId(rs.getString("ssoName")).badLoginCount(rs.getInt("badLoginCount"))
 					.suspendedUntil(rs.getTimestamp("suspendedUntil")).email(rs.getString("userAddress"))
 					.loginType(rs.getString("loginType")).temporaryPassword(rs.getBoolean("tempPassword"))
-					.temporaryPassword(rs.getBoolean("tempUsername")).score(rs.getInt("userScore"))
+					.temporaryUsername(rs.getBoolean("tempUsername")).score(rs.getInt("userScore"))
 					.goldMedalCount(rs.getInt("goldMedalCount")).silverMedalCount(rs.getInt("silverMedalCount"))
 					.bronzeMedalCount(rs.getInt("bronzeMedalCount")).badSubmissionCount(rs.getInt("badSubmissionCount"))
 					.build();
@@ -52,16 +64,6 @@ public class UserDaoImpl implements UserDAO {
 
 	public List<User> listUsers() {
 		return jdbcTemplate.query("select * from core.users", new UserRowMapper());
-	}
-
-	public void delete(Integer id) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void update(Integer id, Integer age) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
