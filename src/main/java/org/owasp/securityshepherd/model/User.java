@@ -14,18 +14,23 @@ import org.owasp.securityshepherd.utils.Hash;
 import org.springframework.data.annotation.Id;
 
 @Data
-@Builder(builderClassName = "UserBuilder")
+@Builder(builderClassName = "UserBuilder", buildMethodName = "build")
 public class User {
 
 	@EqualsAndHashCode.Include
 	@Id
-	private final String Id;
+	@Builder.Default
+	@NonNull
+	private final String id = Hash.randomString();
 
 	@Builder.Default
 	String classId = null;
 
-	private final String name;
+	@Builder.Default
+	@NonNull
+	private final String name = Hash.randomString();
 
+	@Builder.Default
 	private final String password = null;
 
 	@Builder.Default
@@ -60,45 +65,5 @@ public class User {
 	int bronzeMedalCount = 0;
 	@Builder.Default
 	int badSubmissionCount = 0;
-
-	public static class UserBuilder {
-		public UserBuilder id(String id) {
-			if (id == null) {
-				id = Hash.randomString();
-			}
-
-			if (id.isEmpty()) {
-				throw new IllegalArgumentException("User Id cannot be empty");
-			}
-
-			if (!StringUtils.isAlphanumeric(id)) {
-				throw new IllegalArgumentException("User Id must be alphanumeric");
-			}
-
-			return this;
-		}
-
-		public UserBuilder name(String name) {
-			if (name == null) {
-				name = Hash.randomString();
-			}
-
-			if (name.isEmpty()) {
-				throw new IllegalArgumentException("User name cannot be empty");
-			}
-
-			return this;
-		}
-		
-		public UserBuilder password(String password) {
-
-			if (password.isEmpty()) {
-				throw new IllegalArgumentException("Password cannot be empty");
-			}
-
-			return this;
-		}
-
-	}
 
 }

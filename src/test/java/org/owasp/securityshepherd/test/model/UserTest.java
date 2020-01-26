@@ -12,7 +12,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-public class UserEntityTest {
+public class UserTest {
 
 	@Test
 	public void whenCreatingUser_acceptValidData() {
@@ -75,7 +75,7 @@ public class UserEntityTest {
 	@Test
 	public void equals_equalIds_returnTrue() {
 
-		String userId = "areallylonguserid";
+		String userId = "equalIds_userId";
 
 		User user1 = User.builder().id(userId).classId("aclassid").name("Anotherusername").password("password")
 				.role("player").ssoId("ssoid").suspendedUntil(new Timestamp(0)).email("").loginType("saml")
