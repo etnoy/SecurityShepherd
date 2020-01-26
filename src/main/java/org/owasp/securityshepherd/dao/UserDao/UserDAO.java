@@ -2,15 +2,15 @@ package org.owasp.securityshepherd.dao.UserDao;
 
 import java.util.List;
 
-import org.owasp.securityshepherd.model.UserEntity;
+import org.owasp.securityshepherd.model.User;
 
 public interface UserDAO {
 
-	public void addUser(UserEntity user);
+	public void addUser(User user);
 
-	public UserEntity getUserById(String userID);
+	public User getUserById(String userID);
 
-	public List<UserEntity> getAllUsers();
+	public List<User> getAllUsers();
 
 	public void delete(String userID);
 

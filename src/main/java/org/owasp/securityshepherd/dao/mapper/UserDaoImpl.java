@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.owasp.securityshepherd.dao.UserDao.UserDAO;
-import org.owasp.securityshepherd.model.UserEntity;
+import org.owasp.securityshepherd.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -17,37 +17,40 @@ public class UserDaoImpl implements UserDAO {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-	public void addUser(UserEntity user) {
+	public void addUser(User user) {
 		// TODO Auto-generated method stub
 		jdbcTemplate.update(
-				"INSERT INTO core.users (userId, classId, userName, userPass, userRole, ssoName, userAddress, loginType, tempPassword, tempUsername ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ",
-				user.getUserId(), user.getClassId(), user.getUserName(), user.getUserPass(), user.getUserRole(),
-				user.getSsoName(), user.getUserAddress(), user.getLoginType(), user.isTempPassword(),
-				user.isTempUsername());
+				"INSERT INTO core.users (userId, classId, userName, userPass, userRole, ssoName, badLoginCount, suspendedUntil, userAddress, loginType, tempPassword, tempUsername, userScore, goldMedalCount, silverMedalCount, bronzeMedalCount, badSubmissionCount ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ",
+				user.getId(), user.getClassId(), user.getName(), user.getPassword(), user.getRole(), user.getSsoId(),
+				user.getBadLoginCount(), user.getSuspendedUntil(), user.getEmail(), user.getLoginType(),
+				user.isTemporaryPassword(), user.isTemporaryUsername(), user.getScore(), user.getGoldMedalCount(),
+				user.getSilverMedalCount(), user.getBronzeMedalCount(), user.getBadSubmissionCount());
 
 	}
 
-	public UserEntity getUserById(String userID) {
+	public User getUserById(String userID) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	class UserRowMapper implements RowMapper<UserEntity> {
+	class UserRowMapper implements RowMapper<User> {
 		@Override
-		public UserEntity mapRow(ResultSet rs, int rowNum) throws SQLException {
-			UserEntity user = new UserEntity(rs.getString("userId"), rs.getString("classId"), rs.getString("userName"),
-					rs.getString("userPass"), rs.getString("userRole"), rs.getString("ssoName"),
-					rs.getInt("badLoginCount"), rs.getTimestamp("suspendedUntil"), rs.getString("userAddress"),
-					rs.getString("loginType"), rs.getBoolean("tempPassword"), rs.getBoolean("tempUsername"),
-					rs.getInt("userScore"), rs.getInt("goldMedalCount"), rs.getInt("silverMedalCount"),
-					rs.getInt("bronzeMedalCount"), rs.getInt("badSubmissionCount"));
+		public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+			return User.builder().id(rs.getString("userId")).classId(rs.getString("classId"))
+					.name(rs.getString("userName")).password(rs.getString("userPass")).role(rs.getString("userRole"))
+					.ssoId(rs.getString("ssoName")).badLoginCount(rs.getInt("badLoginCount"))
+					.suspendedUntil(rs.getTimestamp("suspendedUntil")).email(rs.getString("userAddress"))
+					.loginType(rs.getString("loginType")).temporaryPassword(rs.getBoolean("tempPassword"))
+					.temporaryPassword(rs.getBoolean("tempUsername")).score(rs.getInt("userScore"))
+					.goldMedalCount(rs.getInt("goldMedalCount")).silverMedalCount(rs.getInt("silverMedalCount"))
+					.bronzeMedalCount(rs.getInt("bronzeMedalCount")).badSubmissionCount(rs.getInt("badSubmissionCount"))
+					.build();
 
-			return user;
 		}
 
 	}
 
-	public List<UserEntity> listUsers() {
+	public List<User> listUsers() {
 		return jdbcTemplate.query("select * from core.users", new UserRowMapper());
 	}
 
@@ -62,7 +65,7 @@ public class UserDaoImpl implements UserDAO {
 	}
 
 	@Override
-	public List<UserEntity> getAllUsers() {
+	public List<User> getAllUsers() {
 		// TODO Auto-generated method stub
 		return null;
 	}
