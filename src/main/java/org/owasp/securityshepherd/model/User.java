@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
+import lombok.With;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.annotation.Id;
@@ -19,6 +20,7 @@ public class User {
 	@Id
 	@Builder.Default
 	@NonNull
+	@With
 	private final String id = RandomStringUtils.randomAlphanumeric(20);
 
 	String classId;
@@ -46,7 +48,7 @@ public class User {
 
 	@Builder.Default
 	@NonNull
-	String loginType = "login";
+	final String loginType = "login";
 
 	@Builder.Default
 	boolean temporaryPassword = false;
@@ -84,8 +86,8 @@ public class User {
 		public UserBuilder name(String name) {
 			if (name == null) {
 				name = RandomStringUtils.randomAlphanumeric(20);
-			} else if (name.isEmpty()) {
-				throw new IllegalArgumentException();
+			} else {
+				validateName(name);
 			}
 			return super.name(name);
 		}
@@ -107,11 +109,104 @@ public class User {
 			return super.classId(classId);
 		}
 
+		@Override
+		public UserBuilder goldMedalCount(int goldMedalCount) {
+
+			if (goldMedalCount < 0) {
+				throw new IllegalArgumentException("Gold medal count must be a positive integer");
+			}
+			return super.goldMedalCount(goldMedalCount);
+		}
+
+		@Override
+		public UserBuilder silverMedalCount(int silverMedalCount) {
+
+			if (silverMedalCount < 0) {
+				throw new IllegalArgumentException("Silver medal count must be a positive integer");
+			}
+			return super.silverMedalCount(silverMedalCount);
+		}
+
+		@Override
+		public UserBuilder bronzeMedalCount(int bronzeMedalCount) {
+
+			if (bronzeMedalCount < 0) {
+				throw new IllegalArgumentException("Bronze medal count must be a positive integer");
+			}
+			return super.bronzeMedalCount(bronzeMedalCount);
+		}
+		
+		@Override
+		public UserBuilder badSubmissionCount(int badSubmissionCount) {
+
+			if (badSubmissionCount < 0) {
+				throw new IllegalArgumentException("Bad submission count must be a positive integer");
+			}
+			return super.badSubmissionCount(badSubmissionCount);
+		}
+		
+		@Override
+		public UserBuilder badLoginCount(int badLoginCount) {
+
+			if (badLoginCount < 0) {
+				throw new IllegalArgumentException("Bad login count must be a positive integer");
+			}
+			return super.badLoginCount(badLoginCount);
+		}
+
 	}
 
+	public void setGoldMedalCount(int goldMedalCount) {
+		if (goldMedalCount < 0) {
+			throw new IllegalArgumentException("Gold medal count must be a positive integer");
+		}
+
+		this.goldMedalCount = goldMedalCount;
+	}
+
+	public void setSilverMedalCount(int silverMedalCount) {
+		if (silverMedalCount < 0) {
+			throw new IllegalArgumentException("Silver medal count must be a positive integer");
+		}
+
+		this.silverMedalCount = silverMedalCount;
+	}
+
+	public void setBronzeMedalCount(int bronzeMedalCount) {
+		if (bronzeMedalCount < 0) {
+			throw new IllegalArgumentException("Bronze medal count must be a positive integer");
+		}
+
+		this.bronzeMedalCount = bronzeMedalCount;
+	}
+	
+	public void setBadSubmissionCount(int badSubmissionCount) {
+		if (badSubmissionCount < 0) {
+			throw new IllegalArgumentException("Bad submission count must be a positive integer");
+		}
+
+		this.badSubmissionCount = badSubmissionCount;
+	}
+	
+	public void setBadLoginCount(int badLoginCount) {
+		if (badLoginCount < 0) {
+			throw new IllegalArgumentException("Bad login count must be a positive integer");
+		}
+
+		this.badLoginCount = badLoginCount;
+	}
+	
 	public static boolean validateId(String id) {
 		if (id.isEmpty()) {
 			throw new IllegalArgumentException("User id cannot be an empty string");
+		}
+
+		return true;
+	}
+
+	public static boolean validateName(String name) {
+		if (name.isEmpty()) {
+			throw new IllegalArgumentException("User name cannot be an empty string");
 		}
 
 		return true;

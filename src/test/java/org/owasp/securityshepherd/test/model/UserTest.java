@@ -27,13 +27,13 @@ public class UserTest {
 		User.builder().id("abc123").classId("newclass").name("A third name with nönlätiñchåracters")
 				.password("hashedpassword").role("admin").ssoId("anotherssoid").badLoginCount(123)
 				.suspendedUntil(new Timestamp(12345000)).email("").loginType("login").temporaryPassword(true)
-				.temporaryUsername(false).score(1337).goldMedalCount(999).silverMedalCount(999).bronzeMedalCount(9)
+				.temporaryUsername(false).score(-1337).goldMedalCount(999).silverMedalCount(999).bronzeMedalCount(9)
 				.badSubmissionCount(999).build();
 
 		User.builder().classId(null).build();
-		
+
 		User.builder().ssoId(null).build();
-		
+
 		User.builder().suspendedUntil(null).build();
 
 		User.builder().id(null).classId(null).name(null).password(null).ssoId(null).email(null).build();
@@ -41,30 +41,108 @@ public class UserTest {
 	}
 
 	@Test
-	public void createUser_invalidId_ThrowsIllegalArgumentException() {
+	public void build_InvalidId_ThrowsIllegalArgumentException() {
 
 		assertThrows(IllegalArgumentException.class, () -> User.builder().id("").build());
 
 	}
 
 	@Test
-	public void createUser_invalidClassId_ThrowsIllegalArgumentException() {
+	public void build_InvalidClassId_ThrowsIllegalArgumentException() {
 
 		assertThrows(IllegalArgumentException.class, () -> User.builder().classId("").build());
 
 	}
-	
+
 	@Test
-	public void createUser_invalidName_ThrowsIllegalArgumentException() {
+	public void build_InvalidName_ThrowsIllegalArgumentException() {
 
 		assertThrows(IllegalArgumentException.class, () -> User.builder().name("").build());
 
 	}
 
 	@Test
-	public void createUser_invalidSsoId_ThrowsIllegalArgumentException() {
+	public void build_InvalidSsoId_ThrowsIllegalArgumentException() {
 
 		assertThrows(IllegalArgumentException.class, () -> User.builder().ssoId("").build());
+
+	}
+
+	@Test
+	public void build_InvalidGoldMedalCount_ThrowsIllegalArgumentException() {
+
+		assertThrows(IllegalArgumentException.class, () -> User.builder().goldMedalCount(-1).build());
+
+	}
+
+	@Test
+	public void build_InvalidSilverMedalCount_ThrowsIllegalArgumentException() {
+
+		assertThrows(IllegalArgumentException.class, () -> User.builder().silverMedalCount(-1).build());
+
+	}
+
+	@Test
+	public void build_InvalidBronzeMedalCount_ThrowsIllegalArgumentException() {
+
+		assertThrows(IllegalArgumentException.class, () -> User.builder().bronzeMedalCount(-1).build());
+
+	}
+
+	@Test
+	public void setGoldMedalCount_InvalidGoldMedalCount_ThrowsIllegalArgumentException() {
+
+		User invalidGoldMedalCountUser = User.builder().build();
+
+		assertThrows(IllegalArgumentException.class, () -> invalidGoldMedalCountUser.setGoldMedalCount(-1));
+
+	}
+
+	@Test
+	public void setSilverMedalCount_InvalidSilverMedalCount_ThrowsIllegalArgumentException() {
+
+		User invalidSilverMedalCountUser = User.builder().build();
+
+		assertThrows(IllegalArgumentException.class, () -> invalidSilverMedalCountUser.setSilverMedalCount(-1));
+
+	}
+
+	@Test
+	public void setBronzeMedalCount_InvalidBronzeMedalCount_ThrowsIllegalArgumentException() {
+
+		User invalidBronzeMedalCountUser = User.builder().build();
+
+		assertThrows(IllegalArgumentException.class, () -> invalidBronzeMedalCountUser.setBronzeMedalCount(-1));
+
+	}
+
+	@Test
+	public void build_InvalidBadLoginCount_ThrowsIllegalArgumentException() {
+
+		assertThrows(IllegalArgumentException.class, () -> User.builder().badLoginCount(-1).build());
+
+	}
+	
+	@Test
+	public void setBadLoginCount_InvalidBadLoginCount_ThrowsIllegalArgumentException() {
+
+		assertThrows(IllegalArgumentException.class, () -> User.builder().badLoginCount(-1).build());
+
+	}
+
+	@Test
+	public void build_InvalidBadSubmissionCount_ThrowsIllegalArgumentException() {
+
+		assertThrows(IllegalArgumentException.class, () -> User.builder().badSubmissionCount(-1).build());
+
+	}
+
+	@Test
+	public void setInvalidBadSubmissionCount_InvalidBadSubmissionCount_ThrowsIllegalArgumentException() {
+
+		User invalidBadSubmissionUser = User.builder().build();
+
+		assertThrows(IllegalArgumentException.class, () -> invalidBadSubmissionUser.setBadSubmissionCount(-1));
 
 	}
 
@@ -84,7 +162,7 @@ public class UserTest {
 				.goldMedalCount(999).silverMedalCount(999).bronzeMedalCount(9).badSubmissionCount(999).build();
 
 		User user3 = User.builder().id(userId).classId("someclass").name("Athirdusername").password("anotherhash")
-				.role("player").ssoId("athirdssoid").suspendedUntil(new Timestamp(12345000)).email("")
+				.role("player").ssoId("athirdssoid").badLoginCount(3).suspendedUntil(new Timestamp(12345000)).email("")
 				.loginType("login").temporaryPassword(true).temporaryPassword(true).goldMedalCount(999)
 				.silverMedalCount(999).bronzeMedalCount(9).badSubmissionCount(999).build();
 
@@ -122,7 +200,7 @@ public class UserTest {
 	}
 
 	@Test
-	public void builder_ZeroArguments_DefaultValuesPresent() {
+	public void build_ZeroArguments_DefaultValuesPresent() {
 		User user = User.builder().build();
 
 		assertNotNull(user.getId());
@@ -145,7 +223,7 @@ public class UserTest {
 	}
 
 	@Test
-	public void builder_AllArguments_SuppliedValuesPresent() {
+	public void build_AllArguments_SuppliedValuesPresent() {
 		User user = User.builder().id("builder_AllArguments_id").classId("builder_AllArguments_classid")
 				.name("builder_AllArguments_username").password("builder_AllArguments_password").role("admin")
 				.ssoId("builder_AllArguments_ssoid").badLoginCount(123).suspendedUntil(new Timestamp(1003))
