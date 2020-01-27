@@ -224,7 +224,7 @@ public class User {
 	}
 
 	public static boolean validateRole(String role) {
-		if (role == "player" || role == "admin") {
+		if (role.equals("player") || role.equals("admin")) {
 			return true;
 		} else {
 			throw new IllegalArgumentException("User role must be \"player\" or \"admin\"");

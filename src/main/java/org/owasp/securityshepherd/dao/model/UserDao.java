@@ -24,6 +24,50 @@ public class UserDao implements Dao<User> {
 	@Autowired
 	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
+	class UserRowMapper implements RowMapper<User> {
+		@Override
+		public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+			return User.builder().id(rs.getString("id")).classId(rs.getString("classId")).name(rs.getString("name"))
+					.password(rs.getString("password")).role(rs.getString("role"))
+					.suspendedUntil(rs.getTimestamp("suspendedUntil")).email(rs.getString("email"))
+					.loginType(rs.getString("loginType")).temporaryPassword(rs.getBoolean("tempPassword"))
+					.temporaryUsername(rs.getBoolean("tempUsername")).score(rs.getInt("score"))
+					.goldMedals(rs.getInt("goldMedals")).silverMedals(rs.getInt("silverMedals"))
+					.bronzeMedals(rs.getInt("bronzeMedals")).badSubmissionCount(rs.getInt("badSubmissionCount"))
+					.badLoginCount(rs.getInt("badLoginCount")).build();
+
+		}
+
+	}
+
+	@Override
+	public boolean containsId(String id) {
+		User.validateId(id);
+
+		SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("id", id);
+
+		return namedParameterJdbcTemplate.queryForObject("SELECT count(id) FROM core.users WHERE id = :id",
+				namedParameters, Integer.class) > 0;
+	}
+
+	@Override
+	public boolean containsName(String name) {
+		User.validateName(name);
+
+		SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("name", name);
+
+		return namedParameterJdbcTemplate.queryForObject("SELECT count(name) FROM core.users WHERE name = :name",
+				namedParameters, Integer.class) > 0;
+	}
+
+	@Override
+	public int count() {
+		SqlParameterSource namedParameters = new MapSqlParameterSource();
+
+		return namedParameterJdbcTemplate.queryForObject("SELECT count(id) FROM core.users", namedParameters,
+				Integer.class);
+	}
+
 	public void create(User user) {
 		jdbcTemplate.update(
 				"INSERT INTO core.users (id, classId, name, password, role, suspendedUntil, email, loginType, tempPassword, tempUsername, score, goldMedals, silverMedals, bronzeMedals, badSubmissionCount, badLoginCount) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ",
@@ -32,6 +76,31 @@ public class UserDao implements Dao<User> {
 				user.isTemporaryUsername(), user.getScore(), user.getGoldMedals(), user.getSilverMedals(),
 				user.getBronzeMedals(), user.getBadSubmissionCount(), user.getBadLoginCount());
 
+	}
+
+	@Override
+	public void deleteAll() {
+
+		namedParameterJdbcTemplate.update("DELETE FROM core.users ", new MapSqlParameterSource());
+	}
+
+	@Override
+	public void deleteById(String id) {
+		User.validateId(id);
+
+		SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("id", id);
+
+		namedParameterJdbcTemplate.update("DELETE FROM core.users WHERE id = :id", namedParameters);
+
+	}
+
+	@Override
+	public void deleteByName(String name) {
+		User.validateName(name);
+
+		SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("name", name);
+
+		namedParameterJdbcTemplate.update("DELETE FROM core.users WHERE name = :name", namedParameters);
 	}
 
 	public User getById(String id) {
@@ -46,17 +115,36 @@ public class UserDao implements Dao<User> {
 	}
 
 	@Override
+	public User getByName(String name) {
+		User.validateName(name);
+
+		SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("name", name);
+
+		return namedParameterJdbcTemplate.queryForObject("SELECT * FROM core.users WHERE name = :name", namedParameters,
+				new UserRowMapper());
+	}
+
+	@Override
 	public List<User> getAll() {
 		return jdbcTemplate.query("select * from core.users", new UserRowMapper());
 	}
 
 	@Override
-	public void deleteById(String id) {
-		User.validateId(id);
+	public void renameByName(String name, String newName) {
+		User.validateId(name);
 
-		SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("id", id);
+		User.validateName(newName);
 
-		namedParameterJdbcTemplate.update("DELETE FROM core.users WHERE id = :id", namedParameters);
+		SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("name", name).addValue("newName",
+				newName);
+
+		String renameQuery = "UPDATE core.users SET name=:newName WHERE name = :name";
+
+		int rowsAffected = namedParameterJdbcTemplate.update(renameQuery, namedParameters);
+
+		if (rowsAffected != 1) {
+			throw new JdbcUpdateAffectedIncorrectNumberOfRowsException(renameQuery, 1, rowsAffected);
+		}
 
 	}
 
@@ -76,64 +164,6 @@ public class UserDao implements Dao<User> {
 			throw new JdbcUpdateAffectedIncorrectNumberOfRowsException(renameQuery, 1, rowsAffected);
 		}
 
-	}
-
-	class UserRowMapper implements RowMapper<User> {
-		@Override
-		public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-			return User.builder().id(rs.getString("id")).classId(rs.getString("classId")).name(rs.getString("name"))
-					.password(rs.getString("password")).role(rs.getString("role"))
-					.suspendedUntil(rs.getTimestamp("suspendedUntil")).email(rs.getString("email"))
-					.loginType(rs.getString("loginType")).temporaryPassword(rs.getBoolean("tempPassword"))
-					.temporaryUsername(rs.getBoolean("tempUsername")).score(rs.getInt("score"))
-					.goldMedals(rs.getInt("goldMedals")).silverMedals(rs.getInt("silverMedals"))
-					.bronzeMedals(rs.getInt("bronzeMedals")).badSubmissionCount(rs.getInt("badSubmissionCount"))
-					.badLoginCount(rs.getInt("badLoginCount")).build();
-
-		}
-
-	}
-
-	@Override
-	public void deleteAll() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public int count() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public boolean containsId(String id) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public User getByName(String name) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void deleteByName(String name) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void renameByName(String id, String newName) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean containsName(String name) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 }

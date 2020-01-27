@@ -48,20 +48,6 @@ public class UserTest {
 	}
 
 	@Test
-	public void toString_ValidData_NotNull() {
-
-		assertNotNull(User.builder().build().toString());
-
-	}
-
-	@Test
-	public void userBuildertoString_ValidData_NotNull() {
-
-		assertNotNull(User.builder().toString());
-
-	}
-
-	@Test
 	public void build_InvalidBadLoginCount_ThrowsIllegalArgumentException() {
 
 		assertThrows(IllegalArgumentException.class, () -> User.builder().badLoginCount(-1).build());
@@ -137,29 +123,6 @@ public class UserTest {
 	}
 
 	@Test
-	public void build_ZeroArguments_DefaultValuesPresent() {
-		User buildZeroArgumentsUser = User.builder().build();
-
-		assertNotNull(buildZeroArgumentsUser.getId());
-		assertEquals(null, buildZeroArgumentsUser.getClassId());
-		assertNotNull(buildZeroArgumentsUser.getName());
-		assertEquals(null, buildZeroArgumentsUser.getPassword());
-		assertEquals("player", buildZeroArgumentsUser.getRole());
-		assertEquals(null, buildZeroArgumentsUser.getSuspendedUntil());
-		assertEquals(null, buildZeroArgumentsUser.getEmail());
-		assertEquals("login", buildZeroArgumentsUser.getLoginType());
-		assertEquals(false, buildZeroArgumentsUser.isTemporaryPassword());
-		assertEquals(false, buildZeroArgumentsUser.isTemporaryUsername());
-		assertEquals(0, buildZeroArgumentsUser.getScore());
-		assertEquals(0, buildZeroArgumentsUser.getGoldMedals());
-		assertEquals(0, buildZeroArgumentsUser.getSilverMedals());
-		assertEquals(0, buildZeroArgumentsUser.getBronzeMedals());
-		assertEquals(0, buildZeroArgumentsUser.getBadSubmissionCount());
-		assertEquals(0, buildZeroArgumentsUser.getBadLoginCount());
-
-	}
-
-	@Test
 	public void build_NullArguments_DefaultValuesPresent() {
 		User buildNullArgumentsUser = User.builder().id(null).classId(null).name(null).password(null).email(null)
 				.build();
@@ -180,6 +143,29 @@ public class UserTest {
 		assertEquals(0, buildNullArgumentsUser.getBronzeMedals());
 		assertEquals(0, buildNullArgumentsUser.getBadSubmissionCount());
 		assertEquals(0, buildNullArgumentsUser.getBadLoginCount());
+
+	}
+
+	@Test
+	public void build_ZeroArguments_DefaultValuesPresent() {
+		User buildZeroArgumentsUser = User.builder().build();
+
+		assertNotNull(buildZeroArgumentsUser.getId());
+		assertEquals(null, buildZeroArgumentsUser.getClassId());
+		assertNotNull(buildZeroArgumentsUser.getName());
+		assertEquals(null, buildZeroArgumentsUser.getPassword());
+		assertEquals("player", buildZeroArgumentsUser.getRole());
+		assertEquals(null, buildZeroArgumentsUser.getSuspendedUntil());
+		assertEquals(null, buildZeroArgumentsUser.getEmail());
+		assertEquals("login", buildZeroArgumentsUser.getLoginType());
+		assertEquals(false, buildZeroArgumentsUser.isTemporaryPassword());
+		assertEquals(false, buildZeroArgumentsUser.isTemporaryUsername());
+		assertEquals(0, buildZeroArgumentsUser.getScore());
+		assertEquals(0, buildZeroArgumentsUser.getGoldMedals());
+		assertEquals(0, buildZeroArgumentsUser.getSilverMedals());
+		assertEquals(0, buildZeroArgumentsUser.getBronzeMedals());
+		assertEquals(0, buildZeroArgumentsUser.getBadSubmissionCount());
+		assertEquals(0, buildZeroArgumentsUser.getBadLoginCount());
 
 	}
 
@@ -350,6 +336,21 @@ public class UserTest {
 	}
 
 	@Test
+	public void setRole_ValidRole_SetsRole() {
+
+		User validRoleUser = User.builder().build();
+
+		validRoleUser.setRole("admin");
+
+		assertEquals("admin", validRoleUser.getRole());
+
+		validRoleUser.setRole("player");
+
+		assertEquals("player", validRoleUser.getRole());
+
+	}
+
+	@Test
 	public void setScore_ValidScore_SetsScore() {
 
 		User validScoreUser = User.builder().build();
@@ -377,17 +378,30 @@ public class UserTest {
 	}
 
 	@Test
-	public void setRole_ValidRole_SetsRole() {
+	public void setSilverMedals_InvalidSilverMedals_ThrowsIllegalArgumentException() {
 
-		User validRoleUser = User.builder().build();
+		User invalidSilverMedalsUser = User.builder().build();
 
-		validRoleUser.setRole("admin");
+		assertThrows(IllegalArgumentException.class, () -> invalidSilverMedalsUser.setSilverMedals(-1));
 
-		assertEquals("admin", validRoleUser.getRole());
+	}
 
-		validRoleUser.setRole("player");
+	@Test
+	public void setSilverMedals_ValidData_ReturnsCorrectCount() {
 
-		assertEquals("player", validRoleUser.getRole());
+		User validSilverMedalsUser = User.builder().build();
+
+		validSilverMedalsUser.setSilverMedals(10);
+
+		assertEquals(10, validSilverMedalsUser.getSilverMedals());
+
+		validSilverMedalsUser.setSilverMedals(1234);
+
+		assertEquals(1234, validSilverMedalsUser.getSilverMedals());
+
+		validSilverMedalsUser.setSilverMedals(0);
+
+		assertEquals(0, validSilverMedalsUser.getSilverMedals());
 
 	}
 
@@ -441,30 +455,16 @@ public class UserTest {
 	}
 
 	@Test
-	public void setSilverMedals_InvalidSilverMedals_ThrowsIllegalArgumentException() {
+	public void toString_ValidData_NotNull() {
 
-		User invalidSilverMedalsUser = User.builder().build();
-
-		assertThrows(IllegalArgumentException.class, () -> invalidSilverMedalsUser.setSilverMedals(-1));
+		assertNotNull(User.builder().build().toString());
 
 	}
 
 	@Test
-	public void setSilverMedals_ValidData_ReturnsCorrectCount() {
+	public void userBuildertoString_ValidData_NotNull() {
 
-		User validSilverMedalsUser = User.builder().build();
-
-		validSilverMedalsUser.setSilverMedals(10);
-
-		assertEquals(10, validSilverMedalsUser.getSilverMedals());
-
-		validSilverMedalsUser.setSilverMedals(1234);
-
-		assertEquals(1234, validSilverMedalsUser.getSilverMedals());
-
-		validSilverMedalsUser.setSilverMedals(0);
-
-		assertEquals(0, validSilverMedalsUser.getSilverMedals());
+		assertNotNull(User.builder().toString());
 
 	}
 
