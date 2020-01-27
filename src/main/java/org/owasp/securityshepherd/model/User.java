@@ -2,25 +2,23 @@ package org.owasp.securityshepherd.model;
 
 import java.sql.Timestamp;
 
+import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.data.annotation.Id;
+
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
-import lombok.With;
-
-import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.data.annotation.Id;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Builder(builderClassName = "UserBuilder", buildMethodName = "build")
+@Builder(builderClassName = "UserBuilder")
 public class User {
 
 	@EqualsAndHashCode.Include
 	@Id
 	@Builder.Default
 	@NonNull
-	@With
 	private final String id = RandomStringUtils.randomAlphanumeric(20);
 
 	String classId;
@@ -29,22 +27,18 @@ public class User {
 	@NonNull
 	private final String name = RandomStringUtils.randomAlphanumeric(20);
 
-	private final String password;
+	@Builder.Default
+	private final String password = null;
 
 	@Builder.Default
 	@NonNull
-	String role = "player";
-
-	// TODO: ssoId should be deprecated and merged into id
-	String ssoId;
-
-	@Builder.Default
-	int badLoginCount = 0;
+	private String role = "player";
 
 	@Builder.Default
 	Timestamp suspendedUntil = null;
 
-	String email;
+	@Builder.Default
+	String email = null;
 
 	@Builder.Default
 	@NonNull
@@ -54,16 +48,21 @@ public class User {
 	boolean temporaryPassword = false;
 	@Builder.Default
 	boolean temporaryUsername = false;
+
 	@Builder.Default
 	int score = 0;
+
 	@Builder.Default
-	int goldMedalCount = 0;
+	int goldMedals = 0;
 	@Builder.Default
-	int silverMedalCount = 0;
+	int silverMedals = 0;
 	@Builder.Default
-	int bronzeMedalCount = 0;
+	int bronzeMedals = 0;
+
 	@Builder.Default
 	int badSubmissionCount = 0;
+	@Builder.Default
+	int badLoginCount = 0;
 
 	public static UserBuilder builder() {
 		return new ValidatingUserBuilder();
@@ -83,6 +82,15 @@ public class User {
 		}
 
 		@Override
+		public UserBuilder classId(String classId) {
+
+			if (classId != null && classId.isEmpty()) {
+				throw new IllegalArgumentException();
+			}
+			return super.classId(classId);
+		}
+
+		@Override
 		public UserBuilder name(String name) {
 			if (name == null) {
 				name = RandomStringUtils.randomAlphanumeric(20);
@@ -93,49 +101,40 @@ public class User {
 		}
 
 		@Override
-		public UserBuilder ssoId(String ssoId) {
-			if (ssoId != null && ssoId.isEmpty()) {
-				throw new IllegalArgumentException();
-			}
-			return super.ssoId(ssoId);
+		public UserBuilder role(String role) {
+
+			validateRole(role);
+
+			return super.role(role);
 		}
 
 		@Override
-		public UserBuilder classId(String classId) {
+		public UserBuilder goldMedals(int goldMedals) {
 
-			if (classId != null && classId.isEmpty()) {
-				throw new IllegalArgumentException();
-			}
-			return super.classId(classId);
-		}
-
-		@Override
-		public UserBuilder goldMedalCount(int goldMedalCount) {
-
-			if (goldMedalCount < 0) {
+			if (goldMedals < 0) {
 				throw new IllegalArgumentException("Gold medal count must be a positive integer");
 			}
-			return super.goldMedalCount(goldMedalCount);
+			return super.goldMedals(goldMedals);
 		}
 
 		@Override
-		public UserBuilder silverMedalCount(int silverMedalCount) {
+		public UserBuilder silverMedals(int silverMedals) {
 
-			if (silverMedalCount < 0) {
+			if (silverMedals < 0) {
 				throw new IllegalArgumentException("Silver medal count must be a positive integer");
 			}
-			return super.silverMedalCount(silverMedalCount);
+			return super.silverMedals(silverMedals);
 		}
 
 		@Override
-		public UserBuilder bronzeMedalCount(int bronzeMedalCount) {
+		public UserBuilder bronzeMedals(int bronzeMedals) {
 
-			if (bronzeMedalCount < 0) {
+			if (bronzeMedals < 0) {
 				throw new IllegalArgumentException("Bronze medal count must be a positive integer");
 			}
-			return super.bronzeMedalCount(bronzeMedalCount);
+			return super.bronzeMedals(bronzeMedals);
 		}
-		
+
 		@Override
 		public UserBuilder badSubmissionCount(int badSubmissionCount) {
 
@@ -144,7 +143,7 @@ public class User {
 			}
 			return super.badSubmissionCount(badSubmissionCount);
 		}
-		
+
 		@Override
 		public UserBuilder badLoginCount(int badLoginCount) {
 
@@ -156,30 +155,30 @@ public class User {
 
 	}
 
-	public void setGoldMedalCount(int goldMedalCount) {
-		if (goldMedalCount < 0) {
+	public void setGoldMedals(int goldMedals) {
+		if (goldMedals < 0) {
 			throw new IllegalArgumentException("Gold medal count must be a positive integer");
 		}
 
-		this.goldMedalCount = goldMedalCount;
+		this.goldMedals = goldMedals;
 	}
 
-	public void setSilverMedalCount(int silverMedalCount) {
-		if (silverMedalCount < 0) {
+	public void setSilverMedals(int silverMedals) {
+		if (silverMedals < 0) {
 			throw new IllegalArgumentException("Silver medal count must be a positive integer");
 		}
 
-		this.silverMedalCount = silverMedalCount;
+		this.silverMedals = silverMedals;
 	}
 
-	public void setBronzeMedalCount(int bronzeMedalCount) {
-		if (bronzeMedalCount < 0) {
+	public void setBronzeMedals(int bronzeMedals) {
+		if (bronzeMedals < 0) {
 			throw new IllegalArgumentException("Bronze medal count must be a positive integer");
 		}
 
-		this.bronzeMedalCount = bronzeMedalCount;
+		this.bronzeMedals = bronzeMedals;
 	}
-	
+
 	public void setBadSubmissionCount(int badSubmissionCount) {
 		if (badSubmissionCount < 0) {
 			throw new IllegalArgumentException("Bad submission count must be a positive integer");
@@ -187,7 +186,7 @@ public class User {
 
 		this.badSubmissionCount = badSubmissionCount;
 	}
-	
+
 	public void setBadLoginCount(int badLoginCount) {
 		if (badLoginCount < 0) {
 			throw new IllegalArgumentException("Bad login count must be a positive integer");
@@ -195,7 +194,19 @@ public class User {
 
 		this.badLoginCount = badLoginCount;
 	}
-	
+
+	public void setRole(String role) {
+		validateRole(role);
+
+		this.role = role;
+	}
+
+	public void setClassId(String classId) {
+		validateId(classId);
+
+		this.classId = classId;
+	}
+
 	public static boolean validateId(String id) {
 		if (id.isEmpty()) {
 			throw new IllegalArgumentException("User id cannot be an empty string");
@@ -210,6 +221,15 @@ public class User {
 		}
 
 		return true;
+	}
+
+	public static boolean validateRole(String role) {
+		if (role == "player" || role == "admin") {
+			return true;
+		} else {
+			throw new IllegalArgumentException("User role must be \"player\" or \"admin\"");
+		}
+
 	}
 
 }

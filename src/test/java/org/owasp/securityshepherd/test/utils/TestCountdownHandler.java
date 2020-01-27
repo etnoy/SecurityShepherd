@@ -2,6 +2,7 @@ package org.owasp.securityshepherd.test.utils;
 
 import org.apache.log4j.Logger;
 import org.junit.BeforeClass;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import utils.CountdownHandler;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 
+@Disabled
 public class TestCountdownHandler {
 	private static org.apache.log4j.Logger log = Logger.getLogger(TestCountdownHandler.class);
 

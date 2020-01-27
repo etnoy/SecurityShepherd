@@ -1,19 +1,33 @@
-package org.owasp.securityshepherd.dao.UserDao;
+package org.owasp.securityshepherd.dao;
 
 import java.util.List;
 
 import org.owasp.securityshepherd.model.User;
 
-public interface UserDAO {
+public interface Dao<T> {
 
-	public void addUser(User user);
+	public void create(User user);
 
-	public User getUserById(String userID);
+	public User getById(String id);
 
-	public List<User> getAllUsers();
+	public User getByName(String name);
 
-	public void delete(String userID);
+	public List<T> getAll();
 
-	public void changeUserName(String userID, String userName);
+	public void deleteById(String id);
+
+	public void deleteByName(String name);
+
+	public void deleteAll();
+
+	public void renameById(String id, String newName);
+
+	public void renameByName(String id, String newName);
+
+	public int count();
+
+	public boolean containsId(String id);
+
+	public boolean containsName(String name);
 
 }
