@@ -52,9 +52,8 @@ public class Group {
 			}
 			return super.name(name);
 		}
-
 	}
-	
+
 	public void setName(String name) {
 		validateName(name);
 

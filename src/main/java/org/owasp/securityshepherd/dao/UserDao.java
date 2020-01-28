@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class UserDao implements Dao<User> {
 
+	// FIXME: remove old template and use only named
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
