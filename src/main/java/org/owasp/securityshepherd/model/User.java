@@ -24,7 +24,7 @@ public class User {
 	@Builder.Default
 	@NonNull
 	private String name = RandomStringUtils.randomAlphanumeric(20);
-	
+
 	String classId;
 
 	@Builder.Default
@@ -86,7 +86,6 @@ public class User {
 
 		@Override
 		public UserBuilder classId(String classId) {
-
 			if (classId != null) {
 				validateId(classId);
 			}
@@ -106,7 +105,6 @@ public class User {
 
 		@Override
 		public UserBuilder role(String role) {
-
 			validateRole(role);
 
 			return super.role(role);
@@ -114,7 +112,6 @@ public class User {
 
 		@Override
 		public UserBuilder goldMedals(int goldMedals) {
-
 			if (goldMedals < 0) {
 				throw new IllegalArgumentException("Gold medal count must be a positive integer");
 			}
@@ -123,7 +120,6 @@ public class User {
 
 		@Override
 		public UserBuilder silverMedals(int silverMedals) {
-
 			if (silverMedals < 0) {
 				throw new IllegalArgumentException("Silver medal count must be a positive integer");
 			}
@@ -132,7 +128,6 @@ public class User {
 
 		@Override
 		public UserBuilder bronzeMedals(int bronzeMedals) {
-
 			if (bronzeMedals < 0) {
 				throw new IllegalArgumentException("Bronze medal count must be a positive integer");
 			}
@@ -141,7 +136,6 @@ public class User {
 
 		@Override
 		public UserBuilder badSubmissionCount(int badSubmissionCount) {
-
 			if (badSubmissionCount < 0) {
 				throw new IllegalArgumentException("Bad submission count must be a positive integer");
 			}
@@ -150,13 +144,11 @@ public class User {
 
 		@Override
 		public UserBuilder badLoginCount(int badLoginCount) {
-
 			if (badLoginCount < 0) {
 				throw new IllegalArgumentException("Bad login count must be a positive integer");
 			}
 			return super.badLoginCount(badLoginCount);
 		}
-
 	}
 
 	public void setGoldMedals(int goldMedals) {
@@ -199,6 +191,12 @@ public class User {
 		this.badLoginCount = badLoginCount;
 	}
 
+	public void setEmail(String email) {
+		validateEmail(email);
+
+		this.email = email;
+	}
+
 	public void setRole(String role) {
 		validateRole(role);
 
@@ -211,8 +209,16 @@ public class User {
 		this.classId = classId;
 	}
 
+	public void setName(String name) {
+		validateName(name);
+
+		this.name = name;
+	}
+
 	public static boolean validateId(String id) {
-		if (id.isEmpty()) {
+		if (id == null) {
+			throw new IllegalArgumentException("User id cannot be null");
+		} else if (id.isEmpty()) {
 			throw new IllegalArgumentException("User id cannot be an empty string");
 		} else if (id.length() > maxIdLength) {
 			throw new IllegalArgumentException("User id cannot be longer than " + Integer.toString(maxIdLength));
@@ -222,7 +228,9 @@ public class User {
 	}
 
 	public static boolean validateName(String name) {
-		if (name.isEmpty()) {
+		if (name == null) {
+			throw new IllegalArgumentException("User name cannot be null");
+		} else if (name.isEmpty()) {
 			throw new IllegalArgumentException("User name cannot be an empty string");
 		} else if (name.length() > maxNameLength) {
 			throw new IllegalArgumentException("User name cannot be longer than " + Integer.toString(maxNameLength));
@@ -232,12 +240,21 @@ public class User {
 	}
 
 	public static boolean validateRole(String role) {
-		if (role.equals("player") || role.equals("admin")) {
+		if (role == null) {
+			throw new IllegalArgumentException("Role cannot be null");
+		} else if (role.equals("player") || role.equals("admin")) {
 			return true;
 		} else {
 			throw new IllegalArgumentException("User role must be \"player\" or \"admin\"");
 		}
+	}
 
+	public static boolean validateEmail(String email) {
+		if (email == null) {
+			throw new IllegalArgumentException("Email cannot be null");
+		} else {
+			return true;
+		}
 	}
 
 }

@@ -1,9 +1,9 @@
-
 DROP SCHEMA IF EXISTS `core` ;
 
 CREATE DATABASE core;
 USE core;
-CREATE  TABLE users (
+
+CREATE TABLE users (
   `id` VARCHAR(64) NOT NULL ,
   `name` VARCHAR(191) NOT NULL ,
   `classId` VARCHAR(64) NULL ,
@@ -23,5 +23,13 @@ CREATE  TABLE users (
   PRIMARY KEY (`id`) ,
   INDEX `classId` (`classId` ASC) ,
   UNIQUE INDEX `name_UNIQUE` (`name` ASC))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4;
+
+CREATE TABLE class (
+  `id` VARCHAR(64) NOT NULL ,
+  `name` VARCHAR(191) NOT NULL UNIQUE,
+  `year` INT NOT NULL,
+  PRIMARY KEY (`id`) )
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;

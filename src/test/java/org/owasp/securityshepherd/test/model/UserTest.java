@@ -48,18 +48,18 @@ public class UserTest {
 	}
 
 	@Test
-	public void build_IdTooLong_ThrowsIllegalArgumentException() {
-
-		assertThrows(IllegalArgumentException.class,
-				() -> User.builder().id("buildId_TooLong_morethan30chars").build());
-
-	}
-
-	@Test
 	public void build_ClassIdTooLong_ThrowsIllegalArgumentException() {
 
 		assertThrows(IllegalArgumentException.class,
 				() -> User.builder().classId("classId_TooLong_morethan30chars").build());
+
+	}
+
+	@Test
+	public void build_IdTooLong_ThrowsIllegalArgumentException() {
+
+		assertThrows(IllegalArgumentException.class,
+				() -> User.builder().id("buildId_TooLong_morethan30chars").build());
 
 	}
 
@@ -171,14 +171,6 @@ public class UserTest {
 	}
 
 	@Test
-	public void build_ValidData_ReturnsUserObject() {
-		User build_ValidDataUser = User.builder().build();
-
-		assertTrue(build_ValidDataUser instanceof User);
-
-	}
-
-	@Test
 	public void build_ValidClassIdLength_ReturnsUser() {
 
 		String validLengthClassId = "classId_exactly__30_chars_long";
@@ -190,6 +182,14 @@ public class UserTest {
 		assertTrue(build_ValidClassIdLengthUser instanceof User);
 
 		assertEquals(validLengthClassId, build_ValidClassIdLengthUser.getClassId());
+	}
+
+	@Test
+	public void build_ValidData_ReturnsUserObject() {
+		User build_ValidDataUser = User.builder().build();
+
+		assertTrue(build_ValidDataUser instanceof User);
+
 	}
 
 	@Test
@@ -323,9 +323,9 @@ public class UserTest {
 	@Test
 	public void setClassId_InvalidClassId_ThrowsIllegalArgumentException() {
 
-		User invalidClassIdUser = User.builder().build();
+		assertThrows(IllegalArgumentException.class, () -> User.builder().build().setClassId(null));
 
-		assertThrows(IllegalArgumentException.class, () -> invalidClassIdUser.setClassId(""));
+		assertThrows(IllegalArgumentException.class, () -> User.builder().build().setClassId(""));
 
 	}
 
@@ -352,11 +352,16 @@ public class UserTest {
 	}
 
 	@Test
+	public void setEmail_InvalidEmail_ThrowsIllegalArgumentException() {
+
+		assertThrows(IllegalArgumentException.class, () -> User.builder().build().setEmail(null));
+
+	}
+
+	@Test
 	public void setGoldMedals_InvalidGoldMedals_ThrowsIllegalArgumentException() {
 
-		User invalidGoldMedalsUser = User.builder().build();
-
-		assertThrows(IllegalArgumentException.class, () -> invalidGoldMedalsUser.setGoldMedals(-1));
+		assertThrows(IllegalArgumentException.class, () -> User.builder().build().setGoldMedals(-1));
 
 	}
 
@@ -389,6 +394,23 @@ public class UserTest {
 	}
 
 	@Test
+	public void setName_InvalidName_ThrowsIllegalArgumentException() {
+
+		assertThrows(IllegalArgumentException.class, () -> User.builder().build().setName(""));
+
+		assertThrows(IllegalArgumentException.class, () -> User.builder().build().setName(null));
+
+	}
+
+	@Test
+	public void setName_NameTooLong_ThrowsIllegalArgumentException() {
+		
+		assertThrows(IllegalArgumentException.class, () -> User.builder().build()
+				.setName("Build_Name_Too_Long_more_than_70_chars_Build_Name_Too_Long_Too_Long_70_"));
+
+	}
+
+	@Test
 	public void setName_ValidNameLength_SetsName() {
 
 		String validLengthName = "Build_Name_exactly_70_chars_long_which_should_be_accepted_as_valid_123";
@@ -406,6 +428,8 @@ public class UserTest {
 	public void setRole_InvalidRole_ThrowsIllegalArgumentException() {
 
 		User invalidRoleUser = User.builder().build();
+
+		assertThrows(IllegalArgumentException.class, () -> invalidRoleUser.setRole(null));
 
 		assertThrows(IllegalArgumentException.class, () -> invalidRoleUser.setRole(""));
 
