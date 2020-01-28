@@ -5,8 +5,8 @@ CREATE DATABASE core;
 USE core;
 CREATE  TABLE users (
   `id` VARCHAR(64) NOT NULL ,
-  `classId` VARCHAR(64) NULL ,
   `name` VARCHAR(191) NOT NULL ,
+  `classId` VARCHAR(64) NULL ,
   `password` VARCHAR(191) ,
   `role` VARCHAR(32) NOT NULL ,
   `suspendedUntil` DATETIME DEFAULT NULL,

@@ -131,7 +131,7 @@ public class UserDao implements Dao<User> {
 
 	@Override
 	public void renameByName(String name, String newName) {
-		User.validateId(name);
+		User.validateName(name);
 
 		User.validateName(newName);
 

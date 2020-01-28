@@ -21,11 +21,11 @@ public class User {
 	@NonNull
 	private final String id = RandomStringUtils.randomAlphanumeric(20);
 
-	String classId;
-
 	@Builder.Default
 	@NonNull
-	private final String name = RandomStringUtils.randomAlphanumeric(20);
+	private String name = RandomStringUtils.randomAlphanumeric(20);
+	
+	String classId;
 
 	@Builder.Default
 	private final String password = null;
@@ -64,6 +64,9 @@ public class User {
 	@Builder.Default
 	int badLoginCount = 0;
 
+	static final int maxIdLength = 30;
+	static final int maxNameLength = 70;
+
 	public static UserBuilder builder() {
 		return new ValidatingUserBuilder();
 	}
@@ -84,9 +87,10 @@ public class User {
 		@Override
 		public UserBuilder classId(String classId) {
 
-			if (classId != null && classId.isEmpty()) {
-				throw new IllegalArgumentException();
+			if (classId != null) {
+				validateId(classId);
 			}
+
 			return super.classId(classId);
 		}
 
@@ -210,6 +214,8 @@ public class User {
 	public static boolean validateId(String id) {
 		if (id.isEmpty()) {
 			throw new IllegalArgumentException("User id cannot be an empty string");
+		} else if (id.length() > maxIdLength) {
+			throw new IllegalArgumentException("User id cannot be longer than " + Integer.toString(maxIdLength));
 		}
 
 		return true;
@@ -218,6 +224,8 @@ public class User {
 	public static boolean validateName(String name) {
 		if (name.isEmpty()) {
 			throw new IllegalArgumentException("User name cannot be an empty string");
+		} else if (name.length() > maxNameLength) {
+			throw new IllegalArgumentException("User name cannot be longer than " + Integer.toString(maxNameLength));
 		}
 
 		return true;

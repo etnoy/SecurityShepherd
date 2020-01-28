@@ -398,11 +398,11 @@ public class UserDaoTest {
 	@Test
 	public void renameById_DuplicateName_ThrowsException() {
 
-		String idToRename = "changeNameById_DuplicateName_renameId";
-		String idOfDuplicate = "changeNameById_DuplicateName_duplicateId";
+		String idToRename = "renameById_DupName_renameId";
+		String idOfDuplicate = "renameById_DupName_duplicateId";
 
-		String oldName = "changeNameById_DuplicateName_oldName";
-		String duplicateName = "changeNameById_DuplicateName_duplicateName";
+		String oldName = "renameById_DuplicateName_oldName";
+		String duplicateName = "renameById_DuplicateName_duplicateName";
 
 		User renameUser = User.builder().id(idToRename).name(oldName).build();
 		User duplicateUser = User.builder().id(idOfDuplicate).name(duplicateName).build();
