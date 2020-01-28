@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.owasp.securityshepherd.dao.Dao;
 import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.model.User.UserBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +21,7 @@ public class UserDao implements Dao<User> {
 	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
 	class UserRowMapper implements RowMapper<User> {
+		
 		@Override
 		public User mapRow(ResultSet rs, int rowNum) throws SQLException {
 			UserBuilder rowMapBuilder = User.builder();
