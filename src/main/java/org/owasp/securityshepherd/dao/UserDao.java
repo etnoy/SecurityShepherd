@@ -6,9 +6,9 @@ import java.util.List;
 
 import org.owasp.securityshepherd.dao.Dao;
 import org.owasp.securityshepherd.model.User;
+import org.owasp.securityshepherd.model.User.UserBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.JdbcUpdateAffectedIncorrectNumberOfRowsException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -18,24 +18,32 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class UserDao implements Dao<User> {
 
-	// FIXME: remove old template and use only named
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
-
 	@Autowired
 	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
 	class UserRowMapper implements RowMapper<User> {
 		@Override
 		public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-			return User.builder().id(rs.getString("id")).classId(rs.getString("classId")).name(rs.getString("name"))
-					.password(rs.getString("password")).role(rs.getString("role"))
-					.suspendedUntil(rs.getTimestamp("suspendedUntil")).email(rs.getString("email"))
-					.loginType(rs.getString("loginType")).temporaryPassword(rs.getBoolean("tempPassword"))
-					.temporaryUsername(rs.getBoolean("tempUsername")).score(rs.getInt("score"))
-					.goldMedals(rs.getInt("goldMedals")).silverMedals(rs.getInt("silverMedals"))
-					.bronzeMedals(rs.getInt("bronzeMedals")).badSubmissionCount(rs.getInt("badSubmissionCount"))
-					.badLoginCount(rs.getInt("badLoginCount")).build();
+			UserBuilder rowMapBuilder = User.builder();
+
+			rowMapBuilder.id(rs.getString("id"));
+			rowMapBuilder.name(rs.getString("name"));
+			rowMapBuilder.classId(rs.getString("classId"));
+			rowMapBuilder.password(rs.getString("password"));
+			rowMapBuilder.role(rs.getString("role"));
+			rowMapBuilder.suspendedUntil(rs.getTimestamp("suspendedUntil"));
+			rowMapBuilder.email(rs.getString("email"));
+			rowMapBuilder.loginType(rs.getString("loginType"));
+			rowMapBuilder.temporaryPassword(rs.getBoolean("tempPassword"));
+			rowMapBuilder.temporaryUsername(rs.getBoolean("tempUsername"));
+			rowMapBuilder.score(rs.getInt("score"));
+			rowMapBuilder.goldMedals(rs.getInt("goldMedals"));
+			rowMapBuilder.silverMedals(rs.getInt("silverMedals"));
+			rowMapBuilder.bronzeMedals(rs.getInt("bronzeMedals"));
+			rowMapBuilder.badSubmissionCount(rs.getInt("badSubmissionCount"));
+			rowMapBuilder.badLoginCount(rs.getInt("badLoginCount"));
+
+			return rowMapBuilder.build();
 
 		}
 
@@ -70,12 +78,29 @@ public class UserDao implements Dao<User> {
 	}
 
 	public void create(User user) {
-		jdbcTemplate.update(
-				"INSERT INTO core.users (id, classId, name, password, role, suspendedUntil, email, loginType, tempPassword, tempUsername, score, goldMedals, silverMedals, bronzeMedals, badSubmissionCount, badLoginCount) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ",
-				user.getId(), user.getClassId(), user.getName(), user.getPassword(), user.getRole(),
-				user.getSuspendedUntil(), user.getEmail(), user.getLoginType(), user.isTemporaryPassword(),
-				user.isTemporaryUsername(), user.getScore(), user.getGoldMedals(), user.getSilverMedals(),
-				user.getBronzeMedals(), user.getBadSubmissionCount(), user.getBadLoginCount());
+
+		String createQuery = "INSERT INTO core.users (id, name, classId, password, role, suspendedUntil, email, loginType, tempPassword, tempUsername, score, goldMedals, silverMedals, bronzeMedals, badSubmissionCount, badLoginCount) VALUES (:id, :name, :classId, :password, :role, :suspendedUntil, :email, :loginType, :temporaryPassword, :temporaryUsername, :score, :goldMedals, :silverMedals, :bronzeMedals, :badSubmissionCount, :badLoginCount)";
+
+		MapSqlParameterSource namedParameters = new MapSqlParameterSource();
+
+		namedParameters.addValue("id", user.getId());
+		namedParameters.addValue("name", user.getName());
+		namedParameters.addValue("classId", user.getClassId());
+		namedParameters.addValue("password", user.getPassword());
+		namedParameters.addValue("role", user.getRole());
+		namedParameters.addValue("suspendedUntil", user.getSuspendedUntil());
+		namedParameters.addValue("email", user.getEmail());
+		namedParameters.addValue("loginType", user.getLoginType());
+		namedParameters.addValue("temporaryPassword", user.isTemporaryPassword());
+		namedParameters.addValue("temporaryUsername", user.isTemporaryUsername());
+		namedParameters.addValue("score", user.getScore());
+		namedParameters.addValue("goldMedals", user.getGoldMedals());
+		namedParameters.addValue("silverMedals", user.getSilverMedals());
+		namedParameters.addValue("bronzeMedals", user.getBronzeMedals());
+		namedParameters.addValue("badSubmissionCount", user.getBadSubmissionCount());
+		namedParameters.addValue("badLoginCount", user.getBadLoginCount());
+
+		namedParameterJdbcTemplate.update(createQuery, namedParameters);
 
 	}
 
@@ -127,7 +152,9 @@ public class UserDao implements Dao<User> {
 
 	@Override
 	public List<User> getAll() {
-		return jdbcTemplate.query("select * from core.users", new UserRowMapper());
+	
+		return namedParameterJdbcTemplate.query("SELECT * FROM core.users", new MapSqlParameterSource(),
+				new UserRowMapper());
 	}
 
 	@Override
