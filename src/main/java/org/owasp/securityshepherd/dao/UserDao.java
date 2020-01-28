@@ -1,4 +1,4 @@
-package org.owasp.securityshepherd.dao.model;
+package org.owasp.securityshepherd.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

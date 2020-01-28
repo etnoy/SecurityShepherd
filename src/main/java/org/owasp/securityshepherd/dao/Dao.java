@@ -2,15 +2,13 @@ package org.owasp.securityshepherd.dao;
 
 import java.util.List;
 
-import org.owasp.securityshepherd.model.User;
-
 public interface Dao<T> {
 
-	public void create(User user);
+	public void create(T entity);
 
-	public User getById(String id);
+	public T getById(String id);
 
-	public User getByName(String name);
+	public T getByName(String name);
 
 	public List<T> getAll();
 
