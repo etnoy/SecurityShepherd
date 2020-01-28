@@ -1,0 +1,1 @@
+INSERT INTO `users` VALUES ('test','user',NULL,'$2y$12$4b4Cn4Pux0vk30aNrB6le.dDlrVBHqWfh98ZNrVhLIB0CkLG0WVWe','player',NULL,NULL,'login',0,0,0,0,0,0,0,0);
