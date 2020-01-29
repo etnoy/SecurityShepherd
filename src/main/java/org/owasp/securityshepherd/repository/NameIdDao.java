@@ -1,8 +1,8 @@
-package org.owasp.securityshepherd.dao;
+package org.owasp.securityshepherd.repository;
 
 import java.util.List;
 
-public interface Dao<T> {
+public interface NameIdDao<T> {
 
 	public void create(T entity);
 

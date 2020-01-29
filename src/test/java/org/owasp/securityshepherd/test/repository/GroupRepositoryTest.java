@@ -1,4 +1,4 @@
-package org.owasp.securityshepherd.test.dao;
+package org.owasp.securityshepherd.test.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -9,8 +9,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.owasp.securityshepherd.dao.GroupDao;
 import org.owasp.securityshepherd.model.Group;
+import org.owasp.securityshepherd.repository.GroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
@@ -22,10 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @Transactional
-public class GroupDaoTest {
+public class GroupRepositoryTest {
 
 	@Autowired
-	private GroupDao groupDao;
+	private GroupRepository groupDao;
 
 	@Test
 	public void containsId_ExistingId_ReturnsTrue() {

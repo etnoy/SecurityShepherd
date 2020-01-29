@@ -1,4 +1,4 @@
-package org.owasp.securityshepherd.dao;
+package org.owasp.securityshepherd.repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,13 +15,13 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class UserDao implements Dao<User> {
+public class UserRepository implements NameIdDao<User> {
 
 	@Autowired
 	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
 	class UserRowMapper implements RowMapper<User> {
-		
+
 		@Override
 		public User mapRow(ResultSet rs, int rowNum) throws SQLException {
 			UserBuilder rowMapBuilder = User.builder();
@@ -152,7 +152,7 @@ public class UserDao implements Dao<User> {
 
 	@Override
 	public List<User> getAll() {
-	
+
 		return namedParameterJdbcTemplate.query("SELECT * FROM core.users", new MapSqlParameterSource(),
 				new UserRowMapper());
 	}

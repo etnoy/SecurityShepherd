@@ -1,4 +1,4 @@
-package org.owasp.securityshepherd.dao;
+package org.owasp.securityshepherd.repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,7 +14,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class GroupDao implements Dao<Group> {
+public class GroupRepository implements NameIdDao<Group> {
 
 	@Autowired
 	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
