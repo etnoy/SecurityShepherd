@@ -34,8 +34,8 @@ public class UserRepository implements NameIdDao<User> {
 			rowMapBuilder.suspendedUntil(rs.getTimestamp("suspendedUntil"));
 			rowMapBuilder.email(rs.getString("email"));
 			rowMapBuilder.loginType(rs.getString("loginType"));
-			rowMapBuilder.temporaryPassword(rs.getBoolean("tempPassword"));
-			rowMapBuilder.temporaryUsername(rs.getBoolean("tempUsername"));
+			rowMapBuilder.temporaryPassword(rs.getBoolean("temporaryPassword"));
+			rowMapBuilder.temporaryUsername(rs.getBoolean("temporaryUsername"));
 			rowMapBuilder.score(rs.getInt("score"));
 			rowMapBuilder.goldMedals(rs.getInt("goldMedals"));
 			rowMapBuilder.silverMedals(rs.getInt("silverMedals"));
@@ -79,7 +79,7 @@ public class UserRepository implements NameIdDao<User> {
 
 	public void create(User user) {
 
-		String createQuery = "INSERT INTO core.users (id, name, classId, password, role, suspendedUntil, email, loginType, tempPassword, tempUsername, score, goldMedals, silverMedals, bronzeMedals, badSubmissionCount, badLoginCount) VALUES (:id, :name, :classId, :password, :role, :suspendedUntil, :email, :loginType, :temporaryPassword, :temporaryUsername, :score, :goldMedals, :silverMedals, :bronzeMedals, :badSubmissionCount, :badLoginCount)";
+		String createQuery = "INSERT INTO core.users (id, name, classId, password, role, suspendedUntil, email, loginType, temporaryPassword, temporaryUsername, score, goldMedals, silverMedals, bronzeMedals, badSubmissionCount, badLoginCount) VALUES (:id, :name, :classId, :password, :role, :suspendedUntil, :email, :loginType, :temporaryPassword, :temporaryUsername, :score, :goldMedals, :silverMedals, :bronzeMedals, :badSubmissionCount, :badLoginCount)";
 
 		MapSqlParameterSource namedParameters = new MapSqlParameterSource();
 

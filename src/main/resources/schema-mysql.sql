@@ -1,4 +1,4 @@
-DROP SCHEMA IF EXISTS `core` ;
+DROP SCHEMA IF EXISTS `core`;
 
 CREATE DATABASE core;
 USE core;
@@ -12,8 +12,8 @@ CREATE TABLE users (
   `suspendedUntil` DATETIME DEFAULT NULL,
   `email` VARCHAR(128) NULL ,
   `loginType` VARCHAR(32) NULL ,
-  `tempPassword` BOOLEAN  NULL DEFAULT FALSE ,
-  `tempUsername` BOOLEAN  NULL DEFAULT FALSE ,
+  `temporaryPassword` BOOLEAN  NULL DEFAULT FALSE ,
+  `temporaryUsername` BOOLEAN  NULL DEFAULT FALSE ,
   `score` INT NOT NULL DEFAULT 0 ,
   `goldMedals` INT NOT NULL DEFAULT 0 ,
   `silverMedals` INT NOT NULL DEFAULT 0 ,
