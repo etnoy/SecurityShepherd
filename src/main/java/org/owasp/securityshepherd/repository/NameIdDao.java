@@ -1,6 +1,8 @@
 package org.owasp.securityshepherd.repository;
 
-public interface NameIdDao<T> extends IdDao<T> {
+import org.springframework.data.repository.PagingAndSortingRepository;
+
+public interface NameIdDao<T> extends PagingAndSortingRepository<T, String> {
 
 	public boolean containsName(String name);
 

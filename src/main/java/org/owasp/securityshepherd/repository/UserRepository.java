@@ -3,10 +3,14 @@ package org.owasp.securityshepherd.repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.model.User.UserBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.JdbcUpdateAffectedIncorrectNumberOfRowsException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -50,7 +54,7 @@ public class UserRepository implements NameIdDao<User> {
 	}
 
 	@Override
-	public boolean containsId(String id) {
+	public boolean existsById(String id) {
 		User.validateId(id);
 
 		SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("id", id);
@@ -70,7 +74,7 @@ public class UserRepository implements NameIdDao<User> {
 	}
 
 	@Override
-	public int count() {
+	public long count() {
 		SqlParameterSource namedParameters = new MapSqlParameterSource();
 
 		return namedParameterJdbcTemplate.queryForObject("SELECT count(id) FROM core.users", namedParameters,
@@ -151,7 +155,7 @@ public class UserRepository implements NameIdDao<User> {
 	}
 
 	@Override
-	public List<User> getAll() {
+	public List<User> findAll() {
 
 		return namedParameterJdbcTemplate.query("SELECT * FROM core.users", new MapSqlParameterSource(),
 				new UserRowMapper());
@@ -191,6 +195,54 @@ public class UserRepository implements NameIdDao<User> {
 		if (rowsAffected != 1) {
 			throw new JdbcUpdateAffectedIncorrectNumberOfRowsException(renameQuery, 1, rowsAffected);
 		}
+
+	}
+
+	@Override
+	public Iterable<User> findAll(Sort sort) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Page<User> findAll(Pageable pageable) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <S extends User> S save(S entity) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <S extends User> Iterable<S> saveAll(Iterable<S> entities) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Optional<User> findById(String id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Iterable<User> findAllById(Iterable<String> ids) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void delete(User entity) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void deleteAll(Iterable<? extends User> entities) {
+		// TODO Auto-generated method stub
 
 	}
 

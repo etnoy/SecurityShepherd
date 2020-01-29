@@ -29,39 +29,39 @@ public class UserRepositoryTest {
 	private UserRepository userDao;
 
 	@Test
-	public void containsId_ExistingId_ReturnsTrue() {
+	public void existsById_ExistingId_ReturnsTrue() {
 
-		User containsIdExistingIdUser = User.builder().id("containsId_ExistingId").build();
+		User existsByIdExistingIdUser = User.builder().id("existsById_ExistingId").build();
 
-		assertFalse(userDao.containsId("containsId_ExistingId"));
+		assertFalse(userDao.existsById("existsById_ExistingId"));
 
-		userDao.create(containsIdExistingIdUser);
+		userDao.create(existsByIdExistingIdUser);
 
-		assertTrue(userDao.containsId("containsId_ExistingId"));
+		assertTrue(userDao.existsById("existsById_ExistingId"));
 
-		User containsIdExistingIdLongerIdUser = User.builder().id("containsId_ExistingId_LongerId").build();
+		User existsByIdExistingIdLongerIdUser = User.builder().id("existsById_ExistingId_LongerId").build();
 
-		assertFalse(userDao.containsId("containsId_ExistingId_LongerId"));
+		assertFalse(userDao.existsById("existsById_ExistingId_LongerId"));
 
-		userDao.create(containsIdExistingIdLongerIdUser);
+		userDao.create(existsByIdExistingIdLongerIdUser);
 
-		assertTrue(userDao.containsId("containsId_ExistingId_LongerId"));
+		assertTrue(userDao.existsById("existsById_ExistingId_LongerId"));
 
 	}
 
 	@Test
-	public void containsId_InvalidId_ThrowsIllegalArgumentException() {
+	public void existsById_InvalidId_ThrowsIllegalArgumentException() {
 
 		assertThrows(IllegalArgumentException.class, () -> {
-			userDao.containsId("");
+			userDao.existsById("");
 		});
 
 	}
 
 	@Test
-	public void containsId_NonExistentId_ReturnsFalse() {
+	public void existsById_NonExistentId_ReturnsFalse() {
 
-		assertFalse(userDao.containsId("containsId_NonExistentId"));
+		assertFalse(userDao.existsById("existsById_NonExistentId"));
 
 	}
 
@@ -173,7 +173,7 @@ public class UserRepositoryTest {
 		userDao.create(validUser2);
 		userDao.create(validUser3);
 
-		List<User> allUsers = userDao.getAll();
+		List<User> allUsers = userDao.findAll();
 
 		assertTrue(allUsers.contains(validUser1), "List of users should contain added users");
 		assertTrue(allUsers.contains(validUser2), "List of users should contain added users");
@@ -256,7 +256,7 @@ public class UserRepositoryTest {
 			userDao.getById(idToDelete);
 		});
 
-		assertFalse(userDao.containsId(idToDelete));
+		assertFalse(userDao.existsById(idToDelete));
 
 	}
 
@@ -298,35 +298,35 @@ public class UserRepositoryTest {
 	}
 
 	@Test
-	public void getAll_ReturnsUsers() {
+	public void findAll_ReturnsUsers() {
 
 		userDao.deleteAll();
 
 		assertTrue(userDao.count() == 0);
 
-		User getAll_ReturnsUsers_user1 = User.builder().id("getAll_ReturnsUsers_user1").build();
-		User getAll_ReturnsUsers_user2 = User.builder().id("getAll_ReturnsUsers_user2").build();
-		User getAll_ReturnsUsers_user3 = User.builder().id("getAll_ReturnsUsers_user3").build();
-		User getAll_ReturnsUsers_user4 = User.builder().id("getAll_ReturnsUsers_user4").build();
+		User findAll_ReturnsUsers_user1 = User.builder().id("findAll_ReturnsUsers_user1").build();
+		User findAll_ReturnsUsers_user2 = User.builder().id("findAll_ReturnsUsers_user2").build();
+		User findAll_ReturnsUsers_user3 = User.builder().id("findAll_ReturnsUsers_user3").build();
+		User findAll_ReturnsUsers_user4 = User.builder().id("findAll_ReturnsUsers_user4").build();
 
-		userDao.create(getAll_ReturnsUsers_user1);
-		userDao.create(getAll_ReturnsUsers_user2);
-		userDao.create(getAll_ReturnsUsers_user3);
-		userDao.create(getAll_ReturnsUsers_user4);
+		userDao.create(findAll_ReturnsUsers_user1);
+		userDao.create(findAll_ReturnsUsers_user2);
+		userDao.create(findAll_ReturnsUsers_user3);
+		userDao.create(findAll_ReturnsUsers_user4);
 
-		assertTrue(userDao.containsId(getAll_ReturnsUsers_user1.getId()));
-		assertTrue(userDao.containsId(getAll_ReturnsUsers_user2.getId()));
-		assertTrue(userDao.containsId(getAll_ReturnsUsers_user3.getId()));
-		assertTrue(userDao.containsId(getAll_ReturnsUsers_user4.getId()));
+		assertTrue(userDao.existsById(findAll_ReturnsUsers_user1.getId()));
+		assertTrue(userDao.existsById(findAll_ReturnsUsers_user2.getId()));
+		assertTrue(userDao.existsById(findAll_ReturnsUsers_user3.getId()));
+		assertTrue(userDao.existsById(findAll_ReturnsUsers_user4.getId()));
 
-		List<User> users = userDao.getAll();
+		List<User> users = userDao.findAll();
 
 		assertEquals(4, users.size());
 
-		assertTrue(users.contains(getAll_ReturnsUsers_user1));
-		assertTrue(users.contains(getAll_ReturnsUsers_user2));
-		assertTrue(users.contains(getAll_ReturnsUsers_user3));
-		assertTrue(users.contains(getAll_ReturnsUsers_user4));
+		assertTrue(users.contains(findAll_ReturnsUsers_user1));
+		assertTrue(users.contains(findAll_ReturnsUsers_user2));
+		assertTrue(users.contains(findAll_ReturnsUsers_user3));
+		assertTrue(users.contains(findAll_ReturnsUsers_user4));
 
 	}
 
@@ -413,13 +413,13 @@ public class UserRepositoryTest {
 		userDao.create(renameUser);
 		userDao.create(duplicateUser);
 
-		int countBefore = userDao.count();
+		long countBefore = userDao.count();
 
 		assertThrows(DuplicateKeyException.class, () -> {
 			userDao.renameById(idToRename, duplicateName);
 		});
 
-		int countAfter = userDao.count();
+		long countAfter = userDao.count();
 
 		assertEquals(countBefore, countAfter);
 
@@ -486,13 +486,13 @@ public class UserRepositoryTest {
 		userDao.create(renameUser);
 		userDao.create(duplicateUser);
 
-		int countBefore = userDao.count();
+		long countBefore = userDao.count();
 
 		assertThrows(DuplicateKeyException.class, () -> {
 			userDao.renameByName(oldName, duplicateName);
 		});
 
-		int countAfter = userDao.count();
+		long countAfter = userDao.count();
 
 		assertEquals(countBefore, countAfter);
 

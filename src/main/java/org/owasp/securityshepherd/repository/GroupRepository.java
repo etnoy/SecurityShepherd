@@ -3,9 +3,13 @@ package org.owasp.securityshepherd.repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 import org.owasp.securityshepherd.model.Group;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.JdbcUpdateAffectedIncorrectNumberOfRowsException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -29,7 +33,7 @@ public class GroupRepository implements NameIdDao<Group> {
 	}
 
 	@Override
-	public boolean containsId(String id) {
+	public boolean existsById(String id) {
 		Group.validateId(id);
 
 		SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("id", id);
@@ -49,7 +53,7 @@ public class GroupRepository implements NameIdDao<Group> {
 	}
 
 	@Override
-	public int count() {
+	public long count() {
 		return namedParameterJdbcTemplate.queryForObject("SELECT count(id) FROM core.groups",
 				new MapSqlParameterSource(), Integer.class);
 	}
@@ -114,7 +118,7 @@ public class GroupRepository implements NameIdDao<Group> {
 	}
 
 	@Override
-	public List<Group> getAll() {
+	public List<Group> findAll() {
 		return namedParameterJdbcTemplate.query("SELECT * FROM core.groups", new MapSqlParameterSource(),
 				new GroupRowMapper());
 	}
@@ -154,6 +158,54 @@ public class GroupRepository implements NameIdDao<Group> {
 			throw new JdbcUpdateAffectedIncorrectNumberOfRowsException(renameQuery, 1, rowsAffected);
 		}
 
+	}
+
+	@Override
+	public Iterable<Group> findAll(Sort sort) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Page<Group> findAll(Pageable pageable) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <S extends Group> S save(S entity) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <S extends Group> Iterable<S> saveAll(Iterable<S> entities) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Optional<Group> findById(String id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Iterable<Group> findAllById(Iterable<String> ids) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void delete(Group entity) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deleteAll(Iterable<? extends Group> entities) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

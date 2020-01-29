@@ -28,39 +28,39 @@ public class GroupRepositoryTest {
 	private GroupRepository groupDao;
 
 	@Test
-	public void containsId_ExistingId_ReturnsTrue() {
+	public void existsById_ExistingId_ReturnsTrue() {
 
-		Group containsIdExistingIdGroup = Group.builder().id("containsId_ExistingId").build();
+		Group existsByIdExistingIdGroup = Group.builder().id("existsById_ExistingId").build();
 
-		assertFalse(groupDao.containsId("containsId_ExistingId"));
+		assertFalse(groupDao.existsById("existsById_ExistingId"));
 
-		groupDao.create(containsIdExistingIdGroup);
+		groupDao.create(existsByIdExistingIdGroup);
 
-		assertTrue(groupDao.containsId("containsId_ExistingId"));
+		assertTrue(groupDao.existsById("existsById_ExistingId"));
 
-		Group containsIdExistingIdLongerIdGroup = Group.builder().id("containsId_ExistingId_LongerId").build();
+		Group existsByIdExistingIdLongerIdGroup = Group.builder().id("existsById_ExistingId_LongerId").build();
 
-		assertFalse(groupDao.containsId("containsId_ExistingId_LongerId"));
+		assertFalse(groupDao.existsById("existsById_ExistingId_LongerId"));
 
-		groupDao.create(containsIdExistingIdLongerIdGroup);
+		groupDao.create(existsByIdExistingIdLongerIdGroup);
 
-		assertTrue(groupDao.containsId("containsId_ExistingId_LongerId"));
+		assertTrue(groupDao.existsById("existsById_ExistingId_LongerId"));
 
 	}
 
 	@Test
-	public void containsId_InvalidId_ThrowsIllegalArgumentException() {
+	public void existsById_InvalidId_ThrowsIllegalArgumentException() {
 
 		assertThrows(IllegalArgumentException.class, () -> {
-			groupDao.containsId("");
+			groupDao.existsById("");
 		});
 
 	}
 
 	@Test
-	public void containsId_NonExistentId_ReturnsFalse() {
+	public void existsById_NonExistentId_ReturnsFalse() {
 
-		assertFalse(groupDao.containsId("containsId_NonExistentId"));
+		assertFalse(groupDao.existsById("existsById_NonExistentId"));
 
 	}
 
@@ -166,7 +166,7 @@ public class GroupRepositoryTest {
 		groupDao.create(validGroup2);
 		groupDao.create(validGroup3);
 
-		List<Group> allGroups = groupDao.getAll();
+		List<Group> allGroups = groupDao.findAll();
 
 		assertTrue(allGroups.contains(validGroup1), "List of groups should contain added groups");
 		assertTrue(allGroups.contains(validGroup2), "List of groups should contain added groups");
@@ -249,7 +249,7 @@ public class GroupRepositoryTest {
 			groupDao.getById(idToDelete);
 		});
 
-		assertFalse(groupDao.containsId(idToDelete));
+		assertFalse(groupDao.existsById(idToDelete));
 
 	}
 
@@ -307,12 +307,12 @@ public class GroupRepositoryTest {
 		groupDao.create(getAll_ReturnsGroups_group3);
 		groupDao.create(getAll_ReturnsGroups_group4);
 
-		assertTrue(groupDao.containsId(getAll_ReturnsGroups_group1.getId()));
-		assertTrue(groupDao.containsId(getAll_ReturnsGroups_group2.getId()));
-		assertTrue(groupDao.containsId(getAll_ReturnsGroups_group3.getId()));
-		assertTrue(groupDao.containsId(getAll_ReturnsGroups_group4.getId()));
+		assertTrue(groupDao.existsById(getAll_ReturnsGroups_group1.getId()));
+		assertTrue(groupDao.existsById(getAll_ReturnsGroups_group2.getId()));
+		assertTrue(groupDao.existsById(getAll_ReturnsGroups_group3.getId()));
+		assertTrue(groupDao.existsById(getAll_ReturnsGroups_group4.getId()));
 
-		List<Group> groups = groupDao.getAll();
+		List<Group> groups = groupDao.findAll();
 
 		assertEquals(4, groups.size());
 
@@ -406,13 +406,13 @@ public class GroupRepositoryTest {
 		groupDao.create(renameGroup);
 		groupDao.create(duplicateGroup);
 
-		int countBefore = groupDao.count();
+		long countBefore = groupDao.count();
 
 		assertThrows(DuplicateKeyException.class, () -> {
 			groupDao.renameById(idToRename, duplicateName);
 		});
 
-		int countAfter = groupDao.count();
+		long countAfter = groupDao.count();
 
 		assertEquals(countBefore, countAfter);
 
@@ -479,13 +479,13 @@ public class GroupRepositoryTest {
 		groupDao.create(renameGroup);
 		groupDao.create(duplicateGroup);
 
-		int countBefore = groupDao.count();
+		long countBefore = groupDao.count();
 
 		assertThrows(DuplicateKeyException.class, () -> {
 			groupDao.renameByName(oldName, duplicateName);
 		});
 
-		int countAfter = groupDao.count();
+		long countAfter = groupDao.count();
 
 		assertEquals(countBefore, countAfter);
 
