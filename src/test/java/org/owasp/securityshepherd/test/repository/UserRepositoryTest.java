@@ -7,11 +7,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.model.User;
-import org.owasp.securityshepherd.repository.UserRepository;
+import org.owasp.securityshepherd.repository.NameIdRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
@@ -26,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserRepositoryTest {
 
 	@Autowired
-	private UserRepository userDao;
+	private NameIdRepository<User> userDao;
 
 	@Test
 	public void existsById_ExistingId_ReturnsTrue() {
@@ -35,7 +36,7 @@ public class UserRepositoryTest {
 
 		assertFalse(userDao.existsById("existsById_ExistingId"));
 
-		userDao.create(existsByIdExistingIdUser);
+		userDao.save(existsByIdExistingIdUser);
 
 		assertTrue(userDao.existsById("existsById_ExistingId"));
 
@@ -43,7 +44,7 @@ public class UserRepositoryTest {
 
 		assertFalse(userDao.existsById("existsById_ExistingId_LongerId"));
 
-		userDao.create(existsByIdExistingIdLongerIdUser);
+		userDao.save(existsByIdExistingIdLongerIdUser);
 
 		assertTrue(userDao.existsById("existsById_ExistingId_LongerId"));
 
@@ -66,40 +67,40 @@ public class UserRepositoryTest {
 	}
 
 	@Test
-	public void containsName_ExistingName_ReturnsTrue() {
+	public void existsByName_ExistingName_ReturnsTrue() {
 
-		User containsNameExistingNameUser = User.builder().name("containsName_ExistingName").build();
+		User existsByNameExistingNameUser = User.builder().name("existsByName_ExistingName").build();
 
-		assertFalse(userDao.containsName("containsName_ExistingName"));
+		assertFalse(userDao.existsByName("existsByName_ExistingName"));
 
-		userDao.create(containsNameExistingNameUser);
+		userDao.save(existsByNameExistingNameUser);
 
-		assertTrue(userDao.containsName("containsName_ExistingName"));
+		assertTrue(userDao.existsByName("existsByName_ExistingName"));
 
-		User containsNameExistingNameLongerNameUser = User.builder().name("containsName_ExistingName_LongerName")
+		User existsByNameExistingNameLongerNameUser = User.builder().name("existsByName_ExistingName_LongerName")
 				.build();
 
-		assertFalse(userDao.containsName("containsName_ExistingName_LongerName"));
+		assertFalse(userDao.existsByName("existsByName_ExistingName_LongerName"));
 
-		userDao.create(containsNameExistingNameLongerNameUser);
+		userDao.save(existsByNameExistingNameLongerNameUser);
 
-		assertTrue(userDao.containsName("containsName_ExistingName_LongerName"));
+		assertTrue(userDao.existsByName("existsByName_ExistingName_LongerName"));
 
 	}
 
 	@Test
-	public void containsName_InvalidName_ThrowsIllegalArgumentException() {
+	public void existsByName_InvalidName_ThrowsIllegalArgumentException() {
 
 		assertThrows(IllegalArgumentException.class, () -> {
-			userDao.containsName("");
+			userDao.existsByName("");
 		});
 
 	}
 
 	@Test
-	public void containsName_NonExistentName_ReturnsFalse() {
+	public void existsByName_NonExistentName_ReturnsFalse() {
 
-		assertFalse(userDao.containsName("containsName_NonExistentName"));
+		assertFalse(userDao.existsByName("existsByName_NonExistentName"));
 
 	}
 
@@ -109,19 +110,19 @@ public class UserRepositoryTest {
 		userDao.deleteAll();
 		assertEquals(0, userDao.count());
 
-		userDao.create(User.builder().build());
+		userDao.save(User.builder().build());
 		assertEquals(1, userDao.count());
 
-		userDao.create(User.builder().build());
+		userDao.save(User.builder().build());
 		assertEquals(2, userDao.count());
 
-		userDao.create(User.builder().build());
+		userDao.save(User.builder().build());
 		assertEquals(3, userDao.count());
 
-		userDao.create(User.builder().build());
+		userDao.save(User.builder().build());
 		assertEquals(4, userDao.count());
 
-		userDao.create(User.builder().build());
+		userDao.save(User.builder().build());
 		assertEquals(5, userDao.count());
 
 	}
@@ -132,10 +133,10 @@ public class UserRepositoryTest {
 		User duplicateUserId1 = User.builder().id("duplicateUserId").name("duplicateUserId1").build();
 		User duplicateUserId2 = User.builder().id("duplicateUserId").name("duplicateUserId2").build();
 
-		userDao.create(duplicateUserId1);
+		userDao.save(duplicateUserId1);
 
 		assertThrows(DuplicateKeyException.class, () -> {
-			userDao.create(duplicateUserId2);
+			userDao.save(duplicateUserId2);
 		});
 
 	}
@@ -146,10 +147,10 @@ public class UserRepositoryTest {
 		User duplicateUserName1 = User.builder().name("duplicateUserName").build();
 		User duplicateUserName2 = User.builder().name("duplicateUserName").build();
 
-		userDao.create(duplicateUserName1);
+		userDao.save(duplicateUserName1);
 
 		assertThrows(DuplicateKeyException.class, () -> {
-			userDao.create(duplicateUserName2);
+			userDao.save(duplicateUserName2);
 		});
 
 	}
@@ -169,11 +170,11 @@ public class UserRepositoryTest {
 				.loginType("login").temporaryPassword(true).temporaryPassword(true).goldMedals(999).silverMedals(999)
 				.bronzeMedals(9).badSubmissionCount(999).build();
 
-		userDao.create(validUser1);
-		userDao.create(validUser2);
-		userDao.create(validUser3);
+		userDao.save(validUser1);
+		userDao.save(validUser2);
+		userDao.save(validUser3);
 
-		List<User> allUsers = userDao.findAll();
+		List<User> allUsers = (List<User>) userDao.findAll();
 
 		assertTrue(allUsers.contains(validUser1), "List of users should contain added users");
 		assertTrue(allUsers.contains(validUser2), "List of users should contain added users");
@@ -191,7 +192,7 @@ public class UserRepositoryTest {
 
 		assertEquals(0, userDao.count());
 
-		userDao.create(deleteAll_DeletesAll_user1);
+		userDao.save(deleteAll_DeletesAll_user1);
 
 		assertEquals(1, userDao.count());
 
@@ -199,10 +200,10 @@ public class UserRepositoryTest {
 
 		assertEquals(0, userDao.count());
 
-		userDao.create(deleteAll_DeletesAll_user1);
-		userDao.create(deleteAll_DeletesAll_user2);
-		userDao.create(deleteAll_DeletesAll_user3);
-		userDao.create(deleteAll_DeletesAll_user4);
+		userDao.save(deleteAll_DeletesAll_user1);
+		userDao.save(deleteAll_DeletesAll_user2);
+		userDao.save(deleteAll_DeletesAll_user3);
+		userDao.save(deleteAll_DeletesAll_user4);
 
 		assertEquals(4, userDao.count());
 
@@ -236,7 +237,7 @@ public class UserRepositoryTest {
 	public void deleteById_NonExistentId_ThrowsException() {
 
 		assertThrows(EmptyResultDataAccessException.class, () -> {
-			userDao.getById("deleteById_NonExistentId");
+			userDao.findById("deleteById_NonExistentId");
 		});
 
 	}
@@ -248,12 +249,12 @@ public class UserRepositoryTest {
 
 		User delete_ValidId_User = User.builder().id(idToDelete).build();
 
-		userDao.create(delete_ValidId_User);
+		userDao.save(delete_ValidId_User);
 
 		userDao.deleteById(idToDelete);
 
 		assertThrows(EmptyResultDataAccessException.class, () -> {
-			userDao.getById(idToDelete);
+			userDao.findById(idToDelete);
 		});
 
 		assertFalse(userDao.existsById(idToDelete));
@@ -273,7 +274,7 @@ public class UserRepositoryTest {
 	public void deleteByName_NonExistentName_ThrowsException() {
 
 		assertThrows(EmptyResultDataAccessException.class, () -> {
-			userDao.getByName("deleteByName_NonExistentName");
+			userDao.findByName("deleteByName_NonExistentName");
 		});
 
 	}
@@ -285,15 +286,15 @@ public class UserRepositoryTest {
 
 		User delete_ValidName_User = User.builder().name(nameToDelete).build();
 
-		userDao.create(delete_ValidName_User);
+		userDao.save(delete_ValidName_User);
 
 		userDao.deleteByName(nameToDelete);
 
 		assertThrows(EmptyResultDataAccessException.class, () -> {
-			userDao.getByName(nameToDelete);
+			userDao.findByName(nameToDelete);
 		});
 
-		assertFalse(userDao.containsName(nameToDelete));
+		assertFalse(userDao.existsByName(nameToDelete));
 
 	}
 
@@ -309,17 +310,17 @@ public class UserRepositoryTest {
 		User findAll_ReturnsUsers_user3 = User.builder().id("findAll_ReturnsUsers_user3").build();
 		User findAll_ReturnsUsers_user4 = User.builder().id("findAll_ReturnsUsers_user4").build();
 
-		userDao.create(findAll_ReturnsUsers_user1);
-		userDao.create(findAll_ReturnsUsers_user2);
-		userDao.create(findAll_ReturnsUsers_user3);
-		userDao.create(findAll_ReturnsUsers_user4);
+		userDao.save(findAll_ReturnsUsers_user1);
+		userDao.save(findAll_ReturnsUsers_user2);
+		userDao.save(findAll_ReturnsUsers_user3);
+		userDao.save(findAll_ReturnsUsers_user4);
 
 		assertTrue(userDao.existsById(findAll_ReturnsUsers_user1.getId()));
 		assertTrue(userDao.existsById(findAll_ReturnsUsers_user2.getId()));
 		assertTrue(userDao.existsById(findAll_ReturnsUsers_user3.getId()));
 		assertTrue(userDao.existsById(findAll_ReturnsUsers_user4.getId()));
 
-		List<User> users = userDao.findAll();
+		List<User> users = (List<User>) userDao.findAll();
 
 		assertEquals(4, users.size());
 
@@ -331,222 +332,226 @@ public class UserRepositoryTest {
 	}
 
 	@Test
-	public void getById_InvalidId_ThrowsIllegalArgumentException() {
+	public void findById_InvalidId_ThrowsIllegalArgumentException() {
 
 		assertThrows(IllegalArgumentException.class, () -> {
-			userDao.getById("");
+			userDao.findById("");
 		});
 
 	}
 
 	@Test
-	public void getById_NonExistentId_ThrowsException() {
+	public void findById_NonExistentId_ThrowsException() {
 
 		assertThrows(EmptyResultDataAccessException.class, () -> {
-			userDao.getById("getUserById_NonExistentId");
+			userDao.findById("getUserById_NonExistentId");
 		});
 
 	}
 
 	@Test
-	public void getById_ValidId_CanFindUser() {
+	public void findById_ValidId_CanFindUser() {
 
 		String idToFind = "getUserByIdvalidId";
 
 		User getUserById_validId_User = User.builder().id(idToFind).build();
 
-		userDao.create(getUserById_validId_User);
+		userDao.save(getUserById_validId_User);
 
-		User returnedUser = userDao.getById(idToFind);
+		Optional<User> returnedUser = userDao.findById(idToFind);
 
-		assertEquals(returnedUser, getUserById_validId_User);
+		assertTrue(returnedUser.isPresent());
+		
+		assertEquals(returnedUser.get(), getUserById_validId_User);
 
 	}
 
 	@Test
-	public void getByName_InvalidName_ThrowsIllegalArgumentException() {
+	public void findByName_InvalidName_ThrowsIllegalArgumentException() {
 
 		assertThrows(IllegalArgumentException.class, () -> {
-			userDao.getByName("");
+			userDao.findByName("");
 		});
 
 	}
 
 	@Test
-	public void getByName_NonExistentName_ThrowsException() {
+	public void findByName_NonExistentName_ThrowsException() {
 
 		assertThrows(EmptyResultDataAccessException.class, () -> {
-			userDao.getByName("getUserByName_NonExistentName");
+			userDao.findByName("getUserByName_NonExistentName");
 		});
 
 	}
 
 	@Test
-	public void getByName_ValidName_CanFindUser() {
+	public void findByName_ValidName_CanFindUser() {
 
 		String nameToFind = "getUserByNamevalidName";
 
 		User getUserByName_validName_User = User.builder().name(nameToFind).build();
 
-		userDao.create(getUserByName_validName_User);
+		userDao.save(getUserByName_validName_User);
 
-		User returnedUser = userDao.getByName(nameToFind);
+		Optional<User> returnedUser = userDao.findByName(nameToFind);
+		
+		assertTrue(returnedUser.isPresent());
 
-		assertEquals(returnedUser, getUserByName_validName_User);
+		assertEquals(returnedUser.get(), getUserByName_validName_User);
 
-		assertEquals(returnedUser.getName(), getUserByName_validName_User.getName());
-
-	}
-
-	@Test
-	public void renameById_DuplicateName_ThrowsException() {
-
-		String idToRename = "renameById_DupName_renameId";
-		String idOfDuplicate = "renameById_DupName_duplicateId";
-
-		String oldName = "renameById_DuplicateName_oldName";
-		String duplicateName = "renameById_DuplicateName_duplicateName";
-
-		User renameUser = User.builder().id(idToRename).name(oldName).build();
-		User duplicateUser = User.builder().id(idOfDuplicate).name(duplicateName).build();
-
-		userDao.create(renameUser);
-		userDao.create(duplicateUser);
-
-		long countBefore = userDao.count();
-
-		assertThrows(DuplicateKeyException.class, () -> {
-			userDao.renameById(idToRename, duplicateName);
-		});
-
-		long countAfter = userDao.count();
-
-		assertEquals(countBefore, countAfter);
+		assertEquals(returnedUser.get().getName(), getUserByName_validName_User.getName());
 
 	}
 
-	@Test
-	public void renameById_InvalidId_ThrowsIllegalArgumentException() {
-
-		assertThrows(IllegalArgumentException.class, () -> {
-			userDao.renameById("", "renameById_InvalidId");
-		});
-
-	}
-
-	@Test
-	public void renameById_InvalidName_ThrowsIllegalArgumentException() {
-
-		assertThrows(IllegalArgumentException.class, () -> {
-			userDao.renameById("renameById_InvalidName", "");
-		});
-
-	}
-
-	@Test
-	public void renameById_NonExistentId_ThrowsException() {
-
-		assertThrows(JdbcUpdateAffectedIncorrectNumberOfRowsException.class, () -> {
-			userDao.renameById("renameById_NonExistentId_id", "renameById_NonExistentId_username");
-		});
-
-	}
-
-	@Test
-	public void renameById_ValidIdAndName_ChangesName() {
-
-		String idToRename = "changeNameById_ValidIdAndName";
-
-		String oldName = "changeNameById_ValidIdAndName_oldName";
-		String newName = "changeNameById_ValidIdAndName_newName";
-
-		User insertedUser = User.builder().id(idToRename).name(oldName).build();
-
-		userDao.create(insertedUser);
-
-		userDao.renameById(idToRename, newName);
-
-		User returnedUser = userDao.getById(idToRename);
-
-		assertEquals(returnedUser, insertedUser);
-
-		assertEquals(returnedUser.getName(), newName);
-
-	}
-
-	@Test
-	public void renameByName_DuplicateName_ThrowsException() {
-
-		String oldName = "changeNameById_DuplicateName_oldName";
-		String duplicateName = "changeNameById_DuplicateName_duplicateName";
-
-		User renameUser = User.builder().name(oldName).build();
-		User duplicateUser = User.builder().name(duplicateName).build();
-
-		userDao.create(renameUser);
-		userDao.create(duplicateUser);
-
-		long countBefore = userDao.count();
-
-		assertThrows(DuplicateKeyException.class, () -> {
-			userDao.renameByName(oldName, duplicateName);
-		});
-
-		long countAfter = userDao.count();
-
-		assertEquals(countBefore, countAfter);
-
-	}
-
-	@Test
-	public void renameByName_InvalidOldName_ThrowsIllegalArgumentException() {
-
-		assertThrows(IllegalArgumentException.class, () -> {
-			userDao.renameByName("", "renameById_InvalidId");
-		});
-
-	}
-
-	@Test
-	public void renameByName_InvalidNewName_ThrowsIllegalArgumentException() {
-
-		User renameUser = User.builder().name("renameByName_InvalidNewName").build();
-
-		userDao.create(renameUser);
-
-		assertThrows(IllegalArgumentException.class, () -> {
-			userDao.renameByName("renameByName_InvalidNewName", "");
-		});
-
-	}
-
-	@Test
-	public void renameByName_NonExistentName_ThrowsException() {
-
-		assertThrows(JdbcUpdateAffectedIncorrectNumberOfRowsException.class, () -> {
-			userDao.renameByName("renameByName_NonExistentName_name", "renameByName_NonExistentName_username");
-		});
-
-	}
-
-	@Test
-	public void renameByName_ValidNames_ChangesName() {
-
-		String oldName = "changeNameById_ValidIdAndName_oldName";
-		String newName = "changeNameById_ValidIdAndName_newName";
-
-		User insertedUser = User.builder().name(oldName).build();
-
-		userDao.create(insertedUser);
-
-		userDao.renameByName(oldName, newName);
-
-		User returnedUser = userDao.getByName(newName);
-
-		assertEquals(returnedUser, insertedUser);
-
-		assertEquals(returnedUser.getName(), newName);
-
-	}
+//	@Test
+//	public void renameById_DuplicateName_ThrowsException() {
+//
+//		String idToRename = "renameById_DupName_renameId";
+//		String idOfDuplicate = "renameById_DupName_duplicateId";
+//
+//		String oldName = "renameById_DuplicateName_oldName";
+//		String duplicateName = "renameById_DuplicateName_duplicateName";
+//
+//		User renameUser = User.builder().id(idToRename).name(oldName).build();
+//		User duplicateUser = User.builder().id(idOfDuplicate).name(duplicateName).build();
+//
+//		userDao.save(renameUser);
+//		userDao.save(duplicateUser);
+//
+//		long countBefore = userDao.count();
+//
+//		assertThrows(DuplicateKeyException.class, () -> {
+//			userDao.renameById(idToRename, duplicateName);
+//		});
+//
+//		long countAfter = userDao.count();
+//
+//		assertEquals(countBefore, countAfter);
+//
+//	}
+//
+//	@Test
+//	public void renameById_InvalidId_ThrowsIllegalArgumentException() {
+//
+//		assertThrows(IllegalArgumentException.class, () -> {
+//			userDao.renameById("", "renameById_InvalidId");
+//		});
+//
+//	}
+//
+//	@Test
+//	public void renameById_InvalidName_ThrowsIllegalArgumentException() {
+//
+//		assertThrows(IllegalArgumentException.class, () -> {
+//			userDao.renameById("renameById_InvalidName", "");
+//		});
+//
+//	}
+//
+//	@Test
+//	public void renameById_NonExistentId_ThrowsException() {
+//
+//		assertThrows(JdbcUpdateAffectedIncorrectNumberOfRowsException.class, () -> {
+//			userDao.renameById("renameById_NonExistentId_id", "renameById_NonExistentId_username");
+//		});
+//
+//	}
+//
+//	@Test
+//	public void renameById_ValidIdAndName_ChangesName() {
+//
+//		String idToRename = "changeNameById_ValidIdAndName";
+//
+//		String oldName = "changeNameById_ValidIdAndName_oldName";
+//		String newName = "changeNameById_ValidIdAndName_newName";
+//
+//		User insertedUser = User.builder().id(idToRename).name(oldName).build();
+//
+//		userDao.save(insertedUser);
+//
+//		userDao.renameById(idToRename, newName);
+//
+//		User returnedUser = userDao.findById(idToRename);
+//
+//		assertEquals(returnedUser, insertedUser);
+//
+//		assertEquals(returnedUser.getName(), newName);
+//
+//	}
+//
+//	@Test
+//	public void renameByName_DuplicateName_ThrowsException() {
+//
+//		String oldName = "changeNameById_DuplicateName_oldName";
+//		String duplicateName = "changeNameById_DuplicateName_duplicateName";
+//
+//		User renameUser = User.builder().name(oldName).build();
+//		User duplicateUser = User.builder().name(duplicateName).build();
+//
+//		userDao.save(renameUser);
+//		userDao.save(duplicateUser);
+//
+//		long countBefore = userDao.count();
+//
+//		assertThrows(DuplicateKeyException.class, () -> {
+//			userDao.renameByName(oldName, duplicateName);
+//		});
+//
+//		long countAfter = userDao.count();
+//
+//		assertEquals(countBefore, countAfter);
+//
+//	}
+//
+//	@Test
+//	public void renameByName_InvalidOldName_ThrowsIllegalArgumentException() {
+//
+//		assertThrows(IllegalArgumentException.class, () -> {
+//			userDao.renameByName("", "renameById_InvalidId");
+//		});
+//
+//	}
+//
+//	@Test
+//	public void renameByName_InvalidNewName_ThrowsIllegalArgumentException() {
+//
+//		User renameUser = User.builder().name("renameByName_InvalidNewName").build();
+//
+//		userDao.save(renameUser);
+//
+//		assertThrows(IllegalArgumentException.class, () -> {
+//			userDao.renameByName("renameByName_InvalidNewName", "");
+//		});
+//
+//	}
+//
+//	@Test
+//	public void renameByName_NonExistentName_ThrowsException() {
+//
+//		assertThrows(JdbcUpdateAffectedIncorrectNumberOfRowsException.class, () -> {
+//			userDao.renameByName("renameByName_NonExistentName_name", "renameByName_NonExistentName_username");
+//		});
+//
+//	}
+//
+//	@Test
+//	public void renameByName_ValidNames_ChangesName() {
+//
+//		String oldName = "changeNameById_ValidIdAndName_oldName";
+//		String newName = "changeNameById_ValidIdAndName_newName";
+//
+//		User insertedUser = User.builder().name(oldName).build();
+//
+//		userDao.save(insertedUser);
+//
+//		userDao.renameByName(oldName, newName);
+//
+//		User returnedUser = userDao.findByName(newName);
+//
+//		assertEquals(returnedUser, insertedUser);
+//
+//		assertEquals(returnedUser.getName(), newName);
+//
+//	}
 
 }

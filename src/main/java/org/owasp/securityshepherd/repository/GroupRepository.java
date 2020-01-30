@@ -18,7 +18,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class GroupRepository implements NameIdDao<Group> {
+public class GroupRepository implements NameIdRepository<Group> {
 
 	@Autowired
 	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -43,7 +43,7 @@ public class GroupRepository implements NameIdDao<Group> {
 	}
 
 	@Override
-	public boolean containsName(String name) {
+	public boolean existsByName(String name) {
 		Group.validateName(name);
 
 		SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("name", name);
@@ -108,13 +108,13 @@ public class GroupRepository implements NameIdDao<Group> {
 	}
 
 	@Override
-	public Group getByName(String name) {
+	public Optional<Group> findByName(String name) {
 		Group.validateName(name);
 
 		SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("name", name);
 
-		return namedParameterJdbcTemplate.queryForObject("SELECT * FROM core.groups WHERE name = :name",
-				namedParameters, new GroupRowMapper());
+		return Optional.ofNullable(namedParameterJdbcTemplate
+				.queryForObject("SELECT * FROM core.groups WHERE name = :name", namedParameters, new GroupRowMapper()));
 	}
 
 	@Override
@@ -123,42 +123,46 @@ public class GroupRepository implements NameIdDao<Group> {
 				new GroupRowMapper());
 	}
 
-	@Override
-	public void renameByName(String name, String newName) {
-		Group.validateName(name);
-
-		Group.validateName(newName);
-
-		SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("name", name).addValue("newName",
-				newName);
-
-		String renameQuery = "UPDATE core.groups SET name=:newName WHERE name = :name";
-
-		int rowsAffected = namedParameterJdbcTemplate.update(renameQuery, namedParameters);
-
-		if (rowsAffected != 1) {
-			throw new JdbcUpdateAffectedIncorrectNumberOfRowsException(renameQuery, 1, rowsAffected);
-		}
-
-	}
-
-	@Override
-	public void renameById(String id, String newName) {
-		Group.validateId(id);
-
-		Group.validateName(newName);
-
-		SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("id", id).addValue("name", newName);
-
-		String renameQuery = "UPDATE core.groups SET name=:name WHERE id = :id";
-
-		int rowsAffected = namedParameterJdbcTemplate.update(renameQuery, namedParameters);
-
-		if (rowsAffected != 1) {
-			throw new JdbcUpdateAffectedIncorrectNumberOfRowsException(renameQuery, 1, rowsAffected);
-		}
-
-	}
+	/*
+	 * @Override public void renameByName(String name, String newName) {
+	 * Group.validateName(name);
+	 * 
+	 * Group.validateName(newName);
+	 * 
+	 * SqlParameterSource namedParameters = new
+	 * MapSqlParameterSource().addValue("name", name).addValue("newName", newName);
+	 * 
+	 * String renameQuery =
+	 * "UPDATE core.groups SET name=:newName WHERE name = :name";
+	 * 
+	 * int rowsAffected = namedParameterJdbcTemplate.update(renameQuery,
+	 * namedParameters);
+	 * 
+	 * if (rowsAffected != 1) { throw new
+	 * JdbcUpdateAffectedIncorrectNumberOfRowsException(renameQuery, 1,
+	 * rowsAffected); }
+	 * 
+	 * }
+	 * 
+	 * @Override public void renameById(String id, String newName) {
+	 * Group.validateId(id);
+	 * 
+	 * Group.validateName(newName);
+	 * 
+	 * SqlParameterSource namedParameters = new
+	 * MapSqlParameterSource().addValue("id", id).addValue("name", newName);
+	 * 
+	 * String renameQuery = "UPDATE core.groups SET name=:name WHERE id = :id";
+	 * 
+	 * int rowsAffected = namedParameterJdbcTemplate.update(renameQuery,
+	 * namedParameters);
+	 * 
+	 * if (rowsAffected != 1) { throw new
+	 * JdbcUpdateAffectedIncorrectNumberOfRowsException(renameQuery, 1,
+	 * rowsAffected); }
+	 * 
+	 * }
+	 */
 
 	@Override
 	public Iterable<Group> findAll(Sort sort) {
@@ -199,13 +203,13 @@ public class GroupRepository implements NameIdDao<Group> {
 	@Override
 	public void delete(Group entity) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void deleteAll(Iterable<? extends Group> entities) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

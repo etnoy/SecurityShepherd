@@ -6,16 +6,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.model.Group;
-import org.owasp.securityshepherd.repository.GroupRepository;
+import org.owasp.securityshepherd.repository.NameIdRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.JdbcUpdateAffectedIncorrectNumberOfRowsException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,64 +25,27 @@ import org.springframework.transaction.annotation.Transactional;
 public class GroupRepositoryTest {
 
 	@Autowired
-	private GroupRepository groupDao;
-
-	@Test
-	public void existsById_ExistingId_ReturnsTrue() {
-
-		Group existsByIdExistingIdGroup = Group.builder().id("existsById_ExistingId").build();
-
-		assertFalse(groupDao.existsById("existsById_ExistingId"));
-
-		groupDao.create(existsByIdExistingIdGroup);
-
-		assertTrue(groupDao.existsById("existsById_ExistingId"));
-
-		Group existsByIdExistingIdLongerIdGroup = Group.builder().id("existsById_ExistingId_LongerId").build();
-
-		assertFalse(groupDao.existsById("existsById_ExistingId_LongerId"));
-
-		groupDao.create(existsByIdExistingIdLongerIdGroup);
-
-		assertTrue(groupDao.existsById("existsById_ExistingId_LongerId"));
-
-	}
-
-	@Test
-	public void existsById_InvalidId_ThrowsIllegalArgumentException() {
-
-		assertThrows(IllegalArgumentException.class, () -> {
-			groupDao.existsById("");
-		});
-
-	}
-
-	@Test
-	public void existsById_NonExistentId_ReturnsFalse() {
-
-		assertFalse(groupDao.existsById("existsById_NonExistentId"));
-
-	}
+	private NameIdRepository<Group> groupDao;
 
 	@Test
 	public void containsName_ExistingName_ReturnsTrue() {
 
 		Group containsNameExistingNameGroup = Group.builder().name("containsName_ExistingName").build();
 
-		assertFalse(groupDao.containsName("containsName_ExistingName"));
+		assertFalse(groupDao.existsByName("containsName_ExistingName"));
 
-		groupDao.create(containsNameExistingNameGroup);
+		groupDao.save(containsNameExistingNameGroup);
 
-		assertTrue(groupDao.containsName("containsName_ExistingName"));
+		assertTrue(groupDao.existsByName("containsName_ExistingName"));
 
 		Group containsNameExistingNameLongerNameGroup = Group.builder().name("containsName_ExistingName_LongerName")
 				.build();
 
-		assertFalse(groupDao.containsName("containsName_ExistingName_LongerName"));
+		assertFalse(groupDao.existsByName("containsName_ExistingName_LongerName"));
 
-		groupDao.create(containsNameExistingNameLongerNameGroup);
+		groupDao.save(containsNameExistingNameLongerNameGroup);
 
-		assertTrue(groupDao.containsName("containsName_ExistingName_LongerName"));
+		assertTrue(groupDao.existsByName("containsName_ExistingName_LongerName"));
 
 	}
 
@@ -90,7 +53,7 @@ public class GroupRepositoryTest {
 	public void containsName_InvalidName_ThrowsIllegalArgumentException() {
 
 		assertThrows(IllegalArgumentException.class, () -> {
-			groupDao.containsName("");
+			groupDao.existsByName("");
 		});
 
 	}
@@ -98,7 +61,7 @@ public class GroupRepositoryTest {
 	@Test
 	public void containsName_NonExistentName_ReturnsFalse() {
 
-		assertFalse(groupDao.containsName("containsName_NonExistentName"));
+		assertFalse(groupDao.existsByName("containsName_NonExistentName"));
 
 	}
 
@@ -108,19 +71,19 @@ public class GroupRepositoryTest {
 		groupDao.deleteAll();
 		assertEquals(0, groupDao.count());
 
-		groupDao.create(Group.builder().build());
+		groupDao.save(Group.builder().build());
 		assertEquals(1, groupDao.count());
 
-		groupDao.create(Group.builder().build());
+		groupDao.save(Group.builder().build());
 		assertEquals(2, groupDao.count());
 
-		groupDao.create(Group.builder().build());
+		groupDao.save(Group.builder().build());
 		assertEquals(3, groupDao.count());
 
-		groupDao.create(Group.builder().build());
+		groupDao.save(Group.builder().build());
 		assertEquals(4, groupDao.count());
 
-		groupDao.create(Group.builder().build());
+		groupDao.save(Group.builder().build());
 		assertEquals(5, groupDao.count());
 
 	}
@@ -131,10 +94,10 @@ public class GroupRepositoryTest {
 		Group duplicateGroupId1 = Group.builder().id("duplicateGroupId").name("duplicateGroupId1").build();
 		Group duplicateGroupId2 = Group.builder().id("duplicateGroupId").name("duplicateGroupId2").build();
 
-		groupDao.create(duplicateGroupId1);
+		groupDao.save(duplicateGroupId1);
 
 		assertThrows(DuplicateKeyException.class, () -> {
-			groupDao.create(duplicateGroupId2);
+			groupDao.save(duplicateGroupId2);
 		});
 
 	}
@@ -145,10 +108,10 @@ public class GroupRepositoryTest {
 		Group duplicateGroupName1 = Group.builder().name("duplicateGroupName").build();
 		Group duplicateGroupName2 = Group.builder().name("duplicateGroupName").build();
 
-		groupDao.create(duplicateGroupName1);
+		groupDao.save(duplicateGroupName1);
 
 		assertThrows(DuplicateKeyException.class, () -> {
-			groupDao.create(duplicateGroupName2);
+			groupDao.save(duplicateGroupName2);
 		});
 
 	}
@@ -162,11 +125,11 @@ public class GroupRepositoryTest {
 
 		Group validGroup3 = Group.builder().id("validgroup3").name("nönlätiñchåracters").build();
 
-		groupDao.create(validGroup1);
-		groupDao.create(validGroup2);
-		groupDao.create(validGroup3);
+		groupDao.save(validGroup1);
+		groupDao.save(validGroup2);
+		groupDao.save(validGroup3);
 
-		List<Group> allGroups = groupDao.findAll();
+		List<Group> allGroups = (List<Group>) groupDao.findAll();
 
 		assertTrue(allGroups.contains(validGroup1), "List of groups should contain added groups");
 		assertTrue(allGroups.contains(validGroup2), "List of groups should contain added groups");
@@ -184,7 +147,7 @@ public class GroupRepositoryTest {
 
 		assertEquals(0, groupDao.count());
 
-		groupDao.create(deleteAll_DeletesAll_group1);
+		groupDao.save(deleteAll_DeletesAll_group1);
 
 		assertEquals(1, groupDao.count());
 
@@ -192,10 +155,10 @@ public class GroupRepositoryTest {
 
 		assertEquals(0, groupDao.count());
 
-		groupDao.create(deleteAll_DeletesAll_group1);
-		groupDao.create(deleteAll_DeletesAll_group2);
-		groupDao.create(deleteAll_DeletesAll_group3);
-		groupDao.create(deleteAll_DeletesAll_group4);
+		groupDao.save(deleteAll_DeletesAll_group1);
+		groupDao.save(deleteAll_DeletesAll_group2);
+		groupDao.save(deleteAll_DeletesAll_group3);
+		groupDao.save(deleteAll_DeletesAll_group4);
 
 		assertEquals(4, groupDao.count());
 
@@ -229,7 +192,7 @@ public class GroupRepositoryTest {
 	public void deleteById_NonExistentId_ThrowsException() {
 
 		assertThrows(EmptyResultDataAccessException.class, () -> {
-			groupDao.getById("deleteById_NonExistentId");
+			groupDao.findById("deleteById_NonExistentId");
 		});
 
 	}
@@ -241,12 +204,12 @@ public class GroupRepositoryTest {
 
 		Group delete_ValidId_Group = Group.builder().id(idToDelete).build();
 
-		groupDao.create(delete_ValidId_Group);
+		groupDao.save(delete_ValidId_Group);
 
 		groupDao.deleteById(idToDelete);
 
 		assertThrows(EmptyResultDataAccessException.class, () -> {
-			groupDao.getById(idToDelete);
+			groupDao.findById(idToDelete);
 		});
 
 		assertFalse(groupDao.existsById(idToDelete));
@@ -266,7 +229,7 @@ public class GroupRepositoryTest {
 	public void deleteByName_NonExistentName_ThrowsException() {
 
 		assertThrows(EmptyResultDataAccessException.class, () -> {
-			groupDao.getByName("deleteByName_NonExistentName");
+			groupDao.findByName("deleteByName_NonExistentName");
 		});
 
 	}
@@ -278,20 +241,57 @@ public class GroupRepositoryTest {
 
 		Group delete_ValidName_Group = Group.builder().name(nameToDelete).build();
 
-		groupDao.create(delete_ValidName_Group);
+		groupDao.save(delete_ValidName_Group);
 
 		groupDao.deleteByName(nameToDelete);
 
 		assertThrows(EmptyResultDataAccessException.class, () -> {
-			groupDao.getByName(nameToDelete);
+			groupDao.findByName(nameToDelete);
 		});
 
-		assertFalse(groupDao.containsName(nameToDelete));
+		assertFalse(groupDao.existsByName(nameToDelete));
 
 	}
 
 	@Test
-	public void getAll_ReturnsGroups() {
+	public void existsById_ExistingId_ReturnsTrue() {
+
+		Group existsByIdExistingIdGroup = Group.builder().id("existsById_ExistingId").build();
+
+		assertFalse(groupDao.existsById("existsById_ExistingId"));
+
+		groupDao.save(existsByIdExistingIdGroup);
+
+		assertTrue(groupDao.existsById("existsById_ExistingId"));
+
+		Group existsByIdExistingIdLongerIdGroup = Group.builder().id("existsById_ExistingId_LongerId").build();
+
+		assertFalse(groupDao.existsById("existsById_ExistingId_LongerId"));
+
+		groupDao.save(existsByIdExistingIdLongerIdGroup);
+
+		assertTrue(groupDao.existsById("existsById_ExistingId_LongerId"));
+
+	}
+
+	@Test
+	public void existsById_InvalidId_ThrowsIllegalArgumentException() {
+
+		assertThrows(IllegalArgumentException.class, () -> {
+			groupDao.existsById("");
+		});
+
+	}
+
+	@Test
+	public void existsById_NonExistentId_ReturnsFalse() {
+
+		assertFalse(groupDao.existsById("existsById_NonExistentId"));
+
+	}
+
+	@Test
+	public void findAll_ReturnsGroups() {
 
 		groupDao.deleteAll();
 
@@ -302,17 +302,17 @@ public class GroupRepositoryTest {
 		Group getAll_ReturnsGroups_group3 = Group.builder().id("getAll_ReturnsGroups_group3").build();
 		Group getAll_ReturnsGroups_group4 = Group.builder().id("getAll_ReturnsGroups_group4").build();
 
-		groupDao.create(getAll_ReturnsGroups_group1);
-		groupDao.create(getAll_ReturnsGroups_group2);
-		groupDao.create(getAll_ReturnsGroups_group3);
-		groupDao.create(getAll_ReturnsGroups_group4);
+		groupDao.save(getAll_ReturnsGroups_group1);
+		groupDao.save(getAll_ReturnsGroups_group2);
+		groupDao.save(getAll_ReturnsGroups_group3);
+		groupDao.save(getAll_ReturnsGroups_group4);
 
 		assertTrue(groupDao.existsById(getAll_ReturnsGroups_group1.getId()));
 		assertTrue(groupDao.existsById(getAll_ReturnsGroups_group2.getId()));
 		assertTrue(groupDao.existsById(getAll_ReturnsGroups_group3.getId()));
 		assertTrue(groupDao.existsById(getAll_ReturnsGroups_group4.getId()));
 
-		List<Group> groups = groupDao.findAll();
+		List<Group> groups = (List<Group>) groupDao.findAll();
 
 		assertEquals(4, groups.size());
 
@@ -324,222 +324,214 @@ public class GroupRepositoryTest {
 	}
 
 	@Test
-	public void getById_InvalidId_ThrowsIllegalArgumentException() {
+	public void findById_InvalidId_ThrowsIllegalArgumentException() {
 
 		assertThrows(IllegalArgumentException.class, () -> {
-			groupDao.getById("");
+			groupDao.findById("");
 		});
 
 	}
 
 	@Test
-	public void getById_NonExistentId_ThrowsException() {
+	public void findById_NonExistentId_ThrowsException() {
 
 		assertThrows(EmptyResultDataAccessException.class, () -> {
-			groupDao.getById("getGroupById_NonExistentId");
+			groupDao.findById("getGroupById_NonExistentId");
 		});
 
 	}
 
 	@Test
-	public void getById_ValidId_CanFindGroup() {
+	public void findById_ValidId_CanFindGroup() {
 
 		String idToFind = "getGroupByIdvalidId";
 
 		Group getGroupById_validId_Group = Group.builder().id(idToFind).build();
 
-		groupDao.create(getGroupById_validId_Group);
+		groupDao.save(getGroupById_validId_Group);
 
-		Group returnedGroup = groupDao.getById(idToFind);
+		Optional<Group> returnedGroup = groupDao.findById(idToFind);
+
+		assertTrue(returnedGroup.isPresent());
 
 		assertEquals(returnedGroup, getGroupById_validId_Group);
 
 	}
 
 	@Test
-	public void getByName_InvalidName_ThrowsIllegalArgumentException() {
+	public void findByName_InvalidName_ThrowsIllegalArgumentException() {
 
 		assertThrows(IllegalArgumentException.class, () -> {
-			groupDao.getByName("");
+			groupDao.findByName("");
 		});
 
 	}
 
 	@Test
-	public void getByName_NonExistentName_ThrowsException() {
+	public void findByName_NonExistentName_ThrowsException() {
 
 		assertThrows(EmptyResultDataAccessException.class, () -> {
-			groupDao.getByName("getGroupByName_NonExistentName");
+			groupDao.findByName("getGroupByName_NonExistentName");
 		});
 
 	}
 
 	@Test
-	public void getByName_ValidName_CanFindGroup() {
+	public void findByName_ValidName_CanFindGroup() {
 
 		String nameToFind = "getGroupByNamevalidName";
 
 		Group getGroupByName_validName_Group = Group.builder().name(nameToFind).build();
 
-		groupDao.create(getGroupByName_validName_Group);
+		groupDao.save(getGroupByName_validName_Group);
 
-		Group returnedGroup = groupDao.getByName(nameToFind);
+		Optional<Group> returnedGroup = groupDao.findByName(nameToFind);
+
+		assertTrue(returnedGroup.isPresent());
 
 		assertEquals(returnedGroup, getGroupByName_validName_Group);
 
-		assertEquals(returnedGroup.getName(), getGroupByName_validName_Group.getName());
+		assertEquals(returnedGroup.get().getName(), getGroupByName_validName_Group.getName());
 
 	}
 
-	@Test
-	public void renameById_DuplicateName_ThrowsException() {
-
-		String idToRename = "renameById_DupName_renameId";
-		String idOfDuplicate = "renameById_DupName_duplicateId";
-
-		String oldName = "renameById_DuplicateName_oldName";
-		String duplicateName = "renameById_DuplicateName_duplicateName";
-
-		Group renameGroup = Group.builder().id(idToRename).name(oldName).build();
-		Group duplicateGroup = Group.builder().id(idOfDuplicate).name(duplicateName).build();
-
-		groupDao.create(renameGroup);
-		groupDao.create(duplicateGroup);
-
-		long countBefore = groupDao.count();
-
-		assertThrows(DuplicateKeyException.class, () -> {
-			groupDao.renameById(idToRename, duplicateName);
-		});
-
-		long countAfter = groupDao.count();
-
-		assertEquals(countBefore, countAfter);
-
-	}
-
-	@Test
-	public void renameById_InvalidId_ThrowsIllegalArgumentException() {
-
-		assertThrows(IllegalArgumentException.class, () -> {
-			groupDao.renameById("", "renameById_InvalidId");
-		});
-
-	}
-
-	@Test
-	public void renameById_InvalidName_ThrowsIllegalArgumentException() {
-
-		assertThrows(IllegalArgumentException.class, () -> {
-			groupDao.renameById("renameById_InvalidName", "");
-		});
-
-	}
-
-	@Test
-	public void renameById_NonExistentId_ThrowsException() {
-
-		assertThrows(JdbcUpdateAffectedIncorrectNumberOfRowsException.class, () -> {
-			groupDao.renameById("renameById_NonExistentId_id", "renameById_NonExistentId_groupname");
-		});
-
-	}
-
-	@Test
-	public void renameById_ValidIdAndName_ChangesName() {
-
-		String idToRename = "changeNameById_ValidIdAndName";
-
-		String oldName = "changeNameById_ValidIdAndName_oldName";
-		String newName = "changeNameById_ValidIdAndName_newName";
-
-		Group insertedGroup = Group.builder().id(idToRename).name(oldName).build();
-
-		groupDao.create(insertedGroup);
-
-		groupDao.renameById(idToRename, newName);
-
-		Group returnedGroup = groupDao.getById(idToRename);
-
-		assertEquals(returnedGroup, insertedGroup);
-
-		assertEquals(returnedGroup.getName(), newName);
-
-	}
-
-	@Test
-	public void renameByName_DuplicateName_ThrowsException() {
-
-		String oldName = "changeNameById_DuplicateName_oldName";
-		String duplicateName = "changeNameById_DuplicateName_duplicateName";
-
-		Group renameGroup = Group.builder().name(oldName).build();
-		Group duplicateGroup = Group.builder().name(duplicateName).build();
-
-		groupDao.create(renameGroup);
-		groupDao.create(duplicateGroup);
-
-		long countBefore = groupDao.count();
-
-		assertThrows(DuplicateKeyException.class, () -> {
-			groupDao.renameByName(oldName, duplicateName);
-		});
-
-		long countAfter = groupDao.count();
-
-		assertEquals(countBefore, countAfter);
-
-	}
-
-	@Test
-	public void renameByName_InvalidOldName_ThrowsIllegalArgumentException() {
-
-		assertThrows(IllegalArgumentException.class, () -> {
-			groupDao.renameByName("", "renameById_InvalidId");
-		});
-
-	}
-
-	@Test
-	public void renameByName_InvalidNewName_ThrowsIllegalArgumentException() {
-
-		Group renameGroup = Group.builder().name("renameByName_InvalidNewName").build();
-
-		groupDao.create(renameGroup);
-
-		assertThrows(IllegalArgumentException.class, () -> {
-			groupDao.renameByName("renameByName_InvalidNewName", "");
-		});
-
-	}
-
-	@Test
-	public void renameByName_NonExistentName_ThrowsException() {
-
-		assertThrows(JdbcUpdateAffectedIncorrectNumberOfRowsException.class, () -> {
-			groupDao.renameByName("renameByName_NonExistentName_name", "renameByName_NonExistentName_groupname");
-		});
-
-	}
-
-	@Test
-	public void renameByName_ValidNames_ChangesName() {
-
-		String oldName = "changeNameById_ValidIdAndName_oldName";
-		String newName = "changeNameById_ValidIdAndName_newName";
-
-		Group insertedGroup = Group.builder().name(oldName).build();
-
-		groupDao.create(insertedGroup);
-
-		groupDao.renameByName(oldName, newName);
-
-		Group returnedGroup = groupDao.getByName(newName);
-
-		assertEquals(returnedGroup, insertedGroup);
-
-		assertEquals(returnedGroup.getName(), newName);
-
-	}
+	/*
+	 * @Test public void renameById_DuplicateName_ThrowsException() {
+	 * 
+	 * String idToRename = "renameById_DupName_renameId"; String idOfDuplicate =
+	 * "renameById_DupName_duplicateId";
+	 * 
+	 * String oldName = "renameById_DuplicateName_oldName"; String duplicateName =
+	 * "renameById_DuplicateName_duplicateName";
+	 * 
+	 * Group renameGroup = Group.builder().id(idToRename).name(oldName).build();
+	 * Group duplicateGroup =
+	 * Group.builder().id(idOfDuplicate).name(duplicateName).build();
+	 * 
+	 * groupDao.save(renameGroup); groupDao.save(duplicateGroup);
+	 * 
+	 * long countBefore = groupDao.count();
+	 * 
+	 * assertThrows(DuplicateKeyException.class, () -> {
+	 * groupDao.renameById(idToRename, duplicateName); });
+	 * 
+	 * long countAfter = groupDao.count();
+	 * 
+	 * assertEquals(countBefore, countAfter);
+	 * 
+	 * }
+	 * 
+	 * @Test public void renameById_InvalidId_ThrowsIllegalArgumentException() {
+	 * 
+	 * assertThrows(IllegalArgumentException.class, () -> { groupDao.renameById("",
+	 * "renameById_InvalidId"); });
+	 * 
+	 * }
+	 * 
+	 * @Test public void renameById_InvalidName_ThrowsIllegalArgumentException() {
+	 * 
+	 * assertThrows(IllegalArgumentException.class, () -> {
+	 * groupDao.renameById("renameById_InvalidName", ""); });
+	 * 
+	 * }
+	 * 
+	 * @Test public void renameById_NonExistentId_ThrowsException() {
+	 * 
+	 * assertThrows(JdbcUpdateAffectedIncorrectNumberOfRowsException.class, () -> {
+	 * groupDao.renameById("renameById_NonExistentId_id",
+	 * "renameById_NonExistentId_groupname"); });
+	 * 
+	 * }
+	 * 
+	 * @Test public void renameById_ValidIdAndName_ChangesName() {
+	 * 
+	 * String idToRename = "changeNameById_ValidIdAndName";
+	 * 
+	 * String oldName = "changeNameById_ValidIdAndName_oldName"; String newName =
+	 * "changeNameById_ValidIdAndName_newName";
+	 * 
+	 * Group insertedGroup = Group.builder().id(idToRename).name(oldName).build();
+	 * 
+	 * groupDao.save(insertedGroup);
+	 * 
+	 * groupDao.renameById(idToRename, newName);
+	 * 
+	 * Group returnedGroup = groupDao.findById(idToRename);
+	 * 
+	 * assertEquals(returnedGroup, insertedGroup);
+	 * 
+	 * assertEquals(returnedGroup.getName(), newName);
+	 * 
+	 * }
+	 * 
+	 * @Test public void renameByName_DuplicateName_ThrowsException() {
+	 * 
+	 * String oldName = "changeNameById_DuplicateName_oldName"; String duplicateName
+	 * = "changeNameById_DuplicateName_duplicateName";
+	 * 
+	 * Group renameGroup = Group.builder().name(oldName).build(); Group
+	 * duplicateGroup = Group.builder().name(duplicateName).build();
+	 * 
+	 * groupDao.save(renameGroup); groupDao.save(duplicateGroup);
+	 * 
+	 * long countBefore = groupDao.count();
+	 * 
+	 * assertThrows(DuplicateKeyException.class, () -> {
+	 * groupDao.renameByName(oldName, duplicateName); });
+	 * 
+	 * long countAfter = groupDao.count();
+	 * 
+	 * assertEquals(countBefore, countAfter);
+	 * 
+	 * }
+	 * 
+	 * @Test public void
+	 * renameByName_InvalidOldName_ThrowsIllegalArgumentException() {
+	 * 
+	 * assertThrows(IllegalArgumentException.class, () -> {
+	 * groupDao.renameByName("", "renameById_InvalidId"); });
+	 * 
+	 * }
+	 * 
+	 * @Test public void
+	 * renameByName_InvalidNewName_ThrowsIllegalArgumentException() {
+	 * 
+	 * Group renameGroup =
+	 * Group.builder().name("renameByName_InvalidNewName").build();
+	 * 
+	 * groupDao.save(renameGroup);
+	 * 
+	 * assertThrows(IllegalArgumentException.class, () -> {
+	 * groupDao.renameByName("renameByName_InvalidNewName", ""); });
+	 * 
+	 * }
+	 * 
+	 * @Test public void renameByName_NonExistentName_ThrowsException() {
+	 * 
+	 * assertThrows(JdbcUpdateAffectedIncorrectNumberOfRowsException.class, () -> {
+	 * groupDao.renameByName("renameByName_NonExistentName_name",
+	 * "renameByName_NonExistentName_groupname"); });
+	 * 
+	 * }
+	 * 
+	 * @Test public void renameByName_ValidNames_ChangesName() {
+	 * 
+	 * String oldName = "changeNameById_ValidIdAndName_oldName"; String newName =
+	 * "changeNameById_ValidIdAndName_newName";
+	 * 
+	 * Group insertedGroup = Group.builder().name(oldName).build();
+	 * 
+	 * groupDao.save(insertedGroup);
+	 * 
+	 * groupDao.renameByName(oldName, newName);
+	 * 
+	 * Group returnedGroup = groupDao.findByName(newName);
+	 * 
+	 * assertEquals(returnedGroup, insertedGroup);
+	 * 
+	 * assertEquals(returnedGroup.getName(), newName);
+	 * 
+	 * }
+	 */
 
 }

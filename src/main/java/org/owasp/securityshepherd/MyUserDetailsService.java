@@ -1,7 +1,9 @@
 package org.owasp.securityshepherd;
 
+import java.util.Optional;
+
 import org.owasp.securityshepherd.model.User;
-import org.owasp.securityshepherd.repository.UserRepository;
+import org.owasp.securityshepherd.repository.NameIdRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,15 +14,16 @@ import org.springframework.stereotype.Service;
 public class MyUserDetailsService implements UserDetailsService {
 
 	@Autowired
-	private UserRepository userDao;
+	private NameIdRepository<User> userRepository;
 
 	@Override
 	public UserDetails loadUserByUsername(String username) {
-		User user = userDao.getByName(username);
-		if (user == null) {
+		Optional<User> user = userRepository.findByName(username);
+
+		if (!user.isPresent()) {
 			throw new UsernameNotFoundException(username);
 		}
 
-		return new MyUserPrincipal(user);
+		return new MyUserPrincipal(user.get());
 	}
 }
