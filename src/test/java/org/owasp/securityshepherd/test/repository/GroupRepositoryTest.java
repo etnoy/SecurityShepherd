@@ -11,7 +11,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.model.Group;
-import org.owasp.securityshepherd.repository.NameIdRepository;
+import org.owasp.securityshepherd.repository.GroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class GroupRepositoryTest {
 
 	@Autowired
-	private NameIdRepository<Group> groupDao;
+	private GroupRepository groupDao;
 
 	@Test
 	public void containsName_ExistingName_ReturnsTrue() {

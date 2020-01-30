@@ -4,6 +4,8 @@ import java.sql.Timestamp;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.domain.Persistable;
+import org.springframework.data.relational.core.mapping.Table;
 
 import lombok.Builder;
 import lombok.Data;
@@ -11,9 +13,10 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
 @Data
+@Table("users")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder(builderClassName = "UserBuilder")
-public class User {
+public class User implements Persistable<String> {
 
 	@EqualsAndHashCode.Include
 	@Id
@@ -255,6 +258,12 @@ public class User {
 		} else {
 			return true;
 		}
+	}
+
+	@Override
+	public boolean isNew() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

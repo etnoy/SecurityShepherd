@@ -12,12 +12,11 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.model.User;
-import org.owasp.securityshepherd.repository.NameIdRepository;
+import org.owasp.securityshepherd.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.JdbcUpdateAffectedIncorrectNumberOfRowsException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserRepositoryTest {
 
 	@Autowired
-	private NameIdRepository<User> userDao;
+	private UserRepository userDao;
 
 	@Test
 	public void existsById_ExistingId_ReturnsTrue() {
@@ -352,7 +351,7 @@ public class UserRepositoryTest {
 	@Test
 	public void findById_ValidId_CanFindUser() {
 
-		String idToFind = "getUserByIdvalidId";
+		String idToFind = "getUserByInvalidId";
 
 		User getUserById_validId_User = User.builder().id(idToFind).build();
 
