@@ -32,5 +32,7 @@ public final class User {
 	private final String role = "player";
 
 	private final String email;
+	
+	private final UserAuth auth;
 
 }
