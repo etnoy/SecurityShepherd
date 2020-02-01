@@ -12,6 +12,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.model.User;
+import org.owasp.securityshepherd.model.AuthData;
+import org.owasp.securityshepherd.model.PasswordData;
 import org.owasp.securityshepherd.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -270,9 +272,7 @@ public class UserRepositoryTest {
 
 		String nameToFind = "findUserByNamevalidName";
 
-		User findUserByName_validName_User = User.builder().name(nameToFind).build();
-
-		findUserByName_validName_User=userRepository.save(findUserByName_validName_User);
+		User findUserByName_validName_User = userRepository.save(User.builder().name(nameToFind).build());
 
 		Optional<User> returnedUser = userRepository.findByName(nameToFind);
 
@@ -283,5 +283,6 @@ public class UserRepositoryTest {
 		assertEquals(returnedUser.get().getName(), findUserByName_validName_User.getName());
 
 	}
+
 
 }

@@ -13,7 +13,7 @@ import lombok.With;
 @Data
 @Table("users")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Builder(builderClassName = "UserBuilder")
+@Builder
 @With
 public final class User {
 
@@ -33,6 +33,6 @@ public final class User {
 
 	private final String email;
 	
-	private final UserAuth auth;
+	private final AuthData auth_data;
 
 }
