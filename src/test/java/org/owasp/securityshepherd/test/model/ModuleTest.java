@@ -46,10 +46,9 @@ public class ModuleTest {
 
 	@Test
 	public void build_ZeroArguments_DefaultValuesPresent() {
-		Module buildZeroArgumentsModule = Module.builder().build();
+		Module buildZeroArgumentsModule = Module.builder().name("build_ZeroArguments").build();
 
 		assertNotNull(buildZeroArgumentsModule.getId());
-		assertNotNull(buildZeroArgumentsModule.getName());
 
 	}
 
@@ -61,7 +60,7 @@ public class ModuleTest {
 	@Test
 	public void toString_ValidData_NotNull() {
 
-		assertNotNull(Module.builder().build().toString());
+		assertNotNull(Module.builder().name("toString_ValidData").build().toString());
 
 	}
 

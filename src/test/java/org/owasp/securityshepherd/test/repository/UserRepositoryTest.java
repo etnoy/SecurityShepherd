@@ -12,8 +12,6 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.model.User;
-import org.owasp.securityshepherd.model.AuthData;
-import org.owasp.securityshepherd.model.PasswordData;
 import org.owasp.securityshepherd.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,7 +30,7 @@ public class UserRepositoryTest {
 	@Test
 	public void existsById_ExistingId_ReturnsTrue() {
 
-		User existsByIdExistingIdUser = User.builder().build();
+		User existsByIdExistingIdUser = User.builder().name("existsById_ExistingId").build();
 
 		User returnedUser = userRepository.save(existsByIdExistingIdUser);
 
@@ -83,19 +81,19 @@ public class UserRepositoryTest {
 		userRepository.deleteAll();
 		assertEquals(0, userRepository.count());
 
-		userRepository.save(User.builder().build());
+		userRepository.save(User.builder().name("count_KnownNumberOfUsers1").build());
 		assertEquals(1, userRepository.count());
 
-		userRepository.save(User.builder().build());
+		userRepository.save(User.builder().name("count_KnownNumberOfUsers2").build());
 		assertEquals(2, userRepository.count());
 
-		userRepository.save(User.builder().build());
+		userRepository.save(User.builder().name("count_KnownNumberOfUsers3").build());
 		assertEquals(3, userRepository.count());
 
-		userRepository.save(User.builder().build());
+		userRepository.save(User.builder().name("count_KnownNumberOfUsers4").build());
 		assertEquals(4, userRepository.count());
 
-		userRepository.save(User.builder().build());
+		userRepository.save(User.builder().name("count_KnownNumberOfUsers5").build());
 		assertEquals(5, userRepository.count());
 
 	}
@@ -119,10 +117,10 @@ public class UserRepositoryTest {
 
 		User validUser1 = User.builder().name("save_ValidUser1").build();
 
-		User validUser2 = User.builder().classId("aclassid").name("save_ValidUser2").role("player")
+		User validUser2 = User.builder().classId("aclassid").name("save_ValidUser2")
 				.email("me@example.com").build();
 
-		User validUser3 = User.builder().classId("newclass").name("save_ValidUser3").role("admin").email("").build();
+		User validUser3 = User.builder().classId("newclass").name("save_ValidUser3").email("").build();
 
 		validUser1 = userRepository.save(validUser1);
 		validUser2 = userRepository.save(validUser2);
@@ -176,7 +174,7 @@ public class UserRepositoryTest {
 	@Test
 	public void deleteById_ValidId_DeletesUser() {
 
-		User returnedUser = userRepository.save(User.builder().build());
+		User returnedUser = userRepository.save(User.builder().name("deleteById_ValidId").build());
 
 		userRepository.deleteById(returnedUser.getId());
 
@@ -250,7 +248,7 @@ public class UserRepositoryTest {
 	@Test
 	public void findById_ValidId_CanFindUser() {
 
-		User findUserById_validId_User = userRepository.save(User.builder().build());
+		User findUserById_validId_User = userRepository.save(User.builder().name("findById_ValidId").build());
 
 		Optional<User> returnedUser = userRepository.findById(findUserById_validId_User.getId());
 
@@ -270,7 +268,7 @@ public class UserRepositoryTest {
 	@Test
 	public void findByName_ValidName_CanFindUser() {
 
-		String nameToFind = "findUserByNamevalidName";
+		String nameToFind = "findByName_ValidName";
 
 		User findUserByName_validName_User = userRepository.save(User.builder().name(nameToFind).build());
 

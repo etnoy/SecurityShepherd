@@ -30,7 +30,7 @@ public class ModuleRepositoryTest {
 	@Test
 	public void existsById_ExistingId_ReturnsTrue() {
 
-		Module existsByIdExistingIdModule = Module.builder().build();
+		Module existsByIdExistingIdModule = Module.builder().name("existsById_ExistingId").build();
 
 		Module returnedModule = moduleRepository.save(existsByIdExistingIdModule);
 
@@ -81,19 +81,19 @@ public class ModuleRepositoryTest {
 		moduleRepository.deleteAll();
 		assertEquals(0, moduleRepository.count());
 
-		moduleRepository.save(Module.builder().build());
+		moduleRepository.save(Module.builder().name("count_KnownNumberOfModules1").build());
 		assertEquals(1, moduleRepository.count());
 
-		moduleRepository.save(Module.builder().build());
+		moduleRepository.save(Module.builder().name("count_KnownNumberOfModules2").build());
 		assertEquals(2, moduleRepository.count());
 
-		moduleRepository.save(Module.builder().build());
+		moduleRepository.save(Module.builder().name("count_KnownNumberOfModules3").build());
 		assertEquals(3, moduleRepository.count());
 
-		moduleRepository.save(Module.builder().build());
+		moduleRepository.save(Module.builder().name("count_KnownNumberOfModules4").build());
 		assertEquals(4, moduleRepository.count());
 
-		moduleRepository.save(Module.builder().build());
+		moduleRepository.save(Module.builder().name("count_KnownNumberOfModules5").build());
 		assertEquals(5, moduleRepository.count());
 
 	}
@@ -167,7 +167,7 @@ public class ModuleRepositoryTest {
 	@Test
 	public void deleteById_ValidId_DeletesModule() {
 
-		Module returnedModule = moduleRepository.save(Module.builder().build());
+		Module returnedModule = moduleRepository.save(Module.builder().name("deleteById_ValidId").build());
 
 		moduleRepository.deleteById(returnedModule.getId());
 
@@ -241,7 +241,7 @@ public class ModuleRepositoryTest {
 	@Test
 	public void findById_ValidId_CanFindModule() {
 
-		Module findModuleById_validId_Module = moduleRepository.save(Module.builder().build());
+		Module findModuleById_validId_Module = moduleRepository.save(Module.builder().name("findById_ValidId").build());
 
 		Optional<Module> returnedModule = moduleRepository.findById(findModuleById_validId_Module.getId());
 

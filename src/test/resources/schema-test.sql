@@ -7,8 +7,8 @@ CREATE TABLE users (
   id BIGINT AUTO_INCREMENT,
   name VARCHAR(191) NOT NULL,
   class_id VARCHAR(64) NULL,
-  role VARCHAR(32) NOT NULL ,
   email VARCHAR(128) NULL ,
+  solution_key VARCHAR(128) NULL ,
   PRIMARY KEY (id) ,
   INDEX class_id (class_id ASC) ,
   UNIQUE INDEX name_UNIQUE (name ASC))
@@ -23,10 +23,12 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
 CREATE TABLE modules (
-  id BIGINT AUTO_INCREMENT,
-  name VARCHAR(191) NOT NULL UNIQUE,
-    description VARCHAR(191),
-      shortname VARCHAR(191),
+	id BIGINT AUTO_INCREMENT,
+	name VARCHAR(191) NOT NULL UNIQUE,
+ 	description VARCHAR(191),
+ 	short_name VARCHAR(191),
+	solution_key VARCHAR(128) NULL ,
+	fixed_solution_key BOOLEAN,
   PRIMARY KEY (id) )
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
@@ -34,6 +36,7 @@ DEFAULT CHARACTER SET = utf8mb4;
 CREATE TABLE auth_data (
   is_enabled BOOLEAN DEFAULT FALSE,
   bad_login_count INT DEFAULT 0,
+  is_admin BOOLEAN DEFAULT FALSE,
   suspended_until TIMESTAMP,
   last_login TIMESTAMP,
   user BIGINT,

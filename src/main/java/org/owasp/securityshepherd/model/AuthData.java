@@ -18,6 +18,8 @@ public final class AuthData {
 
 	private final int badLoginCount;
 
+	private final boolean isAdmin = false;
+
 	private final Timestamp suspendedUntil;
 
 	private final Timestamp lastLogin;

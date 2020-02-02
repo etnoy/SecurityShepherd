@@ -17,13 +17,12 @@ public class UserTest {
 	@Test
 	public void build_AllArguments_SuppliedValuesPresent() {
 		User.UserBuilder buildAllArgumentsUserBuilder = User.builder().classId("builder_AllArguments_classid")
-				.name("builder_AllArguments_username").role("admin").email("builder_AllArguments@example.com");
+				.name("builder_AllArguments_username").email("builder_AllArguments@example.com");
 
 		User buildAllArgumentsUser = buildAllArgumentsUserBuilder.build();
 
 		assertEquals("builder_AllArguments_classid", buildAllArgumentsUser.getClassId());
 		assertEquals("builder_AllArguments_username", buildAllArgumentsUser.getName());
-		assertEquals("admin", buildAllArgumentsUser.getRole());
 		assertEquals("builder_AllArguments@example.com", buildAllArgumentsUser.getEmail());
 
 	}
@@ -35,7 +34,7 @@ public class UserTest {
 
 		assertEquals(30, validLengthClassId.length());
 
-		User build_ValidClassIdLengthUser = User.builder().classId(validLengthClassId).build();
+		User build_ValidClassIdLengthUser = User.builder().name("build_ValidClassIdLength").classId(validLengthClassId).build();
 
 		assertTrue(build_ValidClassIdLengthUser instanceof User);
 
@@ -58,12 +57,12 @@ public class UserTest {
 
 	@Test
 	public void build_ZeroArguments_DefaultValuesPresent() {
-		User buildZeroArgumentsUser = User.builder().build();
+		
+		User buildZeroArgumentsUser = User.builder().name("build_ZeroArguments").build();
 
 		assertNotNull(buildZeroArgumentsUser.getId());
 		assertEquals(null, buildZeroArgumentsUser.getClassId());
 		assertNotNull(buildZeroArgumentsUser.getName());
-		assertEquals("player", buildZeroArgumentsUser.getRole());
 		assertEquals(null, buildZeroArgumentsUser.getEmail());
 
 	}
@@ -76,7 +75,7 @@ public class UserTest {
 	@Test
 	public void toString_ValidData_NotNull() {
 
-		assertNotNull(User.builder().build().toString());
+		assertNotNull(User.builder().name("toString_ValidData").build().toString());
 
 	}
 

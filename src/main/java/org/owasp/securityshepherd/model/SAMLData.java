@@ -10,7 +10,7 @@ import lombok.With;
 @Data
 @EqualsAndHashCode
 @Table("auth_data_saml")
-@Builder(builderClassName = "UserAuthSAMLBuilder")
+@Builder
 @With
 public final class SAMLData {
 

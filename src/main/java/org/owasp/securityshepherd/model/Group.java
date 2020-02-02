@@ -13,7 +13,7 @@ import lombok.With;
 @Data
 @Table("groups")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Builder(builderClassName = "GroupBuilder")
+@Builder
 @With
 public final class Group {
 

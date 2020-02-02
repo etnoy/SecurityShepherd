@@ -1,6 +1,5 @@
 package org.owasp.securityshepherd.model;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -22,19 +21,14 @@ public final class User {
 	private final long id;
 
 	@NonNull
-	@Builder.Default
 	private final String name;
 
 	private final String classId;
-
-	@Builder.Default
-	@NonNull
-	private final String role = "player";
 
 	private final String email;
 	
 	private final AuthData auth_data;
 	
-	private final String 
+	private final String solutionKey;
 
 }
