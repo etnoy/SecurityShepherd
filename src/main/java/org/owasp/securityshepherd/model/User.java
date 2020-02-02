@@ -23,7 +23,7 @@ public final class User {
 
 	@NonNull
 	@Builder.Default
-	private final String name = RandomStringUtils.randomAlphanumeric(20);
+	private final String name;
 
 	private final String classId;
 
@@ -34,5 +34,7 @@ public final class User {
 	private final String email;
 	
 	private final AuthData auth_data;
+	
+	private final String 
 
 }

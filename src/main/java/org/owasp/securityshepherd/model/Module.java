@@ -13,7 +13,7 @@ import lombok.With;
 @Data
 @Table("modules")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Builder(builderClassName = "ModuleBuilder")
+@Builder
 @With
 public final class Module {
 
@@ -24,5 +24,11 @@ public final class Module {
 	@Builder.Default
 	@NonNull
 	private final String name = RandomStringUtils.randomAlphanumeric(20);
+	
+	private final String description;
+	
+	private final String shortName;
+	
+	private final ModuleKey keys;
 
 }

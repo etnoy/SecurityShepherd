@@ -25,6 +25,8 @@ DEFAULT CHARACTER SET = utf8mb4;
 CREATE TABLE modules (
   id BIGINT AUTO_INCREMENT,
   name VARCHAR(191) NOT NULL UNIQUE,
+    description VARCHAR(191),
+      shortname VARCHAR(191),
   PRIMARY KEY (id) )
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
@@ -34,20 +36,32 @@ CREATE TABLE auth_data (
   bad_login_count INT DEFAULT 0,
   suspended_until TIMESTAMP,
   last_login TIMESTAMP,
-  `user` BIGINT,
+  user BIGINT,
   FOREIGN KEY (`user`) REFERENCES users(id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
 CREATE TABLE auth_data_saml (
-  `user` BIGINT,
+  user BIGINT,
   saml_id VARCHAR(40) NOT NULL )
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
 CREATE TABLE auth_data_password (
-  `user` BIGINT,
+  user BIGINT,
   hashed_password VARCHAR(40) NOT NULL,
   password_expired BOOLEAN DEFAULT FALSE )
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4;
+
+
+CREATE TABLE submissions (
+	id BIGINT AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    module_id BIGINT NOT NULL,
+    time TIMESTAMP,
+    valid BOOLEAN,
+    result VARCHAR(191),
+      PRIMARY KEY (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;

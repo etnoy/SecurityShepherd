@@ -10,7 +10,7 @@ import lombok.With;
 @Data
 @EqualsAndHashCode
 @Table("auth_data_password")
-@Builder(builderClassName = "UserAuthPasswordBuilder")
+@Builder
 @With
 public final class PasswordData {
 
