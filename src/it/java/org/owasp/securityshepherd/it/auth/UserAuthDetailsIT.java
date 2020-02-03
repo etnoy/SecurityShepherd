@@ -29,7 +29,7 @@ public class UserAuthDetailsIT {
 	public void userAuth_HashedPassword_ReturnsHash() {
 
 		String userName = "authorizedUser";
-		
+
 		// "Password" hashed with low-round bcrypt for testing
 		String hashedPassword = "$2y$06$dPAxpb.cmwryGD1PcW6Kh.Fpq0xy9wN8aq6EV2DqRX/Y7LFPL1noa";
 
@@ -59,12 +59,6 @@ public class UserAuthDetailsIT {
 		assertTrue(userDetails.isAccountNonLocked());
 		assertTrue(userDetails.isCredentialsNonExpired());
 		assertTrue(userDetails.getAuthorities().contains(new SimpleGrantedAuthority("player")));
-
-	}
-	
-	@Test
-	public void userAuth_SAMLPassword_ReturnsHash() {
-
 
 	}
 

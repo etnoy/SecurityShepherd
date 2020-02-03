@@ -1,13 +1,16 @@
 package org.owasp.securityshepherd.model;
 
+import org.owasp.securityshepherd.service.FlagHandlingService;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.With;
+import lombok.AccessLevel;
 
 @Data
 @Table("modules")
@@ -27,8 +30,10 @@ public final class Module {
 
 	private final String shortName;
 
-	private final String solutionKey;
+	@NonNull
+	private final byte[] solutionKey = FlagHandlingService.generateRandomBytes(16);
 
-	private final boolean fixedSolutionKey;
+	private final boolean fixedSolutionKey = false;
+
 
 }

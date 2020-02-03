@@ -8,6 +8,7 @@ import org.springframework.data.relational.core.mapping.Table;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import lombok.With;
 
 @Data
@@ -21,14 +22,16 @@ public final class Submission {
 	@Id
 	private final long id;
 	
-	private final long user_id;
+	private final User user;
 	
-	private final long module_id;
+	private final Module module;
 
+	@NonNull
 	private final Timestamp time;
 	
 	private final boolean valid;
 	
-	private final String result;
+	@NonNull
+	private final String submittedFlag;
 
 }
