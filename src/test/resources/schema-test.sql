@@ -38,6 +38,7 @@ CREATE TABLE auth_data (
   bad_login_count INT DEFAULT 0,
   is_admin BOOLEAN DEFAULT FALSE,
   suspended_until TIMESTAMP,
+  suspension_message VARCHAR(191),
   last_login TIMESTAMP,
   user BIGINT,
   FOREIGN KEY (`user`) REFERENCES users(id))
@@ -52,11 +53,10 @@ DEFAULT CHARACTER SET = utf8mb4;
 
 CREATE TABLE auth_data_password (
   user BIGINT,
-  hashed_password VARCHAR(40) NOT NULL,
+  hashed_password VARCHAR(191) NOT NULL,
   password_expired BOOLEAN DEFAULT FALSE )
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
-
 
 CREATE TABLE submissions (
 	id BIGINT AUTO_INCREMENT,

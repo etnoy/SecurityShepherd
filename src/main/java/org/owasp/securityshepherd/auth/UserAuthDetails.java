@@ -1,29 +1,45 @@
-package org.owasp.securityshepherd;
+package org.owasp.securityshepherd.auth;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.owasp.securityshepherd.model.User;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-public class MyUserPrincipal implements UserDetails {
+public class UserAuthDetails implements UserDetails {
 
 	private static final long serialVersionUID = -3677404075923734838L;
 	private User user;
- 
-    public MyUserPrincipal(User user) {
-        this.user = user;
-    }
+
+	public UserAuthDetails(User user) {
+		this.user = user;
+	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		// TODO Auto-generated method stub
-		return null;
+
+		List<GrantedAuthority> authorities = new ArrayList<>();
+
+		String role;
+
+		if (user.getAuth_data().isAdmin()) {
+			role = "admin";
+		} else {
+			role = "player";
+		}
+
+		authorities.add(new SimpleGrantedAuthority(role));
+
+		return authorities;
+
 	}
 
 	@Override
 	public String getPassword() {
-		return "";
+		return user.getAuth_data().getPassword().getHashedPassword();
 	}
 
 	@Override
@@ -33,26 +49,22 @@ public class MyUserPrincipal implements UserDetails {
 
 	@Override
 	public boolean isAccountNonExpired() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
 	@Override
 	public boolean isAccountNonLocked() {
-		// TODO Auto-generated method stub
-		return true;
+		return !user.getAuth_data().isAccountSuspended();
 	}
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-		// TODO Auto-generated method stub
-		return true;
+		return !user.getAuth_data().getPassword().isPasswordExpired();
 	}
 
 	@Override
 	public boolean isEnabled() {
-		// TODO Auto-generated method stub
-		return true;
+		return !user.getAuth_data().isEnabled();
 	}
-    
+
 }

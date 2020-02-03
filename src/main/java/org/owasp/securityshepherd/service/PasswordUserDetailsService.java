@@ -1,7 +1,8 @@
-package org.owasp.securityshepherd;
+package org.owasp.securityshepherd.service;
 
 import java.util.Optional;
 
+import org.owasp.securityshepherd.auth.UserAuthDetails;
 import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MyUserDetailsService implements UserDetailsService {
+public class PasswordUserDetailsService implements UserDetailsService {
 
 	@Autowired
 	private UserRepository userRepository;
@@ -24,6 +25,6 @@ public class MyUserDetailsService implements UserDetailsService {
 			throw new UsernameNotFoundException(username);
 		}
 
-		return new MyUserPrincipal(user.get());
+		return new UserAuthDetails(user.get());
 	}
 }

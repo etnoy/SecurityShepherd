@@ -16,6 +16,7 @@ public final class PasswordData {
 
 	private final String hashedPassword;
 
-	private final boolean passwordExpired = false;
+	@Builder.Default
+	private final boolean passwordExpired = true;
 
 }

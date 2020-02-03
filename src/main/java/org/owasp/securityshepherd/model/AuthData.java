@@ -16,16 +16,29 @@ public final class AuthData {
 	@Builder.Default
 	private final boolean isEnabled = false;
 
-	private final int badLoginCount;
+	private final int badLoginCount = 0;
 
 	private final boolean isAdmin = false;
 
 	private final Timestamp suspendedUntil;
+
+	private final String suspensionMessage = null;
 
 	private final Timestamp lastLogin;
 
 	private final PasswordData password;
 
 	private final SAMLData saml;
+	
+	public boolean isAccountSuspended() {
+		if(suspendedUntil == null) {
+			return false;
+		} else if (suspendedUntil.getTime() <= System.currentTimeMillis()) {
+			return false;
+		} else {
+			return true;
+		}
+		
+	}
 
 }

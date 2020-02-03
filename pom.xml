@@ -14,6 +14,13 @@
 	<version>3.1.0-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>Security Shepherd</name>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<skipTests>false</skipTests>
+		<skipITs>${skipTests}</skipITs>
+		<skipUTs>${skipTests}</skipUTs>
+	</properties>
 
 	<dependencies>
 		<dependency>
@@ -100,19 +107,8 @@
 		</dependency>
 	</dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<artifactId>maven-surefire-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
 
-	<profiles>
+<profiles>
 		<profile>
 			<id>docker</id>
 			<build>
@@ -279,5 +275,130 @@
 	</profiles>
 
 
+	<build>
+		<finalName>${project.artifactId}</finalName>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>false</filtering>
+			</resource>
+		</resources>
+
+		<plugins>
+					<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>properties-maven-plugin</artifactId>
+				<version>1.0.0</version>
+				<executions>
+					<execution>
+						<phase>initialize</phase>
+						<goals>
+							<goal>read-project-properties</goal>
+						</goals>
+						<configuration>
+							<files>
+								<file>${basedir}/.env</file>
+							</files>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration>
+					<warSourceDirectory>src/main/webapp</warSourceDirectory>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target/test-classes/WEB-INF/classes</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/main/resources</directory>
+									<filtering>true</filtering>
+								</resource>
+								<resource>
+									<directory>src/it/resources</directory>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<skipTests>${skipUTs}</skipTests>
+					<excludes>
+						<exclude>**/*IT</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<configuration>
+					<skipTests>${skipTests}</skipTests>
+					<skipITs>${skipITs}</skipITs>
+					<excludes>
+						<exclude>**/*Test*</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<execution>
+						<id>integration-tests</id>
+						<phase>integration-test</phase>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>add-test-source</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/it/java</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+	</build>
 
 </project>
