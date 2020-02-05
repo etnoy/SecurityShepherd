@@ -6,7 +6,9 @@ import org.owasp.securityshepherd.model.Group;
 import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface GroupRepository extends CrudRepository<Group, Long> {
 
 	@Query("select count(1) from groups where name = :name")

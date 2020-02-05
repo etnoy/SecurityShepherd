@@ -1,4 +1,4 @@
-package org.owasp.securityshepherd.service;
+package org.owasp.securityshepherd.repository;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -12,7 +12,9 @@ import org.owasp.securityshepherd.model.Submission;
 import org.owasp.securityshepherd.model.Submission.SubmissionBuilder;
 import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.repository.SubmissionRepository;
+import org.owasp.securityshepherd.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import com.google.common.primitives.Bytes;
 
@@ -20,14 +22,17 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
-@Service
 @Slf4j
+@Component
 @NoArgsConstructor
 public class FlagHandlingService {
 
 	@Autowired
 	private SubmissionRepository submissionRepository;
 
+	@Autowired
+	private UserRepository userRepository;
+	
 	@NonNull
 	private User submittingUser;
 
@@ -78,10 +83,8 @@ public class FlagHandlingService {
 		submissionBuilder.valid(isFlagValid);
 
 		Submission newSubmission = submissionBuilder.build();
-
-		System.out.println(submittedFlag);
 		
-		//submissionRepository.findAll();
+		userRepository.findAll();
 		
 		//submissionRepository.save(newSubmission);
 

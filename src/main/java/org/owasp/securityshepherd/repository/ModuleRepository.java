@@ -6,7 +6,9 @@ import org.owasp.securityshepherd.model.Module;
 import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface ModuleRepository extends CrudRepository<Module, Long> {
 
 	@Query("select count(1) from modules where name = :name")

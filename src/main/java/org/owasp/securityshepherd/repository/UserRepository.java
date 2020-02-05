@@ -6,7 +6,9 @@ import org.owasp.securityshepherd.model.User;
 import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface UserRepository extends CrudRepository<User, Long> {
 
 	@Query("select count(1) from users where name = :name")
