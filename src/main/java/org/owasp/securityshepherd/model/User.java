@@ -30,6 +30,8 @@ public final class User {
 
 	private final AuthData auth_data;
 
+	@NonNull
+	@Builder.Default
 	private final byte[] solutionKey = FlagHandlingService.generateRandomBytes(16);
 
 }

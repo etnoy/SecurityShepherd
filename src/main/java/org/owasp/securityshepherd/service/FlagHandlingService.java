@@ -16,23 +16,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.google.common.primitives.Bytes;
 
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
+@NoArgsConstructor
 public class FlagHandlingService {
 
 	@Autowired
 	private SubmissionRepository submissionRepository;
 
 	@NonNull
-	private final User submittingUser;
+	private User submittingUser;
 
 	@NonNull
-	private final Module submittedModule;
+	private Module submittedModule;
 
-	private final byte[] concatenatedKey;
+	private byte[] concatenatedKey;
 
 	private static final Mac HMAC512 = initializeHMAC();
 
@@ -70,12 +72,18 @@ public class FlagHandlingService {
 		boolean isFlagValid = validate(submittedFlag);
 
 		SubmissionBuilder submissionBuilder = Submission.builder();
-		submissionBuilder.user(submittingUser);
-		submissionBuilder.module(submittedModule);
+		submissionBuilder.userId(submittingUser.getId());
+		submissionBuilder.moduleId(submittedModule.getId());
 		submissionBuilder.submittedFlag(submittedFlag);
 		submissionBuilder.valid(isFlagValid);
 
-		submissionRepository.save(submissionBuilder.build());
+		Submission newSubmission = submissionBuilder.build();
+
+		System.out.println(submittedFlag);
+		
+		//submissionRepository.findAll();
+		
+		//submissionRepository.save(newSubmission);
 
 		return isFlagValid;
 

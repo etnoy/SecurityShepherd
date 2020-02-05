@@ -13,9 +13,11 @@ import org.owasp.securityshepherd.service.FlagHandlingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
+@Transactional
 public class FlagHandlingIT {
 
 	@Autowired
@@ -23,7 +25,7 @@ public class FlagHandlingIT {
 
 	@Autowired
 	private ModuleRepository moduleRepository;
-	
+
 	@Autowired
 	private SubmissionRepository submissionRepository;
 
@@ -37,10 +39,7 @@ public class FlagHandlingIT {
 		FlagHandlingService flagHandler = new FlagHandlingService(submittingUser, submittedModule);
 
 		assertTrue(flagHandler.submitFlag(flagHandler.generateFlag()));
-		
-		System.out.println(submissionRepository.findAll());
 
 	}
-
 
 }

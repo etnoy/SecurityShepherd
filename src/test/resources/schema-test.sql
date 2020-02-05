@@ -8,7 +8,7 @@ CREATE TABLE users (
   name VARCHAR(191) NOT NULL,
   class_id VARCHAR(64) NULL,
   email VARCHAR(128) NULL ,
-  solution_key VARCHAR(128) NULL ,
+  solution_key BINARY(16) NULL ,
   PRIMARY KEY (id) ,
   INDEX class_id (class_id ASC) ,
   UNIQUE INDEX name_UNIQUE (name ASC))
@@ -27,7 +27,7 @@ CREATE TABLE modules (
 	name VARCHAR(191) NOT NULL UNIQUE,
  	description VARCHAR(191),
  	short_name VARCHAR(191),
-	solution_key VARCHAR(128) NULL ,
+	solution_key BINARY(16) NULL ,
 	fixed_solution_key BOOLEAN,
   PRIMARY KEY (id) )
 ENGINE = InnoDB
@@ -64,7 +64,7 @@ CREATE TABLE submissions (
     module_id BIGINT NOT NULL,
     time TIMESTAMP,
     valid BOOLEAN,
-    result VARCHAR(191),
+    submitted_flag VARCHAR(191),
       PRIMARY KEY (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;

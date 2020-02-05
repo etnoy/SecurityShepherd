@@ -7,10 +7,8 @@ import org.springframework.data.relational.core.mapping.Table;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NonNull;
 import lombok.With;
-import lombok.AccessLevel;
 
 @Data
 @Table("modules")
@@ -31,8 +29,10 @@ public final class Module {
 	private final String shortName;
 
 	@NonNull
+	@Builder.Default
 	private final byte[] solutionKey = FlagHandlingService.generateRandomBytes(16);
 
+	@Builder.Default
 	private final boolean fixedSolutionKey = false;
 
 

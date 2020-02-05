@@ -21,16 +21,22 @@ public final class Submission {
 	@EqualsAndHashCode.Include
 	@Id
 	private final long id;
-	
-	private final User user;
-	
-	private final Module module;
 
 	@NonNull
-	private final Timestamp time;
-	
-	private final boolean valid;
-	
+	@Builder.Default
+	private final Long userId = null;
+
+	@NonNull
+	@Builder.Default
+	private final Long moduleId = null;
+
+	@NonNull
+	@Builder.Default
+	private final Timestamp time = new Timestamp(System.currentTimeMillis());
+
+	@Builder.Default
+	private final boolean valid = false;
+
 	@NonNull
 	private final String submittedFlag;
 
