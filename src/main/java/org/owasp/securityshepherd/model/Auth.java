@@ -11,7 +11,7 @@ import lombok.With;
 @EqualsAndHashCode
 @Builder
 @With
-public final class AuthData {
+public final class Auth {
 
 	@Builder.Default
 	private final boolean isEnabled = false;

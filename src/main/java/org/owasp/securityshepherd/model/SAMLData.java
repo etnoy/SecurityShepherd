@@ -9,7 +9,7 @@ import lombok.With;
 
 @Data
 @EqualsAndHashCode
-@Table("auth_data_saml")
+@Table("auth_saml")
 @Builder
 @With
 public final class SAMLData {

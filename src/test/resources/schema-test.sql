@@ -33,7 +33,7 @@ CREATE TABLE modules (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
-CREATE TABLE auth_data (
+CREATE TABLE auth (
   is_enabled BOOLEAN DEFAULT FALSE,
   bad_login_count INT DEFAULT 0,
   is_admin BOOLEAN DEFAULT FALSE,
@@ -45,13 +45,13 @@ CREATE TABLE auth_data (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
-CREATE TABLE auth_data_saml (
+CREATE TABLE auth_saml (
   user BIGINT,
   saml_id VARCHAR(40) NOT NULL )
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
-CREATE TABLE auth_data_password (
+CREATE TABLE auth_password (
   user BIGINT,
   hashed_password VARCHAR(191) NOT NULL,
   password_expired BOOLEAN DEFAULT FALSE )

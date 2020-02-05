@@ -34,7 +34,8 @@ public class UserTest {
 
 		assertEquals(30, validLengthClassId.length());
 
-		User build_ValidClassIdLengthUser = User.builder().name("build_ValidClassIdLength").classId(validLengthClassId).build();
+		User build_ValidClassIdLengthUser = User.builder().name("build_ValidClassIdLength").classId(validLengthClassId)
+				.build();
 
 		assertTrue(build_ValidClassIdLengthUser instanceof User);
 
@@ -57,7 +58,7 @@ public class UserTest {
 
 	@Test
 	public void build_ZeroArguments_DefaultValuesPresent() {
-		
+
 		User buildZeroArgumentsUser = User.builder().name("build_ZeroArguments").build();
 
 		assertNotNull(buildZeroArgumentsUser.getId());
@@ -85,6 +86,5 @@ public class UserTest {
 		assertNotNull(User.builder().toString());
 
 	}
-
 
 }

@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.auth.UserAuthDetails;
-import org.owasp.securityshepherd.model.AuthData;
-import org.owasp.securityshepherd.model.AuthData.AuthDataBuilder;
+import org.owasp.securityshepherd.model.Auth;
+import org.owasp.securityshepherd.model.Auth.AuthBuilder;
 import org.owasp.securityshepherd.model.PasswordData;
 import org.owasp.securityshepherd.model.PasswordData.PasswordDataBuilder;
 import org.owasp.securityshepherd.model.User;
@@ -38,7 +38,7 @@ public class UserAuthDetailsIT {
 		passwordBuilder.hashedPassword(hashedPassword);
 		passwordBuilder.passwordExpired(false);
 
-		AuthDataBuilder authDataBuilder = AuthData.builder();
+		AuthBuilder authDataBuilder = Auth.builder();
 
 		authDataBuilder.password(passwordBuilder.build());
 
@@ -46,7 +46,7 @@ public class UserAuthDetailsIT {
 
 		authorizedUserBuilder.name(userName);
 
-		authorizedUserBuilder.auth_data(authDataBuilder.build());
+		authorizedUserBuilder.auth(authDataBuilder.build());
 
 		User authorizedUser = userRepository.save(authorizedUserBuilder.build());
 

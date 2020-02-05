@@ -25,7 +25,7 @@ public class UserAuthDetails implements UserDetails {
 
 		String role;
 
-		if (user.getAuth_data().isAdmin()) {
+		if (user.getAuth().isAdmin()) {
 			role = "admin";
 		} else {
 			role = "player";
@@ -39,7 +39,7 @@ public class UserAuthDetails implements UserDetails {
 
 	@Override
 	public String getPassword() {
-		return user.getAuth_data().getPassword().getHashedPassword();
+		return user.getAuth().getPassword().getHashedPassword();
 	}
 
 	@Override
@@ -54,17 +54,17 @@ public class UserAuthDetails implements UserDetails {
 
 	@Override
 	public boolean isAccountNonLocked() {
-		return !user.getAuth_data().isAccountSuspended();
+		return !user.getAuth().isAccountSuspended();
 	}
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-		return !user.getAuth_data().getPassword().isPasswordExpired();
+		return !user.getAuth().getPassword().isPasswordExpired();
 	}
 
 	@Override
 	public boolean isEnabled() {
-		return !user.getAuth_data().isEnabled();
+		return !user.getAuth().isEnabled();
 	}
 
 }

@@ -9,7 +9,7 @@ import lombok.With;
 
 @Data
 @EqualsAndHashCode
-@Table("auth_data_password")
+@Table("auth_password")
 @Builder
 @With
 public final class PasswordData {
