@@ -1,6 +1,5 @@
 package org.owasp.securityshepherd.model;
 
-import org.owasp.securityshepherd.service.FlagService;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -29,9 +28,5 @@ public final class User {
 	private final String email;
 
 	private final Auth auth;
-
-	@NonNull
-	@Builder.Default
-	private final byte[] flagKey = FlagService.generateFlagKey();
 
 }

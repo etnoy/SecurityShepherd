@@ -17,10 +17,7 @@ import lombok.With;
 @Builder
 @With
 public final class Module {
-	
-	@Autowired
-	FlagService flagService;
-	
+
 	@EqualsAndHashCode.Include
 	@Id
 	private final long id;
@@ -32,11 +29,10 @@ public final class Module {
 
 	private final String shortName;
 
-	@NonNull
-	@Builder.Default
-	private final byte[] flagKey = flagService.generateFlagKey();
+	private boolean hasFlag;
+	
+	private boolean hardcodedFlag;
 
-	@Builder.Default
-	private final boolean staticFlag = false;
+	private final String flag;
 
 }

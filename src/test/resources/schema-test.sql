@@ -27,8 +27,9 @@ CREATE TABLE modules (
 	name VARCHAR(191) NOT NULL UNIQUE,
  	description VARCHAR(191),
  	short_name VARCHAR(191),
-	flag_key BINARY(16) NULL ,
-	static_flag BOOLEAN,
+	has_flag BOOLEAN,
+  	hardcoded_flag BOOLEAN,
+	flag VARCHAR(32) NULL,
   PRIMARY KEY (id) )
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;

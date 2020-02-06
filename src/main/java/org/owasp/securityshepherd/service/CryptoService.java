@@ -3,18 +3,17 @@ package org.owasp.securityshepherd.service;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Component
-
 @NoArgsConstructor
-public class CryptoService {
+@Service
+public final class CryptoService {
 
-	public byte[] generateRandomBytes(int numberOfBytes) {
+	public static byte[] generateRandomBytes(int numberOfBytes) {
 
 		SecureRandom strongPRNG;
 		try {
