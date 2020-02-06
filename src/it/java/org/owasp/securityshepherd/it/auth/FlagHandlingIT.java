@@ -39,13 +39,9 @@ public class FlagHandlingIT {
 
 		Module submittedModule = moduleRepository.save(Module.builder().name("validateFlag_ValidFlag_module").build());
 
-		String generatedFlag = FlagService.generateFlag(submittingUser, submittedModule);
+		String generatedFlag = flagService.generateFlag(submittingUser, submittedModule);
 
-		assertTrue(flagService.submitFlag(submittingUser, submittedModule, generatedFlag));
-
-		assertEquals(1, submissionRepository.count());
-		
-		submissionRepository.findAll();
+		assertTrue(flagService.validateFlag(submittingUser, submittedModule, generatedFlag));
 
 	}
 

@@ -2,38 +2,32 @@ package org.owasp.securityshepherd.service;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.owasp.securityshepherd.model.Module;
-import org.owasp.securityshepherd.model.Submission;
-import org.owasp.securityshepherd.model.Submission.SubmissionBuilder;
 import org.owasp.securityshepherd.model.User;
-import org.owasp.securityshepherd.repository.SubmissionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.common.primitives.Bytes;
 
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
 
-@NoArgsConstructor
 public class FlagService {
 
 	@Autowired
-	private SubmissionRepository submissionRepository;
+	private CryptoService cryptoService;
 
-	private static final Mac HMAC512;
+	private final Mac HMAC512;
 
-	private static final String flagPattern = "flag{%s}";
-
-	static {
+	private final String flagPattern = "flag{%s}";
+	
+	FlagService() {
 
 		try {
 			HMAC512 = Mac.getInstance("HmacSHA512");
@@ -42,7 +36,7 @@ public class FlagService {
 			throw new RuntimeException(e);
 		}
 
-		byte serverKey[] = generateRandomBytes(16);
+		byte[] serverKey = cryptoService.generateRandomBytes(16);
 
 		SecretKeySpec keySpec = new SecretKeySpec(serverKey, "HmacSHA512");
 
@@ -55,7 +49,7 @@ public class FlagService {
 
 	}
 
-	public static String generateFlag(User user, Module module) {
+	public String generateFlag(User user, Module module) {
 
 		byte[] moduleSolutionKey = module.getFlagKey();
 		byte[] flagKey;
@@ -68,9 +62,9 @@ public class FlagService {
 			flagKey = Bytes.concat(user.getFlagKey(), moduleSolutionKey);
 			flagFormat = flagPattern;
 		}
-		
+
 		log.trace("flagKey: " + flagKey);
-		
+
 		byte[] hashedFlag = HMAC512.doFinal(flagKey);
 
 		StringBuilder sb = new StringBuilder();
@@ -82,52 +76,21 @@ public class FlagService {
 
 	}
 
-	public static byte[] generateFlagKey() {
+	public byte[] generateFlagKey() {
 
-		return generateRandomBytes(16);
+		return cryptoService.generateRandomBytes(16);
 
 	}
 
-	public static byte[] generateRandomBytes(int numberOfBytes) {
-
-		SecureRandom strongPRNG;
-		try {
-			strongPRNG = SecureRandom.getInstanceStrong();
-		} catch (NoSuchAlgorithmException e) {
-			log.error("Could not initialize PRNG");
-			throw new RuntimeException(e);
-		}
-
-		byte[] returnedBytes = new byte[numberOfBytes];
-
-		strongPRNG.nextBytes(returnedBytes);
-
-		return returnedBytes;
-	}
-
-	public boolean submitFlag(User submittingUser, Module submittedModule, String submittedFlag) {
+	public boolean validateFlag(User submittingUser, Module submittedModule, String submittedFlag) {
 
 		log.debug("Submitted flag: " + submittedFlag);
-		
+
 		String correctFlag = generateFlag(submittingUser, submittedModule);
-		
+
 		log.debug("Correct flag: " + correctFlag);
-		
-		boolean isFlagValid = submittedFlag.equals(correctFlag);
 
-		SubmissionBuilder submissionBuilder = Submission.builder();
-		submissionBuilder.userId(submittingUser.getId());
-		submissionBuilder.moduleId(submittedModule.getId());
-		submissionBuilder.submittedFlag(submittedFlag);
-		submissionBuilder.valid(isFlagValid);
-
-		Submission newSubmission = submissionBuilder.build();
-		
-		log.trace("Submitting " + newSubmission.toString());
-
-		submissionRepository.save(newSubmission);
-
-		return isFlagValid;
+		return submittedFlag.equals(correctFlag);
 
 	}
 

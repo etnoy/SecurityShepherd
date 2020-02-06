@@ -1,6 +1,7 @@
 package org.owasp.securityshepherd.model;
 
 import org.owasp.securityshepherd.service.FlagService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -16,7 +17,10 @@ import lombok.With;
 @Builder
 @With
 public final class Module {
-
+	
+	@Autowired
+	FlagService flagService;
+	
 	@EqualsAndHashCode.Include
 	@Id
 	private final long id;
@@ -30,10 +34,9 @@ public final class Module {
 
 	@NonNull
 	@Builder.Default
-	private final byte[] flagKey = FlagService.generateFlagKey();
+	private final byte[] flagKey = flagService.generateFlagKey();
 
 	@Builder.Default
 	private final boolean staticFlag = false;
-
 
 }
