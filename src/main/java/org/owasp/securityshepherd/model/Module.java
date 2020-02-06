@@ -1,6 +1,6 @@
 package org.owasp.securityshepherd.model;
 
-import org.owasp.securityshepherd.service.FlagHandlingService;
+import org.owasp.securityshepherd.service.FlagService;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -30,10 +30,10 @@ public final class Module {
 
 	@NonNull
 	@Builder.Default
-	private final byte[] solutionKey = FlagHandlingService.generateRandomBytes(16);
+	private final byte[] flagKey = FlagService.generateFlagKey();
 
 	@Builder.Default
-	private final boolean fixedSolutionKey = false;
+	private final boolean staticFlag = false;
 
 
 }

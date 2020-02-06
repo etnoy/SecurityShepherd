@@ -12,7 +12,6 @@ import org.owasp.securityshepherd.model.Submission;
 import org.owasp.securityshepherd.model.Submission.SubmissionBuilder;
 import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.repository.SubmissionRepository;
-import org.owasp.securityshepherd.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,15 +24,14 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 
 @NoArgsConstructor
-public class FlagHandlingService {
+public class FlagService {
 
 	@Autowired
 	private SubmissionRepository submissionRepository;
 
-	@Autowired
-	private UserRepository userRepository;
-
 	private static final Mac HMAC512;
+
+	private static final String flagPattern = "flag{%s}";
 
 	static {
 
@@ -57,16 +55,36 @@ public class FlagHandlingService {
 
 	}
 
-	public static String encryptFlag(byte[] solutionKey) {
+	public static String generateFlag(User user, Module module) {
 
-		byte[] flag = HMAC512.doFinal(solutionKey);
+		byte[] moduleSolutionKey = module.getFlagKey();
+		byte[] flagKey;
+		String flagFormat;
+
+		if (module.isStaticFlag()) {
+			flagKey = moduleSolutionKey;
+			flagFormat = "%s";
+		} else {
+			flagKey = Bytes.concat(user.getFlagKey(), moduleSolutionKey);
+			flagFormat = flagPattern;
+		}
+		
+		log.trace("flagKey: " + flagKey);
+		
+		byte[] hashedFlag = HMAC512.doFinal(flagKey);
 
 		StringBuilder sb = new StringBuilder();
-		for (byte b : flag) {
+		for (byte b : hashedFlag) {
 			sb.append(String.format("%02X", b));
 		}
 
-		return sb.toString();
+		return String.format(flagFormat, sb.toString());
+
+	}
+
+	public static byte[] generateFlagKey() {
+
+		return generateRandomBytes(16);
 
 	}
 
@@ -89,19 +107,12 @@ public class FlagHandlingService {
 
 	public boolean submitFlag(User submittingUser, Module submittedModule, String submittedFlag) {
 
-		byte[] userSolutionKey = submittingUser.getSolutionKey();
-		byte[] moduleSolutionKey = submittedModule.getSolutionKey();
-
-		byte[] concatenatedKey;
-
-		if (submittedModule.isFixedSolutionKey()) {
-			concatenatedKey = moduleSolutionKey;
-		} else {
-			concatenatedKey = Bytes.concat(userSolutionKey, moduleSolutionKey);
-		}
-
-		String correctFlag = encryptFlag(concatenatedKey);
-
+		log.debug("Submitted flag: " + submittedFlag);
+		
+		String correctFlag = generateFlag(submittingUser, submittedModule);
+		
+		log.debug("Correct flag: " + correctFlag);
+		
 		boolean isFlagValid = submittedFlag.equals(correctFlag);
 
 		SubmissionBuilder submissionBuilder = Submission.builder();
@@ -111,8 +122,8 @@ public class FlagHandlingService {
 		submissionBuilder.valid(isFlagValid);
 
 		Submission newSubmission = submissionBuilder.build();
-
-		userRepository.findAll();
+		
+		log.trace("Submitting " + newSubmission.toString());
 
 		submissionRepository.save(newSubmission);
 

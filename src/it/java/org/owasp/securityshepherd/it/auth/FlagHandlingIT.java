@@ -1,6 +1,6 @@
 package org.owasp.securityshepherd.it.auth;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,7 +9,7 @@ import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.repository.ModuleRepository;
 import org.owasp.securityshepherd.repository.SubmissionRepository;
 import org.owasp.securityshepherd.repository.UserRepository;
-import org.owasp.securityshepherd.service.FlagHandlingService;
+import org.owasp.securityshepherd.service.FlagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -21,7 +21,7 @@ import com.google.common.primitives.Bytes;
 public class FlagHandlingIT {
 
 	@Autowired
-	FlagHandlingService flagHandler;
+	FlagService flagService;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -39,19 +39,12 @@ public class FlagHandlingIT {
 
 		Module submittedModule = moduleRepository.save(Module.builder().name("validateFlag_ValidFlag_module").build());
 
-		byte[] userSolutionKey = submittingUser.getSolutionKey();
-		byte[] moduleSolutionKey = submittedModule.getSolutionKey();
+		String generatedFlag = FlagService.generateFlag(submittingUser, submittedModule);
 
-		byte[] concatenatedKey;
+		assertTrue(flagService.submitFlag(submittingUser, submittedModule, generatedFlag));
 
-		if (submittedModule.isFixedSolutionKey()) {
-			concatenatedKey = moduleSolutionKey;
-		} else {
-			concatenatedKey = Bytes.concat(userSolutionKey, moduleSolutionKey);
-		}
-
-		assertTrue(flagHandler.submitFlag(submittingUser, submittedModule, FlagHandlingService.encryptFlag(concatenatedKey)));
-
+		assertEquals(1, submissionRepository.count());
+		
 		submissionRepository.findAll();
 
 	}
