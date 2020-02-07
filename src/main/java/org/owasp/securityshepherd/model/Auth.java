@@ -16,19 +16,23 @@ public final class Auth {
 	@Builder.Default
 	private final boolean isEnabled = false;
 
+	@Builder.Default
 	private final int badLoginCount = 0;
 
+	@Builder.Default
 	private final boolean isAdmin = false;
 
 	private final Timestamp suspendedUntil;
-
-	private final String suspensionMessage = null;
-
+	
+	private final String suspensionMessage;
+	
 	private final Timestamp lastLogin;
+	
+	private final String lastLoginMethod;
 
-	private final PasswordData password;
+	private final PasswordAuth password;
 
-	private final SAMLData saml;
+	private final SAMLAuth saml;
 	
 	public boolean isAccountSuspended() {
 		if(suspendedUntil == null) {

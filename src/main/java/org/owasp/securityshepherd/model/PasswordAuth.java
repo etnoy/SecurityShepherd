@@ -1,19 +1,20 @@
 package org.owasp.securityshepherd.model;
 
-import org.springframework.data.relational.core.mapping.Table;
-
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import lombok.With;
 
 @Data
 @EqualsAndHashCode
-@Table("auth_password")
 @Builder
 @With
-public final class PasswordData {
+public final class PasswordAuth {
 
+	@NonNull
+	private final String loginName;
+	
 	private final String hashedPassword;
 
 	@Builder.Default

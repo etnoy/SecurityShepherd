@@ -1,7 +1,7 @@
 package org.owasp.securityshepherd.auth;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.owasp.securityshepherd.model.User;
@@ -9,19 +9,22 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-public class UserAuthDetails implements UserDetails {
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+public class PasswordUserDetails implements UserDetails {
 
 	private static final long serialVersionUID = -3677404075923734838L;
 	private User user;
 
-	public UserAuthDetails(User user) {
+	public PasswordUserDetails(User user) {
+    	log.trace("Creating password details for user " + user);
+
 		this.user = user;
 	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-
-		List<GrantedAuthority> authorities = new ArrayList<>();
 
 		String role;
 
@@ -31,7 +34,7 @@ public class UserAuthDetails implements UserDetails {
 			role = "player";
 		}
 
-		authorities.add(new SimpleGrantedAuthority(role));
+		final List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(role));
 
 		return authorities;
 
@@ -39,11 +42,14 @@ public class UserAuthDetails implements UserDetails {
 
 	@Override
 	public String getPassword() {
+		log.trace("Found password hash " + user.getAuth().getPassword().getHashedPassword());
+
 		return user.getAuth().getPassword().getHashedPassword();
 	}
 
 	@Override
 	public String getUsername() {
+		log.trace("Found username " + user.getAuth().getPassword().getLoginName());
 		return user.getName();
 	}
 
@@ -64,7 +70,7 @@ public class UserAuthDetails implements UserDetails {
 
 	@Override
 	public boolean isEnabled() {
-		return !user.getAuth().isEnabled();
+		return user.getAuth().isEnabled();
 	}
 
 }

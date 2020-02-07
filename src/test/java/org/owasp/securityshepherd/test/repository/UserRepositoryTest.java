@@ -7,6 +7,8 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.owasp.securityshepherd.model.Auth;
+import org.owasp.securityshepherd.model.PasswordAuth;
 import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,8 +115,7 @@ public class UserRepositoryTest {
 
 		User validUser1 = User.builder().name("save_ValidUser1").build();
 
-		User validUser2 = User.builder().classId("aclassid").name("save_ValidUser2")
-				.email("me@example.com").build();
+		User validUser2 = User.builder().classId("aclassid").name("save_ValidUser2").email("me@example.com").build();
 
 		User validUser3 = User.builder().classId("newclass").name("save_ValidUser3").email("").build();
 
@@ -180,7 +181,7 @@ public class UserRepositoryTest {
 
 	@Test
 	public void deleteByName_NonExistentName_ThrowsException() {
-
+//TODO refactor 
 		assertFalse(userRepository.findByName("deleteByName_NonExistentName").isPresent());
 
 	}
@@ -262,6 +263,29 @@ public class UserRepositoryTest {
 	}
 
 	@Test
+	public void findByLoginName_ValidName_CanFindUser() {
+
+		String nameToFind = "findByLoginName_ValidName";
+
+		User findUserByName_validName_User = userRepository.save(User.builder().name("findByLoginName_ValidName_name")
+				.auth(Auth.builder().password(PasswordAuth.builder().loginName(nameToFind).build()).build()).build());
+
+		assertEquals(nameToFind, findUserByName_validName_User.getAuth().getPassword().getLoginName());
+
+		Optional<User> returnedUser = userRepository.findByLoginName(nameToFind);
+
+		assertTrue(returnedUser.isPresent());
+
+		assertEquals(returnedUser.get(), findUserByName_validName_User);
+
+		assertEquals(returnedUser.get().getAuth().getPassword().getLoginName(),
+				findUserByName_validName_User.getAuth().getPassword().getLoginName());
+
+		assertEquals(nameToFind, returnedUser.get().getAuth().getPassword().getLoginName());
+
+	}
+
+	@Test
 	public void findByName_ValidName_CanFindUser() {
 
 		String nameToFind = "findByName_ValidName";
@@ -277,6 +301,5 @@ public class UserRepositoryTest {
 		assertEquals(returnedUser.get().getName(), findUserByName_validName_User.getName());
 
 	}
-
 
 }

@@ -41,21 +41,23 @@ CREATE TABLE auth (
   suspended_until TIMESTAMP,
   suspension_message VARCHAR(191),
   last_login TIMESTAMP,
+  last_login_method VARCHAR(10),
   user BIGINT,
   FOREIGN KEY (`user`) REFERENCES users(id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
-CREATE TABLE auth_saml (
+CREATE TABLE saml_auth (
   user BIGINT,
   saml_id VARCHAR(40) NOT NULL )
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
-CREATE TABLE auth_password (
+CREATE TABLE password_auth (
   user BIGINT,
-  hashed_password VARCHAR(191) NOT NULL,
-  password_expired BOOLEAN DEFAULT FALSE )
+  login_name VARCHAR(191) NOT NULL UNIQUE,
+  hashed_password VARCHAR(191),
+  password_expired BOOLEAN DEFAULT TRUE )
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 

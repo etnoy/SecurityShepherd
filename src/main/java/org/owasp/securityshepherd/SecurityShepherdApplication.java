@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SecurityShepherdApplication {
 
 	public static void main(String[] args) throws Throwable {
-		
 		SpringApplication.run(SecurityShepherdApplication.class, args);
 	}
 

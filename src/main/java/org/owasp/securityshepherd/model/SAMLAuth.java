@@ -9,10 +9,9 @@ import lombok.With;
 
 @Data
 @EqualsAndHashCode
-@Table("auth_saml")
 @Builder
 @With
-public final class SAMLData {
+public final class SAMLAuth {
 
 	private final String samlId;
 	
