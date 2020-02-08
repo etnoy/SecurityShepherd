@@ -42,7 +42,7 @@ public class PasswordUserDetails implements UserDetails {
 
 	@Override
 	public String getPassword() {
-		log.trace("Found password hash " + user.getAuth().getPassword().getHashedPassword());
+		log.trace("Found password hash ", user.getAuth().getPassword().getHashedPassword());
 
 		return user.getAuth().getPassword().getHashedPassword();
 	}

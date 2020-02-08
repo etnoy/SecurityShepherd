@@ -27,24 +27,27 @@ public class ShepherdUserDetailsService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String name) {
+		if (userRepository.count() == 0) {
 
-		PasswordAuthBuilder passwordAuthBuilder = PasswordAuth.builder();
+			PasswordAuthBuilder passwordAuthBuilder = PasswordAuth.builder();
 
-		passwordAuthBuilder.loginName("test");
-		passwordAuthBuilder.hashedPassword("$2y$12$4b4Cn4Pux0vk30aNrB6le.dDlrVBHqWfh98ZNrVhLIB0CkLG0WVWe");
-		passwordAuthBuilder.passwordExpired(false);
+			passwordAuthBuilder.loginName("test");
+			passwordAuthBuilder.hashedPassword("$2y$12$4b4Cn4Pux0vk30aNrB6le.dDlrVBHqWfh98ZNrVhLIB0CkLG0WVWe");
+			passwordAuthBuilder.passwordExpired(false);
 
-		AuthBuilder userAuthBuilder = Auth.builder();
+			AuthBuilder userAuthBuilder = Auth.builder();
 
-		userAuthBuilder.password(passwordAuthBuilder.build());
-		userAuthBuilder.isEnabled(true);
+			userAuthBuilder.password(passwordAuthBuilder.build());
+			userAuthBuilder.isEnabled(true);
 
-		UserBuilder userBuilder = User.builder();
+			UserBuilder userBuilder = User.builder();
 
-		userBuilder.name("TestUser");
-		userBuilder.auth(userAuthBuilder.build());
+			userBuilder.name("TestUser");
+			userBuilder.auth(userAuthBuilder.build());
 
-		userRepository.save(userBuilder.build());
+			userRepository.save(userBuilder.build());
+
+		}
 
 		log.trace("Looking for username " + name);
 		Optional<User> user = userRepository.findByLoginName(name);

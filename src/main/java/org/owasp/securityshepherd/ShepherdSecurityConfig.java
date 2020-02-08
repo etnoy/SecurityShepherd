@@ -22,55 +22,20 @@ import org.springframework.web.context.WebApplicationContext;
 @Configuration
 @EnableWebSecurity
 public class ShepherdSecurityConfig extends WebSecurityConfigurerAdapter {
-
-    @Autowired
-    private WebApplicationContext applicationContext;
     
-    private ShepherdUserDetailsService userDetailsService;
-
-    @Autowired
-    private DataSource dataSource;
-
-    @PostConstruct
-    public void completeSetup() {
-        userDetailsService = applicationContext.getBean(ShepherdUserDetailsService.class);
-    }
-
-    @Override
-    protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService)
-            .passwordEncoder(encoder())
-            .and()
-            .authenticationProvider(authenticationProvider())
-            .jdbcAuthentication()
-            .dataSource(dataSource);
-    }
-
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        web.ignoring()
-            .antMatchers("/resources/**");
-    }
-
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-            .antMatchers("/login")
-            .permitAll()
-            .and()
-            .formLogin()
-            .permitAll()
-            .and()
-            .csrf()
-            .disable();
-    }
-
-    @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        final DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(encoder());
-        return authProvider;
+		http
+		.authorizeRequests()
+			.antMatchers("/", "/home").permitAll()
+			.anyRequest().authenticated()
+			.and()
+		.formLogin()
+			.loginPage("/login")
+			.permitAll()
+			.and()
+		.logout()
+			.permitAll();
     }
 
     @Bean
