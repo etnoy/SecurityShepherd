@@ -22,11 +22,16 @@ public final class Auth {
 	@Builder.Default
 	private final boolean isAdmin = false;
 
-	private final Timestamp suspendedUntil;
+	@Builder.Default
+	private final Timestamp suspendedUntil = null;
 	
 	private final String suspensionMessage;
-	
-	private final Timestamp lastLogin;
+
+	@Builder.Default
+	private final Timestamp accountCreated = new Timestamp(System.currentTimeMillis());
+
+	@Builder.Default
+	private final Timestamp lastLogin = null;
 	
 	private final String lastLoginMethod;
 

@@ -40,6 +40,7 @@ CREATE TABLE auth (
   is_admin BOOLEAN DEFAULT FALSE,
   suspended_until TIMESTAMP,
   suspension_message VARCHAR(191),
+  account_created TIMESTAMP,
   last_login TIMESTAMP,
   last_login_method VARCHAR(10),
   user BIGINT,
