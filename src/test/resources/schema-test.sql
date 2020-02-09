@@ -3,7 +3,7 @@ DROP SCHEMA IF EXISTS core;
 CREATE DATABASE core;
 USE core;
 
-CREATE TABLE users (
+CREATE TABLE user (
   id BIGINT AUTO_INCREMENT,
   name VARCHAR(191) NOT NULL,
   class_id VARCHAR(64) NULL,
@@ -15,7 +15,7 @@ CREATE TABLE users (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
-CREATE TABLE groups (
+CREATE TABLE class (
   id BIGINT AUTO_INCREMENT,
   name VARCHAR(191) NOT NULL UNIQUE,
   PRIMARY KEY (id) )
@@ -44,7 +44,7 @@ CREATE TABLE auth (
   last_login TIMESTAMP,
   last_login_method VARCHAR(10),
   user BIGINT,
-  FOREIGN KEY (`user`) REFERENCES users(id))
+  FOREIGN KEY (`user`) REFERENCES user(id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 

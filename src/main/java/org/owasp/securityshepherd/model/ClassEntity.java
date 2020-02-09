@@ -11,11 +11,11 @@ import lombok.NonNull;
 import lombok.With;
 
 @Data
-@Table("groups")
+@Table("classes")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder
 @With
-public final class Group {
+public final class ClassEntity {
 
 	@EqualsAndHashCode.Include
 	@Id

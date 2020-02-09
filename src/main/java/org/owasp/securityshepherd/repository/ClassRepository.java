@@ -2,23 +2,23 @@ package org.owasp.securityshepherd.repository;
 
 import java.util.Optional;
 
-import org.owasp.securityshepherd.model.Group;
+import org.owasp.securityshepherd.model.ClassEntity;
 import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface GroupRepository extends CrudRepository<Group, Long> {
+public interface ClassRepository extends CrudRepository<ClassEntity, Long> {
 
-	@Query("select count(1) from groups where name = :name")
+	@Query("select count(1) from classes where name = :name")
 	public boolean existsByName(String name);
 
 	@Modifying
-	@Query("delete from Groups where name = :name")
+	@Query("delete from classes where name = :name")
 	public void deleteByName(String name);
 
-	@Query("select * from Groups where name = :name")
-	public Optional<Group> findByName(String name);
+	@Query("select * from classes where name = :name")
+	public Optional<ClassEntity> findByName(String name);
 
 }

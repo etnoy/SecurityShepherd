@@ -10,7 +10,6 @@ import lombok.NonNull;
 import lombok.With;
 
 @Data
-@Table("users")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder
 @With
