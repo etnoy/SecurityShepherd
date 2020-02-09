@@ -45,11 +45,11 @@ public final class UserService {
 		if (displayName == null || loginName == null || hashedPassword == null) {
 			throw new NullPointerException();
 		}
-		
+
 		if (displayName.isEmpty() || loginName.isEmpty() || hashedPassword.isEmpty()) {
 			throw new IllegalArgumentException();
 		}
-		
+
 		PasswordAuthBuilder passwordAuthBuilder = PasswordAuth.builder();
 		passwordAuthBuilder.loginName(loginName);
 		passwordAuthBuilder.hashedPassword(hashedPassword);
@@ -87,6 +87,10 @@ public final class UserService {
 
 	public long count() {
 		return userRepository.count();
+	}
+
+	public Optional<User> findByLoginName(String loginName) {
+		return userRepository.findByLoginName(loginName);
 	}
 
 	public User get(long id) {

@@ -15,6 +15,7 @@ import org.owasp.securityshepherd.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
@@ -27,18 +28,22 @@ public class ShepherdUserDetailsService implements UserDetailsService {
 	private UserService userService;
 
 	@Override
-	public UserDetails loadUserByUsername(String name) {
+	public UserDetails loadUserByUsername(String loginName) {
 		if (userService.count() == 0) {
 
-			userService.createPasswordUser("TestUser", "test", "$2y$04$U3oKNt0WbZXLvt.LTHyd4Oy4OMweBu3oU7unxvtCcijW7AxVREbZK");
+			userService.createPasswordUser("TestUser", "test",
+					"$2y$04$U3oKNt0WbZXLvt.LTHyd4Oy4OMweBu3oU7unxvtCcijW7AxVREbZK");
 
 		}
 
-		log.trace("Looking for username " + name);
-		Optional<User> user = userService.getByLoginName(name);
+		log.trace("Looking for username " + loginName);
+		Optional<User> user = userService.findByLoginName(loginName);
 		if (!user.isPresent()) {
-			throw new RuntimeException(name);
+			throw new UsernameNotFoundException(loginName);
+
 		}
+		
+		log.trace("Found username, creating user details");
 		return new PasswordUserDetails(user.get());
 	}
 }

@@ -4,19 +4,11 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
 
-import java.util.Optional;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.owasp.securityshepherd.model.ClassEntity;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.owasp.securityshepherd.model.User;
-import org.owasp.securityshepherd.repository.ClassRepository;
 import org.owasp.securityshepherd.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,22 +16,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 @ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 @Transactional
 @SpringBootTest
 public class UserServiceTest {
 
 	@Autowired
-	@InjectMocks
 	private UserService userService;
-
-	@Mock
-	private ClassRepository classRepository;
-
-	@BeforeEach
-	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
-		when(classRepository.findById(1L)).thenReturn(Optional.of(ClassEntity.builder().name("MockClass").build()));
-	}
 
 	@Test
 	public void createPasswordUser_ValidData_Succeeds() {
