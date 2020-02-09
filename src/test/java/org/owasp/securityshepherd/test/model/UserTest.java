@@ -16,55 +16,38 @@ public class UserTest {
 
 	@Test
 	public void build_AllArguments_SuppliedValuesPresent() {
-		User.UserBuilder buildAllArgumentsUserBuilder = User.builder().classId("builder_AllArguments_classid")
-				.name("builder_AllArguments_username").email("builder_AllArguments@example.com");
+		User.UserBuilder buildAllArgumentsUserBuilder = User.builder().classId(99L)
+				.displayName("builder_AllArguments_username").email("builder_AllArguments@example.com");
 
 		User buildAllArgumentsUser = buildAllArgumentsUserBuilder.build();
 
-		assertEquals("builder_AllArguments_classid", buildAllArgumentsUser.getClassId());
-		assertEquals("builder_AllArguments_username", buildAllArgumentsUser.getName());
+		assertEquals(99L, buildAllArgumentsUser.getClassId());
+		assertEquals("builder_AllArguments_username", buildAllArgumentsUser.getDisplayName());
 		assertEquals("builder_AllArguments@example.com", buildAllArgumentsUser.getEmail());
 
 	}
 
 	@Test
-	public void build_ValidClassIdLength_ReturnsUser() {
+	public void build_ValidDisplayName_ReturnsUser() {
 
-		String validLengthClassId = "classId_exactly__30_chars_long";
+		String validDisplayName = "build_ValidDisplayName";
 
-		assertEquals(30, validLengthClassId.length());
+		User build_ValidDisplayNameLengthUser = User.builder().displayName(validDisplayName).build();
 
-		User build_ValidClassIdLengthUser = User.builder().name("build_ValidClassIdLength").classId(validLengthClassId)
-				.build();
+		assertTrue(build_ValidDisplayNameLengthUser instanceof User);
 
-		assertTrue(build_ValidClassIdLengthUser instanceof User);
-
-		assertEquals(validLengthClassId, build_ValidClassIdLengthUser.getClassId());
-	}
-
-	@Test
-	public void build_ValidNameLength_ReturnsUser() {
-
-		String validLengthName = "Build_Name_exactly_70_chars_long_which_should_be_accepted_as_valid_123";
-
-		assertEquals(70, validLengthName.length());
-
-		User build_ValidNameLengthUser = User.builder().name(validLengthName).build();
-
-		assertTrue(build_ValidNameLengthUser instanceof User);
-
-		assertEquals(validLengthName, build_ValidNameLengthUser.getName());
+		assertEquals(validDisplayName, build_ValidDisplayNameLengthUser.getDisplayName());
 	}
 
 	@Test
 	public void build_ZeroArguments_DefaultValuesPresent() {
 
-		User buildZeroArgumentsUser = User.builder().name("build_ZeroArguments").build();
+		User buildZeroArgumentsUser = User.builder().displayName("build_ZeroArguments").build();
 
 		assertNotNull(buildZeroArgumentsUser.getId());
-		assertEquals(null, buildZeroArgumentsUser.getClassId());
-		assertNotNull(buildZeroArgumentsUser.getName());
-		assertEquals(null, buildZeroArgumentsUser.getEmail());
+		assertNull(buildZeroArgumentsUser.getClassId());
+		assertNotNull(buildZeroArgumentsUser.getDisplayName());
+		assertNull(buildZeroArgumentsUser.getEmail());
 
 	}
 
@@ -76,7 +59,7 @@ public class UserTest {
 	@Test
 	public void toString_ValidData_NotNull() {
 
-		assertNotNull(User.builder().name("toString_ValidData").build().toString());
+		assertNotNull(User.builder().displayName("toString_ValidData").build().toString());
 
 	}
 

@@ -1,15 +1,13 @@
 package org.owasp.securityshepherd.model;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Table;
-
 import lombok.Builder;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
+import lombok.Value;
 import lombok.With;
 
-@Data
+@Value
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder
 @With
@@ -20,9 +18,9 @@ public final class User {
 	private final long id;
 
 	@NonNull
-	private final String name;
+	private final String displayName;
 
-	private final String classId;
+	private final Long classId;
 
 	private final String email;
 

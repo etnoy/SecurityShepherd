@@ -14,8 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.google.common.primitives.Bytes;
-
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class FlagHandlingIT {
@@ -35,7 +33,7 @@ public class FlagHandlingIT {
 	@Test
 	public void validateFlag_ValidFlag_SavesResult() {
 
-		User submittingUser = userRepository.save(User.builder().name("validateFlag_ValidFlag_user").build());
+		User submittingUser = userRepository.save(User.builder().displayName("validateFlag_ValidFlag_user").build());
 
 		Module submittedModule = moduleRepository.save(Module.builder().name("validateFlag_ValidFlag_module").build());
 

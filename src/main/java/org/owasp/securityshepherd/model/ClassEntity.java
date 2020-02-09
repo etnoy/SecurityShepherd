@@ -11,7 +11,7 @@ import lombok.NonNull;
 import lombok.With;
 
 @Data
-@Table("classes")
+@Table("class")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder
 @With

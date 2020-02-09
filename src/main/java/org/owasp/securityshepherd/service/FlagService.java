@@ -1,17 +1,8 @@
 package org.owasp.securityshepherd.service;
 
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import com.google.common.primitives.Bytes;
 
 import lombok.extern.slf4j.Slf4j;
 

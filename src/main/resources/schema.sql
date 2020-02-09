@@ -5,17 +5,17 @@ USE core;
 
 CREATE TABLE user (
   id BIGINT AUTO_INCREMENT,
-  name VARCHAR(191) NOT NULL,
-  class_id VARCHAR(64) NULL,
+  display_name VARCHAR(191) NOT NULL,
+  class_id BIGINT NULL,
   email VARCHAR(128) NULL ,
   flag_key BINARY(16) NULL ,
   PRIMARY KEY (id) ,
   INDEX class_id (class_id ASC) ,
-  UNIQUE INDEX name_UNIQUE (name ASC))
+  UNIQUE INDEX display_name_UNIQUE (display_name ASC))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
-CREATE TABLE classes (
+CREATE TABLE class (
   id BIGINT AUTO_INCREMENT,
   name VARCHAR(191) NOT NULL UNIQUE,
   PRIMARY KEY (id) )

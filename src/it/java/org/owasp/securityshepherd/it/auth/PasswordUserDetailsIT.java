@@ -44,7 +44,7 @@ public class PasswordUserDetailsIT {
 
 		UserBuilder authorizedUserBuilder = User.builder();
 
-		authorizedUserBuilder.name(userName);
+		authorizedUserBuilder.displayName(userName);
 
 		authorizedUserBuilder.auth(authDataBuilder.build());
 

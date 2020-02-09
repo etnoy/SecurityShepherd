@@ -50,7 +50,7 @@ public class PasswordUserDetails implements UserDetails {
 	@Override
 	public String getUsername() {
 		log.trace("Found username " + user.getAuth().getPassword().getLoginName());
-		return user.getName();
+		return user.getDisplayName();
 	}
 
 	@Override
