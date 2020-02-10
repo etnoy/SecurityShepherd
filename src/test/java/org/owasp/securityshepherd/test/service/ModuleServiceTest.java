@@ -5,8 +5,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.sql.SQLIntegrityConstraintViolationException;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.model.Module;
@@ -44,6 +42,75 @@ public class ModuleServiceTest {
 		moduleService.create(name);
 
 		assertThrows(DbActionExecutionException.class, () -> moduleService.create(name));
+
+	}
+
+	@Test
+	public void setExactFlag_ValidFlag_SetsFlagToExact() {
+
+		String name = "setExactFlag_ValidFlag";
+		String exactFlag = "setExactFlag_ValidFlag_flag";
+
+		Module returnedModule;
+
+		returnedModule = moduleService.create(name);
+		long moduleId = returnedModule.getId();
+
+		assertThat(returnedModule.isFlagEnabled(), is(false));
+		assertThat(returnedModule.isExactFlag(), is(false));
+
+		moduleService.setExactFlag(moduleId, exactFlag);
+		returnedModule = moduleService.get(moduleId);
+
+		assertThat(returnedModule.isFlagEnabled(), is(true));
+		assertThat(returnedModule.isExactFlag(), is(true));
+
+		assertThat(returnedModule.getFlag(), is(equalTo(exactFlag)));
+
+	}
+	
+	@Test
+	public void setDynamicFlag_ValidFlag_SetsFlagToExact() {
+
+		//TODO
+
+	}
+
+	@Test
+	public void verifyFlag_ExactFlag_ReturnsTrue() {
+
+		String name = "verifyFlag_ExactFlag";
+		String exactFlag = "verifyFlag_ExactFlag_flag";
+
+		Module returnedModule;
+
+		returnedModule = moduleService.create(name);
+		long moduleId = returnedModule.getId();
+
+		moduleService.setExactFlag(moduleId, exactFlag);
+		assertThat(moduleService.verifyFlag(moduleId, exactFlag), is(true));
+
+	}
+	
+	@Test
+	public void verifyFlag_DynamicFlag_ReturnsTrue() {
+
+		//TODO
+
+	}
+
+	@Test
+	public void verifyFlag_FlagNotSet_ThrowsException() {
+
+		String name = "verifyFlag_FlagNotSet";
+		String flag = "verifyFlag_FlagNotSet_flag";
+
+		Module returnedModule;
+
+		returnedModule = moduleService.create(name);
+		long moduleId = returnedModule.getId();
+
+		assertThrows(IllegalArgumentException.class, () -> moduleService.verifyFlag(moduleId, flag));
 
 	}
 

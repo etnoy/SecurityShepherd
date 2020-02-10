@@ -2,15 +2,7 @@ package org.owasp.securityshepherd.auth;
 
 import java.util.Optional;
 
-import org.owasp.securityshepherd.model.Auth;
-import org.owasp.securityshepherd.model.PasswordAuth;
-import org.owasp.securityshepherd.model.PasswordAuth.PasswordAuthBuilder;
-import org.owasp.securityshepherd.model.Auth.AuthBuilder;
-
 import org.owasp.securityshepherd.model.User;
-
-import org.owasp.securityshepherd.model.User.UserBuilder;
-import org.owasp.securityshepherd.repository.UserRepository;
 import org.owasp.securityshepherd.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

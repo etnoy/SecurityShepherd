@@ -27,8 +27,8 @@ CREATE TABLE module (
 	name VARCHAR(191) NOT NULL UNIQUE,
  	description VARCHAR(191),
  	short_name VARCHAR(191),
-	has_flag BOOLEAN,
-  	hardcoded_flag BOOLEAN,
+	flag_enabled BOOLEAN,
+  	exact_flag BOOLEAN,
 	flag VARCHAR(32) NULL,
 	is_open BOOLEAN,
   PRIMARY KEY (id) )

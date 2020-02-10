@@ -1,7 +1,6 @@
 package org.owasp.securityshepherd.model;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Table;
 
 import lombok.Builder;
 import lombok.Data;
@@ -25,10 +24,10 @@ public final class Module {
 	private final String description;
 
 	@Builder.Default
-	private boolean hasFlag = false;
+	private boolean flagEnabled = false;
 
 	@Builder.Default
-	private boolean hardcodedFlag = false;
+	private boolean exactFlag = false;
 
 	private final String flag;
 

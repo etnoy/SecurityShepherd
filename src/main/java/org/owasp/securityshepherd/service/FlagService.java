@@ -11,11 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 
 public class FlagService {
 
-
 //	private final Mac HMAC512;
 
 	private final String flagPattern = "flag{%s}";
-	
+
 //	FlagService() {
 //
 //		try {
@@ -39,33 +38,39 @@ public class FlagService {
 //	}
 
 	public String generateFlag(User user, Module module) {
-		//TODO: stub
-		
-		return null;
+		// TODO: stub
 
-		/*
-		 * Flag moduleFlag = module.getFlag(); byte[] flagKey; String flagFormat;
-		 * 
-		 * if (module.isStaticFlag()) { flagKey = moduleSolutionKey; flagFormat = "%s";
-		 * } else { flagKey = Bytes.concat(user.getFlagKey(), moduleSolutionKey);
-		 * flagFormat = flagPattern; }
-		 * 
-		 * log.trace("flagKey: " + flagKey);
-		 * 
-		 * byte[] hashedFlag = HMAC512.doFinal(flagKey);
-		 * 
-		 * StringBuilder sb = new StringBuilder(); for (byte b : hashedFlag) {
-		 * sb.append(String.format("%02X", b)); }
-		 * 
-		 * return String.format(flagFormat, sb.toString());
-		 */
+		return null;
+//
+//		Flag moduleFlag = module.getFlag();
+//		byte[] flagKey;
+//		String flagFormat;
+//
+//		if (module.isStaticFlag()) {
+//			flagKey = moduleSolutionKey;
+//			flagFormat = "%s";
+//		} else {
+//			flagKey = Bytes.concat(user.getFlagKey(), moduleSolutionKey);
+//			flagFormat = flagPattern;
+//		}
+//
+//		log.trace("flagKey: " + flagKey);
+//
+//		byte[] hashedFlag = HMAC512.doFinal(flagKey);
+//
+//		StringBuilder sb = new StringBuilder();
+//		for (byte b : hashedFlag) {
+//			sb.append(String.format("%02X", b));
+//		}
+//
+//		return String.format(flagFormat, sb.toString());
 
 	}
 
 	public byte[] generateFlagKey() {
 		return null;
 
-		//return cryptoService.generateRandomBytes(16);
+		// return cryptoService.generateRandomBytes(16);
 
 	}
 

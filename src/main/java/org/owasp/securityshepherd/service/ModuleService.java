@@ -42,6 +42,33 @@ public final class ModuleService {
 
 	}
 
+	public boolean verifyFlag(long id, String submittedFlag) {
+
+		Module submittedModule = get(id);
+
+		if (!submittedModule.isFlagEnabled()) {
+			// TODO: maybe a better exception here?
+			throw new IllegalArgumentException();
+		}
+
+		if (submittedModule.isExactFlag()) {
+			// Flag is of the exact type, so no cryptography needed
+			return submittedModule.getFlag().equals(submittedFlag);
+		} else {
+			// Not implemented yet
+			return false;
+		}
+
+	}
+
+	public void setExactFlag(long id, String exactFlag) {
+
+		Module exactFlagModule = get(id).withFlagEnabled(true).withExactFlag(true).withFlag(exactFlag);
+
+		moduleRepository.save(exactFlagModule);
+
+	}
+
 	public void setName(long id, String name) {
 
 		Module newDisplayNameModule = get(id).withName(name);
