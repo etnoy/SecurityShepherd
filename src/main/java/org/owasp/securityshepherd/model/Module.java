@@ -10,7 +10,6 @@ import lombok.NonNull;
 import lombok.With;
 
 @Data
-@Table("modules")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder
 @With
@@ -25,12 +24,15 @@ public final class Module {
 
 	private final String description;
 
-	private final String shortName;
+	@Builder.Default
+	private boolean hasFlag = false;
 
-	private boolean hasFlag;
-	
-	private boolean hardcodedFlag;
+	@Builder.Default
+	private boolean hardcodedFlag = false;
 
 	private final String flag;
+
+	@Builder.Default
+	private final boolean isOpen = false;
 
 }

@@ -25,6 +25,14 @@ public final class UserService {
 
 	public User create(String displayName) {
 
+		if (displayName == null) {
+			throw new NullPointerException();
+		}
+
+		if (displayName.isEmpty()) {
+			throw new IllegalArgumentException();
+		}
+
 		log.debug("Creating user with display name " + displayName);
 
 		UserBuilder userBuilder = User.builder();
@@ -40,8 +48,6 @@ public final class UserService {
 
 	public User createPasswordUser(String displayName, String loginName, String hashedPassword) {
 
-		log.debug("Creating password login user with display name " + displayName);
-
 		if (displayName == null || loginName == null || hashedPassword == null) {
 			throw new NullPointerException();
 		}
@@ -49,6 +55,8 @@ public final class UserService {
 		if (displayName.isEmpty() || loginName.isEmpty() || hashedPassword.isEmpty()) {
 			throw new IllegalArgumentException();
 		}
+
+		log.debug("Creating password login user with display name " + displayName);
 
 		PasswordAuthBuilder passwordAuthBuilder = PasswordAuth.builder();
 		passwordAuthBuilder.loginName(loginName);

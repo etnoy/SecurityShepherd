@@ -11,14 +11,14 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ModuleRepository extends CrudRepository<Module, Long> {
 
-	@Query("select count(1) from modules where name = :name")
+	@Query("select count(1) from module where name = :name")
 	public boolean existsByName(String name);
 
 	@Modifying
-	@Query("delete from modules where name = :name")
+	@Query("delete from module where name = :name")
 	public void deleteByName(String name);
 
-	@Query("select * from modules where name = :name")
+	@Query("select * from module where name = :name")
 	public Optional<Module> findByName(String name);
 
 }

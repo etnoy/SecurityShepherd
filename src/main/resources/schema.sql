@@ -5,10 +5,10 @@ USE core;
 
 CREATE TABLE user (
   id BIGINT AUTO_INCREMENT,
-  display_name VARCHAR(191) NOT NULL,
+  display_name VARCHAR(191) NOT NULL UNIQUE,
   class_id BIGINT NULL,
-  email VARCHAR(128) NULL ,
-  flag_key BINARY(16) NULL ,
+  email VARCHAR(128) NULL,
+  flag_key BINARY(16) NULL,
   PRIMARY KEY (id) ,
   INDEX class_id (class_id ASC) ,
   UNIQUE INDEX display_name_UNIQUE (display_name ASC))
@@ -22,7 +22,7 @@ CREATE TABLE class (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
-CREATE TABLE modules (
+CREATE TABLE module (
 	id BIGINT AUTO_INCREMENT,
 	name VARCHAR(191) NOT NULL UNIQUE,
  	description VARCHAR(191),
@@ -30,6 +30,7 @@ CREATE TABLE modules (
 	has_flag BOOLEAN,
   	hardcoded_flag BOOLEAN,
 	flag VARCHAR(32) NULL,
+	is_open BOOLEAN,
   PRIMARY KEY (id) )
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;

@@ -5,18 +5,19 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.sql.SQLIntegrityConstraintViolationException;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.relational.core.conversion.DbActionExecutionException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 @ExtendWith(SpringExtension.class)
-@ExtendWith(MockitoExtension.class)
 @Transactional
 @SpringBootTest
 public class UserServiceTest {
@@ -38,6 +39,55 @@ public class UserServiceTest {
 		assertThat(userService.get(userId).getDisplayName(), is(equalTo(displayName)));
 		assertThat(userService.get(userId).getAuth().getPassword().getLoginName(), is(equalTo(loginName)));
 		assertThat(userService.get(userId).getAuth().getPassword().getHashedPassword(), is(equalTo(hashedPassword)));
+
+	}
+
+	@Test
+	public void createPasswordUser_DuplicateDisplayName_ThrowsException() {
+
+		String displayName = "createPasswordUser_DuplicateUser";
+		String loginName1 = "_createPasswordUser_DuplicateUser1_";
+		String loginName2 = "_createPasswordUser_DuplicateUser2_";
+
+		// String "createPasswordUser_ValidData" bcrypted
+		String hashedPassword = "$2y$04$2zPOzxj77Ul5amFcsnsyjenMBGpRgEApYsJXyK76dcX2wK7asi7.6";
+
+		userService.createPasswordUser(displayName, loginName1, hashedPassword);
+
+		assertThrows(DbActionExecutionException.class,
+				() -> userService.createPasswordUser(displayName, loginName2, hashedPassword));
+
+	}
+
+	@Test
+	public void createPasswordUser_DuplicateLoginName_ThrowsException() {
+
+		String displayName1 = "createPasswordUser_DuplicateLoginName1";
+		String displayName2 = "createPasswordUser_DuplicateLoginName2";
+
+		String loginName = "_createPasswordUser_DuplicateLoginName_";
+
+		// String "createPasswordUser_ValidData" bcrypted
+		String hashedPassword = "$2y$04$2zPOzxj77Ul5amFcsnsyjenMBGpRgEApYsJXyK76dcX2wK7asi7.6";
+
+		userService.createPasswordUser(displayName1, loginName, hashedPassword);
+
+		assertThrows(DbActionExecutionException.class,
+				() -> userService.createPasswordUser(displayName2, loginName, hashedPassword));
+
+	}
+
+	@Test
+	public void create_NullArgument_ThrowsException() {
+
+		assertThrows(NullPointerException.class, () -> userService.create(null));
+
+	}
+	
+	@Test
+	public void create_EmptyArgument_ThrowsException() {
+
+		assertThrows(IllegalArgumentException.class, () -> userService.create(""));
 
 	}
 

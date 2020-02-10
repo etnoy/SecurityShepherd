@@ -12,7 +12,7 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-public class ClassTest {
+public class ClassEntityTest {
 
 	@Test
 	public void build_AllArguments_SuppliedValuesPresent() {
