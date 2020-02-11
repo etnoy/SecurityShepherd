@@ -9,7 +9,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ModuleRepository extends CrudRepository<Module, Long> {
+public interface ModuleRepository extends CrudRepository<Module, Integer> {
 
 	@Query("select count(1) from module where name = :name")
 	public boolean existsByName(String name);

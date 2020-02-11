@@ -77,7 +77,7 @@ public final class UserService {
 
 	}
 
-	public void setDisplayName(long id, String displayName) {
+	public void setDisplayName(int id, String displayName) {
 
 		User newDisplayNameUser = get(id).withDisplayName(displayName);
 
@@ -85,7 +85,7 @@ public final class UserService {
 
 	}
 
-	public void setClassId(long id, long classId) {
+	public void setClassId(int id, int classId) {
 
 		User newClassIdUser = get(id).withClassId(classId);
 
@@ -101,7 +101,7 @@ public final class UserService {
 		return userRepository.findByLoginName(loginName);
 	}
 
-	public User get(long id) {
+	public User get(int id) {
 		Optional<User> returnedUser = userRepository.findById(id);
 
 		if (!returnedUser.isPresent()) {

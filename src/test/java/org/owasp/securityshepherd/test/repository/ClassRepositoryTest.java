@@ -38,7 +38,7 @@ public class ClassRepositoryTest {
 	@Test
 	public void existsById_NonExistentId_ReturnsFalse() {
 
-		assertFalse(classRepository.existsById(1234567890L));
+		assertFalse(classRepository.existsById(1234567890));
 
 	}
 
@@ -230,7 +230,7 @@ public class ClassRepositoryTest {
 	@Test
 	public void findById_NonExistentId_ThrowsException() {
 
-		assertFalse(classRepository.findById(123456789L).isPresent());
+		assertFalse(classRepository.findById(123456789).isPresent());
 
 	}
 

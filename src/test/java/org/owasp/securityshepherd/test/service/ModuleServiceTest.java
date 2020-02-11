@@ -32,7 +32,7 @@ public class ModuleServiceTest {
 
 		String name = "createPasswordModule_ValidData";
 
-		Long moduleId = moduleService.create(name).getId();
+		int moduleId = moduleService.create(name).getId();
 
 		assertThat(moduleService.get(moduleId).getName(), is(equalTo(name)));
 
@@ -58,7 +58,7 @@ public class ModuleServiceTest {
 		Module returnedModule;
 
 		returnedModule = moduleService.create(name);
-		long moduleId = returnedModule.getId();
+		int moduleId = returnedModule.getId();
 
 		assertThat(returnedModule.isFlagEnabled(), is(false));
 		assertThat(returnedModule.isExactFlag(), is(false));
@@ -88,8 +88,8 @@ public class ModuleServiceTest {
 		String userName = name + "_user";
 		String exactFlag = name + "_flag";
 
-		long moduleId = moduleService.create(moduleName).getId();
-		long userId = userService.create(userName).getId();
+		int moduleId = moduleService.create(moduleName).getId();
+		int userId = userService.create(userName).getId();
 
 		moduleService.setExactFlag(moduleId, exactFlag);
 		assertThat(moduleService.verifyFlag(moduleId, userId, exactFlag), is(true));
@@ -104,8 +104,8 @@ public class ModuleServiceTest {
 		String userName = name + "_user";
 		String exactFlag = name + "_flag";
 
-		long moduleId = moduleService.create(moduleName).getId();
-		long userId = userService.create(userName).getId();
+		int moduleId = moduleService.create(moduleName).getId();
+		int userId = userService.create(userName).getId();
 
 		moduleService.setExactFlag(moduleId, exactFlag);
 
@@ -122,8 +122,8 @@ public class ModuleServiceTest {
 		String userName = name + "_user";
 		String exactFlag = name + "_flag";
 
-		long moduleId = moduleService.create(moduleName).getId();
-		long userId = userService.create(userName).getId();
+		int moduleId = moduleService.create(moduleName).getId();
+		int userId = userService.create(userName).getId();
 
 		moduleService.setExactFlag(moduleId, exactFlag);
 
@@ -141,8 +141,8 @@ public class ModuleServiceTest {
 		String userName = name + "_user";
 		String exactFlag = name + "_flag";
 
-		long moduleId = moduleService.create(moduleName).getId();
-		long userId = userService.create(userName).getId();
+		int moduleId = moduleService.create(moduleName).getId();
+		int userId = userService.create(userName).getId();
 
 		moduleService.setExactFlag(moduleId, exactFlag);
 
@@ -165,8 +165,8 @@ public class ModuleServiceTest {
 		String userName = name + "_user";
 		String exactFlag = name + "_flag";
 
-		long moduleId = moduleService.create(moduleName).getId();
-		long userId = userService.create(userName).getId();
+		int moduleId = moduleService.create(moduleName).getId();
+		int userId = userService.create(userName).getId();
 
 		// TODO: better exception
 		assertThrows(IllegalArgumentException.class, () -> moduleService.verifyFlag(moduleId, userId, exactFlag));
@@ -195,7 +195,7 @@ public class ModuleServiceTest {
 
 		assertThat(moduleService.count(), is(0L));
 
-		Long moduleId = moduleService.create(name).getId();
+		int moduleId = moduleService.create(name).getId();
 
 		assertThat(moduleService.count(), is(1L));
 

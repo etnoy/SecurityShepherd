@@ -19,7 +19,7 @@ public final class ClassEntity {
 
 	@EqualsAndHashCode.Include
 	@Id
-	private final long id;
+	private final int id;
 
 	@Builder.Default
 	@NonNull

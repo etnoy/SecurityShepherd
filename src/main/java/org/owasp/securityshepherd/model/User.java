@@ -15,12 +15,13 @@ public final class User {
 
 	@EqualsAndHashCode.Include
 	@Id
-	private final long id;
+	private final int id;
+
+	@Builder.Default
+	private final Integer classId = null;
 
 	@NonNull
 	private final String displayName;
-
-	private final Long classId;
 
 	private final String email;
 

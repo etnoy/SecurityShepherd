@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Service
 public final class ClassService {
-	public ClassEntity get(long id) {
+	public ClassEntity get(int id) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -38,7 +38,7 @@ public class ModuleRepositoryTest {
 	@Test
 	public void existsById_NonExistentId_ReturnsFalse() {
 
-		assertFalse(moduleRepository.existsById(1234567890L));
+		assertFalse(moduleRepository.existsById(1234567890));
 
 	}
 
@@ -230,7 +230,7 @@ public class ModuleRepositoryTest {
 	@Test
 	public void findById_NonExistentId_ThrowsException() {
 
-		assertFalse(moduleRepository.findById(123456789L).isPresent());
+		assertFalse(moduleRepository.findById(123456789).isPresent());
 
 	}
 

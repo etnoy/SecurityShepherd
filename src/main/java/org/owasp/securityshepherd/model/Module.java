@@ -16,7 +16,7 @@ public final class Module {
 
 	@EqualsAndHashCode.Include
 	@Id
-	private final long id;
+	private final int id;
 
 	@NonNull
 	private final String name;

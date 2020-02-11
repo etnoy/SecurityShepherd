@@ -16,12 +16,12 @@ public class UserTest {
 
 	@Test
 	public void build_AllArguments_SuppliedValuesPresent() {
-		User.UserBuilder buildAllArgumentsUserBuilder = User.builder().classId(99L)
+		User.UserBuilder buildAllArgumentsUserBuilder = User.builder().classId(99)
 				.displayName("builder_AllArguments_username").email("builder_AllArguments@example.com");
 
 		User buildAllArgumentsUser = buildAllArgumentsUserBuilder.build();
 
-		assertEquals(99L, buildAllArgumentsUser.getClassId());
+		assertEquals(99, buildAllArgumentsUser.getClassId());
 		assertEquals("builder_AllArguments_username", buildAllArgumentsUser.getDisplayName());
 		assertEquals("builder_AllArguments@example.com", buildAllArgumentsUser.getEmail());
 

@@ -47,7 +47,7 @@ public final class ModuleService {
 
 	}
 
-	public boolean verifyFlag(long moduleId, long userId, String submittedFlag) {
+	public boolean verifyFlag(int moduleId, int userId, String submittedFlag) {
 
 		if(submittedFlag == null) {
 			throw new NullPointerException();
@@ -80,7 +80,7 @@ public final class ModuleService {
 		return null;
 	}
 
-	public void setExactFlag(long id, String exactFlag) {
+	public void setExactFlag(int id, String exactFlag) {
 
 		Module exactFlagModule = get(id).withFlagEnabled(true).withExactFlag(true).withFlag(exactFlag);
 
@@ -88,7 +88,7 @@ public final class ModuleService {
 
 	}
 
-	public void setName(long id, String name) {
+	public void setName(int id, String name) {
 
 		Module newDisplayNameModule = get(id).withName(name);
 
@@ -100,7 +100,7 @@ public final class ModuleService {
 		return moduleRepository.count();
 	}
 
-	public Module get(long id) {
+	public Module get(int id) {
 		Optional<Module> returnedModule = moduleRepository.findById(id);
 
 		if (!returnedModule.isPresent()) {

@@ -32,7 +32,7 @@ public class UserServiceTest {
 		// String "createPasswordUser_ValidData" bcrypted
 		String hashedPassword = "$2y$04$2zPOzxj77Ul5amFcsnsyjenMBGpRgEApYsJXyK76dcX2wK7asi7.6";
 
-		Long userId = userService.createPasswordUser(displayName, loginName, hashedPassword).getId();
+		int userId = userService.createPasswordUser(displayName, loginName, hashedPassword).getId();
 
 		assertThat(userService.get(userId).getDisplayName(), is(equalTo(displayName)));
 		assertThat(userService.get(userId).getAuth().getPassword().getLoginName(), is(equalTo(loginName)));
@@ -120,7 +120,7 @@ public class UserServiceTest {
 
 		String userName = "setDisplayName_ValidName";
 		String newUserName = "new_rename_ValidName";
-		Long userId = userService.create(userName).getId();
+		int userId = userService.create(userName).getId();
 
 		assertThat(userService.count(), is(1L));
 
@@ -143,12 +143,12 @@ public class UserServiceTest {
 
 		String userName = "setClass_ValidClass_user";
 
-		Long userId = userService.create(userName).getId();
+		int userId = userService.create(userName).getId();
 
-		userService.setClassId(userId, 1L);
+		userService.setClassId(userId, 1);
 
 		User returnedUser = userService.get(userId);
-		assertThat(returnedUser.getClassId(), is(1L));
+		assertThat(returnedUser.getClassId(), is(1));
 
 	}
 

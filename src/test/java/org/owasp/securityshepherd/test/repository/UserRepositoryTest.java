@@ -38,7 +38,7 @@ public class UserRepositoryTest {
 	@Test
 	public void existsById_NonExistentId_ReturnsFalse() {
 
-		assertFalse(userRepository.existsById(1234567890L));
+		assertFalse(userRepository.existsById(1234567890));
 
 	}
 
@@ -84,9 +84,9 @@ public class UserRepositoryTest {
 
 		User validUser1 = User.builder().displayName("save_ValidUser1").build();
 
-		User validUser2 = User.builder().classId(3L).displayName("save_ValidUser2").email("me@example.com").build();
+		User validUser2 = User.builder().classId(3).displayName("save_ValidUser2").email("me@example.com").build();
 
-		User validUser3 = User.builder().classId(500L).displayName("save_ValidUser3").email("").build();
+		User validUser3 = User.builder().classId(500).displayName("save_ValidUser3").email("").build();
 
 		validUser1 = userRepository.save(validUser1);
 		validUser2 = userRepository.save(validUser2);
@@ -183,7 +183,7 @@ public class UserRepositoryTest {
 	@Test
 	public void findById_NonExistentId_ThrowsException() {
 
-		assertFalse(userRepository.findById(123456789L).isPresent());
+		assertFalse(userRepository.findById(123456789).isPresent());
 
 	}
 
