@@ -32,7 +32,6 @@ public class ShepherdUserDetailsService implements UserDetailsService {
 		Optional<User> user = userService.findByLoginName(loginName);
 		if (!user.isPresent()) {
 			throw new UsernameNotFoundException(loginName);
-
 		}
 		
 		log.trace("Found username, creating user details");

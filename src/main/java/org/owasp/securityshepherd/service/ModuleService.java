@@ -18,6 +18,11 @@ public final class ModuleService {
 
 	@Autowired
 	ModuleRepository moduleRepository;
+	
+	@Autowired
+	RNGService rngService;
+
+	private final int keyLength = 16;
 
 	public Module create(String name) {
 
@@ -42,9 +47,13 @@ public final class ModuleService {
 
 	}
 
-	public boolean verifyFlag(long id, String submittedFlag) {
+	public boolean verifyFlag(long moduleId, long userId, String submittedFlag) {
 
-		Module submittedModule = get(id);
+		if(submittedFlag == null) {
+			throw new NullPointerException();
+		}
+		
+		Module submittedModule = get(moduleId);
 
 		if (!submittedModule.isFlagEnabled()) {
 			// TODO: maybe a better exception here?
@@ -53,12 +62,22 @@ public final class ModuleService {
 
 		if (submittedModule.isExactFlag()) {
 			// Flag is of the exact type, so no cryptography needed
-			return submittedModule.getFlag().equals(submittedFlag);
+			return submittedModule.getFlag().equalsIgnoreCase(submittedFlag);
 		} else {
-			// Not implemented yet
+
+			// TODO
 			return false;
+
 		}
 
+	}
+	
+	public String generateFlag(long moduleId, long userId) {
+
+		
+		
+		// TODO
+		return null;
 	}
 
 	public void setExactFlag(long id, String exactFlag) {

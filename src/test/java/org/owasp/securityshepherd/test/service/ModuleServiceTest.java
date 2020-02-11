@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.service.ModuleService;
+import org.owasp.securityshepherd.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.relational.core.conversion.DbActionExecutionException;
@@ -22,6 +23,9 @@ public class ModuleServiceTest {
 
 	@Autowired
 	private ModuleService moduleService;
+
+	@Autowired
+	private UserService userService;
 
 	@Test
 	public void createModule_ValidData_Succeeds() {
@@ -68,34 +72,88 @@ public class ModuleServiceTest {
 		assertThat(returnedModule.getFlag(), is(equalTo(exactFlag)));
 
 	}
-	
+
 	@Test
 	public void setDynamicFlag_ValidFlag_SetsFlagToExact() {
 
-		//TODO
+		// TODO
 
 	}
 
 	@Test
-	public void verifyFlag_ExactFlag_ReturnsTrue() {
+	public void verifyFlag_ValidExactFlag_ReturnsTrue() {
 
-		String name = "verifyFlag_ExactFlag";
-		String exactFlag = "verifyFlag_ExactFlag_flag";
+		String name = "verifyFlag_ValidExactFlag";
+		String moduleName = name + "_module";
+		String userName = name + "_user";
+		String exactFlag = name + "_flag";
 
-		Module returnedModule;
-
-		returnedModule = moduleService.create(name);
-		long moduleId = returnedModule.getId();
+		long moduleId = moduleService.create(moduleName).getId();
+		long userId = userService.create(userName).getId();
 
 		moduleService.setExactFlag(moduleId, exactFlag);
-		assertThat(moduleService.verifyFlag(moduleId, exactFlag), is(true));
+		assertThat(moduleService.verifyFlag(moduleId, userId, exactFlag), is(true));
 
 	}
-	
+
+	@Test
+	public void verifyFlag_ValidExactUpperLowerCaseFlag_ReturnsTrue() {
+
+		String name = "verifyFlag_ValidExactUpperLowerCaseFlag";
+		String moduleName = name + "_module";
+		String userName = name + "_user";
+		String exactFlag = name + "_flag";
+
+		long moduleId = moduleService.create(moduleName).getId();
+		long userId = userService.create(userName).getId();
+
+		moduleService.setExactFlag(moduleId, exactFlag);
+
+		assertThat(moduleService.verifyFlag(moduleId, userId, exactFlag.toLowerCase()), is(true));
+		assertThat(moduleService.verifyFlag(moduleId, userId, exactFlag.toUpperCase()), is(true));
+
+	}
+
+	@Test
+	public void verifyFlag_InvalidExactFlag_ReturnsFalse() {
+
+		String name = "verifyFlag_InvalidExactFlag";
+		String moduleName = name + "_module";
+		String userName = name + "_user";
+		String exactFlag = name + "_flag";
+
+		long moduleId = moduleService.create(moduleName).getId();
+		long userId = userService.create(userName).getId();
+
+		moduleService.setExactFlag(moduleId, exactFlag);
+
+		assertThat(moduleService.verifyFlag(moduleId, userId, exactFlag + "1"), is(false));
+		assertThat(moduleService.verifyFlag(moduleId, userId, "1"), is(false));
+		assertThat(moduleService.verifyFlag(moduleId, userId, ""), is(false));
+
+	}
+
+	@Test
+	public void verifyFlag_NullFlag_ThrowsException() {
+
+		String name = "verifyFlag_NullFlag";
+		String moduleName = name + "_module";
+		String userName = name + "_user";
+		String exactFlag = name + "_flag";
+
+		long moduleId = moduleService.create(moduleName).getId();
+		long userId = userService.create(userName).getId();
+
+		moduleService.setExactFlag(moduleId, exactFlag);
+
+		assertThrows(NullPointerException.class, () -> moduleService.verifyFlag(moduleId, userId, null));
+
+	}
+
 	@Test
 	public void verifyFlag_DynamicFlag_ReturnsTrue() {
 
-		//TODO
+		// TODO
 
 	}
 
@@ -103,14 +161,15 @@ public class ModuleServiceTest {
 	public void verifyFlag_FlagNotSet_ThrowsException() {
 
 		String name = "verifyFlag_FlagNotSet";
-		String flag = "verifyFlag_FlagNotSet_flag";
+		String moduleName = name + "_module";
+		String userName = name + "_user";
+		String exactFlag = name + "_flag";
 
-		Module returnedModule;
+		long moduleId = moduleService.create(moduleName).getId();
+		long userId = userService.create(userName).getId();
 
-		returnedModule = moduleService.create(name);
-		long moduleId = returnedModule.getId();
-
-		assertThrows(IllegalArgumentException.class, () -> moduleService.verifyFlag(moduleId, flag));
+		// TODO: better exception
+		assertThrows(IllegalArgumentException.class, () -> moduleService.verifyFlag(moduleId, userId, exactFlag));
 
 	}
 

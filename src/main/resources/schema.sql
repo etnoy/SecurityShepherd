@@ -29,7 +29,7 @@ CREATE TABLE module (
  	short_name VARCHAR(191),
 	flag_enabled BOOLEAN,
   	exact_flag BOOLEAN,
-	flag VARCHAR(32) NULL,
+	flag VARCHAR(64) NULL,
 	is_open BOOLEAN,
   PRIMARY KEY (id) )
 ENGINE = InnoDB

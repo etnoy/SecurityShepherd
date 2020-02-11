@@ -11,9 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @NoArgsConstructor
 @Service
-public final class CryptoService {
+public final class RNGService {
 
-	public static byte[] generateRandomBytes(int numberOfBytes) {
+	public byte[] generateRandomBytes(int numberOfBytes) {
 
 		SecureRandom strongPRNG;
 		try {
