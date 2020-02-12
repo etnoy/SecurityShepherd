@@ -22,6 +22,9 @@ public final class UserService {
 
 	@Autowired
 	UserRepository userRepository;
+	
+	@Autowired
+	RNGService rngService;
 
 	public User create(String displayName) {
 
@@ -95,6 +98,26 @@ public final class UserService {
 
 	public long count() {
 		return userRepository.count();
+	}
+
+	public byte[] getKey(int id) {
+
+		User getKeyUser = get(id);
+		
+		byte[] currentKey = getKeyUser.getKey();
+		
+		if(currentKey == null) {
+			
+			currentKey = rngService.generateRandomBytes(16);
+			
+			getKeyUser = getKeyUser.withKey(currentKey);
+			
+			userRepository.save(getKeyUser);
+			
+		}
+
+		return currentKey;
+
 	}
 
 	public Optional<User> findByLoginName(String loginName) {

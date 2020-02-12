@@ -1,6 +1,6 @@
 DROP SCHEMA IF EXISTS core;
 
-CREATE DATABASE core;
+CREATE SCHEMA core;
 USE core;
 
 CREATE TABLE user (
@@ -8,7 +8,7 @@ CREATE TABLE user (
   display_name VARCHAR(191) NOT NULL UNIQUE,
   class_id INT NULL,
   email VARCHAR(128) NULL,
-  flag_key BINARY(16) NULL,
+  user_key BINARY(16) NULL,
   PRIMARY KEY (id) ,
   INDEX class_id (class_id ASC) ,
   UNIQUE INDEX display_name_UNIQUE (display_name ASC))
@@ -30,6 +30,7 @@ CREATE TABLE module (
 	flag_enabled BOOLEAN,
   	exact_flag BOOLEAN,
 	flag VARCHAR(64) NULL,
+	module_key BINARY(16) NULL,
 	is_open BOOLEAN,
   PRIMARY KEY (id) )
 ENGINE = InnoDB

@@ -1,6 +1,7 @@
 package org.owasp.securityshepherd.model;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
 
 import lombok.Builder;
 import lombok.Data;
@@ -31,6 +32,9 @@ public final class Module {
 
 	private final String flag;
 
+	@Column("module_key")
+	private final byte[] key;
+	
 	@Builder.Default
 	private final boolean isOpen = false;
 

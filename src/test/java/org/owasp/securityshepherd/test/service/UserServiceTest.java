@@ -2,6 +2,7 @@ package org.owasp.securityshepherd.test.service;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -151,5 +152,41 @@ public class UserServiceTest {
 		assertThat(returnedUser.getClassId(), is(1));
 
 	}
+	
+	@Test
+	public void getKey_NoKeyExists_GeneratesKey() {
+
+		String userName = "getKey_NoKeyExists_GeneratesKey";
+
+		int userId = userService.create(userName).getId();
+
+		assertThat(userService.get(userId).getKey(), is(nullValue()));
+		
+		byte[] userKey = userService.getKey(userId);
+		
+		assertThat(userKey.length, is(16));
+
+	}
+	
+	@Test
+	public void getKey_KeyExists_UsesKey() {
+
+		String userName = "getKey_KeyExists_UsesKey";
+
+		int userId = userService.create(userName).getId();
+
+		assertThat(userService.get(userId).getKey(), is(nullValue()));
+		
+		byte[] userKey = userService.getKey(userId);
+		
+		assertThat(userKey.length, is(16));
+		
+		byte[] userKey2 = userService.getKey(userId);
+
+		assertThat(userKey, is(equalTo(userKey2)));
+
+	}
+	
+	
 
 }
