@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public final class RNGService {
 
-	public byte[] generateRandomBytes(int numberOfBytes) {
+	public byte[] generateRandomBytes(final int numberOfBytes) {
 
 		SecureRandom strongPRNG;
 		try {

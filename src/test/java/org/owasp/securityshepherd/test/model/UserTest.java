@@ -115,7 +115,7 @@ public class UserTest {
 	}
 
 	@Test
-	public void userBuildertoString_ValidData_NotNull() {
+	public void userBuildertoString_ValidData_AsExpected() {
 		final UserBuilder builder = User.builder();
 
 		assertThat(builder.toString(), is(equalTo(

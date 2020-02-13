@@ -22,11 +22,11 @@ public final class UserService {
 
 	@Autowired
 	UserRepository userRepository;
-	
+
 	@Autowired
 	RNGService rngService;
 
-	public User create(String displayName) {
+	public User create(final String displayName) {
 
 		if (displayName == null) {
 			throw new NullPointerException();
@@ -38,10 +38,10 @@ public final class UserService {
 
 		log.debug("Creating user with display name " + displayName);
 
-		UserBuilder userBuilder = User.builder();
+		final UserBuilder userBuilder = User.builder();
 		userBuilder.displayName(displayName);
 
-		User savedUser = userRepository.save(userBuilder.build());
+		final User savedUser = userRepository.save(userBuilder.build());
 
 		log.debug("Created user with ID " + savedUser.getId());
 
@@ -49,7 +49,7 @@ public final class UserService {
 
 	}
 
-	public User createPasswordUser(String displayName, String loginName, String hashedPassword) {
+	public User createPasswordUser(final String displayName, final String loginName, final String hashedPassword) {
 
 		if (displayName == null || loginName == null || hashedPassword == null) {
 			throw new NullPointerException();
@@ -61,18 +61,18 @@ public final class UserService {
 
 		log.debug("Creating password login user with display name " + displayName);
 
-		PasswordAuthBuilder passwordAuthBuilder = PasswordAuth.builder();
+		final PasswordAuthBuilder passwordAuthBuilder = PasswordAuth.builder();
 		passwordAuthBuilder.loginName(loginName);
 		passwordAuthBuilder.hashedPassword(hashedPassword);
 
-		AuthBuilder userAuthBuilder = Auth.builder();
+		final AuthBuilder userAuthBuilder = Auth.builder();
 		userAuthBuilder.password(passwordAuthBuilder.build());
 
-		UserBuilder userBuilder = User.builder();
+		final UserBuilder userBuilder = User.builder();
 		userBuilder.displayName(displayName);
 		userBuilder.auth(userAuthBuilder.build());
 
-		User savedUser = userRepository.save(userBuilder.build());
+		final User savedUser = userRepository.save(userBuilder.build());
 
 		log.debug("Created user with ID " + savedUser.getId());
 
@@ -80,7 +80,7 @@ public final class UserService {
 
 	}
 
-	public void setDisplayName(int id, String displayName) {
+	public void setDisplayName(final int id, final String displayName) {
 
 		User newDisplayNameUser = get(id).withDisplayName(displayName);
 
@@ -88,7 +88,7 @@ public final class UserService {
 
 	}
 
-	public void setClassId(int id, int classId) {
+	public void setClassId(final int id, final int classId) {
 
 		User newClassIdUser = get(id).withClassId(classId);
 
@@ -97,41 +97,47 @@ public final class UserService {
 	}
 
 	public long count() {
+
 		return userRepository.count();
+
 	}
 
-	public byte[] getKey(int id) {
+	public byte[] getKey(final int id) {
 
 		User getKeyUser = get(id);
-		
+
 		byte[] currentKey = getKeyUser.getKey();
-		
-		if(currentKey == null) {
-			
+
+		if (currentKey == null) {
+
 			currentKey = rngService.generateRandomBytes(16);
-			
+
 			getKeyUser = getKeyUser.withKey(currentKey);
-			
+
 			userRepository.save(getKeyUser);
-			
+
 		}
 
 		return currentKey;
 
 	}
 
-	public Optional<User> findByLoginName(String loginName) {
+	public Optional<User> findByLoginName(final String loginName) {
+
 		return userRepository.findByLoginName(loginName);
+
 	}
 
-	public User get(int id) {
-		Optional<User> returnedUser = userRepository.findById(id);
+	public User get(final int id) {
+
+		final Optional<User> returnedUser = userRepository.findById(id);
 
 		if (!returnedUser.isPresent()) {
 			throw new NullPointerException();
 		} else {
 			return returnedUser.get();
 		}
+
 	}
 
 }

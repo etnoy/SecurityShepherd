@@ -1,16 +1,15 @@
 package org.owasp.securityshepherd.model;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
 import lombok.Builder;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
+import lombok.Value;
 import lombok.With;
 
-@Data
+@Value
 @Table("class")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder

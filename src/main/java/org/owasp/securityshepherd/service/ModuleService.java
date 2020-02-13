@@ -18,13 +18,13 @@ public final class ModuleService {
 
 	@Autowired
 	ModuleRepository moduleRepository;
-	
+
 	@Autowired
 	RNGService rngService;
 
 	private final int keyLength = 16;
 
-	public Module create(String name) {
+	public Module create(final String name) {
 
 		if (name == null) {
 			throw new NullPointerException();
@@ -36,10 +36,10 @@ public final class ModuleService {
 
 		log.debug("Creating module with name " + name);
 
-		ModuleBuilder moduleBuilder = Module.builder();
+		final ModuleBuilder moduleBuilder = Module.builder();
 		moduleBuilder.name(name);
 
-		Module savedModule = moduleRepository.save(moduleBuilder.build());
+		final Module savedModule = moduleRepository.save(moduleBuilder.build());
 
 		log.debug("Created module with ID " + savedModule.getId());
 
@@ -47,13 +47,13 @@ public final class ModuleService {
 
 	}
 
-	public boolean verifyFlag(int moduleId, int userId, String submittedFlag) {
+	public boolean verifyFlag(final int moduleId, final int userId, final String submittedFlag) {
 
-		if(submittedFlag == null) {
+		if (submittedFlag == null) {
 			throw new NullPointerException();
 		}
-		
-		Module submittedModule = get(moduleId);
+
+		final Module submittedModule = get(moduleId);
 
 		if (!submittedModule.isFlagEnabled()) {
 			// TODO: maybe a better exception here?
@@ -71,43 +71,45 @@ public final class ModuleService {
 		}
 
 	}
-	
-	public String generateFlag(long moduleId, long userId) {
 
-		
-		
+	public String generateFlag(final long moduleId, final long userId) {
+
 		// TODO
 		return null;
 	}
 
-	public void setExactFlag(int id, String exactFlag) {
+	public void setExactFlag(final int id, final String exactFlag) {
 
-		Module exactFlagModule = get(id).withFlagEnabled(true).withExactFlag(true).withFlag(exactFlag);
+		final Module exactFlagModule = get(id).withFlagEnabled(true).withExactFlag(true).withFlag(exactFlag);
 
 		moduleRepository.save(exactFlagModule);
 
 	}
 
-	public void setName(int id, String name) {
+	public void setName(final int id, final String name) {
 
-		Module newDisplayNameModule = get(id).withName(name);
+		final Module newDisplayNameModule = get(id).withName(name);
 
 		moduleRepository.save(newDisplayNameModule);
 
 	}
 
 	public long count() {
+
 		return moduleRepository.count();
+
 	}
 
-	public Module get(int id) {
-		Optional<Module> returnedModule = moduleRepository.findById(id);
+	public Module get(final int id) {
+		
+		final Optional<Module> returnedModule = moduleRepository.findById(id);
 
 		if (!returnedModule.isPresent()) {
 			throw new NullPointerException();
 		} else {
 			return returnedModule.get();
 		}
+		
 	}
 
 }
