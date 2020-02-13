@@ -2,6 +2,7 @@ package org.owasp.securityshepherd.it.auth;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.auth.PasswordUserDetails;
@@ -26,6 +27,7 @@ public class PasswordUserDetailsIT {
 	private UserRepository userRepository;
 
 	@Test
+	@Disabled
 	public void userAuth_HashedPassword_ReturnsHash() {
 
 		String userName = "authorizedUser";
