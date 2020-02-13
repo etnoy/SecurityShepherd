@@ -271,6 +271,8 @@ public class UserTest {
 
 		assertThat(newUser.getAuth(), is(equalTo(originalAuth)));
 
+		assertThat(newUser.withAuth(originalAuth).getAuth(), is(equalTo(originalAuth)));
+		
 		final AuthBuilder[] testedAuthBuilders = { authBuilder, authBuilder.isAdmin(true), authBuilder.badLoginCount(3) };
 
 		User changedUser;
