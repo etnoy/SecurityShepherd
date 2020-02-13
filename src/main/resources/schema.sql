@@ -40,10 +40,10 @@ CREATE TABLE auth (
   is_enabled BOOLEAN DEFAULT FALSE,
   bad_login_count INT DEFAULT 0,
   is_admin BOOLEAN DEFAULT FALSE,
-  suspended_until TIMESTAMP,
+  suspended_until TIMESTAMP  NULL DEFAULT NULL,
   suspension_message VARCHAR(191),
-  account_created TIMESTAMP,
-  last_login TIMESTAMP,
+  account_created TIMESTAMP NULL DEFAULT NULL,
+  last_login TIMESTAMP NULL DEFAULT NULL,
   last_login_method VARCHAR(10),
   user INT,
   FOREIGN KEY (`user`) REFERENCES user(id))
@@ -68,7 +68,7 @@ CREATE TABLE submission (
 	id INT AUTO_INCREMENT,
     user_id INT NOT NULL,
     module_id INT NOT NULL,
-    time TIMESTAMP,
+    time TIMESTAMP NULL DEFAULT NULL,
     valid BOOLEAN,
     submitted_flag VARCHAR(191),
       PRIMARY KEY (id))
