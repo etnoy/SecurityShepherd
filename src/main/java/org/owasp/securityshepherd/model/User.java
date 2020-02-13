@@ -19,11 +19,11 @@ public final class User {
 	@Id
 	private final int id;
 
-	@Builder.Default
-	private final Integer classId = null;
-
 	@NonNull
 	private final String displayName;
+	
+	@Builder.Default
+	private final Integer classId = null;
 
 	private final String email;
 

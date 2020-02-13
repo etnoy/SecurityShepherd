@@ -82,7 +82,7 @@ public class UserServiceTest {
 		assertThrows(NullPointerException.class, () -> userService.create(null));
 
 	}
-	
+
 	@Test
 	public void create_EmptyArgument_ThrowsException() {
 
@@ -152,7 +152,7 @@ public class UserServiceTest {
 		assertThat(returnedUser.getClassId(), is(1));
 
 	}
-	
+
 	@Test
 	public void getKey_NoKeyExists_GeneratesKey() {
 
@@ -161,32 +161,32 @@ public class UserServiceTest {
 		int userId = userService.create(userName).getId();
 
 		assertThat(userService.get(userId).getKey(), is(nullValue()));
-		
+
 		byte[] userKey = userService.getKey(userId);
-		
+
 		assertThat(userKey.length, is(16));
 
 	}
-	
-	@Test
-	public void getKey_KeyExists_UsesKey() {
 
-		String userName = "getKey_KeyExists_UsesKey";
+	@Test
+	public void getKey_KeyExists_UsesExistingKey() {
+
+		String userName = "getKey_KeyExists_UsesExistingKey";
 
 		int userId = userService.create(userName).getId();
 
 		assertThat(userService.get(userId).getKey(), is(nullValue()));
-		
-		byte[] userKey = userService.getKey(userId);
-		
-		assertThat(userKey.length, is(16));
-		
-		byte[] userKey2 = userService.getKey(userId);
 
-		assertThat(userKey, is(equalTo(userKey2)));
+		byte[] userKey = userService.getKey(userId);
+
+		assertThat(userKey.length, is(16));
+
+		assertThat(userService.getKey(userId), is(equalTo(userKey)));
+		
+		userService.setDisplayName(userId, userName + "_new");
+
+		assertThat(userService.getKey(userId), is(equalTo(userKey)));
 
 	}
-	
-	
 
 }
