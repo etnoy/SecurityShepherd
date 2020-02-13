@@ -9,12 +9,16 @@ jobs:
       services: mysql
       language: java
       dist: bionic
+      before_script:
+      - echo "USE mysql;\nUPDATE user SET password=PASSWORD('CowSaysMoo') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root
       script: mvn test -B
    -  stage: integration-test
       services:
       - mysql
       language: java
       dist: bionic
+      before_script:
+      - echo "USE mysql;\nUPDATE user SET password=PASSWORD('CowSaysMoo') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root
       script: mvn verify -DskipUTs=true -B
   
 stages:
