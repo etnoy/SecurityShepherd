@@ -4,9 +4,7 @@ jobs:
       language: java
       dist: bionic
       script:
-      - mvn clean install -Pdocker -DskipTests -B
-      - docker-compose build
-      services: docker
+      - mvn clean install -DskipTests -B
    -  stage: unit-test
       services: mysql
       language: java
@@ -15,24 +13,10 @@ jobs:
    -  stage: integration-test
       services:
       - mysql
-      - docker
       language: java
       dist: bionic
-      script: mvn verify -DskipUTs=true -DmongoDocker -B
-      before_install:
-      - mvn -Pdocker validate
-      - sudo apt-get -y install libargon2-0
-   -  stage: deploy
-      if: fork = false
-      name: Deploy to Dockerhub
-      language: generic
-      provider: script
-      skip_cleanup: true
-      services: docker
-      before_install:
-      - mvn install -Pdocker -DskipTests
-      - docker-compose build web
-      script: bash docker/scripts/deploy-dockerhub.sh $TRAVIS_BRANCH
+      script: mvn verify -DskipUTs=true -B
+  
 stages:
 - build
 - unit-test
