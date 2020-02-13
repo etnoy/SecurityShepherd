@@ -26,7 +26,7 @@ public class ClassRepositoryTest {
 	@Test
 	public void existsById_ExistingId_ReturnsTrue() {
 
-		ClassEntity existsByIdExistingIdClass = ClassEntity.builder().build();
+		ClassEntity existsByIdExistingIdClass = ClassEntity.builder().name("TestClass").build();
 
 		ClassEntity returnedClass = classRepository.save(existsByIdExistingIdClass);
 
@@ -77,19 +77,19 @@ public class ClassRepositoryTest {
 		classRepository.deleteAll();
 		assertEquals(0, classRepository.count());
 
-		classRepository.save(ClassEntity.builder().build());
+		classRepository.save(ClassEntity.builder().name("testClass1").build());
 		assertEquals(1, classRepository.count());
 
-		classRepository.save(ClassEntity.builder().build());
+		classRepository.save(ClassEntity.builder().name("testClass2").build());
 		assertEquals(2, classRepository.count());
 
-		classRepository.save(ClassEntity.builder().build());
+		classRepository.save(ClassEntity.builder().name("testClass3").build());
 		assertEquals(3, classRepository.count());
 
-		classRepository.save(ClassEntity.builder().build());
+		classRepository.save(ClassEntity.builder().name("testClass4").build());
 		assertEquals(4, classRepository.count());
 
-		classRepository.save(ClassEntity.builder().build());
+		classRepository.save(ClassEntity.builder().name("testClass5").build());
 		assertEquals(5, classRepository.count());
 
 	}
@@ -163,7 +163,7 @@ public class ClassRepositoryTest {
 	@Test
 	public void deleteById_ValidId_DeletesClass() {
 
-		ClassEntity returnedClass = classRepository.save(ClassEntity.builder().build());
+		ClassEntity returnedClass = classRepository.save(ClassEntity.builder().name("TestClass").build());
 
 		classRepository.deleteById(returnedClass.getId());
 
@@ -237,7 +237,7 @@ public class ClassRepositoryTest {
 	@Test
 	public void findById_ValidId_CanFindClass() {
 
-		ClassEntity findClassById_validId_Class = classRepository.save(ClassEntity.builder().build());
+		ClassEntity findClassById_validId_Class = classRepository.save(ClassEntity.builder().name("TestClass").build());
 
 		Optional<ClassEntity> returnedClass = classRepository.findById(findClassById_validId_Class.getId());
 

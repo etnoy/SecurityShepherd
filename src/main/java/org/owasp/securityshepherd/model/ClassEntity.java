@@ -21,8 +21,7 @@ public final class ClassEntity {
 	@Id
 	private final int id;
 
-	@Builder.Default
 	@NonNull
-	private final String name = RandomStringUtils.randomAlphanumeric(20);
+	private final String name;
 
 }

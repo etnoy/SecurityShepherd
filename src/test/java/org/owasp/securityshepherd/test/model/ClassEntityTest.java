@@ -1,5 +1,8 @@
 package org.owasp.securityshepherd.test.model;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
@@ -21,7 +24,6 @@ public class ClassEntityTest {
 				ClassEntity.builder().name("builder_AllArguments_classname").build().getName());
 
 	}
-
 
 	@Test
 	public void build_NullName_ThrowsNullPointerException() {
@@ -45,15 +47,6 @@ public class ClassEntityTest {
 	}
 
 	@Test
-	public void build_ZeroArguments_DefaultValuesPresent() {
-		ClassEntity buildZeroArgumentsClass = ClassEntity.builder().build();
-
-		assertNotNull(buildZeroArgumentsClass.getId());
-		assertNotNull(buildZeroArgumentsClass.getName());
-
-	}
-
-	@Test
 	public void equals_AutomaticTesting() {
 		EqualsVerifier.forClass(ClassEntity.class).withOnlyTheseFields("id").verify();
 	}
@@ -61,7 +54,7 @@ public class ClassEntityTest {
 	@Test
 	public void toString_ValidData_NotNull() {
 
-		assertNotNull(ClassEntity.builder().build().toString());
+		assertNotNull(ClassEntity.builder().name("TestClass").build().toString());
 
 	}
 
@@ -69,6 +62,62 @@ public class ClassEntityTest {
 	public void classBuildertoString_ValidData_NotNull() {
 
 		assertNotNull(ClassEntity.builder().toString());
+
+	}
+
+	@Test
+	public void withName_ValidName_ChangesName() {
+
+		final String name = "Test Class";
+
+		final ClassEntity testClass = ClassEntity.builder().name(name).build();
+
+		assertThat(testClass.getName(), is(equalTo(name)));
+
+		final String[] testedNames = { name, "", "newClass", "Long  With     Whitespace", "12345" };
+
+		ClassEntity changedClass;
+		for (String newName : testedNames) {
+
+			changedClass = testClass.withName(newName);
+			assertThat(changedClass.getName(), is(equalTo(newName)));
+			assertThat(changedClass, is(equalTo(testClass)));
+
+		}
+
+	}
+
+	@Test
+	public void withyName_NullName_ThrowsException() {
+
+		final String name = "withName_NullName";
+
+		final ClassEntity testClass = ClassEntity.builder().name(name).build();
+
+		assertThat(testClass.getName(), is(equalTo(name)));
+
+		assertThrows(NullPointerException.class, () -> testClass.withName(null));
+
+	}
+
+	@Test
+	public void withId_ValidId_ChangesId() {
+
+		final int originalId = 1;
+		final int[] testedIds = { originalId, 0, -1, 1000, -1000, 123456789 };
+
+		final ClassEntity testClass = ClassEntity.builder().id(originalId).name("Test Class").build();
+
+		assertThat(testClass.getId(), is(originalId));
+
+		ClassEntity changedClass;
+
+		for (int newId : testedIds) {
+
+			changedClass = testClass.withId(newId);
+			assertThat(changedClass.getId(), is(newId));
+
+		}
 
 	}
 

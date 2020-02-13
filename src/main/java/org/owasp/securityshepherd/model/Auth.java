@@ -28,7 +28,7 @@ public final class Auth {
 	private final String suspensionMessage;
 
 	@Builder.Default
-	private final Timestamp accountCreated = new Timestamp(System.currentTimeMillis());
+	private final Timestamp accountCreated = null;
 
 	@Builder.Default
 	private final Timestamp lastLogin = null;

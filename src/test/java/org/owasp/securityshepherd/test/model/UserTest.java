@@ -203,9 +203,8 @@ public class UserTest {
 
 		for (int newId : testedIds) {
 
-			changedUser = newUser.withClassId(newId);
-			assertThat(changedUser.getClassId(), is(newId));
-			assertThat(changedUser, is(equalTo(newUser)));
+			changedUser = newUser.withId(newId);
+			assertThat(changedUser.getId(), is(newId));
 
 		}
 
