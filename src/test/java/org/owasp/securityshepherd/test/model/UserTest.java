@@ -90,9 +90,9 @@ public class UserTest {
 
 		final User build_ValidDisplayNameLengthUser = User.builder().displayName(validDisplayName).build();
 
-		assertTrue(build_ValidDisplayNameLengthUser instanceof User);
+		assertThat(build_ValidDisplayNameLengthUser, instanceOf(User.class));
 
-		assertEquals(validDisplayName, build_ValidDisplayNameLengthUser.getDisplayName());
+		assertThat(build_ValidDisplayNameLengthUser.getDisplayName(), is(equalTo(validDisplayName)));
 	}
 
 	@Test
@@ -100,10 +100,10 @@ public class UserTest {
 
 		final User buildZeroArgumentsUser = User.builder().displayName("build_ZeroArguments").build();
 
-		assertNotNull(buildZeroArgumentsUser.getId());
-		assertNull(buildZeroArgumentsUser.getClassId());
-		assertNotNull(buildZeroArgumentsUser.getDisplayName());
-		assertNull(buildZeroArgumentsUser.getEmail());
+		assertThat(buildZeroArgumentsUser.getId(), is(notNullValue()));
+		assertThat(buildZeroArgumentsUser.getClassId(), is(nullValue()));
+		assertThat(buildZeroArgumentsUser.getDisplayName(), is(notNullValue()));
+		assertThat(buildZeroArgumentsUser.getEmail(), is(nullValue()));
 
 	}
 
