@@ -7,6 +7,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.sql.Timestamp;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.model.Auth;
@@ -42,6 +43,7 @@ public class AuthTest {
 
 	}
 
+	@Disabled
 	@Test
 	public void authBuildertoString_ValidData_AsExpected() {
 
