@@ -30,7 +30,6 @@ CREATE TABLE module (
 	flag_enabled BOOLEAN,
   	exact_flag BOOLEAN,
 	flag VARCHAR(64) NULL,
-	module_key BINARY(16) NULL,
 	is_open BOOLEAN,
   PRIMARY KEY (id) )
 ENGINE = InnoDB
@@ -72,5 +71,13 @@ CREATE TABLE submission (
     valid BOOLEAN,
     submitted_flag VARCHAR(191),
       PRIMARY KEY (id))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4;
+
+CREATE TABLE configuration (
+  id INT AUTO_INCREMENT,
+  config_key VARCHAR(191) NOT NULL UNIQUE,
+  value VARCHAR(191) NOT NULL,
+  PRIMARY KEY (id) )
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;

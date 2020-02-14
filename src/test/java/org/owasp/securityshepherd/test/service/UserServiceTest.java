@@ -35,9 +35,9 @@ public class UserServiceTest {
 
 		int userId = userService.createPasswordUser(displayName, loginName, hashedPassword).getId();
 
-		assertThat(userService.get(userId).getDisplayName(), is(equalTo(displayName)));
-		assertThat(userService.get(userId).getAuth().getPassword().getLoginName(), is(equalTo(loginName)));
-		assertThat(userService.get(userId).getAuth().getPassword().getHashedPassword(), is(equalTo(hashedPassword)));
+		assertThat(userService.get(userId).get().getDisplayName(), is(equalTo(displayName)));
+		assertThat(userService.get(userId).get().getAuth().getPassword().getLoginName(), is(equalTo(loginName)));
+		assertThat(userService.get(userId).get().getAuth().getPassword().getHashedPassword(), is(equalTo(hashedPassword)));
 
 	}
 
@@ -125,14 +125,14 @@ public class UserServiceTest {
 
 		assertThat(userService.count(), is(1L));
 
-		User returnedUser = userService.get(userId);
+		User returnedUser = userService.get(userId).get();
 		assertThat(returnedUser.getId(), is(userId));
 		assertThat(returnedUser.getDisplayName(), equalTo(userName));
 		assertThat(userService.count(), is(1L));
 
 		userService.setDisplayName(userId, newUserName);
 
-		returnedUser = userService.get(userId);
+		returnedUser = userService.get(userId).get();
 		assertThat(returnedUser.getId(), is(userId));
 		assertThat(returnedUser.getDisplayName(), equalTo(newUserName));
 		assertThat(userService.count(), is(1L));
@@ -148,11 +148,25 @@ public class UserServiceTest {
 
 		userService.setClassId(userId, 1);
 
-		User returnedUser = userService.get(userId);
+		User returnedUser = userService.get(userId).get();
 		assertThat(returnedUser.getClassId(), is(1));
 
 	}
 
+	@Test
+	public void getKey_ZeroUserId_ThrowsException() {
+
+		assertThrows(IllegalArgumentException.class, () -> userService.getKey(0));
+		
+	}
+
+	@Test
+	public void getKey_NegativeUserId_ThrowsException() {
+
+		assertThrows(IllegalArgumentException.class, () -> userService.getKey(-1));
+		assertThrows(IllegalArgumentException.class, () -> userService.getKey(-1000));
+	}
+	
 	@Test
 	public void getKey_NoKeyExists_GeneratesKey() {
 
@@ -160,7 +174,7 @@ public class UserServiceTest {
 
 		int userId = userService.create(userName).getId();
 
-		assertThat(userService.get(userId).getKey(), is(nullValue()));
+		assertThat(userService.get(userId).get().getKey(), is(nullValue()));
 
 		byte[] userKey = userService.getKey(userId);
 
@@ -175,18 +189,55 @@ public class UserServiceTest {
 
 		int userId = userService.create(userName).getId();
 
-		assertThat(userService.get(userId).getKey(), is(nullValue()));
+		assertThat(userService.get(userId).get().getKey(), is(nullValue()));
 
 		byte[] userKey = userService.getKey(userId);
 
 		assertThat(userKey.length, is(16));
 
 		assertThat(userService.getKey(userId), is(equalTo(userKey)));
-		
+
 		userService.setDisplayName(userId, userName + "_new");
 
 		assertThat(userService.getKey(userId), is(equalTo(userKey)));
 
+	}
+
+	@Test
+	public void get_ExistingUserId_ReturnsUser() {
+
+		final User testUser1 = userService.create("TestUser1");
+		final User testUser2 = userService.create("TestUser2");
+		final User testUser3 = userService.create("TestUser3");
+
+		assertThat(userService.get(testUser1.getId()).get(), is(equalTo(testUser1)));
+		assertThat(userService.get(testUser2.getId()).get(), is(equalTo(testUser2)));
+		assertThat(userService.get(testUser3.getId()).get(), is(equalTo(testUser3)));
+
+	}
+
+	@Test
+	public void get_NonExistentUserId_NotPresent() {
+
+		assertThat(userService.count(), is(0L));
+		assertThat(userService.get(1).isPresent(), is(false));
+		assertThat(userService.get(1000).isPresent(), is(false));
+
+	}
+
+	@Test
+	public void get_ZeroUserId_ThrowsException() {
+
+		assertThrows(IllegalArgumentException.class, () -> userService.get(0));
+	}
+
+	@Test
+	public void get_NegativeUserId_ThrowsException() {
+
+		assertThrows(IllegalArgumentException.class, () -> userService.get(-1));
+		assertThrows(IllegalArgumentException.class, () -> userService.get(-1000));
+
+		
 	}
 
 }

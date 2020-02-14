@@ -24,7 +24,7 @@ public final class UserService {
 	UserRepository userRepository;
 
 	@Autowired
-	RNGService rngService;
+	KeyService rngService;
 
 	public User create(final String displayName) {
 
@@ -82,7 +82,7 @@ public final class UserService {
 
 	public void setDisplayName(final int id, final String displayName) {
 
-		User newDisplayNameUser = get(id).withDisplayName(displayName);
+		User newDisplayNameUser = get(id).get().withDisplayName(displayName);
 
 		userRepository.save(newDisplayNameUser);
 
@@ -90,7 +90,7 @@ public final class UserService {
 
 	public void setClassId(final int id, final int classId) {
 
-		User newClassIdUser = get(id).withClassId(classId);
+		User newClassIdUser = get(id).get().withClassId(classId);
 
 		userRepository.save(newClassIdUser);
 
@@ -104,7 +104,13 @@ public final class UserService {
 
 	public byte[] getKey(final int id) {
 
-		User getKeyUser = get(id);
+		if (id == 0) {
+			throw new IllegalArgumentException("id can't be zero");
+		} else if (id < 0) {
+			throw new IllegalArgumentException("id can't be negative");
+		}
+
+		User getKeyUser = get(id).get();
 
 		byte[] currentKey = getKeyUser.getKey();
 
@@ -128,15 +134,15 @@ public final class UserService {
 
 	}
 
-	public User get(final int id) {
+	public Optional<User> get(final int id) {
 
-		final Optional<User> returnedUser = userRepository.findById(id);
-
-		if (!returnedUser.isPresent()) {
-			throw new NullPointerException();
-		} else {
-			return returnedUser.get();
+		if (id == 0) {
+			throw new IllegalArgumentException("id can't be zero");
+		} else if (id < 0) {
+			throw new IllegalArgumentException("id can't be negative");
 		}
+
+		return userRepository.findById(id);
 
 	}
 

@@ -8,6 +8,8 @@ import org.owasp.securityshepherd.repository.ModuleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.primitives.Bytes;
+
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,7 +22,16 @@ public final class ModuleService {
 	ModuleRepository moduleRepository;
 
 	@Autowired
-	RNGService rngService;
+	UserService userService;
+
+	@Autowired
+	ConfigurationService configurationService;
+
+	@Autowired
+	KeyService keyService;
+
+	@Autowired
+	CryptoService cryptoService;
 
 	private final int keyLength = 16;
 
@@ -47,10 +58,10 @@ public final class ModuleService {
 
 	}
 
-	public boolean verifyFlag(final int moduleId, final int userId, final String submittedFlag) {
+	public boolean verifyFlag(final int userId, final int moduleId, final String submittedFlag) {
 
 		if (submittedFlag == null) {
-			throw new NullPointerException();
+			return false;
 		}
 
 		final Module submittedModule = get(moduleId);
@@ -65,24 +76,78 @@ public final class ModuleService {
 			return submittedModule.getFlag().equalsIgnoreCase(submittedFlag);
 		} else {
 
-			// TODO
-			return false;
+			final String correctFlag=getDynamicFlag(userId, moduleId);
+			
+			return submittedFlag.equalsIgnoreCase(correctFlag);
 
 		}
 
 	}
 
-	public String generateFlag(final long moduleId, final long userId) {
-
-		// TODO
-		return null;
-	}
-
 	public void setExactFlag(final int id, final String exactFlag) {
+
+		if (id == 0) {
+			throw new IllegalArgumentException("id can't be zero");
+		} else if (id < 0) {
+			throw new IllegalArgumentException("id can't be negative");
+		}
+
+		if (exactFlag == null) {
+			throw new NullPointerException("Flag can't be null");
+		} else if (exactFlag.isEmpty()) {
+			throw new IllegalArgumentException("Flag can't be empty");
+
+		}
 
 		final Module exactFlagModule = get(id).withFlagEnabled(true).withExactFlag(true).withFlag(exactFlag);
 
 		moduleRepository.save(exactFlagModule);
+
+	}
+
+	public void setDynamicFlag(final int id) {
+
+		if (id == 0) {
+			throw new IllegalArgumentException("id can't be zero");
+		} else if (id < 0) {
+			throw new IllegalArgumentException("id can't be negative");
+		}
+
+		Module dynamicFlagModule = get(id).withFlagEnabled(true).withExactFlag(false);
+
+		if (dynamicFlagModule.getFlag() == null) {
+			dynamicFlagModule = dynamicFlagModule.withFlag(keyService.generateRandomString(16));
+		}
+
+		moduleRepository.save(dynamicFlagModule);
+
+	}
+
+	public String getDynamicFlag(final int userId, final int moduleId) {
+
+		Module dynamicFlagModule = get(moduleId);
+
+		if (!dynamicFlagModule.isFlagEnabled()) {
+			throw new IllegalArgumentException("Can't get dynamic flag if flag is disabled");
+		}
+
+		final byte[] userKey = userService.getKey(userId);
+		final byte[] serverKey = configurationService.getServerKey();
+
+		final byte[] fullKey = Bytes.concat(userKey, serverKey);
+
+		if (dynamicFlagModule.getFlag() == null) {
+
+			dynamicFlagModule = dynamicFlagModule.withFlag(keyService.generateRandomString(16));
+			moduleRepository.save(dynamicFlagModule);
+
+		}
+
+		final byte[] baseFlag = dynamicFlagModule.getFlag().getBytes();
+
+		final byte[] generatedFlag = cryptoService.HMAC(fullKey, baseFlag);
+
+		return keyService.convertByteKeyToString(generatedFlag);
 
 	}
 
@@ -101,7 +166,7 @@ public final class ModuleService {
 	}
 
 	public Module get(final int id) {
-		
+
 		final Optional<Module> returnedModule = moduleRepository.findById(id);
 
 		if (!returnedModule.isPresent()) {
@@ -109,7 +174,7 @@ public final class ModuleService {
 		} else {
 			return returnedModule.get();
 		}
-		
+
 	}
 
 }

@@ -4,35 +4,26 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 
 import lombok.Builder;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
+import lombok.Value;
 import lombok.With;
 
-@Data
+@Value
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder
 @With
-public final class Module {
+public final class Configuration {
 
 	@EqualsAndHashCode.Include
 	@Id
 	private final int id;
-
-	@NonNull
-	private final String name;
-
-	private final String description;
-
-	@Builder.Default
-	private boolean flagEnabled = false;
-
-	@Builder.Default
-	private boolean exactFlag = false;
-
-	private final String flag;
 	
-	@Builder.Default
-	private final boolean isOpen = false;
+	@NonNull
+	@Column("config_key")
+	private final String key;
+	
+	@NonNull
+	private final String value;
 
 }
