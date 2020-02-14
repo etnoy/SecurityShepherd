@@ -26,4 +26,4 @@ addons:
       secure: "hR/IgHJxpR6hHPYv342goRGdPXZpuUwDyKNXyMN0pNZLsH/4K7wqjE8vX3vLdcoYppEuJoHnKrQKyskKjBOzdbDYJjFZPYmDscLWaIYLu1FRYsSIDSf7F1kMn9013SyTpvX2tPxCO6jidt1jbL9YTsWBf/WpyMOamT0ayTzGe7dPbw2UCEbhMkvi5fvT5DKs6RA+Dzr164PF1RHs7Wq7q7rNLrxwdxiCQP9DfL5ylAqiS/1Ke0tpwlZG1Sy8KK5+4Jjaucyf01f8G7Ip4ppIAgwu1GfbD27NX6hiC8giuf5a19EKFRQviP9ZzQI90E/wgLkC/294iZivNjI9UAQU22TK1de1iCs4GHgOSLDJQEeFPM945bs7eB45BpQqEfcXNdf8IVFVewTU/BAmzvq4bp6aNhsZnXqJfnhci6F64fR5/eGY6G0mAeALmp9jaujdAHwIRSiqJ3kfzyvYOgY2Fglqy2lLntyfp2EvlfJbOqU4LCcvO8ov75x0QEMlokLVNl1zptBhB1NnzKXBQ+cDl58eYMjRFy83rwh7kJjp+lrkaZMwLG9FN8eMwcblUCv8aUYpZ1HeAXluNFVaIvz4SxMO/1yqkVus0kHEIkUbUz9eP0rFNxCiJd8I4rlq4cFEemrc3VgktbMtb8D8Y3b+buWlXGCqG8nSWZiMSlQXY9k="
             
 script:
-  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=etnoy_SecurityShepherd -Dsonar.host.url=https://sonarcloud.io
+  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=etnoy_SecurityShepherd
