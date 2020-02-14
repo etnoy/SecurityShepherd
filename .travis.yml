@@ -1,5 +1,4 @@
 language: java
-
 jobs:
   include:
   - stage: build
@@ -11,19 +10,16 @@ jobs:
   - stage: integration-test
     services: mysql
     script: mvn verify -DskipUTs=true -B
-    
 stages:
 - build
 - unit-test
 - integration-test
 - name: deploy
   if: branch IN (master, dev) AND type = push
-  
 addons:
   sonarcloud:
     organization: "etnoy"
     token:
-      secure: "hR/IgHJxpR6hHPYv342goRGdPXZpuUwDyKNXyMN0pNZLsH/4K7wqjE8vX3vLdcoYppEuJoHnKrQKyskKjBOzdbDYJjFZPYmDscLWaIYLu1FRYsSIDSf7F1kMn9013SyTpvX2tPxCO6jidt1jbL9YTsWBf/WpyMOamT0ayTzGe7dPbw2UCEbhMkvi5fvT5DKs6RA+Dzr164PF1RHs7Wq7q7rNLrxwdxiCQP9DfL5ylAqiS/1Ke0tpwlZG1Sy8KK5+4Jjaucyf01f8G7Ip4ppIAgwu1GfbD27NX6hiC8giuf5a19EKFRQviP9ZzQI90E/wgLkC/294iZivNjI9UAQU22TK1de1iCs4GHgOSLDJQEeFPM945bs7eB45BpQqEfcXNdf8IVFVewTU/BAmzvq4bp6aNhsZnXqJfnhci6F64fR5/eGY6G0mAeALmp9jaujdAHwIRSiqJ3kfzyvYOgY2Fglqy2lLntyfp2EvlfJbOqU4LCcvO8ov75x0QEMlokLVNl1zptBhB1NnzKXBQ+cDl58eYMjRFy83rwh7kJjp+lrkaZMwLG9FN8eMwcblUCv8aUYpZ1HeAXluNFVaIvz4SxMO/1yqkVus0kHEIkUbUz9eP0rFNxCiJd8I4rlq4cFEemrc3VgktbMtb8D8Y3b+buWlXGCqG8nSWZiMSlQXY9k="
-            
+      secure: "ImqWktnOtUy7pD0LpCc5ZWAB1gUc7V7e5UERri12NaZxlmGqZkwmkDLCwn5rFF+lDwugmMYkNi/RLAcLtj99B62qDYqvSV87LwR8/QGl0VS7MPYHEM+gDxkfp+l9iqtkv05jNhGvRoJdpSC4ocC6CuSHOeD0yppwG7wTQC9BctBtp9jlyUN4On227OBTUDO0W9QFzxtKOqjyYK+bO00vdbwGGL/EQoWfwz6RZFh+WNmBFtue71nDccyKe1v46kwmDmYYDIpKchxF4bOQDdPAQDDoxkvKCLrOcU3HRMpVMWzkqgCCBPNT3c32Yi53Q963P+ftwjDIKaUwNLP79Ljv1ZyIkyCWRT2wK1oR7KkgG3MOZQbpIrce1t3Q45eU3XG/+6FbLbJ3Rtig4uE9pJ6n7Wokszytml020zMF/LcIxdafLt7nAWhbE1so7bkmhDQ6IPGtM5jk14q+p3zBPI7ITczkZTueh8oA+HFhzqipuCLIwtKJ/rG6FX0THMinxhCE2hZiNnEpRkF9NQTqz2AYfXDEmRMcizOAOhaNH7KAj44FDNUfGC4Ksr1i3dmM+roLqRWkMgsZL9vSozXgaJ0xz8H1GiczmeHDeagXIeUVVmVVDtOmmvAgDPajnxbdHe3gg35xyc9qU7+j4oawygImZqj+SoChpXo1kB0PLuLjOqE="
 script:
-  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=etnoy_SecurityShepherd
+- mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=etnoy_SecurityShepherd
