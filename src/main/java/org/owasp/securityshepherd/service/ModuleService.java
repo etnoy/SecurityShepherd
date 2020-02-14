@@ -33,8 +33,6 @@ public final class ModuleService {
 	@Autowired
 	CryptoService cryptoService;
 
-	private final int keyLength = 16;
-
 	public Module create(final String name) {
 
 		if (name == null) {
@@ -64,7 +62,7 @@ public final class ModuleService {
 			return false;
 		}
 
-		final Module submittedModule = get(moduleId);
+		final Module submittedModule = get(moduleId).get();
 
 		if (!submittedModule.isFlagEnabled()) {
 			// TODO: maybe a better exception here?
@@ -76,8 +74,8 @@ public final class ModuleService {
 			return submittedModule.getFlag().equalsIgnoreCase(submittedFlag);
 		} else {
 
-			final String correctFlag=getDynamicFlag(userId, moduleId);
-			
+			final String correctFlag = getDynamicFlag(userId, moduleId);
+
 			return submittedFlag.equalsIgnoreCase(correctFlag);
 
 		}
@@ -99,7 +97,7 @@ public final class ModuleService {
 
 		}
 
-		final Module exactFlagModule = get(id).withFlagEnabled(true).withExactFlag(true).withFlag(exactFlag);
+		final Module exactFlagModule = get(id).get().withFlagEnabled(true).withExactFlag(true).withFlag(exactFlag);
 
 		moduleRepository.save(exactFlagModule);
 
@@ -113,7 +111,7 @@ public final class ModuleService {
 			throw new IllegalArgumentException("id can't be negative");
 		}
 
-		Module dynamicFlagModule = get(id).withFlagEnabled(true).withExactFlag(false);
+		Module dynamicFlagModule = get(id).get().withFlagEnabled(true).withExactFlag(false);
 
 		if (dynamicFlagModule.getFlag() == null) {
 			dynamicFlagModule = dynamicFlagModule.withFlag(keyService.generateRandomString(16));
@@ -125,7 +123,7 @@ public final class ModuleService {
 
 	public String getDynamicFlag(final int userId, final int moduleId) {
 
-		Module dynamicFlagModule = get(moduleId);
+		final Module dynamicFlagModule = get(moduleId).get();
 
 		if (!dynamicFlagModule.isFlagEnabled()) {
 			throw new IllegalArgumentException("Can't get dynamic flag if flag is disabled");
@@ -135,13 +133,6 @@ public final class ModuleService {
 		final byte[] serverKey = configurationService.getServerKey();
 
 		final byte[] fullKey = Bytes.concat(userKey, serverKey);
-
-		if (dynamicFlagModule.getFlag() == null) {
-
-			dynamicFlagModule = dynamicFlagModule.withFlag(keyService.generateRandomString(16));
-			moduleRepository.save(dynamicFlagModule);
-
-		}
 
 		final byte[] baseFlag = dynamicFlagModule.getFlag().getBytes();
 
@@ -153,7 +144,7 @@ public final class ModuleService {
 
 	public void setName(final int id, final String name) {
 
-		final Module newDisplayNameModule = get(id).withName(name);
+		final Module newDisplayNameModule = get(id).get().withName(name);
 
 		moduleRepository.save(newDisplayNameModule);
 
@@ -165,15 +156,15 @@ public final class ModuleService {
 
 	}
 
-	public Module get(final int id) {
+	public Optional<Module> get(final int id) {
 
-		final Optional<Module> returnedModule = moduleRepository.findById(id);
-
-		if (!returnedModule.isPresent()) {
-			throw new NullPointerException();
-		} else {
-			return returnedModule.get();
+		if (id == 0) {
+			throw new IllegalArgumentException("id can't be zero");
+		} else if (id < 0) {
+			throw new IllegalArgumentException("id can't be negative");
 		}
+
+		return moduleRepository.findById(id);
 
 	}
 

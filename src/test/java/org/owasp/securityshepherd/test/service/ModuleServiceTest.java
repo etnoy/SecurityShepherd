@@ -1,15 +1,18 @@
 package org.owasp.securityshepherd.test.service;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.text.IsEmptyString.*;
-
+import static org.hamcrest.text.IsEmptyString.emptyString;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.model.Module;
-import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.service.ModuleService;
 import org.owasp.securityshepherd.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +39,7 @@ public class ModuleServiceTest {
 
 		final int moduleId = moduleService.create(name).getId();
 
-		assertThat(moduleService.get(moduleId).getName(), is(equalTo(name)));
+		assertThat(moduleService.get(moduleId).get().getName(), is(equalTo(name)));
 
 	}
 
@@ -66,7 +69,7 @@ public class ModuleServiceTest {
 		assertThat(returnedModule.isExactFlag(), is(false));
 
 		moduleService.setExactFlag(moduleId, exactFlag);
-		returnedModule = moduleService.get(moduleId);
+		returnedModule = moduleService.get(moduleId).get();
 
 		assertThat(returnedModule.isFlagEnabled(), is(true));
 		assertThat(returnedModule.isExactFlag(), is(true));
@@ -121,7 +124,7 @@ public class ModuleServiceTest {
 		assertThat(returnedModule.getFlag(), is(nullValue()));
 
 		moduleService.setDynamicFlag(moduleId);
-		returnedModule = moduleService.get(moduleId);
+		returnedModule = moduleService.get(moduleId).get();
 
 		assertThat(returnedModule.isFlagEnabled(), is(true));
 		assertThat(returnedModule.isExactFlag(), is(false));
@@ -139,7 +142,7 @@ public class ModuleServiceTest {
 		final int moduleId = returnedModule.getId();
 
 		moduleService.setDynamicFlag(moduleId);
-		returnedModule = moduleService.get(moduleId);
+		returnedModule = moduleService.get(moduleId).get();
 
 		final String dynamicFlag = returnedModule.getFlag();
 
@@ -330,18 +333,42 @@ public class ModuleServiceTest {
 
 		assertThat(moduleService.count(), is(1L));
 
-		Module returnedModule = moduleService.get(moduleId);
+		Module returnedModule = moduleService.get(moduleId).get();
 		assertThat(returnedModule.getId(), is(moduleId));
 		assertThat(returnedModule.getName(), equalTo(name));
 		assertThat(moduleService.count(), is(1L));
 
 		moduleService.setName(moduleId, newName);
 
-		returnedModule = moduleService.get(moduleId);
+		returnedModule = moduleService.get(moduleId).get();
 		assertThat(returnedModule.getId(), is(moduleId));
 		assertThat(returnedModule.getName(), equalTo(newName));
 		assertThat(moduleService.count(), is(1L));
 
+	}
+	
+	@Test
+	public void get_NonExistentModuleId_NotPresent() {
+
+		assertThat(moduleService.count(), is(0L));
+		assertThat(moduleService.get(1).isPresent(), is(false));
+		assertThat(moduleService.get(1000).isPresent(), is(false));
+
+	}
+
+	@Test
+	public void get_ZeroUserId_ThrowsException() {
+
+		assertThrows(IllegalArgumentException.class, () -> moduleService.get(0));
+	}
+
+	@Test
+	public void get_NegativeUserId_ThrowsException() {
+
+		assertThrows(IllegalArgumentException.class, () -> moduleService.get(-1));
+		assertThrows(IllegalArgumentException.class, () -> moduleService.get(-1000));
+
+		
 	}
 
 }
