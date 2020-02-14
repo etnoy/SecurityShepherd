@@ -2,20 +2,18 @@ jobs:
   include:
   - stage: build
     language: java
-    dist: bionic
     script:
     - mvn clean install -DskipTests -B
   - stage: unit-test
     services: mysql
     language: java
-    dist: bionic
     script: mvn test -B
   - stage: integration-test
     services:
     - mysql
     language: java
-    dist: bionic
     script: mvn verify -DskipUTs=true -B
+    
 stages:
 - build
 - unit-test
