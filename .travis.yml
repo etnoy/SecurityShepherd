@@ -17,10 +17,12 @@ stages:
 - integration-test
 - name: deploy
   if: branch IN (master, dev) AND type = push
+  
 addons:
   sonarcloud:
-    organization: etnoy
+    organization: "etnoy"
     token:
-      secure: M9X/gT1m0GkWCmCek/2y4mj2ajxqNzsY9yzG5nGhJMNp4pRU2w5vFAvkrDfvu36dRiJKM1vzQJ4B70+nSKniQm5IIrf/Z2gSZTPMNQ+lvTR3d481CSMFUr+/S3IcPS9a9WYkd/galaElroBwyrNE1e53G4tSTSACXUBcCTE09eoMKQ/Zu2fEFH4UvWBkv4D0BDbG5OR0g+yKDdJ+9HTfOklnixVI1HFuLzGWBySm34KqBNM5TYFY8YR2240IDJGPwNmrZmwTpP6YS3IOHvPbNMe064D5j6Os2JYAlN38hldb0DykSR9dCUYp6QGys+CKOcxC1hkpCMPHKesl8HV3JifLKv9U9RY0JsLpknZLYFCUhSPmJARXvAuIrnzA2F/ps2Ix3MxwjqqWkBH4lWehBgj5IxJ4GdyxSa8/lty77YqMHinDVfx+bxYmhUjmTF70Or5ZI3mxieEAk2l5rnO5GaBf60d+NM+UAcl2DMg+2K9e4FdwxOtBeHSU6gspDGkbYK05qA4vP6fXdom1CLMNaZ3Ug9nodpH7DI0ZUa94xUaamz59QDW5BPa9DP1OopTiQH5Pe/EI3tl2PxlbqhWvNq19Wn8pZvztlbAg1+XGxM4QuSnNn7g8XUSjyQ1ELVcJWNEMUsjrJ7v07QMaf5LYaFXzSkcuK98pPLZhTcH/U40=
+      secure: "CHoleb1JR6c68y3Yt4qn29G2HLPc57opML/Lyj5130oo34s8A3J4/FQ1ppNeSCeaeHuWS6VLakOUUcCHVqumsdPEIJZXnblZzYeRd6VpKJCm+MMXZ1Z/GjJVHs0f03kfMJB+J228VtePKh0+syHbsmyxylm8GgnxSQ4B6w7OvZFT+ehiGn+YHCRAxfdE8RNive0H7cQ4xijE9lAzQBTkJXqFYQ8N0D+fIHlgL2A9AiA1lHr0lie/JEYzGWf7fkLsgM3Mg1VOmSHw5PfdFN9zOJLMN25QfoZ1WNhefKzdbho5g2PrxQK/DksDNvfC+41uYOFq9DrIKntvjPZipGLZdi3vd8UNL69l49Cu7io+Na/OvL5Uzu77DcCfIU3YwWzwYRzRoDBAppFg+t2bBU9UuJ2DfQo0dz4mTykHLc8HmYtjF8pUM9YUOYabkAFMqxK8zSTBl0Erb8PGLlzZIXacGAPnizIEaEuC0KAa92xZDU3noC1s2xRgvZdelqtK8IkjuMAflvw7wvJ2OR9/eCFsLRB5lKzVeLICCeqhHOO5OCSjWvPU8OMqlF1vWrjKtesg8KPeEp0Ea17Q9NUDxQ6Je6VyKlBzfWgqUIjHbCsVR8s53WNnaOIkUFdgQrEywvz7ObrdiS597xkDin+qjR6WMPlQ30dWTZpA6lGzlYC1t3Q="    
+      
 script:
 - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=etnoy_SecurityShepherd
