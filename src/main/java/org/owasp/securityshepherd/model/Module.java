@@ -3,12 +3,12 @@ package org.owasp.securityshepherd.model;
 import org.springframework.data.annotation.Id;
 
 import lombok.Builder;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
+import lombok.Value;
 import lombok.With;
 
-@Data
+@Value
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder
 @With
