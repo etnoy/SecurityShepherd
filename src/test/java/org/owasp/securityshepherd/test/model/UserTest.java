@@ -32,17 +32,14 @@ public class UserTest {
 	}
 
 	@Test
-	public void buildDisplayName_ValidId_Builds() {
-
-		final String displayName = "Test User";
+	public void buildId_ValidId_Builds() {
 
 		final UserBuilder builder = User.builder();
 
 		builder.id(12345);
-		builder.displayName(displayName);
+		builder.displayName("TestUser");
 
 		assertThat(builder.build(), instanceOf(User.class));
-
 		assertThat(builder.build().getId(), is(12345));
 
 	}
@@ -62,7 +59,7 @@ public class UserTest {
 	}
 
 	@Test
-	public void buildDisplayName_NullDisplayName_ThrowsException() {
+	public void buildDisplayName_DisplayNameNotSet_ThrowsException() {
 
 		final UserBuilder builder = User.builder();
 
@@ -96,22 +93,25 @@ public class UserTest {
 	}
 
 	@Test
-	public void build_ZeroArguments_DefaultValuesPresent() {
+	public void build_RequiredArguments_DefaultValuesPresent() {
 
-		final User buildZeroArgumentsUser = User.builder().displayName("build_ZeroArguments").build();
+		final User testUser = User.builder().displayName("build_ZeroArguments").build();
 
-		assertThat(buildZeroArgumentsUser.getId(), is(notNullValue()));
-		assertThat(buildZeroArgumentsUser.getClassId(), is(nullValue()));
-		assertThat(buildZeroArgumentsUser.getDisplayName(), is(notNullValue()));
-		assertThat(buildZeroArgumentsUser.getEmail(), is(nullValue()));
+		assertThat(testUser.getId(), instanceOf(Integer.class));
+		assertThat(testUser.getId(), is(notNullValue()));
+		assertThat(testUser.getDisplayName(), is(notNullValue()));
+		assertThat(testUser.getClassId(), is(nullValue()));
+		assertThat(testUser.getEmail(), is(nullValue()));
+		assertThat(testUser.getKey(), is(nullValue()));
+		assertThat(testUser.getAuth(), is(nullValue()));
 
 	}
 
 	@Test
 	public void equals_AutomaticTesting() {
-		
+
 		EqualsVerifier.forClass(User.class).withOnlyTheseFields("id").verify();
-		
+
 	}
 
 	@Test
@@ -217,7 +217,8 @@ public class UserTest {
 
 		final String email = "validEmail@example.com";
 
-		final String[] testedStrings = { email, null, "", "newEmail@example.com", "e@e", "a", "alongemail@example.com" };
+		final String[] testedStrings = { email, null, "", "newEmail@example.com", "e@e", "a",
+				"alongemail@example.com" };
 
 		final User newUser = User.builder().displayName(displayName).email(email).build();
 
@@ -272,8 +273,9 @@ public class UserTest {
 		assertThat(newUser.getAuth(), is(equalTo(originalAuth)));
 
 		assertThat(newUser.withAuth(originalAuth).getAuth(), is(equalTo(originalAuth)));
-		
-		final AuthBuilder[] testedAuthBuilders = { authBuilder, authBuilder.isAdmin(true), authBuilder.badLoginCount(3) };
+
+		final AuthBuilder[] testedAuthBuilders = { authBuilder, authBuilder.isAdmin(true),
+				authBuilder.badLoginCount(3) };
 
 		User changedUser;
 		Auth newAuth;

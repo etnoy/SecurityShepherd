@@ -24,10 +24,10 @@ public final class Module {
 	private final String description;
 
 	@Builder.Default
-	private final boolean flagEnabled = false;
+	private final boolean isFlagEnabled = false;
 
 	@Builder.Default
-	private final boolean exactFlag = false;
+	private final boolean isExactFlag = false;
 
 	private final String flag;
 	

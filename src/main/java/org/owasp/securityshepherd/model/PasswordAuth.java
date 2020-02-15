@@ -18,6 +18,6 @@ public final class PasswordAuth {
 	private final String hashedPassword;
 
 	@Builder.Default
-	private final boolean passwordExpired = true;
+	private final boolean isPasswordExpired = true;
 
 }

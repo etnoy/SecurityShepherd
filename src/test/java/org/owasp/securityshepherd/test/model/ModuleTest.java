@@ -1,16 +1,15 @@
 package org.owasp.securityshepherd.test.model;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.model.Module.ModuleBuilder;
-import org.owasp.securityshepherd.model.User;
-import org.owasp.securityshepherd.model.User.UserBuilder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -21,39 +20,121 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 public class ModuleTest {
 
 	@Test
-	public void build_AllArguments_SuppliedValuesPresent() {
+	public void build_NoArguments_ThrowsException() {
 
-		assertEquals("builder_AllArguments_modulename",
-				Module.builder().name("builder_AllArguments_modulename").build().getName());
+		final ModuleBuilder builder = Module.builder();
+
+		assertThrows(NullPointerException.class, () -> builder.build());
 
 	}
 
 	@Test
-	public void build_NullName_ThrowsNullPointerException() {
+	public void buildDescription_ValidDescription_Builds() {
+
+		final String[] namesToTest = { "TestDescription", null, "", "a", "12345" };
+
+		for (String name : namesToTest) {
+
+			final ModuleBuilder builder = Module.builder().name("TestModule");
+
+			builder.description(name);
+
+			assertThat(builder.build(), instanceOf(Module.class));
+			assertThat(builder.build().getDescription(), is(equalTo(name)));
+
+		}
+
+	}
+
+	@Test
+	public void buildId_ValidId_Builds() {
+
+		final ModuleBuilder builder = Module.builder();
+
+		builder.id(123456);
+		builder.name("TestModule");
+
+		assertThat(builder.build(), instanceOf(Module.class));
+		assertThat(builder.build().getId(), is(123456));
+
+	}
+
+	@Test
+	public void buildIsExactFlag_TrueOrFalse_MatchesBuild() {
+
+		final boolean[] booleans = { false, true };
+
+		for (boolean isExactFlag : booleans) {
+
+			final ModuleBuilder builder = Module.builder().name("TestModule");
+
+			builder.isExactFlag(isExactFlag);
+
+			assertThat(builder.build(), instanceOf(Module.class));
+			assertThat(builder.build().isExactFlag(), is(equalTo(isExactFlag)));
+
+		}
+
+	}
+
+	@Test
+	public void buildIsFlagEnabled_TrueOrFalse_MatchesBuild() {
+
+		final boolean[] booleans = { false, true };
+
+		for (boolean isFlagEnabled : booleans) {
+
+			final ModuleBuilder builder = Module.builder().name("TestModule");
+
+			builder.isFlagEnabled(isFlagEnabled);
+
+			assertThat(builder.build(), instanceOf(Module.class));
+			assertThat(builder.build().isFlagEnabled(), is(equalTo(isFlagEnabled)));
+
+		}
+
+	}
+	
+	@Test
+	public void buildIsOpen_TrueOrFalse_MatchesBuild() {
+
+		final boolean[] booleans = { false, true };
+
+		for (boolean isOpen : booleans) {
+
+			final ModuleBuilder builder = Module.builder().name("TestModule");
+
+			builder.isOpen(isOpen);
+
+			assertThat(builder.build(), instanceOf(Module.class));
+			assertThat(builder.build().isOpen(), is(equalTo(isOpen)));
+
+		}
+
+	}
+	
+	@Test
+	public void buildName_NullName_ThrowsNullPointerException() {
 
 		assertThrows(NullPointerException.class, () -> Module.builder().name(null).build());
 
 	}
-
+	
 	@Test
-	public void build_ValidNameLength_ReturnsModule() {
+	public void buildName_ValidName_Builds() {
 
-		String validLengthName = "Build_Name_exactly_70_chars_long_which_should_be_accepted_as_valid_123";
+		final String[] namesToTest = { "TestModule", "", "a", "12345" };
 
-		assertEquals(70, validLengthName.length());
+		for (String name : namesToTest) {
 
-		Module build_ValidNameLengthModule = Module.builder().name(validLengthName).build();
+			final ModuleBuilder builder = Module.builder();
 
-		assertTrue(build_ValidNameLengthModule instanceof Module);
+			builder.name(name);
 
-		assertEquals(validLengthName, build_ValidNameLengthModule.getName());
-	}
+			assertThat(builder.build(), instanceOf(Module.class));
+			assertThat(builder.build().getName(), is(equalTo(name)));
 
-	@Test
-	public void build_ZeroArguments_DefaultValuesPresent() {
-		Module buildZeroArgumentsModule = Module.builder().name("build_ZeroArguments").build();
-
-		assertNotNull(buildZeroArgumentsModule.getId());
+		}
 
 	}
 
@@ -63,53 +144,12 @@ public class ModuleTest {
 	}
 
 	@Test
-	public void toString_ValidData_NotNull() {
+	public void moduleBuilderToString_ValidData_AsExpected() {
 
-		assertNotNull(Module.builder().name("toString_ValidData").build().toString());
-
-	}
-
-	@Test
-	public void moduleBuildertoString_ValidData_NotNull() {
-
-		assertNotNull(Module.builder().toString());
-
-	}
-
-	@Test
-	public void moduleBuildertoString_ValidData_AsExpected() {
 		final ModuleBuilder builder = Module.builder();
 
 		assertThat(builder.toString(), is(equalTo(
-				"Module.ModuleBuilder(id=0, name=null, description=null, flagEnabled$value=false, exactFlag$value=false, flag=null, isOpen$value=false)")));
-
-	}
-
-	@Test
-	public void withName_ValidName_ChangesName() {
-
-		final String[] testedNames = { "TestModule", "", "name", "Long Name With Spaces", "12345" };
-
-		final Module testModule = Module.builder().name("TestModule").build();
-
-		assertThat(testModule.getName(), is(equalTo("TestModule")));
-
-		Module changedModule;
-
-		for (String newName : testedNames) {
-
-			changedModule = testModule.withName(newName);
-			assertThat(changedModule.getName(), is(equalTo(newName)));
-			assertThat(changedModule, is(equalTo(testModule)));
-
-		}
-
-	}
-
-	@Test
-	public void withName_NullName_ThrowsException() {
-
-		assertThrows(NullPointerException.class, () -> Module.builder().name("TestModule").build().withName(null));
+				"Module.ModuleBuilder(id=0, name=null, description=null, isFlagEnabled$value=false, isExactFlag$value=false, flag=null, isOpen$value=false)")));
 
 	}
 
@@ -135,6 +175,20 @@ public class ModuleTest {
 	}
 
 	@Test
+	public void withIsExactFlag_ValidBoolean_ChangesIsExactFlag() {
+
+		final Module testModule = Module.builder().name("TestModule").build();
+
+		assertThat(testModule.isExactFlag(), is(false));
+
+		Module changedModule = testModule.withExactFlag(false);
+		assertThat(changedModule.isExactFlag(), is(false));
+		changedModule = testModule.withExactFlag(true);
+		assertThat(changedModule.isExactFlag(), is(true));
+
+	}
+
+	@Test
 	public void withFlag_ValidFlag_ChangesFlag() {
 
 		final String[] testedFlags = { "abc123xyz789", null, "", "a", "Long Flag With Spaces", "12345" };
@@ -156,7 +210,7 @@ public class ModuleTest {
 	}
 
 	@Test
-	public void withFlagEnabled_ValidBoolean_ChangesFlagEnabled() {
+	public void withIsFlagEnabled_ValidBoolean_ChangesIsFlagEnabled() {
 
 		final Module testModule = Module.builder().name("TestModule").build();
 
@@ -168,35 +222,7 @@ public class ModuleTest {
 		assertThat(changedModule.isFlagEnabled(), is(true));
 
 	}
-	
-	@Test
-	public void withExactFlag_ValidBoolean_ChangesExactFlag() {
 
-		final Module testModule = Module.builder().name("TestModule").build();
-
-		assertThat(testModule.isExactFlag(), is(false));
-
-		Module changedModule = testModule.withExactFlag(false);
-		assertThat(changedModule.isExactFlag(), is(false));
-		changedModule = testModule.withExactFlag(true);
-		assertThat(changedModule.isExactFlag(), is(true));
-
-	}
-	
-	@Test
-	public void withOpen_ValidBoolean_ChangesOpen() {
-
-		final Module testModule = Module.builder().name("TestModule").build();
-
-		assertThat(testModule.isOpen(), is(false));
-
-		Module changedModule = testModule.withOpen(false);
-		assertThat(changedModule.isOpen(), is(false));
-		changedModule = testModule.withOpen(true);
-		assertThat(changedModule.isOpen(), is(true));
-
-	}
-	
 	@Test
 	public void withId_ValidId_ChangesId() {
 
@@ -215,6 +241,48 @@ public class ModuleTest {
 			assertThat(changedModule.getId(), is(newId));
 
 		}
+
+	}
+
+	@Test
+	public void withName_NullName_ThrowsException() {
+
+		assertThrows(NullPointerException.class, () -> Module.builder().name("TestModule").build().withName(null));
+
+	}
+
+	@Test
+	public void withName_ValidName_ChangesName() {
+
+		final String[] testedNames = { "TestModule", "", "name", "Long Name With Spaces", "12345" };
+
+		final Module testModule = Module.builder().name("TestModule").build();
+
+		assertThat(testModule.getName(), is(equalTo("TestModule")));
+
+		Module changedModule;
+
+		for (String newName : testedNames) {
+
+			changedModule = testModule.withName(newName);
+			assertThat(changedModule.getName(), is(equalTo(newName)));
+			assertThat(changedModule, is(equalTo(testModule)));
+
+		}
+
+	}
+
+	@Test
+	public void withIsOpen_ValidBoolean_ChangesOpen() {
+
+		final Module testModule = Module.builder().name("TestModule").build();
+
+		assertThat(testModule.isOpen(), is(false));
+
+		Module changedModule = testModule.withOpen(false);
+		assertThat(changedModule.isOpen(), is(false));
+		changedModule = testModule.withOpen(true);
+		assertThat(changedModule.isOpen(), is(true));
 
 	}
 

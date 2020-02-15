@@ -3,7 +3,6 @@ package org.owasp.securityshepherd.model;
 import java.sql.Timestamp;
 
 import lombok.Builder;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import lombok.With;

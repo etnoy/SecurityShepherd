@@ -33,7 +33,7 @@ public final class Submission {
 	private final Timestamp time = new Timestamp(System.currentTimeMillis());
 
 	@Builder.Default
-	private final boolean valid = false;
+	private final boolean isValid = false;
 
 	@NonNull
 	private final String submittedFlag;

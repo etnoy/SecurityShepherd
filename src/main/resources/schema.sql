@@ -27,8 +27,8 @@ CREATE TABLE module (
 	name VARCHAR(191) NOT NULL UNIQUE,
  	description VARCHAR(191),
  	short_name VARCHAR(191),
-	flag_enabled BOOLEAN,
-  	exact_flag BOOLEAN,
+	is_flag_enabled BOOLEAN,
+  	is_exact_flag BOOLEAN,
 	flag VARCHAR(64) NULL,
 	is_open BOOLEAN,
   PRIMARY KEY (id) )
@@ -59,7 +59,7 @@ CREATE TABLE password_auth (
   user INT,
   login_name VARCHAR(191) NOT NULL UNIQUE,
   hashed_password VARCHAR(191),
-  password_expired BOOLEAN DEFAULT TRUE )
+  is_password_expired BOOLEAN DEFAULT TRUE )
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
@@ -68,7 +68,7 @@ CREATE TABLE submission (
     user_id INT NOT NULL,
     module_id INT NOT NULL,
     time TIMESTAMP NULL DEFAULT NULL,
-    valid BOOLEAN,
+    is_valid BOOLEAN,
     submitted_flag VARCHAR(191),
       PRIMARY KEY (id))
 ENGINE = InnoDB
