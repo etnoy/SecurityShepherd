@@ -19,6 +19,8 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 @SpringBootTest
 public class ModuleTest {
 
+	private static final boolean[] BOOLEANS = { false, true };
+
 	@Test
 	public void build_NoArguments_ThrowsException() {
 
@@ -60,9 +62,7 @@ public class ModuleTest {
 	@Test
 	public void buildIsExactFlag_TrueOrFalse_MatchesBuild() {
 
-		final boolean[] booleans = { false, true };
-
-		for (boolean isExactFlag : booleans) {
+		for (boolean isExactFlag : BOOLEANS) {
 
 			final ModuleBuilder builder = Module.builder().name("TestModule");
 
@@ -78,9 +78,7 @@ public class ModuleTest {
 	@Test
 	public void buildIsFlagEnabled_TrueOrFalse_MatchesBuild() {
 
-		final boolean[] booleans = { false, true };
-
-		for (boolean isFlagEnabled : booleans) {
+		for (boolean isFlagEnabled : BOOLEANS) {
 
 			final ModuleBuilder builder = Module.builder().name("TestModule");
 
@@ -96,9 +94,7 @@ public class ModuleTest {
 	@Test
 	public void buildIsOpen_TrueOrFalse_MatchesBuild() {
 
-		final boolean[] booleans = { false, true };
-
-		for (boolean isOpen : booleans) {
+		for (boolean isOpen : BOOLEANS) {
 
 			final ModuleBuilder builder = Module.builder().name("TestModule");
 

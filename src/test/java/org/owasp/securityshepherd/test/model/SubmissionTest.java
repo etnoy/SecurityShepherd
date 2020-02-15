@@ -11,9 +11,7 @@ import java.sql.Timestamp;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.model.Submission;
-import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.model.Submission.SubmissionBuilder;
-import org.owasp.securityshepherd.model.User.UserBuilder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -161,6 +159,16 @@ public class SubmissionTest {
 	}
 
 	@Test
+	public void toString_ValidData_AsExpected() {
+		final Submission testSubmission = Submission.builder().moduleId(123).userId(6789).time(new Timestamp(0))
+				.build();
+
+		assertThat(testSubmission.toString(), is(equalTo(
+				"Submission(id=0, userId=6789, moduleId=123, time=1970-01-01 01:00:00.0, isValid=false, flag=null)")));
+
+	}
+
+	@Test
 	public void withFlag_ValidFlag_ChangesFlag() {
 
 		final String[] testedFlags = { "abc123xyz789", null, "", "a", "Long Flag With Spaces", "12345" };
@@ -219,16 +227,6 @@ public class SubmissionTest {
 
 		assertThrows(NullPointerException.class,
 				() -> Submission.builder().userId(123).moduleId(6789).time(new Timestamp(0)).build().withTime(null));
-
-	}
-
-	@Test
-	public void toString_ValidData_AsExpected() {
-		final Submission testSubmission = Submission.builder().moduleId(123).userId(6789).time(new Timestamp(0))
-				.build();
-
-		assertThat(testSubmission.toString(), is(equalTo(
-				"Submission(id=0, userId=6789, moduleId=123, time=1970-01-01 01:00:00.0, isValid=false, flag=null)")));
 
 	}
 
