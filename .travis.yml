@@ -11,7 +11,7 @@ jobs:
     script: mvn test -B
   - stage: unit-test
     services: mysql
-    script: mvn test org.jacoco:jacoco-maven-plugin:prepare-agent  sonar:sonar -Pcoverage -Dsonar.projectKey=etnoy_SecurityShepherd -B
+    script: mvn clean verify sonar:sonar -Pcoverage -Dsonar.projectKey=etnoy_SecurityShepherd -B
   - stage: integration-test
     services: mysql
     script: mvn verify -DskipUTs=true -B
