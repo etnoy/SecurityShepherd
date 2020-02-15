@@ -1,18 +1,4 @@
 language: java
-
-jdk:
-  - openjdk8
-  - openjdk11
-  - openjdk-ea
-  - oraclejdk8
-  - oraclejdk11
-  - oraclejdk-ea
-  
-  
-matrix:
-  allow_failures:
-    - jdk: openjdk-ea
-    - jdk: oraclejdk-ea
     
 jobs:
   include:
