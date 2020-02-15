@@ -5,12 +5,12 @@ import java.sql.Timestamp;
 import org.springframework.data.annotation.Id;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.With;
 
-@Data
+@Value
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder
 @With
@@ -20,22 +20,16 @@ public final class Submission {
 	@Id
 	private final int id;
 
-	@NonNull
-	@Builder.Default
-	private final Integer userId = null;
+	private final int userId;
+
+	private final int moduleId;
 
 	@NonNull
-	@Builder.Default
-	private final Integer moduleId = null;
-
-	@NonNull
-	@Builder.Default
-	private final Timestamp time = new Timestamp(System.currentTimeMillis());
+	private final Timestamp time;
 
 	@Builder.Default
 	private final boolean isValid = false;
 
-	@NonNull
-	private final String submittedFlag;
+	private final String flag;
 
 }

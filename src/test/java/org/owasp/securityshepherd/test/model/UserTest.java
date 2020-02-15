@@ -25,9 +25,7 @@ public class UserTest {
 	@Test
 	public void build_NoArguments_ThrowsException() {
 
-		final UserBuilder builder = User.builder();
-
-		assertThrows(NullPointerException.class, () -> builder.build());
+		assertThrows(NullPointerException.class, () -> User.builder().build());
 
 	}
 
@@ -59,11 +57,9 @@ public class UserTest {
 	}
 
 	@Test
-	public void buildDisplayName_DisplayNameNotSet_ThrowsException() {
+	public void buildDisplayName_NullDisplayName_ThrowsException() {
 
-		final UserBuilder builder = User.builder();
-
-		assertThrows(NullPointerException.class, () -> builder.displayName(null));
+		assertThrows(NullPointerException.class, () -> User.builder().displayName(null));
 
 	}
 
@@ -115,19 +111,11 @@ public class UserTest {
 	}
 
 	@Test
-	public void userBuildertoString_ValidData_AsExpected() {
+	public void userBuilderToString_ValidData_AsExpected() {
 		final UserBuilder builder = User.builder();
 
 		assertThat(builder.toString(), is(equalTo(
 				"User.UserBuilder(id=0, displayName=null, classId$value=null, email=null, key=null, auth=null)")));
-
-		builder.id(12345);
-		builder.displayName("Test User");
-		builder.classId(6789);
-		builder.email("me@example.com");
-
-		assertThat(builder.toString(), is(equalTo(
-				"User.UserBuilder(id=12345, displayName=Test User, classId$value=6789, email=me@example.com, key=null, auth=null)")));
 
 	}
 
@@ -156,13 +144,8 @@ public class UserTest {
 	@Test
 	public void withDisplayName_NullDisplayName_ThrowsException() {
 
-		final String displayName = "withDisplayName_NullDisplayName";
-
-		final User newUser = User.builder().displayName(displayName).build();
-
-		assertThat(newUser.getDisplayName(), is(equalTo(displayName)));
-
-		assertThrows(NullPointerException.class, () -> newUser.withDisplayName(null));
+		assertThrows(NullPointerException.class,
+				() -> User.builder().displayName("TestUser").build().withDisplayName(null));
 
 	}
 

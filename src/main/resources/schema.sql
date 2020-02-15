@@ -69,7 +69,7 @@ CREATE TABLE submission (
     module_id INT NOT NULL,
     time TIMESTAMP NULL DEFAULT NULL,
     is_valid BOOLEAN,
-    submitted_flag VARCHAR(191),
+    flag VARCHAR(191),
       PRIMARY KEY (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;

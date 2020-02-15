@@ -22,25 +22,23 @@ public class ModuleTest {
 	@Test
 	public void build_NoArguments_ThrowsException() {
 
-		final ModuleBuilder builder = Module.builder();
-
-		assertThrows(NullPointerException.class, () -> builder.build());
+		assertThrows(NullPointerException.class, () -> Module.builder().build());
 
 	}
 
 	@Test
 	public void buildDescription_ValidDescription_Builds() {
 
-		final String[] namesToTest = { "TestDescription", null, "", "a", "12345" };
+		final String[] descriptionsToTest = { "TestDescription", null, "", "a", "12345" };
 
-		for (String name : namesToTest) {
+		for (String description : descriptionsToTest) {
 
 			final ModuleBuilder builder = Module.builder().name("TestModule");
 
-			builder.description(name);
+			builder.description(description);
 
 			assertThat(builder.build(), instanceOf(Module.class));
-			assertThat(builder.build().getDescription(), is(equalTo(name)));
+			assertThat(builder.build().getDescription(), is(equalTo(description)));
 
 		}
 
@@ -94,7 +92,7 @@ public class ModuleTest {
 		}
 
 	}
-	
+
 	@Test
 	public void buildIsOpen_TrueOrFalse_MatchesBuild() {
 
@@ -112,14 +110,14 @@ public class ModuleTest {
 		}
 
 	}
-	
+
 	@Test
 	public void buildName_NullName_ThrowsNullPointerException() {
 
 		assertThrows(NullPointerException.class, () -> Module.builder().name(null).build());
 
 	}
-	
+
 	@Test
 	public void buildName_ValidName_Builds() {
 
@@ -175,7 +173,7 @@ public class ModuleTest {
 	}
 
 	@Test
-	public void withIsExactFlag_ValidBoolean_ChangesIsExactFlag() {
+	public void withExactFlag_ValidBoolean_ChangesIsExactFlag() {
 
 		final Module testModule = Module.builder().name("TestModule").build();
 
@@ -210,7 +208,7 @@ public class ModuleTest {
 	}
 
 	@Test
-	public void withIsFlagEnabled_ValidBoolean_ChangesIsFlagEnabled() {
+	public void withFlagEnabled_ValidBoolean_ChangesIsFlagEnabled() {
 
 		final Module testModule = Module.builder().name("TestModule").build();
 
@@ -273,7 +271,7 @@ public class ModuleTest {
 	}
 
 	@Test
-	public void withIsOpen_ValidBoolean_ChangesOpen() {
+	public void withOpen_ValidBoolean_ChangesOpen() {
 
 		final Module testModule = Module.builder().name("TestModule").build();
 
