@@ -15,12 +15,17 @@ import lombok.With;
 @Builder
 @With
 public final class ClassEntity {
-
+	
 	@EqualsAndHashCode.Include
 	@Id
 	private final int id;
 
 	@NonNull
 	private final String name;
+	
+	ClassEntity(final int id, final String name) {
+		this.id=id;
+		this.name=name;
+	}
 
 }
