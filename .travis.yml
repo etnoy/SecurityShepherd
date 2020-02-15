@@ -15,6 +15,9 @@ jobs:
   - stage: integration-test
     services: mysql
     script: mvn verify -DskipUTs=true -B
+  - stage: integration-test
+    services: mysql
+    script: mvn clean verify sonar:sonar -Pcoverage -Dsonar.projectKey=etnoy_SecurityShepherd -B
     
 stages:
 - build
