@@ -160,13 +160,12 @@ public class SubmissionTest {
 	}
 
 	@Test
-	@Disabled
 	public void toString_ValidData_AsExpected() {
 		final Submission testSubmission = Submission.builder().moduleId(123).userId(6789).time(new Timestamp(0))
 				.build();
 
-		assertThat(testSubmission.toString(), is(equalTo(
-				"Submission(id=0, userId=6789, moduleId=123, time=1970-01-01 01:00:00.0, isValid=false, flag=null)")));
+		assertThat(testSubmission.toString(), equalTo(
+				"Submission(id=0, userId=6789, moduleId=123, time=1970-01-01 01:00:00.0, isValid=false, flag=null)"));
 
 	}
 
