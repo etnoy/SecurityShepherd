@@ -14,5 +14,9 @@ public final class SAMLAuth {
 
 	@NonNull
 	private final String samlId;
-	
+
+	SAMLAuth(final String samlId) {
+		this.samlId = samlId;
+	}
+
 }
