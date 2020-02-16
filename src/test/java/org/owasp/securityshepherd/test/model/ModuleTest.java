@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.model.Module;
+import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.model.Module.ModuleBuilder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -144,6 +145,16 @@ public class ModuleTest {
 
 		assertThat(builder.toString(), is(equalTo(
 				"Module.ModuleBuilder(id=0, name=null, description=null, isFlagEnabled$value=false, isExactFlag$value=false, flag=null, isOpen$value=false)")));
+
+	}
+
+	@Test
+	public void toString_ValidData_AsExpected() {
+
+		final Module testModule = Module.builder().name("TestModule").build();
+
+		assertThat(testModule.toString(), equalTo(
+				"Module(id=0, name=TestModule, description=null, isFlagEnabled=false, isExactFlag=false, flag=null, isOpen=false)"));
 
 	}
 

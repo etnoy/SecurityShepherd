@@ -47,6 +47,13 @@ public class ClassEntityTest {
 	}
 
 	@Test
+	public void classBuildertoString_ValidData_NotNull() {
+
+		assertNotNull(ClassEntity.builder().toString());
+
+	}
+
+	@Test
 	public void equals_AutomaticTesting() {
 		EqualsVerifier.forClass(ClassEntity.class).withOnlyTheseFields("id").verify();
 	}
@@ -59,9 +66,23 @@ public class ClassEntityTest {
 	}
 
 	@Test
-	public void classBuildertoString_ValidData_NotNull() {
+	public void withId_ValidId_ChangesId() {
 
-		assertNotNull(ClassEntity.builder().toString());
+		final int originalId = 1;
+		final int[] testedIds = { originalId, 0, -1, 1000, -1000, 123456789 };
+
+		final ClassEntity testClass = ClassEntity.builder().id(originalId).name("Test Class").build();
+
+		assertThat(testClass.getId(), is(originalId));
+
+		ClassEntity changedClass;
+
+		for (int newId : testedIds) {
+
+			changedClass = testClass.withId(newId);
+			assertThat(changedClass.getId(), is(newId));
+
+		}
 
 	}
 
@@ -97,27 +118,6 @@ public class ClassEntityTest {
 		assertThat(testClass.getName(), is(equalTo(name)));
 
 		assertThrows(NullPointerException.class, () -> testClass.withName(null));
-
-	}
-
-	@Test
-	public void withId_ValidId_ChangesId() {
-
-		final int originalId = 1;
-		final int[] testedIds = { originalId, 0, -1, 1000, -1000, 123456789 };
-
-		final ClassEntity testClass = ClassEntity.builder().id(originalId).name("Test Class").build();
-
-		assertThat(testClass.getId(), is(originalId));
-
-		ClassEntity changedClass;
-
-		for (int newId : testedIds) {
-
-			changedClass = testClass.withId(newId);
-			assertThat(changedClass.getId(), is(newId));
-
-		}
 
 	}
 

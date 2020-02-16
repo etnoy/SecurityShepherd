@@ -1,18 +1,17 @@
 package org.owasp.securityshepherd.test.model;
 
-import static org.hamcrest.CoreMatchers.*;
-
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.owasp.securityshepherd.model.Auth;
+import org.owasp.securityshepherd.model.Auth.AuthBuilder;
 import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.model.User.UserBuilder;
-import org.owasp.securityshepherd.model.Auth;
-
-import org.owasp.securityshepherd.model.Auth.AuthBuilder;
-
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -30,15 +29,34 @@ public class UserTest {
 	}
 
 	@Test
-	public void buildId_ValidId_Builds() {
+	public void build_ValidDisplayName_ReturnsUser() {
 
-		final UserBuilder builder = User.builder();
+		final String validDisplayName = "build_ValidDisplayName";
 
-		builder.id(12345);
-		builder.displayName("TestUser");
+		final User build_ValidDisplayNameLengthUser = User.builder().displayName(validDisplayName).build();
 
-		assertThat(builder.build(), instanceOf(User.class));
-		assertThat(builder.build().getId(), is(12345));
+		assertThat(build_ValidDisplayNameLengthUser, instanceOf(User.class));
+
+		assertThat(build_ValidDisplayNameLengthUser.getDisplayName(), is(equalTo(validDisplayName)));
+	}
+
+	@Test
+	public void buildClassId_ValidClassId_Builds() {
+
+		final UserBuilder builder = User.builder().displayName("TestUser");
+
+		builder.classId(1);
+
+		final User newUser = builder.build();
+
+		assertThat(newUser.getClassId(), is(1));
+
+	}
+
+	@Test
+	public void buildDisplayName_NullDisplayName_ThrowsException() {
+
+		assertThrows(NullPointerException.class, () -> User.builder().displayName(null));
 
 	}
 
@@ -57,49 +75,15 @@ public class UserTest {
 	}
 
 	@Test
-	public void buildDisplayName_NullDisplayName_ThrowsException() {
+	public void buildId_ValidId_Builds() {
 
-		assertThrows(NullPointerException.class, () -> User.builder().displayName(null));
+		final UserBuilder builder = User.builder();
 
-	}
+		builder.id(12345);
+		builder.displayName("TestUser");
 
-	@Test
-	public void buildClassId_ValidClassId_Builds() {
-
-		final UserBuilder builder = User.builder().displayName("TestUser");
-
-		builder.classId(1);
-
-		final User newUser = builder.build();
-
-		assertThat(newUser.getClassId(), is(1));
-
-	}
-
-	@Test
-	public void build_ValidDisplayName_ReturnsUser() {
-
-		final String validDisplayName = "build_ValidDisplayName";
-
-		final User build_ValidDisplayNameLengthUser = User.builder().displayName(validDisplayName).build();
-
-		assertThat(build_ValidDisplayNameLengthUser, instanceOf(User.class));
-
-		assertThat(build_ValidDisplayNameLengthUser.getDisplayName(), is(equalTo(validDisplayName)));
-	}
-
-	@Test
-	public void build_RequiredArguments_DefaultValuesPresent() {
-
-		final User testUser = User.builder().displayName("build_ZeroArguments").build();
-
-		assertThat(testUser.getId(), instanceOf(Integer.class));
-		assertThat(testUser.getId(), is(notNullValue()));
-		assertThat(testUser.getDisplayName(), is(notNullValue()));
-		assertThat(testUser.getClassId(), is(nullValue()));
-		assertThat(testUser.getEmail(), is(nullValue()));
-		assertThat(testUser.getKey(), is(nullValue()));
-		assertThat(testUser.getAuth(), is(nullValue()));
+		assertThat(builder.build(), instanceOf(User.class));
+		assertThat(builder.build().getId(), is(12345));
 
 	}
 
@@ -107,6 +91,16 @@ public class UserTest {
 	public void equals_AutomaticTesting() {
 
 		EqualsVerifier.forClass(User.class).withOnlyTheseFields("id").verify();
+
+	}
+
+	@Test
+	public void toString_ValidData_AsExpected() {
+
+		final User testUser = User.builder().displayName("TestUser").build();
+
+		assertThat(testUser.toString(),
+				equalTo("User(id=0, displayName=TestUser, classId=null, email=null, key=null, auth=null)"));
 
 	}
 
@@ -120,32 +114,32 @@ public class UserTest {
 	}
 
 	@Test
-	public void withDisplayName_ValidDisplayName_ChangesDisplayName() {
+	public void withAuth_ValidAuth_ChangesAuth() {
 
-		final String displayName = "withDisplayName_ValidDisplayName";
+		final AuthBuilder authBuilder = Auth.builder();
 
-		final User newUser = User.builder().displayName(displayName).build();
+		final Auth originalAuth = authBuilder.build();
 
-		assertThat(newUser.getDisplayName(), is(equalTo(displayName)));
+		final User newUser = User.builder().displayName("Test User").auth(originalAuth).build();
 
-		final String[] testedDisplayNames = { displayName, "", "newUser", "Long  With     Whitespace", "12345" };
+		assertThat(newUser.getAuth(), is(equalTo(originalAuth)));
+
+		assertThat(newUser.withAuth(originalAuth).getAuth(), is(equalTo(originalAuth)));
+
+		final AuthBuilder[] testedAuthBuilders = { authBuilder, authBuilder.isAdmin(true),
+				authBuilder.badLoginCount(3) };
 
 		User changedUser;
-		for (String newDisplayName : testedDisplayNames) {
+		Auth newAuth;
 
-			changedUser = newUser.withDisplayName(newDisplayName);
-			assertThat(changedUser.getDisplayName(), is(equalTo(newDisplayName)));
+		for (AuthBuilder newBuilder : testedAuthBuilders) {
+
+			newAuth = newBuilder.build();
+			changedUser = newUser.withAuth(newAuth);
+			assertThat(changedUser.getAuth(), is(equalTo(newAuth)));
 			assertThat(changedUser, is(equalTo(newUser)));
 
 		}
-
-	}
-
-	@Test
-	public void withDisplayName_NullDisplayName_ThrowsException() {
-
-		assertThrows(NullPointerException.class,
-				() -> User.builder().displayName("TestUser").build().withDisplayName(null));
 
 	}
 
@@ -173,21 +167,30 @@ public class UserTest {
 	}
 
 	@Test
-	public void withId_ValidId_ChangesId() {
+	public void withDisplayName_NullDisplayName_ThrowsException() {
 
-		final int originalId = 1;
-		final int[] testedIds = { originalId, 0, -1, 1000, -1000, 123456789 };
+		assertThrows(NullPointerException.class,
+				() -> User.builder().displayName("TestUser").build().withDisplayName(null));
 
-		final User newUser = User.builder().id(originalId).displayName("Test User").build();
+	}
 
-		assertThat(newUser.getId(), is(originalId));
+	@Test
+	public void withDisplayName_ValidDisplayName_ChangesDisplayName() {
+
+		final String displayName = "withDisplayName_ValidDisplayName";
+
+		final User newUser = User.builder().displayName(displayName).build();
+
+		assertThat(newUser.getDisplayName(), is(equalTo(displayName)));
+
+		final String[] testedDisplayNames = { displayName, "", "newUser", "Long  With     Whitespace", "12345" };
 
 		User changedUser;
+		for (String newDisplayName : testedDisplayNames) {
 
-		for (int newId : testedIds) {
-
-			changedUser = newUser.withId(newId);
-			assertThat(changedUser.getId(), is(newId));
+			changedUser = newUser.withDisplayName(newDisplayName);
+			assertThat(changedUser.getDisplayName(), is(equalTo(newDisplayName)));
+			assertThat(changedUser, is(equalTo(newUser)));
 
 		}
 
@@ -220,6 +223,27 @@ public class UserTest {
 	}
 
 	@Test
+	public void withId_ValidId_ChangesId() {
+
+		final int originalId = 1;
+		final int[] testedIds = { originalId, 0, -1, 1000, -1000, 123456789 };
+
+		final User newUser = User.builder().id(originalId).displayName("Test User").build();
+
+		assertThat(newUser.getId(), is(originalId));
+
+		User changedUser;
+
+		for (int newId : testedIds) {
+
+			changedUser = newUser.withId(newId);
+			assertThat(changedUser.getId(), is(newId));
+
+		}
+
+	}
+
+	@Test
 	public void withKey_ValidKey_ChangesKey() {
 
 		final String displayName = "withKey_ValidKey";
@@ -238,36 +262,6 @@ public class UserTest {
 
 			changedUser = newUser.withKey(newKey);
 			assertThat(changedUser.getKey(), is(equalTo(newKey)));
-			assertThat(changedUser, is(equalTo(newUser)));
-
-		}
-
-	}
-
-	@Test
-	public void withAuth_ValidAuth_ChangesAuth() {
-
-		final AuthBuilder authBuilder = Auth.builder();
-
-		final Auth originalAuth = authBuilder.build();
-
-		final User newUser = User.builder().displayName("Test User").auth(originalAuth).build();
-
-		assertThat(newUser.getAuth(), is(equalTo(originalAuth)));
-
-		assertThat(newUser.withAuth(originalAuth).getAuth(), is(equalTo(originalAuth)));
-
-		final AuthBuilder[] testedAuthBuilders = { authBuilder, authBuilder.isAdmin(true),
-				authBuilder.badLoginCount(3) };
-
-		User changedUser;
-		Auth newAuth;
-
-		for (AuthBuilder newBuilder : testedAuthBuilders) {
-
-			newAuth = newBuilder.build();
-			changedUser = newUser.withAuth(newAuth);
-			assertThat(changedUser.getAuth(), is(equalTo(newAuth)));
 			assertThat(changedUser, is(equalTo(newUser)));
 
 		}
