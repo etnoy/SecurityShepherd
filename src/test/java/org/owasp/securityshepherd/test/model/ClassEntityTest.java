@@ -109,7 +109,7 @@ public class ClassEntityTest {
 	}
 
 	@Test
-	public void withyName_NullName_ThrowsException() {
+	public void withName_NullName_ThrowsException() {
 
 		final String name = "withName_NullName";
 

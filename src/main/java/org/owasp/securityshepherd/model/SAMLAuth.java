@@ -1,12 +1,12 @@
 package org.owasp.securityshepherd.model;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.With;
 
-@Data
+@Value
 @EqualsAndHashCode
 @Builder
 @With
