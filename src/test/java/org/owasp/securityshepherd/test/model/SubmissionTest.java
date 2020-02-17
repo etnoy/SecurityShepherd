@@ -1,6 +1,5 @@
 package org.owasp.securityshepherd.test.model;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -8,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.sql.Timestamp;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.model.Submission;
@@ -43,7 +41,7 @@ public class SubmissionTest {
 			builder.flag(flag);
 
 			assertThat(builder.build(), instanceOf(Submission.class));
-			assertThat(builder.build().getFlag(), is(equalTo(flag)));
+			assertThat(builder.build().getFlag(), is(flag));
 
 		}
 
@@ -61,7 +59,7 @@ public class SubmissionTest {
 			builder.id(id);
 
 			assertThat(builder.build(), instanceOf(Submission.class));
-			assertThat(builder.build().getId(), is(equalTo(id)));
+			assertThat(builder.build().getId(), is(id));
 
 		}
 
@@ -77,7 +75,7 @@ public class SubmissionTest {
 			builder.isValid(isValid);
 
 			assertThat(builder.build(), instanceOf(Submission.class));
-			assertThat(builder.build().isValid(), is(equalTo(isValid)));
+			assertThat(builder.build().isValid(), is(isValid));
 
 		}
 
@@ -95,7 +93,7 @@ public class SubmissionTest {
 			builder.moduleId(moduleId);
 
 			assertThat(builder.build(), instanceOf(Submission.class));
-			assertThat(builder.build().getModuleId(), is(equalTo(moduleId)));
+			assertThat(builder.build().getModuleId(), is(moduleId));
 
 		}
 
@@ -120,7 +118,7 @@ public class SubmissionTest {
 			builder.time(new Timestamp(time));
 
 			assertThat(builder.build(), instanceOf(Submission.class));
-			assertThat(builder.build().getTime(), is(equalTo(new Timestamp(time))));
+			assertThat(builder.build().getTime(), is(new Timestamp(time)));
 
 		}
 
@@ -138,7 +136,7 @@ public class SubmissionTest {
 			builder.userId(userId);
 
 			assertThat(builder.build(), instanceOf(Submission.class));
-			assertThat(builder.build().getUserId(), is(equalTo(userId)));
+			assertThat(builder.build().getUserId(), is(userId));
 
 		}
 
@@ -154,8 +152,8 @@ public class SubmissionTest {
 
 		final SubmissionBuilder builder = Submission.builder();
 
-		assertThat(builder.toString(), is(equalTo(
-				"Submission.SubmissionBuilder(id=0, userId=0, moduleId=0, time=null, isValid$value=false, flag=null)")));
+		assertThat(builder.toString(), is(
+				"Submission.SubmissionBuilder(id=0, userId=0, moduleId=0, time=null, isValid$value=false, flag=null)"));
 
 	}
 
@@ -164,7 +162,7 @@ public class SubmissionTest {
 		final Submission testSubmission = Submission.builder().moduleId(123).userId(6789).time(new Timestamp(0))
 				.build();
 
-		assertThat(testSubmission.toString(), equalTo("Submission(id=0, userId=6789, moduleId=123, time="
+		assertThat(testSubmission.toString(), is("Submission(id=0, userId=6789, moduleId=123, time="
 				+ new Timestamp(0) + ", isValid=false, flag=null)"));
 
 	}
@@ -180,8 +178,8 @@ public class SubmissionTest {
 		for (String newFlag : testedFlags) {
 
 			final Submission changedSubmission = testSubmission.withFlag(newFlag);
-			assertThat(changedSubmission.getFlag(), is(equalTo(newFlag)));
-			assertThat(changedSubmission, is(equalTo(testSubmission)));
+			assertThat(changedSubmission.getFlag(), is(newFlag));
+			assertThat(changedSubmission, is(testSubmission));
 
 		}
 
@@ -245,7 +243,7 @@ public class SubmissionTest {
 
 			final Submission changedSubmission = testSubmission.withTime(time);
 
-			assertThat(changedSubmission.getTime(), is(equalTo(time)));
+			assertThat(changedSubmission.getTime(), is(time));
 
 		}
 

@@ -20,4 +20,10 @@ public final class PasswordAuth {
 	@Builder.Default
 	private final boolean isPasswordExpired = true;
 
+	PasswordAuth(final String loginName, final String hashedPassword, final boolean isPasswordExpired) {
+		this.loginName=loginName;
+		this.hashedPassword=hashedPassword;
+		this.isPasswordExpired=isPasswordExpired;
+	}
+	
 }

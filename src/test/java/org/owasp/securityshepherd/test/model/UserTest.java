@@ -1,6 +1,5 @@
 package org.owasp.securityshepherd.test.model;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -37,7 +36,7 @@ public class UserTest {
 
 		assertThat(build_ValidDisplayNameLengthUser, instanceOf(User.class));
 
-		assertThat(build_ValidDisplayNameLengthUser.getDisplayName(), is(equalTo(validDisplayName)));
+		assertThat(build_ValidDisplayNameLengthUser.getDisplayName(), is(validDisplayName));
 	}
 
 	@Test
@@ -70,7 +69,7 @@ public class UserTest {
 
 		assertThat(builder.build(), instanceOf(User.class));
 
-		assertThat(builder.build().getDisplayName(), is(equalTo(displayName)));
+		assertThat(builder.build().getDisplayName(), is(displayName));
 
 	}
 
@@ -100,7 +99,7 @@ public class UserTest {
 		final User testUser = User.builder().displayName("TestUser").build();
 
 		assertThat(testUser.toString(),
-				equalTo("User(id=0, displayName=TestUser, classId=null, email=null, key=null, auth=null)"));
+				is("User(id=0, displayName=TestUser, classId=null, email=null, key=null, auth=null)"));
 
 	}
 
@@ -108,8 +107,8 @@ public class UserTest {
 	public void userBuilderToString_ValidData_AsExpected() {
 		final UserBuilder builder = User.builder();
 
-		assertThat(builder.toString(), is(equalTo(
-				"User.UserBuilder(id=0, displayName=null, classId$value=null, email=null, key=null, auth=null)")));
+		assertThat(builder.toString(), is(
+				"User.UserBuilder(id=0, displayName=null, classId$value=null, email=null, key=null, auth=null)"));
 
 	}
 
@@ -122,9 +121,9 @@ public class UserTest {
 
 		final User newUser = User.builder().displayName("Test User").auth(originalAuth).build();
 
-		assertThat(newUser.getAuth(), is(equalTo(originalAuth)));
+		assertThat(newUser.getAuth(), is(originalAuth));
 
-		assertThat(newUser.withAuth(originalAuth).getAuth(), is(equalTo(originalAuth)));
+		assertThat(newUser.withAuth(originalAuth).getAuth(), is(originalAuth));
 
 		final AuthBuilder[] testedAuthBuilders = { authBuilder, authBuilder.isAdmin(true),
 				authBuilder.badLoginCount(3) };
@@ -136,8 +135,8 @@ public class UserTest {
 
 			newAuth = newBuilder.build();
 			changedUser = newUser.withAuth(newAuth);
-			assertThat(changedUser.getAuth(), is(equalTo(newAuth)));
-			assertThat(changedUser, is(equalTo(newUser)));
+			assertThat(changedUser.getAuth(), is(newAuth));
+			assertThat(changedUser, is(newUser));
 
 		}
 
@@ -160,7 +159,7 @@ public class UserTest {
 
 			changedUser = newUser.withClassId(newClassId);
 			assertThat(changedUser.getClassId(), is(newClassId));
-			assertThat(changedUser, is(equalTo(newUser)));
+			assertThat(changedUser, is(newUser));
 
 		}
 
@@ -181,7 +180,7 @@ public class UserTest {
 
 		final User newUser = User.builder().displayName(displayName).build();
 
-		assertThat(newUser.getDisplayName(), is(equalTo(displayName)));
+		assertThat(newUser.getDisplayName(), is(displayName));
 
 		final String[] testedDisplayNames = { displayName, "", "newUser", "Long  With     Whitespace", "12345" };
 
@@ -189,8 +188,8 @@ public class UserTest {
 		for (String newDisplayName : testedDisplayNames) {
 
 			changedUser = newUser.withDisplayName(newDisplayName);
-			assertThat(changedUser.getDisplayName(), is(equalTo(newDisplayName)));
-			assertThat(changedUser, is(equalTo(newUser)));
+			assertThat(changedUser.getDisplayName(), is(newDisplayName));
+			assertThat(changedUser, is(newUser));
 
 		}
 
@@ -208,15 +207,15 @@ public class UserTest {
 
 		final User newUser = User.builder().displayName(displayName).email(email).build();
 
-		assertThat(newUser.getEmail(), is(equalTo(email)));
+		assertThat(newUser.getEmail(), is(email));
 
 		User changedUser;
 
 		for (String newEmail : testedStrings) {
 
 			changedUser = newUser.withEmail(newEmail);
-			assertThat(changedUser.getEmail(), is(equalTo(newEmail)));
-			assertThat(changedUser, is(equalTo(newUser)));
+			assertThat(changedUser.getEmail(), is(newEmail));
+			assertThat(changedUser, is(newUser));
 
 		}
 
@@ -254,15 +253,15 @@ public class UserTest {
 
 		final User newUser = User.builder().displayName(displayName).key(key).build();
 
-		assertThat(newUser.getKey(), is(equalTo(key)));
+		assertThat(newUser.getKey(), is(key));
 
 		User changedUser;
 
 		for (byte[] newKey : testedKeys) {
 
 			changedUser = newUser.withKey(newKey);
-			assertThat(changedUser.getKey(), is(equalTo(newKey)));
-			assertThat(changedUser, is(equalTo(newUser)));
+			assertThat(changedUser.getKey(), is(newKey));
+			assertThat(changedUser, is(newUser));
 
 		}
 

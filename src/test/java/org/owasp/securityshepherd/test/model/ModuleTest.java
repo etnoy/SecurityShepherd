@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.model.Module;
-import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.model.Module.ModuleBuilder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -41,7 +40,7 @@ public class ModuleTest {
 			builder.description(description);
 
 			assertThat(builder.build(), instanceOf(Module.class));
-			assertThat(builder.build().getDescription(), is(equalTo(description)));
+			assertThat(builder.build().getDescription(), is(description));
 
 		}
 
@@ -70,7 +69,7 @@ public class ModuleTest {
 			builder.isExactFlag(isExactFlag);
 
 			assertThat(builder.build(), instanceOf(Module.class));
-			assertThat(builder.build().isExactFlag(), is(equalTo(isExactFlag)));
+			assertThat(builder.build().isExactFlag(), is(isExactFlag));
 
 		}
 
@@ -86,7 +85,7 @@ public class ModuleTest {
 			builder.isFlagEnabled(isFlagEnabled);
 
 			assertThat(builder.build(), instanceOf(Module.class));
-			assertThat(builder.build().isFlagEnabled(), is(equalTo(isFlagEnabled)));
+			assertThat(builder.build().isFlagEnabled(), is(isFlagEnabled));
 
 		}
 
@@ -102,7 +101,7 @@ public class ModuleTest {
 			builder.isOpen(isOpen);
 
 			assertThat(builder.build(), instanceOf(Module.class));
-			assertThat(builder.build().isOpen(), is(equalTo(isOpen)));
+			assertThat(builder.build().isOpen(), is(isOpen));
 
 		}
 
@@ -127,7 +126,7 @@ public class ModuleTest {
 			builder.name(name);
 
 			assertThat(builder.build(), instanceOf(Module.class));
-			assertThat(builder.build().getName(), is(equalTo(name)));
+			assertThat(builder.build().getName(), is(name));
 
 		}
 
@@ -143,8 +142,8 @@ public class ModuleTest {
 
 		final ModuleBuilder builder = Module.builder();
 
-		assertThat(builder.toString(), is(equalTo(
-				"Module.ModuleBuilder(id=0, name=null, description=null, isFlagEnabled$value=false, isExactFlag$value=false, flag=null, isOpen$value=false)")));
+		assertThat(builder.toString(), is(
+				"Module.ModuleBuilder(id=0, name=null, description=null, isFlagEnabled$value=false, isExactFlag$value=false, flag=null, isOpen$value=false)"));
 
 	}
 
@@ -165,15 +164,15 @@ public class ModuleTest {
 
 		final Module testModule = Module.builder().name("TestModule").description("Description").build();
 
-		assertThat(testModule.getDescription(), is(equalTo("Description")));
+		assertThat(testModule.getDescription(), is("Description"));
 
 		Module changedModule;
 
 		for (String newDescription : testedDescriptions) {
 
 			changedModule = testModule.withDescription(newDescription);
-			assertThat(changedModule.getDescription(), is(equalTo(newDescription)));
-			assertThat(changedModule, is(equalTo(testModule)));
+			assertThat(changedModule.getDescription(), is(newDescription));
+			assertThat(changedModule, is(testModule));
 
 		}
 
@@ -200,15 +199,15 @@ public class ModuleTest {
 
 		final Module testModule = Module.builder().name("TestModule").flag("abc123xyz789").build();
 
-		assertThat(testModule.getFlag(), is(equalTo("abc123xyz789")));
+		assertThat(testModule.getFlag(), is("abc123xyz789"));
 
 		Module changedModule;
 
 		for (String newFlag : testedFlags) {
 
 			changedModule = testModule.withFlag(newFlag);
-			assertThat(changedModule.getFlag(), is(equalTo(newFlag)));
-			assertThat(changedModule, is(equalTo(testModule)));
+			assertThat(changedModule.getFlag(), is(newFlag));
+			assertThat(changedModule, is(testModule));
 
 		}
 
@@ -263,15 +262,15 @@ public class ModuleTest {
 
 		final Module testModule = Module.builder().name("TestModule").build();
 
-		assertThat(testModule.getName(), is(equalTo("TestModule")));
+		assertThat(testModule.getName(), is("TestModule"));
 
 		Module changedModule;
 
 		for (String newName : testedNames) {
 
 			changedModule = testModule.withName(newName);
-			assertThat(changedModule.getName(), is(equalTo(newName)));
-			assertThat(changedModule, is(equalTo(testModule)));
+			assertThat(changedModule.getName(), is(newName));
+			assertThat(changedModule, is(testModule));
 
 		}
 

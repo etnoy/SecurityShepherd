@@ -1,6 +1,5 @@
 package org.owasp.securityshepherd.test.model;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -93,7 +92,7 @@ public class ClassEntityTest {
 
 		final ClassEntity testClass = ClassEntity.builder().name(name).build();
 
-		assertThat(testClass.getName(), is(equalTo(name)));
+		assertThat(testClass.getName(), is(name));
 
 		final String[] testedNames = { name, "", "newClass", "Long  With     Whitespace", "12345" };
 
@@ -101,8 +100,8 @@ public class ClassEntityTest {
 		for (String newName : testedNames) {
 
 			changedClass = testClass.withName(newName);
-			assertThat(changedClass.getName(), is(equalTo(newName)));
-			assertThat(changedClass, is(equalTo(testClass)));
+			assertThat(changedClass.getName(), is(newName));
+			assertThat(changedClass, is(testClass));
 
 		}
 
@@ -115,7 +114,7 @@ public class ClassEntityTest {
 
 		final ClassEntity testClass = ClassEntity.builder().name(name).build();
 
-		assertThat(testClass.getName(), is(equalTo(name)));
+		assertThat(testClass.getName(), is(name));
 
 		assertThrows(NullPointerException.class, () -> testClass.withName(null));
 

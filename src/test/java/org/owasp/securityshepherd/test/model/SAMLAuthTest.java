@@ -3,18 +3,12 @@ package org.owasp.securityshepherd.test.model;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.sql.Timestamp;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.owasp.securityshepherd.model.Auth;
-import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.model.SAMLAuth;
-import org.owasp.securityshepherd.model.Submission;
 import org.owasp.securityshepherd.model.SAMLAuth.SAMLAuthBuilder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;

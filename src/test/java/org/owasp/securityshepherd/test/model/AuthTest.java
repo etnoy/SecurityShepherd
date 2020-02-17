@@ -1,6 +1,5 @@
 package org.owasp.securityshepherd.test.model;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -14,7 +13,6 @@ import org.owasp.securityshepherd.model.Auth;
 import org.owasp.securityshepherd.model.Auth.AuthBuilder;
 import org.owasp.securityshepherd.model.PasswordAuth;
 import org.owasp.securityshepherd.model.SAMLAuth;
-import org.owasp.securityshepherd.model.Submission;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -31,8 +29,8 @@ public class AuthTest {
 
 		final AuthBuilder builder = Auth.builder();
 
-		assertThat(builder.toString(), is(equalTo(
-				"Auth.AuthBuilder(isEnabled$value=false, badLoginCount$value=0, isAdmin$value=false, suspendedUntil$value=null, suspensionMessage=null, accountCreated$value=null, lastLogin$value=null, lastLoginMethod=null, password=null, saml=null)")));
+		assertThat(builder.toString(), is(
+				"Auth.AuthBuilder(isEnabled$value=false, badLoginCount$value=0, isAdmin$value=false, suspendedUntil$value=null, suspensionMessage=null, accountCreated$value=null, lastLogin$value=null, lastLoginMethod=null, password=null, saml=null)"));
 
 	}
 
@@ -48,7 +46,7 @@ public class AuthTest {
 			builder.accountCreated(new Timestamp(accountCreated));
 
 			assertThat(builder.build(), instanceOf(Auth.class));
-			assertThat(builder.build().getAccountCreated(), is(equalTo(new Timestamp(accountCreated))));
+			assertThat(builder.build().getAccountCreated(), is(new Timestamp(accountCreated)));
 
 		}
 
@@ -143,7 +141,7 @@ public class AuthTest {
 			builder.lastLogin(new Timestamp(lastLogin));
 
 			assertThat(builder.build(), instanceOf(Auth.class));
-			assertThat(builder.build().getLastLogin(), is(equalTo(new Timestamp(lastLogin))));
+			assertThat(builder.build().getLastLogin(), is(new Timestamp(lastLogin)));
 
 		}
 
@@ -228,7 +226,7 @@ public class AuthTest {
 			builder.suspendedUntil(new Timestamp(suspendedUntil));
 
 			assertThat(builder.build(), instanceOf(Auth.class));
-			assertThat(builder.build().getSuspendedUntil(), is(equalTo(new Timestamp(suspendedUntil))));
+			assertThat(builder.build().getSuspendedUntil(), is(new Timestamp(suspendedUntil)));
 
 		}
 
@@ -283,7 +281,7 @@ public class AuthTest {
 		for (String newLastLoginMethod : testedLastLoginMethods) {
 
 			final Auth changedAuth = auth.withLastLoginMethod(newLastLoginMethod);
-			assertThat(changedAuth.getLastLoginMethod(), is(equalTo(newLastLoginMethod)));
+			assertThat(changedAuth.getLastLoginMethod(), is(newLastLoginMethod));
 
 		}
 
@@ -302,7 +300,7 @@ public class AuthTest {
 		for (String newSuspensionMessage : testedSuspensionMessages) {
 
 			final Auth changedAuth = auth.withSuspensionMessage(newSuspensionMessage);
-			assertThat(changedAuth.getSuspensionMessage(), is(equalTo(newSuspensionMessage)));
+			assertThat(changedAuth.getSuspensionMessage(), is(newSuspensionMessage));
 
 		}
 
