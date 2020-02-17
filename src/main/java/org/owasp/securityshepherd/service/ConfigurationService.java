@@ -4,7 +4,6 @@ import java.util.Base64;
 import java.util.Optional;
 
 import org.owasp.securityshepherd.model.Configuration;
-import org.owasp.securityshepherd.model.Configuration.ConfigurationBuilder;
 import org.owasp.securityshepherd.repository.ConfigurationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
