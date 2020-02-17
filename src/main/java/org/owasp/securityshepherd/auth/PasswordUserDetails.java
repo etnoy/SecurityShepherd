@@ -2,7 +2,6 @@ package org.owasp.securityshepherd.auth;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import org.owasp.securityshepherd.model.User;
 import org.springframework.security.core.GrantedAuthority;
@@ -34,9 +33,7 @@ public class PasswordUserDetails implements UserDetails {
 			role = "player";
 		}
 
-		final List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(role));
-
-		return authorities;
+		return Collections.singletonList(new SimpleGrantedAuthority(role));
 
 	}
 

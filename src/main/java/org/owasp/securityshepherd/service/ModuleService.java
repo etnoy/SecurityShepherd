@@ -2,6 +2,11 @@ package org.owasp.securityshepherd.service;
 
 import java.util.Optional;
 
+import org.owasp.securityshepherd.exception.NegativeEntityIdException;
+import org.owasp.securityshepherd.exception.UserIdNotFoundException;
+import org.owasp.securityshepherd.exception.ZeroEntityIdException;
+import org.owasp.securityshepherd.exception.EntityIdException;
+import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.model.Module.ModuleBuilder;
 import org.owasp.securityshepherd.repository.ModuleRepository;
@@ -56,13 +61,22 @@ public final class ModuleService {
 
 	}
 
-	public boolean verifyFlag(final int userId, final int moduleId, final String submittedFlag) {
+	public boolean verifyFlag(final int userId, final int moduleId, final String submittedFlag)
+			throws ModuleIdNotFoundException, UserIdNotFoundException {
 
 		if (submittedFlag == null) {
 			return false;
 		}
 
-		final Module submittedModule = get(moduleId).get();
+		final Optional<Module> returnedModule = get(moduleId);
+
+		if (!returnedModule.isPresent()) {
+
+			throw new ModuleIdNotFoundException();
+
+		}
+
+		final Module submittedModule = returnedModule.get();
 
 		if (!submittedModule.isFlagEnabled()) {
 			// TODO: maybe a better exception here?
@@ -70,8 +84,10 @@ public final class ModuleService {
 		}
 
 		if (submittedModule.isExactFlag()) {
+			
 			// Flag is of the exact type, so no cryptography needed
 			return submittedModule.getFlag().equalsIgnoreCase(submittedFlag);
+			
 		} else {
 
 			final String correctFlag = getDynamicFlag(userId, moduleId);
@@ -82,12 +98,12 @@ public final class ModuleService {
 
 	}
 
-	public void setExactFlag(final int id, final String exactFlag) {
+	public void setExactFlag(final int id, final String exactFlag) throws EntityIdException {
 
 		if (id == 0) {
-			throw new IllegalArgumentException("id can't be zero");
+			throw new ZeroEntityIdException();
 		} else if (id < 0) {
-			throw new IllegalArgumentException("id can't be negative");
+			throw new NegativeEntityIdException();
 		}
 
 		if (exactFlag == null) {
@@ -97,7 +113,16 @@ public final class ModuleService {
 
 		}
 
-		final Module exactFlagModule = get(id).get().withFlagEnabled(true).withExactFlag(true).withFlag(exactFlag);
+		final Optional<Module> returnedModule = get(id);
+
+		if (!returnedModule.isPresent()) {
+
+			throw new ModuleIdNotFoundException();
+
+		}
+
+		final Module exactFlagModule = returnedModule.get().withFlagEnabled(true).withExactFlag(true)
+				.withFlag(exactFlag);
 
 		moduleRepository.save(exactFlagModule);
 
@@ -121,10 +146,20 @@ public final class ModuleService {
 
 	}
 
-	public String getDynamicFlag(final int userId, final int moduleId) {
+	public String getDynamicFlag(final int userId, final int moduleId) throws ModuleIdNotFoundException, UserIdNotFoundException {
 
-		final Module dynamicFlagModule = get(moduleId).get();
 
+		final Optional<Module> returnedModule = get(moduleId);
+
+		if (!returnedModule.isPresent()) {
+
+			throw new ModuleIdNotFoundException();
+
+		}
+		
+		final Module dynamicFlagModule = returnedModule.get();
+
+		
 		if (!dynamicFlagModule.isFlagEnabled()) {
 			throw new IllegalArgumentException("Can't get dynamic flag if flag is disabled");
 		}

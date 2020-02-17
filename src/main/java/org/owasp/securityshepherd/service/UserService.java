@@ -2,11 +2,12 @@ package org.owasp.securityshepherd.service;
 
 import java.util.Optional;
 
+import org.owasp.securityshepherd.exception.UserIdNotFoundException;
 import org.owasp.securityshepherd.model.Auth;
-import org.owasp.securityshepherd.model.PasswordAuth;
-import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.model.Auth.AuthBuilder;
+import org.owasp.securityshepherd.model.PasswordAuth;
 import org.owasp.securityshepherd.model.PasswordAuth.PasswordAuthBuilder;
+import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.model.User.UserBuilder;
 import org.owasp.securityshepherd.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,12 +103,20 @@ public final class UserService {
 
 	}
 
-	public byte[] getKey(final int id) {
+	public byte[] getKey(final int id) throws UserIdNotFoundException {
 
 		if (id == 0) {
 			throw new IllegalArgumentException("id can't be zero");
 		} else if (id < 0) {
 			throw new IllegalArgumentException("id can't be negative");
+		}
+		
+		final Optional<User> returnedUser = get(id);
+
+		if (!returnedUser.isPresent()) {
+
+			throw new UserIdNotFoundException();
+
 		}
 
 		User getKeyUser = get(id).get();

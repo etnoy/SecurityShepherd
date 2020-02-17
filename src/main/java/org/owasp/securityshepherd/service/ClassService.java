@@ -2,6 +2,7 @@ package org.owasp.securityshepherd.service;
 
 import java.util.Optional;
 
+import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
 import org.owasp.securityshepherd.model.ClassEntity;
 import org.owasp.securityshepherd.model.ClassEntity.ClassBuilder;
 import org.owasp.securityshepherd.repository.ClassRepository;
@@ -42,11 +43,19 @@ public final class ClassService {
 
 	}
 
-	public void setName(final int id, final String displayName) {
+	public void setName(final int id, final String name) throws ClassIdNotFoundException {
 
-		ClassEntity newNameClass = get(id).get().withName(displayName);
+		Optional<ClassEntity> returnedClass = get(id);
 
-		classRepository.save(newNameClass);
+		if (returnedClass.isPresent()) {
+
+			classRepository.save(returnedClass.get().withName(name));
+
+		} else {
+
+			throw new ClassIdNotFoundException();
+
+		}
 
 	}
 

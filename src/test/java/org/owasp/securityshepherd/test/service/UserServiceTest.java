@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.owasp.securityshepherd.exception.UserIdNotFoundException;
 import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -152,7 +153,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void getKey_KeyExists_UsesExistingKey() {
+	public void getKey_KeyExists_UsesExistingKey() throws UserIdNotFoundException {
 
 		String userName = "getKey_KeyExists_UsesExistingKey";
 
@@ -180,7 +181,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void getKey_NoKeyExists_GeneratesKey() {
+	public void getKey_NoKeyExists_GeneratesKey() throws UserIdNotFoundException {
 
 		String userName = "getKey_NoKeyExists_GeneratesKey";
 

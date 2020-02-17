@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
 import org.owasp.securityshepherd.model.ClassEntity;
 import org.owasp.securityshepherd.service.ClassService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +75,7 @@ public class ClassServiceTest {
 
 
 	@Test
-	public void setName_ValidName_Succeeds() {
+	public void setName_ValidName_Succeeds() throws ClassIdNotFoundException {
 
 		String className = "setDisplayName_ValidName";
 		String newClassName = "new_rename_ValidName";
