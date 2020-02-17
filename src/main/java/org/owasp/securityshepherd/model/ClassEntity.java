@@ -12,7 +12,7 @@ import lombok.With;
 @Value
 @Table("class")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Builder
+@Builder(builderClassName = "ClassBuilder")
 @With
 public final class ClassEntity {
 	
