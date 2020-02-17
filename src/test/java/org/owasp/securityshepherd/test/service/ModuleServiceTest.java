@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.exception.EntityIdException;
+import org.owasp.securityshepherd.exception.InvalidFlagStateException;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
@@ -79,11 +80,6 @@ public class ModuleServiceTest {
 		assertThat(returnedModule.isExactFlag(), is(true));
 
 		assertThat(returnedModule.getFlag(), is(exactFlag));
-
-	}
-
-	@Test
-	public void setExactFlag_ZeroModuleId_ThrowsException() {
 
 	}
 
@@ -167,7 +163,7 @@ public class ModuleServiceTest {
 	}
 
 	@Test
-	public void verifyFlag_ValidExactFlag_ReturnsTrue() throws EntityIdException {
+	public void verifyFlag_ValidExactFlag_ReturnsTrue() throws EntityIdException, InvalidFlagStateException {
 
 		final String name = "verifyFlag_ValidExactFlag";
 		final String moduleName = name + "_module";
@@ -183,7 +179,8 @@ public class ModuleServiceTest {
 	}
 
 	@Test
-	public void verifyFlag_ValidExactUpperLowerCaseFlag_ReturnsTrue() throws EntityIdException {
+	public void verifyFlag_ValidExactUpperLowerCaseFlag_ReturnsTrue()
+			throws EntityIdException, InvalidFlagStateException {
 
 		final String name = "verifyFlag_ValidExactUpperLowerCaseFlag";
 		final String moduleName = name + "_module";
@@ -201,7 +198,7 @@ public class ModuleServiceTest {
 	}
 
 	@Test
-	public void verifyFlag_InvalidExactFlag_ReturnsFalse() throws EntityIdException {
+	public void verifyFlag_InvalidExactFlag_ReturnsFalse() throws EntityIdException, InvalidFlagStateException {
 
 		final String name = "verifyFlag_InvalidExactFlag";
 		final String moduleName = name + "_module";
@@ -220,7 +217,7 @@ public class ModuleServiceTest {
 	}
 
 	@Test
-	public void verifyFlag_NullFlag_ReturnsFalse() throws EntityIdException {
+	public void verifyFlag_NullFlag_ReturnsFalse() throws EntityIdException, InvalidFlagStateException {
 
 		final int moduleId = moduleService.create("TestModule").getId();
 		final int userId = userService.create("TestUser").getId();
@@ -263,7 +260,7 @@ public class ModuleServiceTest {
 
 	@Test
 	public void verifyFlag_ValidDynamicFlag_ReturnsTrue() throws ModuleIdNotFoundException, UserIdNotFoundException,
-			InvalidUserIdException, InvalidModuleIdException {
+			InvalidUserIdException, InvalidModuleIdException, InvalidFlagStateException {
 
 		final int moduleId = moduleService.create("TestModule").getId();
 		final int userId = userService.create("TestUser").getId();
@@ -277,7 +274,7 @@ public class ModuleServiceTest {
 
 	@Test
 	public void verifyFlag_InvalidDynamicFlag_ReturnsFalse() throws ModuleIdNotFoundException, UserIdNotFoundException,
-			InvalidUserIdException, InvalidModuleIdException {
+			InvalidUserIdException, InvalidModuleIdException, InvalidFlagStateException {
 
 		final int moduleId = moduleService.create("TestModule").getId();
 		final int userId = userService.create("TestUser").getId();

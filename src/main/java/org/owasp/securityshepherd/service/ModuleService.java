@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.owasp.securityshepherd.exception.UserIdNotFoundException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.EntityIdException;
+import org.owasp.securityshepherd.exception.InvalidFlagStateException;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
 import org.owasp.securityshepherd.model.Module;
@@ -62,7 +63,7 @@ public final class ModuleService {
 	}
 
 	public boolean verifyFlag(final int userId, final int moduleId, final String submittedFlag)
-			throws ModuleIdNotFoundException, UserIdNotFoundException, InvalidUserIdException {
+			throws ModuleIdNotFoundException, UserIdNotFoundException, InvalidUserIdException, InvalidFlagStateException {
 
 		if (submittedFlag == null) {
 			return false;
@@ -79,8 +80,8 @@ public final class ModuleService {
 		final Module submittedModule = returnedModule.get();
 
 		if (!submittedModule.isFlagEnabled()) {
-			// TODO: maybe a better exception here?
-			throw new IllegalArgumentException();
+			
+			throw new InvalidFlagStateException("Cannot verify flag if flag is not enabled");
 		}
 
 		if (submittedModule.isExactFlag()) {
