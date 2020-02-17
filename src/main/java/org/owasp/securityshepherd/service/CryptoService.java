@@ -19,7 +19,7 @@ public final class CryptoService {
 	@Autowired
 	KeyService keyService;
 
-	public byte[] hmac(final byte[] key, final byte[] message) throws CryptographicException {
+	public byte[] hmac(final byte[] key, final byte[] message) {
 
 		final Mac hmac512;
 
