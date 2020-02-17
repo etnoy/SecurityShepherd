@@ -136,7 +136,7 @@ public final class ModuleService {
 
 		final byte[] baseFlag = dynamicFlagModule.getFlag().getBytes();
 
-		final byte[] generatedFlag = cryptoService.HMAC(fullKey, baseFlag);
+		final byte[] generatedFlag = cryptoService.hmac(fullKey, baseFlag);
 
 		return keyService.convertByteKeyToString(generatedFlag);
 

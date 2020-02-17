@@ -20,12 +20,12 @@ public final class CryptoService {
 	@Autowired
 	KeyService keyService;
 
-	public byte[] HMAC(final byte[] key, final byte[] message) {
+	public byte[] hmac(final byte[] key, final byte[] message) {
 		
-		final Mac HMAC512;
+		final Mac hmac512;
 		
 		try {
-			HMAC512 = Mac.getInstance("HmacSHA512");
+			hmac512 = Mac.getInstance("HmacSHA512");
 		} catch (NoSuchAlgorithmException e) {
 			log.error("Could not initialize HMAC-SHA512");
 			throw new RuntimeException(e);
@@ -34,13 +34,13 @@ public final class CryptoService {
 		SecretKeySpec keySpec = new SecretKeySpec(key, "HmacSHA512");
 
 		try {
-			HMAC512.init(keySpec);
+			hmac512.init(keySpec);
 		} catch (InvalidKeyException e) {
 			log.error("Server key was invalid when initializing HMAC-SHA512");
 			throw new RuntimeException(e);
 		}
 		
-		return HMAC512.doFinal(message);
+		return hmac512.doFinal(message);
 	}
 
 }
