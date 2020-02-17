@@ -1,6 +1,6 @@
 package org.owasp.securityshepherd.exception;
 
-public class ModuleIdNotFoundException extends EntityIdException {
+public class ModuleIdNotFoundException extends EntityIdNotFoundException {
 
 	/**
 	 * 

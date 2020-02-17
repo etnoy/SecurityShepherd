@@ -131,15 +131,23 @@ public final class ModuleService {
 
 	}
 
-	public void setDynamicFlag(final int id) {
+	public void setDynamicFlag(final int id) throws InvalidModuleIdException, ModuleIdNotFoundException {
 
-		if (id == 0) {
-			throw new IllegalArgumentException("id can't be zero");
-		} else if (id < 0) {
-			throw new IllegalArgumentException("id can't be negative");
+		if (id <= 0) {
+			
+			throw new InvalidModuleIdException();
+			
+		} 
+		
+		final Optional<Module> returnedModule = get(id);
+
+		if (!returnedModule.isPresent()) {
+
+			throw new ModuleIdNotFoundException();
+
 		}
 
-		Module dynamicFlagModule = get(id).get().withFlagEnabled(true).withExactFlag(false);
+		Module dynamicFlagModule = returnedModule.get().withFlagEnabled(true).withExactFlag(false);
 
 		if (dynamicFlagModule.getFlag() == null) {
 			dynamicFlagModule = dynamicFlagModule.withFlag(keyService.generateRandomString(16));
@@ -179,9 +187,17 @@ public final class ModuleService {
 
 	}
 
-	public void setName(final int id, final String name) {
+	public void setName(final int id, final String name) throws ModuleIdNotFoundException {
 
-		final Module newDisplayNameModule = get(id).get().withName(name);
+		final Optional<Module> returnedModule = get(id);
+
+		if (!returnedModule.isPresent()) {
+
+			throw new ModuleIdNotFoundException();
+
+		}
+		
+		final Module newDisplayNameModule = returnedModule.get().withName(name);
 
 		moduleRepository.save(newDisplayNameModule);
 

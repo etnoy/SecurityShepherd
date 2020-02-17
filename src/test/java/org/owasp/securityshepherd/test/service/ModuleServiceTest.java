@@ -85,7 +85,6 @@ public class ModuleServiceTest {
 	@Test
 	public void setExactFlag_ZeroModuleId_ThrowsException() {
 
-
 	}
 
 	@Test
@@ -118,7 +117,8 @@ public class ModuleServiceTest {
 	}
 
 	@Test
-	public void setDynamicFlag_NoPreviousFlag_GeneratesNewFlag() {
+	public void setDynamicFlag_NoPreviousFlag_GeneratesNewFlag()
+			throws InvalidModuleIdException, ModuleIdNotFoundException {
 
 		Module returnedModule = moduleService.create("TestModule");
 		final int moduleId = returnedModule.getId();
@@ -140,7 +140,8 @@ public class ModuleServiceTest {
 	}
 
 	@Test
-	public void setDynamicFlag_FlagPreviouslySet_KeepsFlag() {
+	public void setDynamicFlag_FlagPreviouslySet_KeepsFlag()
+			throws InvalidModuleIdException, ModuleIdNotFoundException {
 
 		Module returnedModule = moduleService.create("TestModule");
 		final int moduleId = returnedModule.getId();
@@ -157,19 +158,11 @@ public class ModuleServiceTest {
 	}
 
 	@Test
-	public void setDynamicFlag_ZeroModuleId_ThrowsException() {
-
-		// TODO: better exception
-		assertThrows(IllegalArgumentException.class, () -> moduleService.setDynamicFlag(0));
-
-	}
-
-	@Test
 	public void setDynamicFlag_NegativeModuleId_ThrowsException() {
 
-		// TODO: better exception
-		assertThrows(IllegalArgumentException.class, () -> moduleService.setDynamicFlag(-1));
-		assertThrows(IllegalArgumentException.class, () -> moduleService.setDynamicFlag(-9999));
+		assertThrows(InvalidModuleIdException.class, () -> moduleService.setDynamicFlag(0));
+		assertThrows(InvalidModuleIdException.class, () -> moduleService.setDynamicFlag(-1));
+		assertThrows(InvalidModuleIdException.class, () -> moduleService.setDynamicFlag(-9999));
 
 	}
 
@@ -252,7 +245,8 @@ public class ModuleServiceTest {
 	}
 
 	@Test
-	public void getDynamicFlag_FlagSet_ReturnsFlag() throws ModuleIdNotFoundException, UserIdNotFoundException, InvalidUserIdException {
+	public void getDynamicFlag_FlagSet_ReturnsFlag() throws ModuleIdNotFoundException, UserIdNotFoundException,
+			InvalidUserIdException, InvalidModuleIdException {
 
 		final Module testModule = moduleService.create("TestModule");
 		final int moduleId = testModule.getId();
@@ -268,7 +262,8 @@ public class ModuleServiceTest {
 	}
 
 	@Test
-	public void verifyFlag_ValidDynamicFlag_ReturnsTrue() throws ModuleIdNotFoundException, UserIdNotFoundException, InvalidUserIdException {
+	public void verifyFlag_ValidDynamicFlag_ReturnsTrue() throws ModuleIdNotFoundException, UserIdNotFoundException,
+			InvalidUserIdException, InvalidModuleIdException {
 
 		final int moduleId = moduleService.create("TestModule").getId();
 		final int userId = userService.create("TestUser").getId();
@@ -281,7 +276,8 @@ public class ModuleServiceTest {
 	}
 
 	@Test
-	public void verifyFlag_InvalidDynamicFlag_ReturnsFalse() throws ModuleIdNotFoundException, UserIdNotFoundException, InvalidUserIdException {
+	public void verifyFlag_InvalidDynamicFlag_ReturnsFalse() throws ModuleIdNotFoundException, UserIdNotFoundException,
+			InvalidUserIdException, InvalidModuleIdException {
 
 		final int moduleId = moduleService.create("TestModule").getId();
 		final int userId = userService.create("TestUser").getId();
@@ -326,7 +322,7 @@ public class ModuleServiceTest {
 	}
 
 	@Test
-	public void setName_ValidName_Succeeds() {
+	public void setName_ValidName_Succeeds() throws ModuleIdNotFoundException {
 
 		final String name = "setName_ValidName";
 		final String newName = "new_rename_ValidName";

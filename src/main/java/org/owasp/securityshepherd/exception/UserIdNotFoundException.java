@@ -1,6 +1,6 @@
 package org.owasp.securityshepherd.exception;
 
-public class UserIdNotFoundException extends EntityIdException {
+public class UserIdNotFoundException extends EntityIdNotFoundException {
 
 	/**
 	 * 
