@@ -299,8 +299,7 @@ public class ModuleServiceTest {
 
 		assertThat(testedModule.isFlagEnabled(), is(false));
 
-		// TODO: better exception
-		assertThrows(IllegalArgumentException.class, () -> moduleService.verifyFlag(userId, moduleId, "flag"));
+		assertThrows(InvalidFlagStateException.class, () -> moduleService.verifyFlag(userId, moduleId, "flag"));
 
 	}
 
