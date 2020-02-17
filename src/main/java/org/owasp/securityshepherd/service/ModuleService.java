@@ -2,10 +2,10 @@ package org.owasp.securityshepherd.service;
 
 import java.util.Optional;
 
-import org.owasp.securityshepherd.exception.NegativeEntityIdException;
 import org.owasp.securityshepherd.exception.UserIdNotFoundException;
-import org.owasp.securityshepherd.exception.ZeroEntityIdException;
+import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.EntityIdException;
+import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.model.Module.ModuleBuilder;
@@ -62,7 +62,7 @@ public final class ModuleService {
 	}
 
 	public boolean verifyFlag(final int userId, final int moduleId, final String submittedFlag)
-			throws ModuleIdNotFoundException, UserIdNotFoundException {
+			throws ModuleIdNotFoundException, UserIdNotFoundException, InvalidUserIdException {
 
 		if (submittedFlag == null) {
 			return false;
@@ -84,10 +84,10 @@ public final class ModuleService {
 		}
 
 		if (submittedModule.isExactFlag()) {
-			
+
 			// Flag is of the exact type, so no cryptography needed
 			return submittedModule.getFlag().equalsIgnoreCase(submittedFlag);
-			
+
 		} else {
 
 			final String correctFlag = getDynamicFlag(userId, moduleId);
@@ -100,15 +100,18 @@ public final class ModuleService {
 
 	public void setExactFlag(final int id, final String exactFlag) throws EntityIdException {
 
-		if (id == 0) {
-			throw new ZeroEntityIdException();
-		} else if (id < 0) {
-			throw new NegativeEntityIdException();
+		if (id <= 0) {
+
+			throw new InvalidModuleIdException();
+
 		}
 
 		if (exactFlag == null) {
+
 			throw new NullPointerException("Flag can't be null");
+
 		} else if (exactFlag.isEmpty()) {
+
 			throw new IllegalArgumentException("Flag can't be empty");
 
 		}
@@ -146,8 +149,8 @@ public final class ModuleService {
 
 	}
 
-	public String getDynamicFlag(final int userId, final int moduleId) throws ModuleIdNotFoundException, UserIdNotFoundException {
-
+	public String getDynamicFlag(final int userId, final int moduleId)
+			throws ModuleIdNotFoundException, UserIdNotFoundException, InvalidUserIdException {
 
 		final Optional<Module> returnedModule = get(moduleId);
 
@@ -156,10 +159,9 @@ public final class ModuleService {
 			throw new ModuleIdNotFoundException();
 
 		}
-		
+
 		final Module dynamicFlagModule = returnedModule.get();
 
-		
 		if (!dynamicFlagModule.isFlagEnabled()) {
 			throw new IllegalArgumentException("Can't get dynamic flag if flag is disabled");
 		}

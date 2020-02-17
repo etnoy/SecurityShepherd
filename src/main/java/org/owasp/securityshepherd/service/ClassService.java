@@ -64,6 +64,12 @@ public final class ClassService {
 		return classRepository.count();
 
 	}
+	
+	public boolean existsById(final int id) {
+		
+		return classRepository.existsById(id);
+		
+	}
 
 	public Optional<ClassEntity> get(final int id) {
 

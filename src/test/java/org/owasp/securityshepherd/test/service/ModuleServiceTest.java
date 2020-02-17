@@ -12,6 +12,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.exception.EntityIdException;
+import org.owasp.securityshepherd.exception.InvalidModuleIdException;
+import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
 import org.owasp.securityshepherd.exception.UserIdNotFoundException;
 import org.owasp.securityshepherd.model.Module;
@@ -83,15 +85,15 @@ public class ModuleServiceTest {
 	@Test
 	public void setExactFlag_ZeroModuleId_ThrowsException() {
 
-		assertThrows(IllegalArgumentException.class, () -> moduleService.setExactFlag(0, "flag"));
 
 	}
 
 	@Test
-	public void setExactFlag_NegativeModuleId_ThrowsException() {
+	public void setExactFlag_InvalidModuleId_ThrowsException() {
 
-		assertThrows(IllegalArgumentException.class, () -> moduleService.setExactFlag(-1, "flag"));
-		assertThrows(IllegalArgumentException.class, () -> moduleService.setExactFlag(-9999, "flag"));
+		assertThrows(InvalidModuleIdException.class, () -> moduleService.setExactFlag(0, "flag"));
+		assertThrows(InvalidModuleIdException.class, () -> moduleService.setExactFlag(-1, "flag"));
+		assertThrows(InvalidModuleIdException.class, () -> moduleService.setExactFlag(-9999, "flag"));
 
 	}
 
@@ -250,7 +252,7 @@ public class ModuleServiceTest {
 	}
 
 	@Test
-	public void getDynamicFlag_FlagSet_ReturnsFlag() throws ModuleIdNotFoundException, UserIdNotFoundException {
+	public void getDynamicFlag_FlagSet_ReturnsFlag() throws ModuleIdNotFoundException, UserIdNotFoundException, InvalidUserIdException {
 
 		final Module testModule = moduleService.create("TestModule");
 		final int moduleId = testModule.getId();
@@ -266,7 +268,7 @@ public class ModuleServiceTest {
 	}
 
 	@Test
-	public void verifyFlag_ValidDynamicFlag_ReturnsTrue() throws ModuleIdNotFoundException, UserIdNotFoundException {
+	public void verifyFlag_ValidDynamicFlag_ReturnsTrue() throws ModuleIdNotFoundException, UserIdNotFoundException, InvalidUserIdException {
 
 		final int moduleId = moduleService.create("TestModule").getId();
 		final int userId = userService.create("TestUser").getId();
@@ -279,7 +281,7 @@ public class ModuleServiceTest {
 	}
 
 	@Test
-	public void verifyFlag_InvalidDynamicFlag_ReturnsFalse() throws ModuleIdNotFoundException, UserIdNotFoundException {
+	public void verifyFlag_InvalidDynamicFlag_ReturnsFalse() throws ModuleIdNotFoundException, UserIdNotFoundException, InvalidUserIdException {
 
 		final int moduleId = moduleService.create("TestModule").getId();
 		final int userId = userService.create("TestUser").getId();

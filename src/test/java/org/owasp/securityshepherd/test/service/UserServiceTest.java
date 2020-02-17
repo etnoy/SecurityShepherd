@@ -8,7 +8,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.exception.UserIdNotFoundException;
+import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
+import org.owasp.securityshepherd.exception.InvalidClassIdException;
+import org.owasp.securityshepherd.exception.InvalidEntityIdException;
+import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.model.User;
+import org.owasp.securityshepherd.service.ClassService;
 import org.owasp.securityshepherd.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,6 +28,9 @@ public class UserServiceTest {
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private ClassService classService;
 
 	@Test
 	public void create_EmptyArgument_ThrowsException() {
@@ -100,7 +108,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void createPasswordUser_ValidData_Succeeds() {
+	public void createPasswordUser_ValidData_Succeeds() throws InvalidUserIdException {
 
 		String displayName = "createPasswordUser_ValidData";
 		String loginName = "_createPasswordUser_ValidData_";
@@ -117,7 +125,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void get_ExistingUserId_ReturnsUser() {
+	public void get_ExistingUserId_ReturnsUser() throws InvalidUserIdException {
 
 		final User testUser1 = userService.create("TestUser1");
 		final User testUser2 = userService.create("TestUser2");
@@ -130,15 +138,16 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void get_NegativeUserId_ThrowsException() {
+	public void get_InvalidUserId_ThrowsException() {
 
-		assertThrows(IllegalArgumentException.class, () -> userService.get(-1));
-		assertThrows(IllegalArgumentException.class, () -> userService.get(-1000));
+		assertThrows(InvalidUserIdException.class, () -> userService.get(-1));
+		assertThrows(InvalidUserIdException.class, () -> userService.get(-1000));
+		assertThrows(InvalidUserIdException.class, () -> userService.get(0));
 
 	}
 
 	@Test
-	public void get_NonExistentUserId_NotPresent() {
+	public void get_NonExistentUserId_NotPresent() throws InvalidUserIdException {
 
 		assertThat(userService.count(), is(0L));
 		assertThat(userService.get(1).isPresent(), is(false));
@@ -147,13 +156,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void get_ZeroUserId_ThrowsException() {
-
-		assertThrows(IllegalArgumentException.class, () -> userService.get(0));
-	}
-
-	@Test
-	public void getKey_KeyExists_UsesExistingKey() throws UserIdNotFoundException {
+	public void getKey_KeyExists_UsesExistingKey() throws UserIdNotFoundException, InvalidUserIdException {
 
 		String userName = "getKey_KeyExists_UsesExistingKey";
 
@@ -174,14 +177,16 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void getKey_NegativeUserId_ThrowsException() {
+	public void getKey_InvalideUserId_ThrowsException() {
 
-		assertThrows(IllegalArgumentException.class, () -> userService.getKey(-1));
-		assertThrows(IllegalArgumentException.class, () -> userService.getKey(-1000));
+		assertThrows(InvalidUserIdException.class, () -> userService.getKey(-1));
+		assertThrows(InvalidUserIdException.class, () -> userService.getKey(-1000));
+		assertThrows(InvalidUserIdException.class, () -> userService.getKey(0));
+
 	}
 
 	@Test
-	public void getKey_NoKeyExists_GeneratesKey() throws UserIdNotFoundException {
+	public void getKey_NoKeyExists_GeneratesKey() throws UserIdNotFoundException, InvalidEntityIdException {
 
 		String userName = "getKey_NoKeyExists_GeneratesKey";
 
@@ -196,28 +201,21 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void getKey_ZeroUserId_ThrowsException() {
+	public void setClass_ValidClass_Succeeds() throws UserIdNotFoundException, InvalidUserIdException, ClassIdNotFoundException, InvalidClassIdException {
 
-		assertThrows(IllegalArgumentException.class, () -> userService.getKey(0));
+		int userId = userService.create("TestUser").getId();
 
-	}
-
-	@Test
-	public void setClass_ValidClass_Succeeds() {
-
-		String userName = "setClass_ValidClass_user";
-
-		int userId = userService.create(userName).getId();
-
-		userService.setClassId(userId, 1);
+		int classId = classService.create("TestClass").getId();
+		
+		userService.setClassId(userId, classId);
 
 		User returnedUser = userService.get(userId).get();
-		assertThat(returnedUser.getClassId(), is(1));
+		assertThat(returnedUser.getClassId(), is(classId));
 
 	}
 
 	@Test
-	public void setDisplayName_ValidName_Succeeds() {
+	public void setDisplayName_ValidName_Succeeds() throws UserIdNotFoundException, InvalidUserIdException {
 
 		String userName = "setDisplayName_ValidName";
 		String newUserName = "new_rename_ValidName";

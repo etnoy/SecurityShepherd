@@ -3,6 +3,9 @@ package org.owasp.securityshepherd.service;
 import java.util.Optional;
 
 import org.owasp.securityshepherd.exception.UserIdNotFoundException;
+import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
+import org.owasp.securityshepherd.exception.InvalidClassIdException;
+import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.model.Auth;
 import org.owasp.securityshepherd.model.Auth.AuthBuilder;
 import org.owasp.securityshepherd.model.PasswordAuth;
@@ -24,6 +27,9 @@ public final class UserService {
 	@Autowired
 	UserRepository userRepository;
 
+	@Autowired
+	ClassService classService;
+	
 	@Autowired
 	KeyService rngService;
 
@@ -81,34 +87,12 @@ public final class UserService {
 
 	}
 
-	public void setDisplayName(final int id, final String displayName) {
+	public void setDisplayName(final int id, final String displayName) throws UserIdNotFoundException, InvalidUserIdException {
 
-		User newDisplayNameUser = get(id).get().withDisplayName(displayName);
-
-		userRepository.save(newDisplayNameUser);
-
-	}
-
-	public void setClassId(final int id, final int classId) {
-
-		User newClassIdUser = get(id).get().withClassId(classId);
-
-		userRepository.save(newClassIdUser);
-
-	}
-
-	public long count() {
-
-		return userRepository.count();
-
-	}
-
-	public byte[] getKey(final int id) throws UserIdNotFoundException {
-
-		if (id == 0) {
-			throw new IllegalArgumentException("id can't be zero");
-		} else if (id < 0) {
-			throw new IllegalArgumentException("id can't be negative");
+		if (id <= 0) {
+			
+			throw new InvalidUserIdException();
+			
 		}
 		
 		final Optional<User> returnedUser = get(id);
@@ -119,7 +103,65 @@ public final class UserService {
 
 		}
 
-		User getKeyUser = get(id).get();
+		userRepository.save(returnedUser.get().withDisplayName(displayName));
+
+	}
+
+	public void setClassId(final int id, final int classId) throws ClassIdNotFoundException, InvalidUserIdException, UserIdNotFoundException, InvalidClassIdException {
+
+		if (id <= 0) {
+			
+			throw new InvalidUserIdException();
+			
+		}
+		
+		if (classId <= 0) {
+			
+			throw new InvalidClassIdException();
+			
+		}
+		
+		final Optional<User> returnedUser = get(id);
+
+		if (!returnedUser.isPresent()) {
+
+			throw new UserIdNotFoundException();
+
+		}
+		
+		if(!classService.existsById(classId)) {
+			
+			throw new ClassIdNotFoundException();
+			
+		}
+
+		userRepository.save(returnedUser.get().withClassId(classId));
+
+	}
+
+	public long count() {
+
+		return userRepository.count();
+
+	}
+
+	public byte[] getKey(final int id) throws UserIdNotFoundException, InvalidUserIdException {
+
+		if (id <= 0) {
+			
+			throw new InvalidUserIdException();
+			
+		}
+
+		final Optional<User> returnedUser = get(id);
+
+		if (!returnedUser.isPresent()) {
+
+			throw new UserIdNotFoundException();
+
+		}
+
+		User getKeyUser = returnedUser.get();
 
 		byte[] currentKey = getKeyUser.getKey();
 
@@ -143,14 +185,12 @@ public final class UserService {
 
 	}
 
-	public Optional<User> get(final int id) {
+	public Optional<User> get(final int id) throws InvalidUserIdException {
 
-		if (id == 0) {
-			throw new IllegalArgumentException("id can't be zero");
-		} else if (id < 0) {
-			throw new IllegalArgumentException("id can't be negative");
-		}
-
+		if (id <= 0) {
+			throw new InvalidUserIdException();
+		} 
+		
 		return userRepository.findById(id);
 
 	}

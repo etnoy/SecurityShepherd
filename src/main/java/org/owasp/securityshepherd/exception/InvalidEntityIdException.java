@@ -1,6 +1,6 @@
 package org.owasp.securityshepherd.exception;
 
-public class ZeroEntityIdException extends EntityIdException {
+public abstract class InvalidEntityIdException extends EntityIdException {
 
 	/**
 	 * 
