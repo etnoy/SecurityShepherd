@@ -4,12 +4,11 @@ import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
+import org.owasp.securityshepherd.exception.RNGException;
 import org.springframework.stereotype.Service;
 
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @NoArgsConstructor
 @Service
 public final class KeyService {
@@ -20,8 +19,7 @@ public final class KeyService {
 		try {
 			strongPRNG = SecureRandom.getInstanceStrong();
 		} catch (NoSuchAlgorithmException e) {
-			log.error("Could not initialize PRNG");
-			throw new RuntimeException(e);
+			throw new RNGException("Could not initialize PRNG", e);
 		}
 
 		byte[] returnedBytes = new byte[numberOfBytes];
@@ -44,9 +42,9 @@ public final class KeyService {
 	}
 
 	public String generateRandomString(final int numberOfBytes) {
-		
+
 		return convertByteKeyToString(generateRandomBytes(numberOfBytes));
-		
+
 	}
 
 }
