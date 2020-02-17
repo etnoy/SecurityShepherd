@@ -1,5 +1,6 @@
 package org.owasp.securityshepherd.model;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 import org.springframework.data.annotation.Id;
@@ -14,7 +15,12 @@ import lombok.With;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder
 @With
-public final class Submission {
+public final class Submission implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5485881248601955741L;
 
 	@EqualsAndHashCode.Include
 	@Id

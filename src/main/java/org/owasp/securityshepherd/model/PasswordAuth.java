@@ -1,5 +1,7 @@
 package org.owasp.securityshepherd.model;
 
+import java.io.Serializable;
+
 import lombok.Builder;
 import lombok.Value;
 import lombok.EqualsAndHashCode;
@@ -10,20 +12,25 @@ import lombok.With;
 @EqualsAndHashCode
 @Builder
 @With
-public final class PasswordAuth {
+public final class PasswordAuth implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 32553442956391684L;
 
 	@NonNull
 	private final String loginName;
-	
+
 	private final String hashedPassword;
 
 	@Builder.Default
 	private final boolean isPasswordExpired = true;
 
 	PasswordAuth(final String loginName, final String hashedPassword, final boolean isPasswordExpired) {
-		this.loginName=loginName;
-		this.hashedPassword=hashedPassword;
-		this.isPasswordExpired=isPasswordExpired;
+		this.loginName = loginName;
+		this.hashedPassword = hashedPassword;
+		this.isPasswordExpired = isPasswordExpired;
 	}
-	
+
 }

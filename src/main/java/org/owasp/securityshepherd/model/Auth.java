@@ -1,5 +1,6 @@
 package org.owasp.securityshepherd.model;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 import lombok.Builder;
@@ -11,7 +12,12 @@ import lombok.With;
 @EqualsAndHashCode
 @Builder
 @With
-public final class Auth {
+public final class Auth implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1511082836956413928L;
 
 	@Builder.Default
 	private final boolean isEnabled = false;
@@ -40,7 +46,7 @@ public final class Auth {
 	private final SAMLAuth saml;
 
 	public boolean isAccountSuspended() {
-		
+
 		if (suspendedUntil == null) {
 			return false;
 		}

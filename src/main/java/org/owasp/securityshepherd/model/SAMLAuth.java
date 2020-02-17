@@ -1,5 +1,7 @@
 package org.owasp.securityshepherd.model;
 
+import java.io.Serializable;
+
 import lombok.Builder;
 import lombok.Value;
 import lombok.EqualsAndHashCode;
@@ -10,8 +12,12 @@ import lombok.With;
 @EqualsAndHashCode
 @Builder
 @With
-public final class SAMLAuth {
+public final class SAMLAuth implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 211951930649985921L;
 	@NonNull
 	private final String samlId;
 

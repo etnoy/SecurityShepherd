@@ -1,5 +1,7 @@
 package org.owasp.securityshepherd.model;
 
+import java.io.Serializable;
+
 import org.springframework.data.annotation.Id;
 
 import lombok.Builder;
@@ -12,7 +14,12 @@ import lombok.With;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder
 @With
-public final class Module {
+public final class Module implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6391362512222766270L;
 
 	@EqualsAndHashCode.Include
 	@Id
@@ -30,7 +37,7 @@ public final class Module {
 	private final boolean isExactFlag = false;
 
 	private final String flag;
-	
+
 	@Builder.Default
 	private final boolean isOpen = false;
 
