@@ -10,20 +10,25 @@ import lombok.Value;
 import lombok.With;
 
 @Value
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode
 @Builder
 @With
 public final class Configuration {
 
-	@EqualsAndHashCode.Include
 	@Id
 	private final int id;
-	
+
 	@NonNull
 	@Column("config_key")
 	private final String key;
-	
+
 	@NonNull
 	private final String value;
+
+	Configuration(final int id, final String key, final String value) {
+		this.id = id;
+		this.key = key;
+		this.value = value;
+	}
 
 }
