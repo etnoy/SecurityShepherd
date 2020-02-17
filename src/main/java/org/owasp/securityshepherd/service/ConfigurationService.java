@@ -23,19 +23,7 @@ public final class ConfigurationService {
 	@Autowired
 	KeyService keyService;
 
-	public Configuration create(final String key, final String value) {
-
-		if (key == null) {
-			throw new NullPointerException();
-		} else if (key.isEmpty()) {
-			throw new IllegalArgumentException();
-		}
-
-		if (value == null) {
-			throw new NullPointerException();
-		} else if (value.isEmpty()) {
-			throw new IllegalArgumentException();
-		}
+	private Configuration create(final String key, final String value) {
 
 		log.debug("Creating configuration key " + key + " with value " + value);
 
@@ -43,19 +31,7 @@ public final class ConfigurationService {
 
 	}
 
-	public void setValue(final String key, final String value) {
-
-		if (key == null) {
-			throw new NullPointerException();
-		} else if (key.isEmpty()) {
-			throw new IllegalArgumentException();
-		}
-
-		if (value == null) {
-			throw new NullPointerException();
-		} else if (value.isEmpty()) {
-			throw new IllegalArgumentException();
-		}
+	private void setValue(final String key, final String value) {
 
 		final Optional<Configuration> searchResult = configurationRepository.findByKey(key);
 
@@ -67,21 +43,18 @@ public final class ConfigurationService {
 
 		} else {
 
-			targetConfiguration = Configuration.builder().key(key).value(value).build();
+			log.debug("Key " + key + " does not exist");
+			throw new IllegalArgumentException("setValue requires an existing key");
 
 		}
+
+		log.debug("Setting configuration key " + key + " to value " + value);
 
 		configurationRepository.save(targetConfiguration);
 
 	}
 
-	public Optional<String> get(final String key) {
-
-		if (key == null) {
-			throw new NullPointerException();
-		} else if (key.isEmpty()) {
-			throw new IllegalArgumentException();
-		}
+	private Optional<String> get(final String key) {
 
 		final Optional<Configuration> searchResult = configurationRepository.findByKey(key);
 
@@ -97,46 +70,57 @@ public final class ConfigurationService {
 
 	}
 
-	public long count() {
-
-		return configurationRepository.count();
-
-	}
-
-	public Optional<Configuration> findByKey(final String key) {
-
-		return configurationRepository.findByKey(key);
-
-	}
-
 	public byte[] getServerKey() {
 
-		final String serverKeyConfigurationKey = "serverKey";
-		byte[] serverKey;
+		// Look for server key in database
+		final Optional<String> returnedKey = get("serverKey");
 
-		Optional<String> returnedKey = get(serverKeyConfigurationKey);
+		if (returnedKey.isPresent()) {
 
-		if (!returnedKey.isPresent()) {
-			// Key not found in configuration, generate it first
-			ConfigurationBuilder serverKeyConfiguration = Configuration.builder();
+			// Server key exists in database, return it
+			return Base64.getDecoder().decode(returnedKey.get());
 
-			serverKeyConfiguration.key(serverKeyConfigurationKey);
-
-			// TODO: Configure how many bytes we want
-			serverKey = keyService.generateRandomBytes(16);
-
-			// Create a String containing the key for storage in db
-			final String keyString = Base64.getEncoder().encodeToString(serverKey);
-
-			serverKeyConfiguration.value(keyString);
-			
-			configurationRepository.save(serverKeyConfiguration.build());
-			
 		} else {
-			serverKey = Base64.getDecoder().decode(returnedKey.get());
+
+			// Key not found in configuration, generate it and return
+			return refreshServerKey();
+
 		}
+
+	}
+
+	public byte[] refreshServerKey() {
 		
-		return serverKey;
+		log.info("Generating new server key");
+
+		final String serverKeyConfigurationKey = "serverKey";
+
+		final byte[] newServerKey = keyService.generateRandomBytes(16);
+
+		// Create a String containing the key for storage in db
+		final String newKeyString = Base64.getEncoder().encodeToString(newServerKey);
+
+		// Look for server key in database
+		if (existsByKey(serverKeyConfigurationKey)) {
+
+			// Server key found in database, replace it with the new key
+			setValue(serverKeyConfigurationKey, newKeyString);
+
+		} else {
+
+			// Key not found in database, store it there
+			create(serverKeyConfigurationKey, newKeyString);
+
+		}
+
+		// Return the generated server key to caller
+		return newServerKey;
+
+	}
+
+	private boolean existsByKey(final String key) {
+
+		return configurationRepository.existsByKey(key);
 
 	}
 

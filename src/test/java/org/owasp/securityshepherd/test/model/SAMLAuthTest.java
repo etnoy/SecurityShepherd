@@ -1,6 +1,5 @@
 package org.owasp.securityshepherd.test.model;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -53,14 +52,14 @@ public class SAMLAuthTest {
 	@Test
 	public void toString_ValidData_AsExpected() {
 
-		assertThat(SAMLAuth.builder().samlId("TestID").build().toString(), equalTo("SAMLAuth(samlId=TestID)"));
+		assertThat(SAMLAuth.builder().samlId("TestID").build().toString(), is("SAMLAuth(samlId=TestID)"));
 
 	}
 	
 	@Test
 	public void builderToString_ValidData_AsExpected() {
 
-		assertThat(SAMLAuth.builder().toString(), equalTo("SAMLAuth.SAMLAuthBuilder(samlId=null)"));
+		assertThat(SAMLAuth.builder().toString(), is("SAMLAuth.SAMLAuthBuilder(samlId=null)"));
 
 	}
 

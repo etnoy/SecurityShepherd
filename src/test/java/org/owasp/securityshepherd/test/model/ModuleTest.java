@@ -1,6 +1,5 @@
 package org.owasp.securityshepherd.test.model;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -152,7 +151,7 @@ public class ModuleTest {
 
 		final Module testModule = Module.builder().name("TestModule").build();
 
-		assertThat(testModule.toString(), equalTo(
+		assertThat(testModule.toString(), is(
 				"Module(id=0, name=TestModule, description=null, isFlagEnabled=false, isExactFlag=false, flag=null, isOpen=false)"));
 
 	}

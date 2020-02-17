@@ -1,6 +1,5 @@
 package org.owasp.securityshepherd.test.service;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -39,7 +38,7 @@ public class ModuleServiceTest {
 
 		final int moduleId = moduleService.create(name).getId();
 
-		assertThat(moduleService.get(moduleId).get().getName(), is(equalTo(name)));
+		assertThat(moduleService.get(moduleId).get().getName(), is((name)));
 
 	}
 
@@ -74,7 +73,7 @@ public class ModuleServiceTest {
 		assertThat(returnedModule.isFlagEnabled(), is(true));
 		assertThat(returnedModule.isExactFlag(), is(true));
 
-		assertThat(returnedModule.getFlag(), is(equalTo(exactFlag)));
+		assertThat(returnedModule.getFlag(), is(exactFlag));
 
 	}
 
@@ -128,7 +127,7 @@ public class ModuleServiceTest {
 
 		assertThat(returnedModule.isFlagEnabled(), is(true));
 		assertThat(returnedModule.isExactFlag(), is(false));
-		
+
 		assertThat(returnedModule.getFlag(), is(notNullValue()));
 		assertThat(returnedModule.getFlag(), instanceOf(String.class));
 		assertThat(returnedModule.getFlag(), not(is(emptyString())));
@@ -148,7 +147,7 @@ public class ModuleServiceTest {
 
 		moduleService.setDynamicFlag(moduleId);
 
-		assertThat(returnedModule.getFlag(), is(equalTo(dynamicFlag)));
+		assertThat(returnedModule.getFlag(), is(dynamicFlag));
 
 	}
 
@@ -335,18 +334,18 @@ public class ModuleServiceTest {
 
 		Module returnedModule = moduleService.get(moduleId).get();
 		assertThat(returnedModule.getId(), is(moduleId));
-		assertThat(returnedModule.getName(), equalTo(name));
+		assertThat(returnedModule.getName(), is(name));
 		assertThat(moduleService.count(), is(1L));
 
 		moduleService.setName(moduleId, newName);
 
 		returnedModule = moduleService.get(moduleId).get();
 		assertThat(returnedModule.getId(), is(moduleId));
-		assertThat(returnedModule.getName(), equalTo(newName));
+		assertThat(returnedModule.getName(), is(newName));
 		assertThat(moduleService.count(), is(1L));
 
 	}
-	
+
 	@Test
 	public void get_NonExistentModuleId_NotPresent() {
 
@@ -368,7 +367,6 @@ public class ModuleServiceTest {
 		assertThrows(IllegalArgumentException.class, () -> moduleService.get(-1));
 		assertThrows(IllegalArgumentException.class, () -> moduleService.get(-1000));
 
-		
 	}
 
 }

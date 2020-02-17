@@ -1,6 +1,5 @@
 package org.owasp.securityshepherd.test.model;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -25,7 +24,7 @@ public class PasswordAuthTest {
 	@Test
 	public void builderToString_ValidData_AsExpected() {
 
-		assertThat(PasswordAuth.builder().toString(), equalTo(
+		assertThat(PasswordAuth.builder().toString(), is(
 				"PasswordAuth.PasswordAuthBuilder(loginName=null, hashedPassword=null, isPasswordExpired$value=false)"));
 
 	}
@@ -99,7 +98,7 @@ public class PasswordAuthTest {
 	public void toString_ValidData_AsExpected() {
 
 		assertThat(PasswordAuth.builder().loginName("TestUser").build().toString(),
-				equalTo("PasswordAuth(loginName=TestUser, hashedPassword=null, isPasswordExpired=true)"));
+				is("PasswordAuth(loginName=TestUser, hashedPassword=null, isPasswordExpired=true)"));
 
 	}
 

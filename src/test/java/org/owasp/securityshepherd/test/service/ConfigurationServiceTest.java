@@ -1,7 +1,7 @@
 package org.owasp.securityshepherd.test.service;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
@@ -37,8 +37,32 @@ public class ConfigurationServiceTest {
 
 		final byte[] serverKey = configurationService.getServerKey();
 
-		assertThat(configurationService.getServerKey(), is(equalTo(serverKey)));
+		assertThat(configurationService.getServerKey(), is(serverKey));
 
 	}
+
+	@Test
+	public void refreshServerKey_KeyExists_RefreshesKey() {
+
+		final byte[] serverKey = configurationService.getServerKey();
+
+		configurationService.refreshServerKey();
+
+		assertThat(configurationService.getServerKey(), is(not(serverKey)));
+
+	}
+
+	@Test
+	public void refreshServerKey_NoKeyExists_GeneratesKey() {
+
+		configurationService.refreshServerKey();
+
+		final byte[] serverKey = configurationService.getServerKey();
+
+		assertThat(serverKey, is(notNullValue()));
+		assertThat(serverKey.length, is(greaterThan(8)));
+
+	}
+	
 
 }
