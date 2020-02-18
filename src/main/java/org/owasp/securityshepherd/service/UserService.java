@@ -29,7 +29,7 @@ public final class UserService {
 
 	@Autowired
 	ClassService classService;
-	
+
 	@Autowired
 	KeyService rngService;
 
@@ -87,14 +87,15 @@ public final class UserService {
 
 	}
 
-	public void setDisplayName(final int id, final String displayName) throws UserIdNotFoundException, InvalidUserIdException {
+	public void setDisplayName(final int id, final String displayName)
+			throws UserIdNotFoundException, InvalidUserIdException {
 
 		if (id <= 0) {
-			
+
 			throw new InvalidUserIdException();
-			
+
 		}
-		
+
 		final Optional<User> returnedUser = get(id);
 
 		if (!returnedUser.isPresent()) {
@@ -107,20 +108,21 @@ public final class UserService {
 
 	}
 
-	public void setClassId(final int id, final int classId) throws ClassIdNotFoundException, InvalidUserIdException, UserIdNotFoundException, InvalidClassIdException {
+	public void setClassId(final int id, final int classId)
+			throws ClassIdNotFoundException, InvalidUserIdException, UserIdNotFoundException, InvalidClassIdException {
 
 		if (id <= 0) {
-			
+
 			throw new InvalidUserIdException();
-			
+
 		}
-		
+
 		if (classId <= 0) {
-			
+
 			throw new InvalidClassIdException();
-			
+
 		}
-		
+
 		final Optional<User> returnedUser = get(id);
 
 		if (!returnedUser.isPresent()) {
@@ -128,11 +130,11 @@ public final class UserService {
 			throw new UserIdNotFoundException();
 
 		}
-		
-		if(!classService.existsById(classId)) {
-			
+
+		if (!classService.existsById(classId)) {
+
 			throw new ClassIdNotFoundException();
-			
+
 		}
 
 		userRepository.save(returnedUser.get().withClassId(classId));
@@ -148,9 +150,9 @@ public final class UserService {
 	public byte[] getKey(final int id) throws UserIdNotFoundException, InvalidUserIdException {
 
 		if (id <= 0) {
-			
+
 			throw new InvalidUserIdException();
-			
+
 		}
 
 		final Optional<User> returnedUser = get(id);
@@ -189,8 +191,8 @@ public final class UserService {
 
 		if (id <= 0) {
 			throw new InvalidUserIdException();
-		} 
-		
+		}
+
 		return userRepository.findById(id);
 
 	}
