@@ -9,16 +9,18 @@ import org.owasp.securityshepherd.repository.ClassRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@NoArgsConstructor
 @Slf4j
 @Service
 public final class ClassService {
 
+	private final ClassRepository classRepository;
+
 	@Autowired
-	ClassRepository classRepository;
+	public ClassService(ClassRepository classRepository) {
+		this.classRepository = classRepository;
+	}
 
 	public ClassEntity create(final String name) {
 
@@ -64,11 +66,11 @@ public final class ClassService {
 		return classRepository.count();
 
 	}
-	
+
 	public boolean existsById(final int id) {
-		
+
 		return classRepository.existsById(id);
-		
+
 	}
 
 	public Optional<ClassEntity> get(final int id) {

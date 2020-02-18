@@ -10,14 +10,15 @@ import org.owasp.securityshepherd.exception.CryptographicException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import lombok.NoArgsConstructor;
-
-@NoArgsConstructor
 @Service
 public final class CryptoService {
 
+	private final KeyService keyService;
+
 	@Autowired
-	KeyService keyService;
+	public CryptoService(KeyService keyService) {
+		this.keyService = keyService;
+	}
 
 	public byte[] hmac(final byte[] key, final byte[] message) {
 

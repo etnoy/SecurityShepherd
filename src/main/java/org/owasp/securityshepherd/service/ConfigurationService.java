@@ -8,19 +8,23 @@ import org.owasp.securityshepherd.repository.ConfigurationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@NoArgsConstructor
 @Service
 public final class ConfigurationService {
 
-	@Autowired
-	ConfigurationRepository configurationRepository;
+	private final ConfigurationRepository configurationRepository;
 
+	private final KeyService keyService;
+	
 	@Autowired
-	KeyService keyService;
+	public ConfigurationService(ConfigurationRepository configurationRepository, KeyService keyService) {
+
+		this.configurationRepository = configurationRepository;
+		this.keyService = keyService;
+
+	}
 
 	private Configuration create(final String key, final String value) {
 
@@ -89,7 +93,7 @@ public final class ConfigurationService {
 	}
 
 	public byte[] refreshServerKey() {
-		
+
 		log.info("Generating new server key");
 
 		final String serverKeyConfigurationKey = "serverKey";

@@ -16,28 +16,33 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.primitives.Bytes;
 
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@NoArgsConstructor
 @Service
 public final class ModuleService {
 
-	@Autowired
-	ModuleRepository moduleRepository;
+	private final ModuleRepository moduleRepository;
+
+	private final UserService userService;
+
+	private final ConfigurationService configurationService;
+
+	private final KeyService keyService;
+
+	private final CryptoService cryptoService;
 
 	@Autowired
-	UserService userService;
+	public ModuleService(ModuleRepository moduleRepository, UserService userService,
+			ConfigurationService configurationService, KeyService keyService, CryptoService cryptoService) {
 
-	@Autowired
-	ConfigurationService configurationService;
+		this.moduleRepository = moduleRepository;
+		this.userService = userService;
+		this.configurationService = configurationService;
+		this.keyService = keyService;
+		this.cryptoService = cryptoService;
 
-	@Autowired
-	KeyService keyService;
-
-	@Autowired
-	CryptoService cryptoService;
+	}
 
 	public Module create(final String name) {
 
@@ -63,7 +68,8 @@ public final class ModuleService {
 	}
 
 	public boolean verifyFlag(final int userId, final int moduleId, final String submittedFlag)
-			throws ModuleIdNotFoundException, UserIdNotFoundException, InvalidUserIdException, InvalidFlagStateException {
+			throws ModuleIdNotFoundException, UserIdNotFoundException, InvalidUserIdException,
+			InvalidFlagStateException {
 
 		if (submittedFlag == null) {
 			return false;
@@ -80,7 +86,7 @@ public final class ModuleService {
 		final Module submittedModule = returnedModule.get();
 
 		if (!submittedModule.isFlagEnabled()) {
-			
+
 			throw new InvalidFlagStateException("Cannot verify flag if flag is not enabled");
 		}
 
@@ -135,11 +141,11 @@ public final class ModuleService {
 	public void setDynamicFlag(final int id) throws InvalidModuleIdException, ModuleIdNotFoundException {
 
 		if (id <= 0) {
-			
+
 			throw new InvalidModuleIdException();
-			
-		} 
-		
+
+		}
+
 		final Optional<Module> returnedModule = get(id);
 
 		if (!returnedModule.isPresent()) {
@@ -197,7 +203,7 @@ public final class ModuleService {
 			throw new ModuleIdNotFoundException();
 
 		}
-		
+
 		final Module newDisplayNameModule = returnedModule.get().withName(name);
 
 		moduleRepository.save(newDisplayNameModule);

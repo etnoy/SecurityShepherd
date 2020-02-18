@@ -2,10 +2,10 @@ package org.owasp.securityshepherd.service;
 
 import java.util.Optional;
 
-import org.owasp.securityshepherd.exception.UserIdNotFoundException;
 import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
 import org.owasp.securityshepherd.exception.InvalidClassIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
+import org.owasp.securityshepherd.exception.UserIdNotFoundException;
 import org.owasp.securityshepherd.model.Auth;
 import org.owasp.securityshepherd.model.Auth.AuthBuilder;
 import org.owasp.securityshepherd.model.PasswordAuth;
@@ -16,22 +16,26 @@ import org.owasp.securityshepherd.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@NoArgsConstructor
 @Service
 public final class UserService {
 
-	@Autowired
-	UserRepository userRepository;
+	private final UserRepository userRepository;
+
+	private final ClassService classService;
+
+	private final KeyService keyService;
 
 	@Autowired
-	ClassService classService;
+	public UserService(UserRepository userRepository, ClassService classService, KeyService keyService) {
 
-	@Autowired
-	KeyService rngService;
+		this.userRepository = userRepository;
+		this.classService = classService;
+		this.keyService = keyService;
+
+	}
 
 	public User create(final String displayName) {
 
@@ -169,7 +173,7 @@ public final class UserService {
 
 		if (currentKey == null) {
 
-			currentKey = rngService.generateRandomBytes(16);
+			currentKey = keyService.generateRandomBytes(16);
 
 			getKeyUser = getKeyUser.withKey(currentKey);
 
