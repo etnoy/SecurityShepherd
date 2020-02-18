@@ -7,9 +7,6 @@ import java.security.SecureRandom;
 import org.owasp.securityshepherd.exception.RNGException;
 import org.springframework.stereotype.Service;
 
-import lombok.NoArgsConstructor;
-
-@NoArgsConstructor
 @Service
 public final class KeyService {
 

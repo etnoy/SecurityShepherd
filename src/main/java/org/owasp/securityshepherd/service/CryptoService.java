@@ -7,18 +7,10 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.owasp.securityshepherd.exception.CryptographicException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public final class CryptoService {
-
-	private final KeyService keyService;
-
-	@Autowired
-	public CryptoService(KeyService keyService) {
-		this.keyService = keyService;
-	}
 
 	public byte[] hmac(final byte[] key, final byte[] message) {
 
