@@ -9,6 +9,9 @@ import javax.crypto.spec.SecretKeySpec;
 import org.owasp.securityshepherd.exception.CryptographicException;
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @Service
 public final class CryptoService {
 

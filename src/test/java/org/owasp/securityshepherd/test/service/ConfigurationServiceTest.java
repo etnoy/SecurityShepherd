@@ -6,11 +6,15 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.owasp.securityshepherd.repository.ConfigurationRepository;
 import org.owasp.securityshepherd.service.ConfigurationService;
+import org.owasp.securityshepherd.service.KeyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +25,17 @@ public class ConfigurationServiceTest {
 
 	@Autowired
 	private ConfigurationService configurationService;
+
+	@MockBean
+	private ConfigurationRepository configurationRepository;
+
+	@MockBean
+	private KeyService keyService;
+
+	@BeforeEach
+	void setUp() {
+		configurationService = new ConfigurationService(configurationRepository, keyService);
+	}
 
 	@Test
 	public void getServerKey_NoKeyExists_GeneratesAndReturnsKey() {
@@ -63,6 +78,5 @@ public class ConfigurationServiceTest {
 		assertThat(serverKey.length, is(greaterThan(8)));
 
 	}
-	
 
 }

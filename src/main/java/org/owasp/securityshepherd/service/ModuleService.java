@@ -2,23 +2,24 @@ package org.owasp.securityshepherd.service;
 
 import java.util.Optional;
 
-import org.owasp.securityshepherd.exception.UserIdNotFoundException;
-import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.EntityIdException;
 import org.owasp.securityshepherd.exception.InvalidFlagStateException;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
+import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
+import org.owasp.securityshepherd.exception.UserIdNotFoundException;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.model.Module.ModuleBuilder;
 import org.owasp.securityshepherd.repository.ModuleRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.primitives.Bytes;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@RequiredArgsConstructor
 @Service
 public final class ModuleService {
 
@@ -31,18 +32,6 @@ public final class ModuleService {
 	private final KeyService keyService;
 
 	private final CryptoService cryptoService;
-
-	@Autowired
-	public ModuleService(ModuleRepository moduleRepository, UserService userService,
-			ConfigurationService configurationService, KeyService keyService, CryptoService cryptoService) {
-
-		this.moduleRepository = moduleRepository;
-		this.userService = userService;
-		this.configurationService = configurationService;
-		this.keyService = keyService;
-		this.cryptoService = cryptoService;
-
-	}
 
 	public Module create(final String name) {
 

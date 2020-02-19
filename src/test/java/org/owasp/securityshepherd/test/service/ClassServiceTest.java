@@ -3,24 +3,47 @@ package org.owasp.securityshepherd.test.service;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
 import org.owasp.securityshepherd.model.ClassEntity;
+import org.owasp.securityshepherd.model.User;
+import org.owasp.securityshepherd.repository.ClassRepository;
 import org.owasp.securityshepherd.service.ClassService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 @ExtendWith(SpringExtension.class)
-@Transactional
 @SpringBootTest
+@Transactional
 public class ClassServiceTest {
 
 	@Autowired
 	private ClassService classService;
+	
+	@MockBean
+	private ClassRepository classRepository;
+
+	@TestConfiguration
+	class ClassServiceTestContextConfiguration {
+
+		@Bean
+		public ClassService classService() {
+			return new ClassService(classRepository);
+		}
+
+	}
 
 	@Test
 	public void create_EmptyArgument_ThrowsException() {
@@ -72,16 +95,17 @@ public class ClassServiceTest {
 		assertThrows(IllegalArgumentException.class, () -> classService.get(0));
 	}
 
-
-
 	@Test
 	public void setName_ValidName_Succeeds() throws ClassIdNotFoundException {
 
+		ClassEntity testClass = mock(ClassEntity.class);
+		when(testClass.getId()).thenReturn(1);
+		when(classRepository.save(any(ClassEntity.class))).thenReturn(testClass);
+		when(classRepository.count()).thenReturn(1L);
+		
 		String className = "setDisplayName_ValidName";
 		String newClassName = "new_rename_ValidName";
 		int classId = classService.create(className).getId();
-
-		assertThat(classService.count(), is(1L));
 
 		ClassEntity returnedClass = classService.get(classId).get();
 		assertThat(returnedClass.getId(), is(classId));

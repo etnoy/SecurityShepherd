@@ -13,12 +13,13 @@ import org.owasp.securityshepherd.model.PasswordAuth.PasswordAuthBuilder;
 import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.model.User.UserBuilder;
 import org.owasp.securityshepherd.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@RequiredArgsConstructor
 @Service
 public final class UserService {
 
@@ -27,15 +28,6 @@ public final class UserService {
 	private final ClassService classService;
 
 	private final KeyService keyService;
-
-	@Autowired
-	public UserService(UserRepository userRepository, ClassService classService, KeyService keyService) {
-
-		this.userRepository = userRepository;
-		this.classService = classService;
-		this.keyService = keyService;
-
-	}
 
 	public User create(final String displayName) {
 

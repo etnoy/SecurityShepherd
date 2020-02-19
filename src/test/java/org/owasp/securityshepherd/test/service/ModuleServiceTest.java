@@ -9,6 +9,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.text.IsEmptyString.emptyString;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.exception.EntityIdException;
@@ -18,10 +19,15 @@ import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
 import org.owasp.securityshepherd.exception.UserIdNotFoundException;
 import org.owasp.securityshepherd.model.Module;
+import org.owasp.securityshepherd.repository.ModuleRepository;
+import org.owasp.securityshepherd.service.ConfigurationService;
+import org.owasp.securityshepherd.service.CryptoService;
+import org.owasp.securityshepherd.service.KeyService;
 import org.owasp.securityshepherd.service.ModuleService;
 import org.owasp.securityshepherd.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.relational.core.conversion.DbActionExecutionException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,8 +40,26 @@ public class ModuleServiceTest {
 	@Autowired
 	private ModuleService moduleService;
 
-	@Autowired
+	@MockBean
 	private UserService userService;
+
+	@MockBean
+	private ModuleRepository moduleRepository;
+	
+	@MockBean
+	private ConfigurationService configurationService;
+
+	@MockBean
+	private KeyService keyService;
+
+	@MockBean
+	private CryptoService cryptoService;
+
+	@BeforeEach
+	void setUp() {
+		moduleService = new ModuleService(moduleRepository, userService, configurationService, keyService,
+				cryptoService);
+	}
 
 	@Test
 	public void createModule_ValidData_Succeeds() {

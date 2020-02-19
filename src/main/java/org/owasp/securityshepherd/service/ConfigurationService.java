@@ -5,26 +5,19 @@ import java.util.Optional;
 
 import org.owasp.securityshepherd.model.Configuration;
 import org.owasp.securityshepherd.repository.ConfigurationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@RequiredArgsConstructor
 @Service
 public final class ConfigurationService {
 
 	private final ConfigurationRepository configurationRepository;
 
 	private final KeyService keyService;
-	
-	@Autowired
-	public ConfigurationService(ConfigurationRepository configurationRepository, KeyService keyService) {
-
-		this.configurationRepository = configurationRepository;
-		this.keyService = keyService;
-
-	}
 
 	private Configuration create(final String key, final String value) {
 

@@ -15,23 +15,19 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.owasp.securityshepherd.exception.UserIdNotFoundException;
 import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
 import org.owasp.securityshepherd.exception.InvalidClassIdException;
 import org.owasp.securityshepherd.exception.InvalidEntityIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
-import org.owasp.securityshepherd.model.ClassEntity;
 import org.owasp.securityshepherd.model.User;
-import org.owasp.securityshepherd.repository.ClassRepository;
 import org.owasp.securityshepherd.repository.UserRepository;
 import org.owasp.securityshepherd.service.ClassService;
 import org.owasp.securityshepherd.service.KeyService;
 import org.owasp.securityshepherd.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.relational.core.conversion.DbActionExecutionException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,28 +35,22 @@ import org.springframework.transaction.annotation.Transactional;
 @ExtendWith(SpringExtension.class)
 @Transactional
 @SpringBootTest
-public class UserServiceTest {
+public class UserServiceIT {
 
-	@Autowired
 	private UserService userService;
 
 	@MockBean
 	private UserRepository userRepository;
 
-	@MockBean
+	@Mock
 	private ClassService classService;
 
-	@MockBean
+	@Mock
 	private KeyService keyService;
 
-	@TestConfiguration
-	class UserServiceTestContextConfiguration {
-
-		@Bean
-		public UserService userService() {
-			return new UserService(userRepository, classService, keyService);
-		}
-
+	@BeforeEach
+	void setUp() {
+		userService = new UserService(userRepository, classService, keyService);
 	}
 
 	@Test
@@ -80,14 +70,10 @@ public class UserServiceTest {
 	@Test
 	public void create_ValidDisplayName_CreatesUser() {
 
-		User testUser = mock(User.class);
-		when(testUser.getId()).thenReturn(1);
-		when(userRepository.save(any(User.class))).thenReturn(testUser);
-
 		final User createdUser = userService.create("TestUser");
 
 		assertThat(createdUser, instanceOf(User.class));
-		assertThat(createdUser, is(testUser));
+		assertThat(createdUser.getDisplayName(), is("TestUser"));
 
 	}
 
@@ -155,21 +141,17 @@ public class UserServiceTest {
 	@Test
 	public void createPasswordUser_ValidData_Succeeds() throws InvalidUserIdException {
 
-		User testUser = mock(User.class);
-		when(testUser.getId()).thenReturn(1);
-		when(userRepository.save(any(User.class))).thenReturn(testUser);
-
-		final String displayName = "createPasswordUser_ValidData";
-		final String loginName = "_createPasswordUser_ValidData_";
+		String displayName = "createPasswordUser_ValidData";
+		String loginName = "_createPasswordUser_ValidData_";
 
 		// String "createPasswordUser_ValidData" bcrypted
-		final String hashedPassword = "$2y$04$2zPOzxj77Ul5amFcsnsyjenMBGpRgEApYsJXyK76dcX2wK7asi7.6";
+		String hashedPassword = "$2y$04$2zPOzxj77Ul5amFcsnsyjenMBGpRgEApYsJXyK76dcX2wK7asi7.6";
 
-		final User createdUser = userService.createPasswordUser(displayName, loginName, hashedPassword);
+		int userId = userService.createPasswordUser(displayName, loginName, hashedPassword).getId();
 
-		assertThat(createdUser.getDisplayName(), is(displayName));
-		assertThat(createdUser.getAuth().getPassword().getLoginName(), is(loginName));
-		assertThat(createdUser.getAuth().getPassword().getHashedPassword(), is(hashedPassword));
+		assertThat(userService.get(userId).get().getDisplayName(), is(displayName));
+		assertThat(userService.get(userId).get().getAuth().getPassword().getLoginName(), is(loginName));
+		assertThat(userService.get(userId).get().getAuth().getPassword().getHashedPassword(), is(hashedPassword));
 
 	}
 
@@ -261,22 +243,17 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void setClassId_ValidClass_Succeeds()
+	public void setClass_ValidClass_Succeeds()
 			throws UserIdNotFoundException, InvalidUserIdException, ClassIdNotFoundException, InvalidClassIdException {
-
-		User testUser = User.builder().displayName("TestUser").id(1).classId(1).build();
-
-		when(userRepository.save(any(User.class)))
-				.thenAnswer(user -> ((User) user.getArgument(0)).withClassId(1).withId(1));
-		when(userRepository.findById(1)).thenReturn(Optional.of(testUser));
-		when(classService.existsById(2)).thenReturn(true);
 
 		int userId = userService.create("TestUser").getId();
 
-		userService.setClassId(userId, 2);
+		int classId = classService.create("TestClass").getId();
+
+		userService.setClassId(userId, classId);
 
 		User returnedUser = userService.get(userId).get();
-		assertThat(returnedUser.getClassId(), is(1));
+		assertThat(returnedUser.getClassId(), is(classId));
 
 	}
 
