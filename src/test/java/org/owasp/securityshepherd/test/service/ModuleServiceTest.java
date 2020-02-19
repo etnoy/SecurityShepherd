@@ -27,7 +27,9 @@ import org.owasp.securityshepherd.service.ModuleService;
 import org.owasp.securityshepherd.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.relational.core.conversion.DbActionExecutionException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +39,6 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 public class ModuleServiceTest {
 
-	@Autowired
 	private ModuleService moduleService;
 
 	@MockBean
@@ -45,7 +46,7 @@ public class ModuleServiceTest {
 
 	@MockBean
 	private ModuleRepository moduleRepository;
-	
+
 	@MockBean
 	private ConfigurationService configurationService;
 
@@ -55,10 +56,14 @@ public class ModuleServiceTest {
 	@MockBean
 	private CryptoService cryptoService;
 
-	@BeforeEach
-	void setUp() {
-		moduleService = new ModuleService(moduleRepository, userService, configurationService, keyService,
-				cryptoService);
+	@TestConfiguration
+	class ConfigurationServiceTestContextConfiguration {
+
+		@Bean
+		public ModuleService moduleService() {
+			return new ModuleService(moduleRepository, userService, configurationService, keyService, cryptoService);
+		}
+
 	}
 
 	@Test

@@ -12,9 +12,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.repository.ConfigurationRepository;
 import org.owasp.securityshepherd.service.ConfigurationService;
 import org.owasp.securityshepherd.service.KeyService;
+import org.owasp.securityshepherd.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 public class ConfigurationServiceTest {
 
-	@Autowired
 	private ConfigurationService configurationService;
 
 	@MockBean
@@ -31,10 +33,15 @@ public class ConfigurationServiceTest {
 
 	@MockBean
 	private KeyService keyService;
+	
+	@TestConfiguration
+	class ConfigurationServiceTestContextConfiguration {
 
-	@BeforeEach
-	void setUp() {
-		configurationService = new ConfigurationService(configurationRepository, keyService);
+		@Bean
+		public ConfigurationService configurationService() {
+			return new ConfigurationService(configurationRepository, keyService);
+		}
+
 	}
 
 	@Test
