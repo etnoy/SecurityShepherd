@@ -3,6 +3,8 @@ package org.owasp.securityshepherd.service;
 import java.util.Optional;
 
 import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
+import org.owasp.securityshepherd.exception.DuplicateUserDisplayNameException;
+import org.owasp.securityshepherd.exception.DuplicateUserLoginNameException;
 import org.owasp.securityshepherd.exception.InvalidClassIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.UserIdNotFoundException;
@@ -29,7 +31,7 @@ public final class UserService {
 
 	private final KeyService keyService;
 
-	public User create(final String displayName) {
+	public User create(final String displayName) throws DuplicateUserDisplayNameException {
 
 		if (displayName == null) {
 			throw new NullPointerException();
@@ -37,6 +39,11 @@ public final class UserService {
 
 		if (displayName.isEmpty()) {
 			throw new IllegalArgumentException();
+		}
+		
+		// Check if display name exists
+		if(userRepository.existsByDisplayName(displayName)) {
+			throw new DuplicateUserDisplayNameException();
 		}
 
 		log.debug("Creating user with display name " + displayName);
@@ -52,8 +59,9 @@ public final class UserService {
 
 	}
 
-	public User createPasswordUser(final String displayName, final String loginName, final String hashedPassword) {
+	public User createPasswordUser(final String displayName, final String loginName, final String hashedPassword) throws DuplicateUserLoginNameException, DuplicateUserDisplayNameException {
 
+		// Validate arguments
 		if (displayName == null || loginName == null || hashedPassword == null) {
 			throw new NullPointerException();
 		}
@@ -62,6 +70,16 @@ public final class UserService {
 			throw new IllegalArgumentException();
 		}
 
+		// Check if display name exists
+		if(userRepository.existsByDisplayName(displayName)) {
+			throw new DuplicateUserDisplayNameException();
+		}
+		
+		// Check if login name exists
+		if(userRepository.existsByLoginName(loginName)) {
+			throw new DuplicateUserLoginNameException();
+		}
+		
 		log.debug("Creating password login user with display name " + displayName);
 
 		final PasswordAuthBuilder passwordAuthBuilder = PasswordAuth.builder();
@@ -86,12 +104,6 @@ public final class UserService {
 	public void setDisplayName(final int id, final String displayName)
 			throws UserIdNotFoundException, InvalidUserIdException {
 
-		if (id <= 0) {
-
-			throw new InvalidUserIdException();
-
-		}
-
 		final Optional<User> returnedUser = get(id);
 
 		if (!returnedUser.isPresent()) {
@@ -106,18 +118,6 @@ public final class UserService {
 
 	public void setClassId(final int id, final int classId)
 			throws ClassIdNotFoundException, InvalidUserIdException, UserIdNotFoundException, InvalidClassIdException {
-
-		if (id <= 0) {
-
-			throw new InvalidUserIdException();
-
-		}
-
-		if (classId <= 0) {
-
-			throw new InvalidClassIdException();
-
-		}
 
 		final Optional<User> returnedUser = get(id);
 
@@ -145,12 +145,6 @@ public final class UserService {
 
 	public byte[] getKey(final int id) throws UserIdNotFoundException, InvalidUserIdException {
 
-		if (id <= 0) {
-
-			throw new InvalidUserIdException();
-
-		}
-
 		final Optional<User> returnedUser = get(id);
 
 		if (!returnedUser.isPresent()) {
@@ -166,9 +160,7 @@ public final class UserService {
 		if (currentKey == null) {
 
 			currentKey = keyService.generateRandomBytes(16);
-
 			getKeyUser = getKeyUser.withKey(currentKey);
-
 			userRepository.save(getKeyUser);
 
 		}

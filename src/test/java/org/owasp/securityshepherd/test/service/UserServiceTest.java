@@ -1,28 +1,28 @@
 package org.owasp.securityshepherd.test.service;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.mock;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.owasp.securityshepherd.exception.UserIdNotFoundException;
+import org.mockito.InOrder;
 import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
+import org.owasp.securityshepherd.exception.DuplicateUserDisplayNameException;
+import org.owasp.securityshepherd.exception.DuplicateUserLoginNameException;
 import org.owasp.securityshepherd.exception.InvalidClassIdException;
-import org.owasp.securityshepherd.exception.InvalidEntityIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
-import org.owasp.securityshepherd.model.ClassEntity;
+import org.owasp.securityshepherd.exception.UserIdNotFoundException;
 import org.owasp.securityshepherd.model.User;
-import org.owasp.securityshepherd.repository.ClassRepository;
 import org.owasp.securityshepherd.repository.UserRepository;
 import org.owasp.securityshepherd.service.ClassService;
 import org.owasp.securityshepherd.service.KeyService;
@@ -78,7 +78,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void create_ValidDisplayName_CreatesUser() {
+	public void create_ValidDisplayName_CreatesUser() throws Exception {
 
 		User testUser = mock(User.class);
 		when(testUser.getId()).thenReturn(1);
@@ -92,37 +92,40 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void createPasswordUser_DuplicateDisplayName_ThrowsException() {
+	public void createPasswordUser_DuplicateDisplayName_ThrowsException() throws Exception {
 
-		String displayName = "createPasswordUser_DuplicateUser";
-		String loginName1 = "_createPasswordUser_DuplicateUser1_";
-		String loginName2 = "_createPasswordUser_DuplicateUser2_";
+		final String displayName = "createPasswordUser_ValidData";
+		final String loginName = "_createPasswordUser_ValidData_";
 
 		// String "createPasswordUser_ValidData" bcrypted
-		String hashedPassword = "$2y$04$2zPOzxj77Ul5amFcsnsyjenMBGpRgEApYsJXyK76dcX2wK7asi7.6";
+		final String hashedPassword = "$2y$04$2zPOzxj77Ul5amFcsnsyjenMBGpRgEApYsJXyK76dcX2wK7asi7.6";
 
-		userService.createPasswordUser(displayName, loginName1, hashedPassword);
+		when(userRepository.existsByDisplayName(displayName)).thenReturn(true);
 
-		assertThrows(DbActionExecutionException.class,
-				() -> userService.createPasswordUser(displayName, loginName2, hashedPassword));
+		assertThrows(DuplicateUserDisplayNameException.class,
+				() -> userService.createPasswordUser(displayName, loginName, hashedPassword));
+
+		// Validate method calls
+		verify(userRepository, times(1)).existsByDisplayName(displayName);
 
 	}
 
 	@Test
 	public void createPasswordUser_DuplicateLoginName_ThrowsException() {
 
-		String displayName1 = "createPasswordUser_DuplicateLoginName1";
-		String displayName2 = "createPasswordUser_DuplicateLoginName2";
-
-		String loginName = "_createPasswordUser_DuplicateLoginName_";
+		final String displayName = "createPasswordUser_ValidData";
+		final String loginName = "_createPasswordUser_ValidData_";
 
 		// String "createPasswordUser_ValidData" bcrypted
-		String hashedPassword = "$2y$04$2zPOzxj77Ul5amFcsnsyjenMBGpRgEApYsJXyK76dcX2wK7asi7.6";
+		final String hashedPassword = "$2y$04$2zPOzxj77Ul5amFcsnsyjenMBGpRgEApYsJXyK76dcX2wK7asi7.6";
 
-		userService.createPasswordUser(displayName1, loginName, hashedPassword);
+		when(userRepository.existsByLoginName(loginName)).thenReturn(true);
 
-		assertThrows(DbActionExecutionException.class,
-				() -> userService.createPasswordUser(displayName2, loginName, hashedPassword));
+		assertThrows(DuplicateUserLoginNameException.class,
+				() -> userService.createPasswordUser(displayName, loginName, hashedPassword));
+
+		// Validate method calls
+		verify(userRepository, times(1)).existsByLoginName(loginName);
 
 	}
 
@@ -153,11 +156,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void createPasswordUser_ValidData_Succeeds() throws InvalidUserIdException {
-
-		User testUser = mock(User.class);
-		when(testUser.getId()).thenReturn(1);
-		when(userRepository.save(any(User.class))).thenReturn(testUser);
+	public void createPasswordUser_ValidData_Succeeds() throws Exception {
 
 		final String displayName = "createPasswordUser_ValidData";
 		final String loginName = "_createPasswordUser_ValidData_";
@@ -165,35 +164,38 @@ public class UserServiceTest {
 		// String "createPasswordUser_ValidData" bcrypted
 		final String hashedPassword = "$2y$04$2zPOzxj77Ul5amFcsnsyjenMBGpRgEApYsJXyK76dcX2wK7asi7.6";
 
+		when(userRepository.existsByDisplayName(displayName)).thenReturn(false);
+		when(userRepository.save(any(User.class))).thenAnswer(user -> (user.getArgument(0)));
+
 		final User createdUser = userService.createPasswordUser(displayName, loginName, hashedPassword);
 
 		assertThat(createdUser.getDisplayName(), is(displayName));
 		assertThat(createdUser.getAuth().getPassword().getLoginName(), is(loginName));
 		assertThat(createdUser.getAuth().getPassword().getHashedPassword(), is(hashedPassword));
 
+		// Validate method calls.
+		final InOrder order1 = inOrder(userRepository);
+		final InOrder order2 = inOrder(userRepository);
+
+		// save() should be called after displayname and loginname checks, but we don't
+		// care if loginname or displayname is checked first.
+		order1.verify(userRepository, times(1)).existsByDisplayName(displayName);
+		order1.verify(userRepository, times(1)).save(createdUser.withId(0));
+
+		order2.verify(userRepository, times(1)).existsByLoginName(loginName);
+		order2.verify(userRepository, times(1)).save(createdUser.withId(0));
+
 	}
 
 	@Test
-	public void get_ExistingUserId_ReturnsUser() throws InvalidUserIdException {
+	public void get_ValidUser_CallsRepository() throws InvalidUserIdException {
 
 		User testUser = mock(User.class);
+		when(userRepository.findById(123)).thenReturn(Optional.of(testUser));
 
-		when(testUser.getId()).thenReturn(1);
-		when(userRepository.save(any(User.class))).thenReturn(testUser);
-		when(userRepository.findById(1)).thenReturn(Optional.of(testUser));
+		userService.get(123);
 
-		final User testUser1 = userService.create("TestUser1");
-		final User testUser2 = userService.create("TestUser2");
-		final User testUser3 = userService.create("TestUser3");
-
-		// Check to make sure all users were created using different IDs
-		assertThat(testUser1, is(not(testUser2)));
-		assertThat(testUser1, is(not(testUser3)));
-		assertThat(testUser2, is(not(testUser3)));
-
-		assertThat(userService.get(testUser1.getId()).get(), is(testUser1));
-		assertThat(userService.get(testUser2.getId()).get(), is(testUser2));
-		assertThat(userService.get(testUser3.getId()).get(), is(testUser3));
+		verify(userRepository, times(1)).findById(123);
 
 	}
 
@@ -216,28 +218,73 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void getKey_KeyExists_UsesExistingKey() throws UserIdNotFoundException, InvalidUserIdException {
+	public void getKey_KeyExists_ReturnsKey() throws Exception {
 
-		String userName = "getKey_KeyExists_UsesExistingKey";
+		// Establish a random key
+		final byte[] testRandomBytes = { -108, 101, -7, -36, 17, -26, -24, 0, -32, -117, 75, -127, 22, 62, 9, 19 };
+		final int userId = 17;
 
-		int userId = userService.create(userName).getId();
+		// Mock a test user that has a key
+		final User testUserWithKey = mock(User.class);
+		when(testUserWithKey.getKey()).thenReturn(testRandomBytes);
+		when(userRepository.findById(userId)).thenReturn(Optional.of(testUserWithKey));
 
-		assertThat(userService.get(userId).get().getKey(), is(nullValue()));
+		// Perform the test
+		final byte[] userKey = userService.getKey(userId);
 
-		byte[] userKey = userService.getKey(userId);
+		final InOrder order = inOrder(testUserWithKey, userRepository);
 
-		assertThat(userKey.length, is(16));
+		// userService should query the repository
+		order.verify(userRepository, times(1)).findById(userId);
 
-		assertThat(userService.getKey(userId), is(userKey));
+		// and then extract the key
+		order.verify(testUserWithKey, times(1)).getKey();
 
-		userService.setDisplayName(userId, userName + "_new");
-
-		assertThat(userService.getKey(userId), is(userKey));
+		// Assert that we got the correct key
+		assertThat(userKey, is(testRandomBytes));
 
 	}
 
 	@Test
-	public void getKey_InvalideUserId_ThrowsException() {
+	public void getKey_NoKeyExists_GeneratesKey() throws Exception {
+
+		// Establish a random key
+		final byte[] testRandomBytes = { -108, 101, -7, -36, 17, -26, -24, 0, -32, -117, 75, -127, 22, 62, 9, 19 };
+		final int userId = 19;
+
+		// This user does not have a key
+		final User testUserWithoutKey = mock(User.class);
+		when(testUserWithoutKey.getKey()).thenReturn(null);
+
+		// When that user is given a key, return an entity that has the key
+		final User testUserWithKey = mock(User.class);
+		when(testUserWithoutKey.withKey(testRandomBytes)).thenReturn(testUserWithKey);
+
+		// Set up the mock repository
+		when(userRepository.findById(userId)).thenReturn(Optional.of(testUserWithoutKey));
+		when(userRepository.save(testUserWithKey)).thenReturn(testUserWithKey);
+
+		// Set up the mock key service
+		when(keyService.generateRandomBytes(16)).thenReturn(testRandomBytes);
+
+		// Perform the test
+		final byte[] userKey = userService.getKey(userId);
+
+		// Validate method calls
+		final InOrder order = inOrder(testUserWithoutKey, userRepository, keyService);
+
+		order.verify(userRepository, times(1)).findById(userId);
+		order.verify(testUserWithoutKey, times(1)).getKey();
+		order.verify(keyService, times(1)).generateRandomBytes(16);
+		order.verify(testUserWithoutKey, times(1)).withKey(testRandomBytes);
+		order.verify(userRepository, times(1)).save(testUserWithKey);
+
+		assertThat(userKey, is(testRandomBytes));
+
+	}
+
+	@Test
+	public void getKey_InvalidUserId_ThrowsException() {
 
 		assertThrows(InvalidUserIdException.class, () -> userService.getKey(-1));
 		assertThrows(InvalidUserIdException.class, () -> userService.getKey(-1000));
@@ -246,28 +293,11 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void getKey_NoKeyExists_GeneratesKey() throws UserIdNotFoundException, InvalidEntityIdException {
-
-		String userName = "getKey_NoKeyExists_GeneratesKey";
-
-		int userId = userService.create(userName).getId();
-
-		assertThat(userService.get(userId).get().getKey(), is(nullValue()));
-
-		byte[] userKey = userService.getKey(userId);
-
-		assertThat(userKey.length, is(16));
-
-	}
-
-	@Test
-	public void setClassId_ValidClass_Succeeds()
-			throws UserIdNotFoundException, InvalidUserIdException, ClassIdNotFoundException, InvalidClassIdException {
-
+	public void setClassId_ValidClass_Succeeds() throws Exception {
 		User testUser = User.builder().displayName("TestUser").id(1).classId(1).build();
 
 		when(userRepository.save(any(User.class)))
-				.thenAnswer(user -> ((User) user.getArgument(0)).withClassId(1).withId(1));
+				.thenAnswer(user -> user.getArgument(0, User.class).withClassId(1).withId(1));
 		when(userRepository.findById(1)).thenReturn(Optional.of(testUser));
 		when(classService.existsById(2)).thenReturn(true);
 
@@ -283,23 +313,19 @@ public class UserServiceTest {
 	@Test
 	public void setDisplayName_ValidName_Succeeds() throws UserIdNotFoundException, InvalidUserIdException {
 
-		String userName = "setDisplayName_ValidName";
-		String newUserName = "new_rename_ValidName";
-		int userId = userService.create(userName).getId();
+		String newDisplayName = "newName";
 
-		assertThat(userService.count(), is(1L));
+		User testUser = mock(User.class);
+		when(userRepository.findById(123)).thenReturn(Optional.of(testUser));
+		when(testUser.withDisplayName(newDisplayName)).thenReturn(testUser);
+		when(userRepository.save(any(User.class))).thenReturn(testUser);
 
-		User returnedUser = userService.get(userId).get();
-		assertThat(returnedUser.getId(), is(userId));
-		assertThat(returnedUser.getDisplayName(), is(userName));
-		assertThat(userService.count(), is(1L));
+		userService.setDisplayName(123, newDisplayName);
 
-		userService.setDisplayName(userId, newUserName);
+		InOrder order = inOrder(testUser, userRepository);
 
-		returnedUser = userService.get(userId).get();
-		assertThat(returnedUser.getId(), is(userId));
-		assertThat(returnedUser.getDisplayName(), is(newUserName));
-		assertThat(userService.count(), is(1L));
+		order.verify(testUser, times(1)).withDisplayName(newDisplayName);
+		order.verify(userRepository, times(1)).save(testUser);
 
 	}
 

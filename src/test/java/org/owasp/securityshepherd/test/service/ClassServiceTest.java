@@ -1,19 +1,21 @@
 package org.owasp.securityshepherd.test.service;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.junit.jupiter.api.BeforeEach;
+import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
+import org.mockito.InOrder;
 import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
+import org.owasp.securityshepherd.exception.InvalidClassIdException;
 import org.owasp.securityshepherd.model.ClassEntity;
-import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.repository.ClassRepository;
 import org.owasp.securityshepherd.service.ClassService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +33,7 @@ public class ClassServiceTest {
 
 	@Autowired
 	private ClassService classService;
-	
+
 	@MockBean
 	private ClassRepository classRepository;
 
@@ -46,78 +48,68 @@ public class ClassServiceTest {
 	}
 
 	@Test
-	public void create_EmptyArgument_ThrowsException() {
+	public void create_EmptyArgument_ThrowsException() throws Exception {
 
 		assertThrows(IllegalArgumentException.class, () -> classService.create(""));
 
 	}
 
 	@Test
-	public void create_NullArgument_ThrowsException() {
+	public void create_NullArgument_ThrowsException() throws Exception {
 
 		assertThrows(NullPointerException.class, () -> classService.create(null));
 
 	}
 
 	@Test
-	public void get_ExistingClassId_ReturnsClass() {
-
-		final ClassEntity testClass1 = classService.create("TestClass1");
-		final ClassEntity testClass2 = classService.create("TestClass2");
-		final ClassEntity testClass3 = classService.create("TestClass3");
-
-		assertThat(classService.get(testClass1.getId()).get(), is(testClass1));
-		assertThat(classService.get(testClass2.getId()).get(), is(testClass2));
-		assertThat(classService.get(testClass3.getId()).get(), is(testClass3));
-
-	}
-
-	@Test
-	public void get_NegativeClassId_ThrowsException() {
-
-		assertThrows(IllegalArgumentException.class, () -> classService.get(-1));
-		assertThrows(IllegalArgumentException.class, () -> classService.get(-1000));
-
-	}
-
-	@Test
-	public void get_NonExistentClassId_NotPresent() {
-
-		assertThat(classService.count(), is(0L));
-		assertThat(classService.get(1).isPresent(), is(false));
-		assertThat(classService.get(1000).isPresent(), is(false));
-
-	}
-
-	@Test
-	public void get_ZeroClassId_ThrowsException() {
-
-		assertThrows(IllegalArgumentException.class, () -> classService.get(0));
-	}
-
-	@Test
-	public void setName_ValidName_Succeeds() throws ClassIdNotFoundException {
+	public void get_ValidClassId_CallsRepository() throws Exception {
 
 		ClassEntity testClass = mock(ClassEntity.class);
-		when(testClass.getId()).thenReturn(1);
+		when(classRepository.findById(123)).thenReturn(Optional.of(testClass));
+
+		classService.get(123);
+
+		verify(classRepository, times(1)).findById(123);
+
+	}
+
+	@Test
+	public void get_InvalidClassId_ThrowsException() throws Exception {
+
+		assertThrows(InvalidClassIdException.class, () -> classService.get(-1));
+		assertThrows(InvalidClassIdException.class, () -> classService.get(-1000));
+		assertThrows(InvalidClassIdException.class, () -> classService.get(0));
+
+	}
+
+	@Test
+	public void setName_ValidName_CallsRepository() throws Exception {
+
+		ClassEntity testClass = mock(ClassEntity.class);
+		when(classRepository.findById(12)).thenReturn(Optional.of(testClass));
+		when(testClass.withName("newClassName")).thenReturn(testClass);
 		when(classRepository.save(any(ClassEntity.class))).thenReturn(testClass);
-		when(classRepository.count()).thenReturn(1L);
-		
-		String className = "setDisplayName_ValidName";
-		String newClassName = "new_rename_ValidName";
-		int classId = classService.create(className).getId();
 
-		ClassEntity returnedClass = classService.get(classId).get();
-		assertThat(returnedClass.getId(), is(classId));
-		assertThat(returnedClass.getName(), is(className));
-		assertThat(classService.count(), is(1L));
+		classService.setName(12, "newClassName");
 
-		classService.setName(classId, newClassName);
+		InOrder order = inOrder(testClass, classRepository);
 
-		returnedClass = classService.get(classId).get();
-		assertThat(returnedClass.getId(), is(classId));
-		assertThat(returnedClass.getName(), is(newClassName));
-		assertThat(classService.count(), is(1L));
+		order.verify(testClass, times(1)).withName("newClassName");
+		order.verify(classRepository, times(1)).save(testClass);
+
+	}
+
+	@Test
+	public void setName_NullName_ThrowsException() throws Exception {
+
+		assertThrows(IllegalArgumentException.class, () -> classService.setName(1, null));
+
+	}
+
+	@Test
+	public void setName_NonExistentId_ThrowsException() throws Exception {
+
+		assertThrows(ClassIdNotFoundException.class, () -> classService.setName(1234567890, "newName"));
 
 	}
 

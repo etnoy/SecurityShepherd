@@ -3,6 +3,7 @@ package org.owasp.securityshepherd.service;
 import java.util.Optional;
 
 import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
+import org.owasp.securityshepherd.exception.InvalidClassIdException;
 import org.owasp.securityshepherd.model.ClassEntity;
 import org.owasp.securityshepherd.model.ClassEntity.ClassBuilder;
 import org.owasp.securityshepherd.repository.ClassRepository;
@@ -41,7 +42,11 @@ public final class ClassService {
 
 	}
 
-	public void setName(final int id, final String name) throws ClassIdNotFoundException {
+	public void setName(final int id, final String name) throws ClassIdNotFoundException, InvalidClassIdException {
+
+		if (name == null) {
+			throw new IllegalArgumentException("name can't be null");
+		}
 
 		Optional<ClassEntity> returnedClass = get(id);
 
@@ -69,12 +74,10 @@ public final class ClassService {
 
 	}
 
-	public Optional<ClassEntity> get(final int id) {
+	public Optional<ClassEntity> get(final int id) throws InvalidClassIdException {
 
-		if (id == 0) {
-			throw new IllegalArgumentException("id can't be zero");
-		} else if (id < 0) {
-			throw new IllegalArgumentException("id can't be negative");
+		if (id <= 0) {
+			throw new InvalidClassIdException();
 		}
 
 		return classRepository.findById(id);

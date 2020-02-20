@@ -9,9 +9,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.text.IsEmptyString.emptyString;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.owasp.securityshepherd.exception.DuplicateUserDisplayNameException;
 import org.owasp.securityshepherd.exception.EntityIdException;
 import org.owasp.securityshepherd.exception.InvalidFlagStateException;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
@@ -25,7 +25,6 @@ import org.owasp.securityshepherd.service.CryptoService;
 import org.owasp.securityshepherd.service.KeyService;
 import org.owasp.securityshepherd.service.ModuleService;
 import org.owasp.securityshepherd.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -122,7 +121,7 @@ public class ModuleServiceTest {
 	}
 
 	@Test
-	public void setExactFlag_EmptyExactFlag_ThrowsException() {
+	public void setExactFlag_EmptyExactFlag_ThrowsException() throws Exception {
 
 		final int moduleId = userService.create("TestUser").getId();
 
@@ -130,9 +129,9 @@ public class ModuleServiceTest {
 		assertThrows(IllegalArgumentException.class, () -> moduleService.setExactFlag(moduleId, ""));
 
 	}
-
+ 
 	@Test
-	public void setExactFlag_NullExactFlag_ThrowsException() {
+	public void setExactFlag_NullExactFlag_ThrowsException() throws Exception {
 
 		final int moduleId = userService.create("TestUser").getId();
 
@@ -192,7 +191,7 @@ public class ModuleServiceTest {
 	}
 
 	@Test
-	public void verifyFlag_ValidExactFlag_ReturnsTrue() throws EntityIdException, InvalidFlagStateException {
+	public void verifyFlag_ValidExactFlag_ReturnsTrue() throws EntityIdException, InvalidFlagStateException, DuplicateUserDisplayNameException {
 
 		final String name = "verifyFlag_ValidExactFlag";
 		final String moduleName = name + "_module";
@@ -209,7 +208,7 @@ public class ModuleServiceTest {
 
 	@Test
 	public void verifyFlag_ValidExactUpperLowerCaseFlag_ReturnsTrue()
-			throws EntityIdException, InvalidFlagStateException {
+			throws Exception {
 
 		final String name = "verifyFlag_ValidExactUpperLowerCaseFlag";
 		final String moduleName = name + "_module";
@@ -227,7 +226,7 @@ public class ModuleServiceTest {
 	}
 
 	@Test
-	public void verifyFlag_InvalidExactFlag_ReturnsFalse() throws EntityIdException, InvalidFlagStateException {
+	public void verifyFlag_InvalidExactFlag_ReturnsFalse() throws Exception	 {
 
 		final String name = "verifyFlag_InvalidExactFlag";
 		final String moduleName = name + "_module";
@@ -246,7 +245,7 @@ public class ModuleServiceTest {
 	}
 
 	@Test
-	public void verifyFlag_NullFlag_ReturnsFalse() throws EntityIdException, InvalidFlagStateException {
+	public void verifyFlag_NullFlag_ReturnsFalse() throws Exception {
 
 		final int moduleId = moduleService.create("TestModule").getId();
 		final int userId = userService.create("TestUser").getId();
@@ -258,7 +257,7 @@ public class ModuleServiceTest {
 	}
 
 	@Test
-	public void getDynamicFlag_FlagNotSet_ThrowsException() {
+	public void getDynamicFlag_FlagNotSet_ThrowsException() throws Exception {
 
 		final Module testModule = moduleService.create("TestModule");
 		final int moduleId = testModule.getId();
@@ -271,8 +270,7 @@ public class ModuleServiceTest {
 	}
 
 	@Test
-	public void getDynamicFlag_FlagSet_ReturnsFlag() throws ModuleIdNotFoundException, UserIdNotFoundException,
-			InvalidUserIdException, InvalidModuleIdException {
+	public void getDynamicFlag_FlagSet_ReturnsFlag() throws Exception {
 
 		final Module testModule = moduleService.create("TestModule");
 		final int moduleId = testModule.getId();
@@ -288,8 +286,7 @@ public class ModuleServiceTest {
 	}
 
 	@Test
-	public void verifyFlag_ValidDynamicFlag_ReturnsTrue() throws ModuleIdNotFoundException, UserIdNotFoundException,
-			InvalidUserIdException, InvalidModuleIdException, InvalidFlagStateException {
+	public void verifyFlag_ValidDynamicFlag_ReturnsTrue() throws Exception {
 
 		final int moduleId = moduleService.create("TestModule").getId();
 		final int userId = userService.create("TestUser").getId();
@@ -302,8 +299,7 @@ public class ModuleServiceTest {
 	}
 
 	@Test
-	public void verifyFlag_InvalidDynamicFlag_ReturnsFalse() throws ModuleIdNotFoundException, UserIdNotFoundException,
-			InvalidUserIdException, InvalidModuleIdException, InvalidFlagStateException {
+	public void verifyFlag_InvalidDynamicFlag_ReturnsFalse() throws Exception {
 
 		final int moduleId = moduleService.create("TestModule").getId();
 		final int userId = userService.create("TestUser").getId();
@@ -320,7 +316,7 @@ public class ModuleServiceTest {
 	}
 
 	@Test
-	public void verifyFlag_FlagNotSet_ThrowsException() {
+	public void verifyFlag_FlagNotSet_ThrowsException() throws Exception {
 
 		final Module testedModule = moduleService.create("TestModule");
 		final int moduleId = testedModule.getId();
@@ -347,7 +343,7 @@ public class ModuleServiceTest {
 	}
 
 	@Test
-	public void setName_ValidName_Succeeds() throws ModuleIdNotFoundException {
+	public void setName_ValidName_Succeeds() throws Exception {
 
 		final String name = "setName_ValidName";
 		final String newName = "new_rename_ValidName";
@@ -373,7 +369,7 @@ public class ModuleServiceTest {
 	}
 
 	@Test
-	public void get_NonExistentModuleId_NotPresent() {
+	public void get_NonExistentModuleId_NotPresent() throws Exception{
 
 		assertThat(moduleService.count(), is(0L));
 		assertThat(moduleService.get(1).isPresent(), is(false));
@@ -382,7 +378,7 @@ public class ModuleServiceTest {
 	}
 
 	@Test
-	public void get_ZeroUserId_ThrowsException() {
+	public void get_ZeroUserId_ThrowsException() throws Exception {
 
 		assertThrows(IllegalArgumentException.class, () -> moduleService.get(0));
 	}
