@@ -65,16 +65,16 @@ public class PasswordUserDetails implements UserDetails {
 		final Timestamp suspendedUntil = user.getAuth().getSuspendedUntil();
 
 		if (suspendedUntil == null) {
-			return false;
+			return true;
 		}
 
-		return suspendedUntil.getTime() > System.currentTimeMillis();
+		return suspendedUntil.getTime() < System.currentTimeMillis();
 
 	}
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-		return !user.getAuth().getPassword().isPasswordExpired();
+		return user.getAuth().getPassword().isPasswordNonExpired();
 	}
 
 	@Override

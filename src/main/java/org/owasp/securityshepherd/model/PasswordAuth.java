@@ -25,12 +25,12 @@ public final class PasswordAuth implements Serializable {
 	private final String hashedPassword;
 
 	@Builder.Default
-	private final boolean isPasswordExpired = true;
+	private final boolean isPasswordNonExpired = false;
 
-	PasswordAuth(final String loginName, final String hashedPassword, final boolean isPasswordExpired) {
+	PasswordAuth(final String loginName, final String hashedPassword, final boolean isPasswordNonExpired) {
 		this.loginName = loginName;
 		this.hashedPassword = hashedPassword;
-		this.isPasswordExpired = isPasswordExpired;
+		this.isPasswordNonExpired = isPasswordNonExpired;
 	}
 
 }

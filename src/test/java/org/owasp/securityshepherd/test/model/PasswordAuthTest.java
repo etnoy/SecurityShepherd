@@ -51,14 +51,14 @@ public class PasswordAuthTest {
 	@Test
 	public void buildIsPasswordExpired_TrueOrFalse_MatchesBuild() {
 
-		for (boolean isPasswordExpired : BOOLEANS) {
+		for (boolean isPasswordNonExpired : BOOLEANS) {
 
 			final PasswordAuthBuilder builder = PasswordAuth.builder().loginName("TestUser");
 
-			builder.isPasswordExpired(isPasswordExpired);
+			builder.isPasswordNonExpired(isPasswordNonExpired);
 
 			assertThat(builder.build(), instanceOf(PasswordAuth.class));
-			assertThat(builder.build().isPasswordExpired(), is(isPasswordExpired));
+			assertThat(builder.build().isPasswordNonExpired(), is(isPasswordNonExpired));
 
 		}
 
@@ -148,10 +148,10 @@ public class PasswordAuthTest {
 
 		final PasswordAuth testPasswordAuth = PasswordAuth.builder().loginName("TestUser").build();
 
-		final PasswordAuth changedPasswordAuth1 = testPasswordAuth.withPasswordExpired(false);
-		assertThat(changedPasswordAuth1.isPasswordExpired(), is(false));
-		final PasswordAuth changedPasswordAuth2 = testPasswordAuth.withPasswordExpired(true);
-		assertThat(changedPasswordAuth2.isPasswordExpired(), is(true));
+		final PasswordAuth changedPasswordAuth1 = testPasswordAuth.withPasswordNonExpired(false);
+		assertThat(changedPasswordAuth1.isPasswordNonExpired(), is(false));
+		final PasswordAuth changedPasswordAuth2 = testPasswordAuth.withPasswordNonExpired(true);
+		assertThat(changedPasswordAuth2.isPasswordNonExpired(), is(true));
 
 	}
 
