@@ -4,7 +4,7 @@ import java.util.Base64;
 import java.util.Optional;
 
 import org.owasp.securityshepherd.model.Configuration;
-import org.owasp.securityshepherd.repository.ConfigurationRepository;
+import org.owasp.securityshepherd.repository.proxy.ConfigurationRepositoryProxy;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public final class ConfigurationService {
 
-	private final ConfigurationRepository configurationRepository;
+	private final ConfigurationRepositoryProxy configurationRepositoryProxy;
 
 	private final KeyService keyService;
 
@@ -23,13 +23,13 @@ public final class ConfigurationService {
 
 		log.debug("Creating configuration key " + key + " with value " + value);
 
-		return configurationRepository.save(Configuration.builder().key(key).value(value).build());
+		return configurationRepositoryProxy.save(Configuration.builder().key(key).value(value).build());
 
 	}
 
 	private void setValue(final String key, final String value) {
 
-		final Optional<Configuration> searchResult = configurationRepository.findByKey(key);
+		final Optional<Configuration> searchResult = configurationRepositoryProxy.findByKey(key);
 
 		Configuration targetConfiguration;
 
@@ -46,13 +46,13 @@ public final class ConfigurationService {
 
 		log.debug("Setting configuration key " + key + " to value " + value);
 
-		configurationRepository.save(targetConfiguration);
+		configurationRepositoryProxy.save(targetConfiguration);
 
 	}
 
 	private Optional<String> get(final String key) {
 
-		final Optional<Configuration> searchResult = configurationRepository.findByKey(key);
+		final Optional<Configuration> searchResult = configurationRepositoryProxy.findByKey(key);
 
 		if (searchResult.isPresent()) {
 
@@ -116,7 +116,7 @@ public final class ConfigurationService {
 
 	private boolean existsByKey(final String key) {
 
-		return configurationRepository.existsByKey(key);
+		return configurationRepositoryProxy.existsByKey(key);
 
 	}
 

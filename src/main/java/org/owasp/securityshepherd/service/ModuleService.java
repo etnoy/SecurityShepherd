@@ -10,7 +10,7 @@ import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
 import org.owasp.securityshepherd.exception.UserIdNotFoundException;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.model.Module.ModuleBuilder;
-import org.owasp.securityshepherd.repository.ModuleRepository;
+import org.owasp.securityshepherd.repository.proxy.ModuleRepositoryProxy;
 import org.springframework.stereotype.Service;
 
 import com.google.common.primitives.Bytes;
@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public final class ModuleService {
 
-	private final ModuleRepository moduleRepository;
+	private final ModuleRepositoryProxy moduleRepositoryProxy;
 
 	private final UserService userService;
 
@@ -48,7 +48,7 @@ public final class ModuleService {
 		final ModuleBuilder moduleBuilder = Module.builder();
 		moduleBuilder.name(name);
 
-		final Module savedModule = moduleRepository.save(moduleBuilder.build());
+		final Module savedModule = moduleRepositoryProxy.save(moduleBuilder.build());
 
 		log.debug("Created module with ID " + savedModule.getId());
 
@@ -123,7 +123,7 @@ public final class ModuleService {
 		final Module exactFlagModule = returnedModule.get().withFlagEnabled(true).withExactFlag(true)
 				.withFlag(exactFlag);
 
-		moduleRepository.save(exactFlagModule);
+		moduleRepositoryProxy.save(exactFlagModule);
 
 	}
 
@@ -149,7 +149,7 @@ public final class ModuleService {
 			dynamicFlagModule = dynamicFlagModule.withFlag(keyService.generateRandomString(16));
 		}
 
-		moduleRepository.save(dynamicFlagModule);
+		moduleRepositoryProxy.save(dynamicFlagModule);
 
 	}
 
@@ -195,13 +195,13 @@ public final class ModuleService {
 
 		final Module newDisplayNameModule = returnedModule.get().withName(name);
 
-		moduleRepository.save(newDisplayNameModule);
+		moduleRepositoryProxy.save(newDisplayNameModule);
 
 	}
 
 	public long count() {
 
-		return moduleRepository.count();
+		return moduleRepositoryProxy.count();
 
 	}
 
@@ -213,7 +213,7 @@ public final class ModuleService {
 			throw new IllegalArgumentException("id can't be negative");
 		}
 
-		return moduleRepository.findById(id);
+		return moduleRepositoryProxy.findById(id);
 
 	}
 

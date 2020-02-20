@@ -19,7 +19,7 @@ import org.owasp.securityshepherd.exception.InvalidFlagStateException;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
 import org.owasp.securityshepherd.model.Module;
-import org.owasp.securityshepherd.repository.ModuleRepository;
+import org.owasp.securityshepherd.repository.proxy.ModuleRepositoryProxy;
 import org.owasp.securityshepherd.service.ConfigurationService;
 import org.owasp.securityshepherd.service.CryptoService;
 import org.owasp.securityshepherd.service.KeyService;
@@ -41,7 +41,7 @@ public class ModuleServiceTest {
 	private UserService userService;
 
 	@Mock
-	private ModuleRepository moduleRepository;
+	private ModuleRepositoryProxy moduleRepositoryProxy;
 
 	@Mock
 	private ConfigurationService configurationService;
@@ -54,7 +54,7 @@ public class ModuleServiceTest {
 
 	@BeforeEach
 	private void setUp() {
-		moduleService = new ModuleService(moduleRepository, userService, configurationService, keyService,
+		moduleService = new ModuleService(moduleRepositoryProxy, userService, configurationService, keyService,
 				cryptoService);
 	}
 
