@@ -6,15 +6,14 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.owasp.securityshepherd.repository.ConfigurationRepository;
 import org.owasp.securityshepherd.service.ConfigurationService;
 import org.owasp.securityshepherd.service.KeyService;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,20 +24,15 @@ public class ConfigurationServiceTest {
 
 	private ConfigurationService configurationService;
 
-	@MockBean
+	@Mock
 	private ConfigurationRepository configurationRepository;
 
-	@MockBean
+	@Mock
 	private KeyService keyService;
-	
-	@TestConfiguration
-	class ConfigurationServiceTestContextConfiguration {
 
-		@Bean
-		public ConfigurationService configurationService() {
-			return new ConfigurationService(configurationRepository, keyService);
-		}
-
+	@BeforeEach
+	private void setUp() {
+		configurationService = new ConfigurationService(configurationRepository, keyService);
 	}
 
 	@Test

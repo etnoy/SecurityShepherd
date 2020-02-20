@@ -9,15 +9,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.text.IsEmptyString.emptyString;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.owasp.securityshepherd.exception.DuplicateUserDisplayNameException;
 import org.owasp.securityshepherd.exception.EntityIdException;
 import org.owasp.securityshepherd.exception.InvalidFlagStateException;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
-import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
-import org.owasp.securityshepherd.exception.UserIdNotFoundException;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.repository.ModuleRepository;
 import org.owasp.securityshepherd.service.ConfigurationService;
@@ -26,9 +26,6 @@ import org.owasp.securityshepherd.service.KeyService;
 import org.owasp.securityshepherd.service.ModuleService;
 import org.owasp.securityshepherd.service.UserService;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.relational.core.conversion.DbActionExecutionException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,29 +37,25 @@ public class ModuleServiceTest {
 
 	private ModuleService moduleService;
 
-	@MockBean
+	@Mock
 	private UserService userService;
 
-	@MockBean
+	@Mock
 	private ModuleRepository moduleRepository;
 
-	@MockBean
+	@Mock
 	private ConfigurationService configurationService;
 
-	@MockBean
+	@Mock
 	private KeyService keyService;
 
-	@MockBean
+	@Mock
 	private CryptoService cryptoService;
 
-	@TestConfiguration
-	class ConfigurationServiceTestContextConfiguration {
-
-		@Bean
-		public ModuleService moduleService() {
-			return new ModuleService(moduleRepository, userService, configurationService, keyService, cryptoService);
-		}
-
+	@BeforeEach
+	private void setUp() {
+		moduleService = new ModuleService(moduleRepository, userService, configurationService, keyService,
+				cryptoService);
 	}
 
 	@Test
@@ -129,7 +122,7 @@ public class ModuleServiceTest {
 		assertThrows(IllegalArgumentException.class, () -> moduleService.setExactFlag(moduleId, ""));
 
 	}
- 
+
 	@Test
 	public void setExactFlag_NullExactFlag_ThrowsException() throws Exception {
 
@@ -191,7 +184,8 @@ public class ModuleServiceTest {
 	}
 
 	@Test
-	public void verifyFlag_ValidExactFlag_ReturnsTrue() throws EntityIdException, InvalidFlagStateException, DuplicateUserDisplayNameException {
+	public void verifyFlag_ValidExactFlag_ReturnsTrue()
+			throws EntityIdException, InvalidFlagStateException, DuplicateUserDisplayNameException {
 
 		final String name = "verifyFlag_ValidExactFlag";
 		final String moduleName = name + "_module";
@@ -207,8 +201,7 @@ public class ModuleServiceTest {
 	}
 
 	@Test
-	public void verifyFlag_ValidExactUpperLowerCaseFlag_ReturnsTrue()
-			throws Exception {
+	public void verifyFlag_ValidExactUpperLowerCaseFlag_ReturnsTrue() throws Exception {
 
 		final String name = "verifyFlag_ValidExactUpperLowerCaseFlag";
 		final String moduleName = name + "_module";
@@ -226,7 +219,7 @@ public class ModuleServiceTest {
 	}
 
 	@Test
-	public void verifyFlag_InvalidExactFlag_ReturnsFalse() throws Exception	 {
+	public void verifyFlag_InvalidExactFlag_ReturnsFalse() throws Exception {
 
 		final String name = "verifyFlag_InvalidExactFlag";
 		final String moduleName = name + "_module";
@@ -369,7 +362,7 @@ public class ModuleServiceTest {
 	}
 
 	@Test
-	public void get_NonExistentModuleId_NotPresent() throws Exception{
+	public void get_NonExistentModuleId_NotPresent() throws Exception {
 
 		assertThat(moduleService.count(), is(0L));
 		assertThat(moduleService.get(1).isPresent(), is(false));

@@ -6,7 +6,7 @@ import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
 import org.owasp.securityshepherd.exception.InvalidClassIdException;
 import org.owasp.securityshepherd.model.ClassEntity;
 import org.owasp.securityshepherd.model.ClassEntity.ClassBuilder;
-import org.owasp.securityshepherd.repository.ClassRepository;
+import org.owasp.securityshepherd.repository.proxy.ClassRepositoryProxy;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public final class ClassService {
 
-	private final ClassRepository classRepository;
+	private final ClassRepositoryProxy classRepository;
 
 	public ClassEntity create(final String name) {
 

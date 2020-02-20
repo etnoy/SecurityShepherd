@@ -10,19 +10,17 @@ import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
+import org.mockito.Mock;
 import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
 import org.owasp.securityshepherd.exception.InvalidClassIdException;
 import org.owasp.securityshepherd.model.ClassEntity;
-import org.owasp.securityshepherd.repository.ClassRepository;
+import org.owasp.securityshepherd.repository.proxy.ClassRepositoryProxy;
 import org.owasp.securityshepherd.service.ClassService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,22 +29,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ClassServiceTest {
 
-	@Autowired
 	private ClassService classService;
 
-	@MockBean
-	private ClassRepository classRepository;
-
-	@TestConfiguration
-	class ClassServiceTestContextConfiguration {
-
-		@Bean
-		public ClassService classService() {
-			return new ClassService(classRepository);
-		}
-
+	@Mock
+	private ClassRepositoryProxy classRepositoryProxy;
+	
+	@BeforeEach
+	private void setUp() {
+		classService = new ClassService(classRepositoryProxy);
 	}
-
+	
 	@Test
 	public void create_EmptyArgument_ThrowsException() throws Exception {
 
@@ -65,11 +57,11 @@ public class ClassServiceTest {
 	public void get_ValidClassId_CallsRepository() throws Exception {
 
 		ClassEntity testClass = mock(ClassEntity.class);
-		when(classRepository.findById(123)).thenReturn(Optional.of(testClass));
+		when(classRepositoryProxy.findById(123)).thenReturn(Optional.of(testClass));
 
 		classService.get(123);
 
-		verify(classRepository, times(1)).findById(123);
+		verify(classRepositoryProxy, times(1)).findById(123);
 
 	}
 
@@ -86,16 +78,16 @@ public class ClassServiceTest {
 	public void setName_ValidName_CallsRepository() throws Exception {
 
 		ClassEntity testClass = mock(ClassEntity.class);
-		when(classRepository.findById(12)).thenReturn(Optional.of(testClass));
+		when(classRepositoryProxy.findById(12)).thenReturn(Optional.of(testClass));
 		when(testClass.withName("newClassName")).thenReturn(testClass);
-		when(classRepository.save(any(ClassEntity.class))).thenReturn(testClass);
+		when(classRepositoryProxy.save(any(ClassEntity.class))).thenReturn(testClass);
 
 		classService.setName(12, "newClassName");
 
-		InOrder order = inOrder(testClass, classRepository);
+		InOrder order = inOrder(testClass, classRepositoryProxy);
 
 		order.verify(testClass, times(1)).withName("newClassName");
-		order.verify(classRepository, times(1)).save(testClass);
+		order.verify(classRepositoryProxy, times(1)).save(testClass);
 
 	}
 

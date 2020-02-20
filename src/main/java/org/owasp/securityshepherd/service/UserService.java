@@ -14,7 +14,7 @@ import org.owasp.securityshepherd.model.PasswordAuth;
 import org.owasp.securityshepherd.model.PasswordAuth.PasswordAuthBuilder;
 import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.model.User.UserBuilder;
-import org.owasp.securityshepherd.repository.UserRepository;
+import org.owasp.securityshepherd.repository.proxy.UserRepositoryProxy;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public final class UserService {
 
-	private final UserRepository userRepository;
+	private final UserRepositoryProxy userRepository;
 
 	private final ClassService classService;
 
