@@ -154,6 +154,8 @@ public class UserServiceTest {
 		final String hashedPassword = "$2y$04$2zPOzxj77Ul5amFcsnsyjenMBGpRgEApYsJXyK76dcX2wK7asi7.6";
 
 		when(userRepositoryProxy.existsByDisplayName(displayName)).thenReturn(false);
+		
+		// When saving an user, just return the user back
 		when(userRepositoryProxy.save(any(User.class))).thenAnswer(user -> (user.getArgument(0)));
 
 		final User createdUser = userService.createPasswordUser(displayName, loginName, hashedPassword);
