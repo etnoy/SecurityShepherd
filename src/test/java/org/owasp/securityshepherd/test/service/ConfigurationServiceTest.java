@@ -10,7 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.owasp.securityshepherd.repository.proxy.ConfigurationRepositoryProxy;
+import org.owasp.securityshepherd.proxy.ConfigurationRepositoryProxy;
 import org.owasp.securityshepherd.service.ConfigurationService;
 import org.owasp.securityshepherd.service.KeyService;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -23,7 +23,7 @@ import org.owasp.securityshepherd.exception.DuplicateUserLoginNameException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.UserIdNotFoundException;
 import org.owasp.securityshepherd.model.User;
-import org.owasp.securityshepherd.repository.proxy.UserRepositoryProxy;
+import org.owasp.securityshepherd.proxy.UserRepositoryProxy;
 import org.owasp.securityshepherd.service.ClassService;
 import org.owasp.securityshepherd.service.KeyService;
 import org.owasp.securityshepherd.service.UserService;

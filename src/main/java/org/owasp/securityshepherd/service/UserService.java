@@ -14,7 +14,7 @@ import org.owasp.securityshepherd.model.PasswordAuth;
 import org.owasp.securityshepherd.model.PasswordAuth.PasswordAuthBuilder;
 import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.model.User.UserBuilder;
-import org.owasp.securityshepherd.repository.proxy.UserRepositoryProxy;
+import org.owasp.securityshepherd.proxy.UserRepositoryProxy;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;

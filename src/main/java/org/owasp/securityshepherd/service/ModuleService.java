@@ -10,7 +10,7 @@ import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
 import org.owasp.securityshepherd.exception.UserIdNotFoundException;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.model.Module.ModuleBuilder;
-import org.owasp.securityshepherd.repository.proxy.ModuleRepositoryProxy;
+import org.owasp.securityshepherd.proxy.ModuleRepositoryProxy;
 import org.springframework.stereotype.Service;
 
 import com.google.common.primitives.Bytes;

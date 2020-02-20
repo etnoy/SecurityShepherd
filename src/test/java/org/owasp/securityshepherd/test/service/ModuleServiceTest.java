@@ -19,7 +19,7 @@ import org.owasp.securityshepherd.exception.InvalidFlagStateException;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
 import org.owasp.securityshepherd.model.Module;
-import org.owasp.securityshepherd.repository.proxy.ModuleRepositoryProxy;
+import org.owasp.securityshepherd.proxy.ModuleRepositoryProxy;
 import org.owasp.securityshepherd.service.ConfigurationService;
 import org.owasp.securityshepherd.service.CryptoService;
 import org.owasp.securityshepherd.service.KeyService;

@@ -4,7 +4,7 @@ import java.util.Base64;
 import java.util.Optional;
 
 import org.owasp.securityshepherd.model.Configuration;
-import org.owasp.securityshepherd.repository.proxy.ConfigurationRepositoryProxy;
+import org.owasp.securityshepherd.proxy.ConfigurationRepositoryProxy;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;

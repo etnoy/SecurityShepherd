@@ -6,7 +6,7 @@ import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
 import org.owasp.securityshepherd.exception.InvalidClassIdException;
 import org.owasp.securityshepherd.model.ClassEntity;
 import org.owasp.securityshepherd.model.ClassEntity.ClassBuilder;
-import org.owasp.securityshepherd.repository.proxy.ClassRepositoryProxy;
+import org.owasp.securityshepherd.proxy.ClassRepositoryProxy;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;

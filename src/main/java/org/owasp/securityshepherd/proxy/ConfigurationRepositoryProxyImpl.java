@@ -1,4 +1,4 @@
-package org.owasp.securityshepherd.repository.proxy;
+package org.owasp.securityshepherd.proxy;
 
 import java.util.Optional;
 
