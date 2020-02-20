@@ -53,33 +53,6 @@ public class AuthTest {
 	}
 
 	@Test
-	public void isAccountSuspended_SuspensionNotSet_NotSuspended() {
-
-		final Auth testAuth = Auth.builder().build();
-
-		assertThat(testAuth.isAccountSuspended(), is(false));
-
-	}
-
-	@Test
-	public void isAccountSuspended_SuspensionInPast_NotSuspended() {
-
-		final Auth testAuth = Auth.builder().suspendedUntil(new Timestamp(12345)).build();
-
-		assertThat(testAuth.isAccountSuspended(), is(false));
-
-	}
-
-	@Test
-	public void isAccountSuspended_SuspensionInFuture_Suspended() {
-
-		final Auth testAuth = Auth.builder().suspendedUntil(new Timestamp(System.currentTimeMillis() + 50000)).build();
-
-		assertThat(testAuth.isAccountSuspended(), is(true));
-
-	}
-
-	@Test
 	public void buildBadLoginCount_ValidBadLoginCount_Builds() {
 
 		final int[] badLoginCountsToTest = { 0, 1, 1000, -1, 999999, 42, 567890, -1234567 };

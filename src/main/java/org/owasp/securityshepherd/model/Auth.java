@@ -14,9 +14,6 @@ import lombok.With;
 @With
 public final class Auth implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -1511082836956413928L;
 
 	@Builder.Default
@@ -44,15 +41,5 @@ public final class Auth implements Serializable {
 	private final PasswordAuth password;
 
 	private final SAMLAuth saml;
-
-	public boolean isAccountSuspended() {
-
-		if (suspendedUntil == null) {
-			return false;
-		}
-
-		return suspendedUntil.getTime() > System.currentTimeMillis();
-
-	}
 
 }

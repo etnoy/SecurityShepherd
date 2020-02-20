@@ -50,7 +50,7 @@ public class ConfigurationServiceTest {
 		final int userId = 17;
 
 		User testUser = mock(User.class);
-		when(testUser.getId()).thenReturn(1);
+		when(testUser.getId()).thenReturn(userId);
 		when(configurationRepositoryProxy.findByKey("serverKey")).thenReturn(Optional.empty());
 		when(configurationRepositoryProxy.existsByKey("serverKey")).thenReturn(false);
 		when(configurationRepositoryProxy.save(any(Configuration.class)))

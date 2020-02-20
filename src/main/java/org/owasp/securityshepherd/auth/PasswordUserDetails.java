@@ -1,5 +1,6 @@
 package org.owasp.securityshepherd.auth;
 
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -16,11 +17,11 @@ import lombok.extern.slf4j.Slf4j;
 public class PasswordUserDetails implements UserDetails {
 
 	private static final long serialVersionUID = -3677404075923734838L;
-	
+
 	private User user;
 
 	public PasswordUserDetails(User user) {
-    	log.trace("Creating password details for user " + user);
+		log.trace("Creating password details for user " + user);
 
 		this.user = user;
 	}
@@ -60,7 +61,15 @@ public class PasswordUserDetails implements UserDetails {
 
 	@Override
 	public boolean isAccountNonLocked() {
-		return !user.getAuth().isAccountSuspended();
+
+		final Timestamp suspendedUntil = user.getAuth().getSuspendedUntil();
+
+		if (suspendedUntil == null) {
+			return false;
+		}
+
+		return suspendedUntil.getTime() > System.currentTimeMillis();
+
 	}
 
 	@Override
