@@ -8,11 +8,13 @@ import org.owasp.securityshepherd.validation.ValidEmail;
 import org.owasp.securityshepherd.validation.ValidPassword;
 
 import lombok.Builder;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.Value;
 
-@Value
+@Data
+@NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @PasswordMatches
 public class UserDto {
@@ -26,6 +28,7 @@ public class UserDto {
 	private String loginName;
 	
 	@ValidPassword
+	@NotNull
 	private String password;
 
 	@NotNull

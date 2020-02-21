@@ -14,6 +14,7 @@ import org.owasp.securityshepherd.exception.DuplicateUserDisplayNameException;
 import org.owasp.securityshepherd.exception.DuplicateUserLoginNameException;
 import org.owasp.securityshepherd.persistence.model.User;
 import org.owasp.securityshepherd.service.UserService;
+import org.owasp.securityshepherd.web.GenericResponse;
 import org.owasp.securityshepherd.web.dto.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -28,36 +29,42 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Controller
+@RestController
 public class RegistrationController {
 
 	@Autowired
 	private UserService userService;
 
-	@RequestMapping(value = "/api/v1/user/registration", method = RequestMethod.POST)
-	@ResponseBody
-	public ModelAndView registerUserAccount(final UserDto userDto, final HttpServletRequest request) {
+	@PostMapping(path = "/api/v1/user/registration", consumes = "application/json", produces = "application/json")
+	public GenericResponse registerUserAccount(@RequestBody @Valid final UserDto userDto, final HttpServletRequest request) {
 		log.debug("Registering user account with information: {}", userDto);
 
 		log.debug(userDto.toString());
 		
-		try {
-			final User registered = userService.createPasswordUser(userDto);
-		} catch (DuplicateUserLoginNameException | DuplicateUserDisplayNameException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			try {
+				final User registered = userService.createPasswordUser(userDto);
+			} catch (DuplicateUserLoginNameException e) {
+		        return new GenericResponse("Login name already exists");
 
-		return new ModelAndView("successRegister", "user", userDto);
+			} catch (DuplicateUserDisplayNameException e) {
+		        return new GenericResponse("Display name already exists");
+
+			}
+		
+        return new GenericResponse("success");
+
 
 	}
 
