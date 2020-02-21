@@ -4,8 +4,8 @@ import java.util.Optional;
 
 import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
 import org.owasp.securityshepherd.exception.InvalidClassIdException;
-import org.owasp.securityshepherd.model.ClassEntity;
-import org.owasp.securityshepherd.model.ClassEntity.ClassBuilder;
+import org.owasp.securityshepherd.persistence.model.ClassEntity;
+import org.owasp.securityshepherd.persistence.model.ClassEntity.ClassBuilder;
 import org.owasp.securityshepherd.proxy.ClassRepositoryProxy;
 import org.springframework.stereotype.Service;
 

@@ -7,8 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.owasp.securityshepherd.model.Configuration;
-import org.owasp.securityshepherd.model.Configuration.ConfigurationBuilder;
+import org.owasp.securityshepherd.persistence.model.Configuration;
+import org.owasp.securityshepherd.persistence.model.Configuration.ConfigurationBuilder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 

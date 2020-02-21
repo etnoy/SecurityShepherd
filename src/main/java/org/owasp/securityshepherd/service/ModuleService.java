@@ -8,8 +8,8 @@ import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
 import org.owasp.securityshepherd.exception.UserIdNotFoundException;
-import org.owasp.securityshepherd.model.Module;
-import org.owasp.securityshepherd.model.Module.ModuleBuilder;
+import org.owasp.securityshepherd.persistence.model.Module;
+import org.owasp.securityshepherd.persistence.model.Module.ModuleBuilder;
 import org.owasp.securityshepherd.proxy.ModuleRepositoryProxy;
 import org.springframework.stereotype.Service;
 

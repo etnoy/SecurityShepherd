@@ -9,10 +9,10 @@ import java.sql.Timestamp;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.owasp.securityshepherd.model.Auth;
-import org.owasp.securityshepherd.model.Auth.AuthBuilder;
-import org.owasp.securityshepherd.model.PasswordAuth;
-import org.owasp.securityshepherd.model.SAMLAuth;
+import org.owasp.securityshepherd.persistence.model.Auth;
+import org.owasp.securityshepherd.persistence.model.PasswordAuth;
+import org.owasp.securityshepherd.persistence.model.SAMLAuth;
+import org.owasp.securityshepherd.persistence.model.Auth.AuthBuilder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 

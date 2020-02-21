@@ -3,7 +3,7 @@ package org.owasp.securityshepherd.service;
 import java.util.Base64;
 import java.util.Optional;
 
-import org.owasp.securityshepherd.model.Configuration;
+import org.owasp.securityshepherd.persistence.model.Configuration;
 import org.owasp.securityshepherd.proxy.ConfigurationRepositoryProxy;
 import org.springframework.stereotype.Service;
 

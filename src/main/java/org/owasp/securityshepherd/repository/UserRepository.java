@@ -2,7 +2,7 @@ package org.owasp.securityshepherd.repository;
 
 import java.util.Optional;
 
-import org.owasp.securityshepherd.model.User;
+import org.owasp.securityshepherd.persistence.model.User;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;

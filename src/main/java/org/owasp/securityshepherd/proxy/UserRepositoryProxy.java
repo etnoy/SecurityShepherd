@@ -2,7 +2,7 @@ package org.owasp.securityshepherd.proxy;
 
 import java.util.Optional;
 
-import org.owasp.securityshepherd.model.User;
+import org.owasp.securityshepherd.persistence.model.User;
 
 public interface UserRepositoryProxy extends RepositoryProxy<User> {
 

@@ -2,7 +2,7 @@ package org.owasp.securityshepherd.proxy;
 
 import java.util.Optional;
 
-import org.owasp.securityshepherd.model.Configuration;
+import org.owasp.securityshepherd.persistence.model.Configuration;
 import org.owasp.securityshepherd.repository.ConfigurationRepository;
 import org.springframework.stereotype.Repository;
 

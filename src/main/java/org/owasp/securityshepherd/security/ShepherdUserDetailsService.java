@@ -2,7 +2,7 @@ package org.owasp.securityshepherd.security;
 
 import java.util.Optional;
 
-import org.owasp.securityshepherd.model.User;
+import org.owasp.securityshepherd.persistence.model.User;
 import org.owasp.securityshepherd.service.UserService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

@@ -17,7 +17,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
 import org.owasp.securityshepherd.exception.InvalidClassIdException;
-import org.owasp.securityshepherd.model.ClassEntity;
+import org.owasp.securityshepherd.persistence.model.ClassEntity;
 import org.owasp.securityshepherd.proxy.ClassRepositoryProxy;
 import org.owasp.securityshepherd.service.ClassService;
 import org.springframework.boot.test.context.SpringBootTest;

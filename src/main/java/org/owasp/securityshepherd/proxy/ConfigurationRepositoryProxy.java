@@ -2,7 +2,7 @@ package org.owasp.securityshepherd.proxy;
 
 import java.util.Optional;
 
-import org.owasp.securityshepherd.model.Configuration;
+import org.owasp.securityshepherd.persistence.model.Configuration;
 
 public interface ConfigurationRepositoryProxy extends RepositoryProxy<Configuration> {
 
