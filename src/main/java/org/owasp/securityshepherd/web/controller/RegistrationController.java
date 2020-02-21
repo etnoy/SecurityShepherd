@@ -41,13 +41,13 @@ import org.springframework.web.servlet.ModelAndView;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@RestController
+@Controller
 public class RegistrationController {
 
 	@Autowired
 	private UserService userService;
 
-	@PostMapping(path = "/api/v1/user/registration", consumes = "application/json", produces = "application/json")
+	@PostMapping(path = "/api/v1/user/registration")
 	public GenericResponse registerUserAccount(@RequestBody @Valid final UserDto userDto, final HttpServletRequest request) {
 		log.debug("Registering user account with information: {}", userDto);
 
