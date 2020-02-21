@@ -1,4 +1,4 @@
-package org.owasp.securityshepherd.auth;
+package org.owasp.securityshepherd.security;
 
 import java.sql.Timestamp;
 import java.util.Collection;
