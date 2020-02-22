@@ -1,15 +1,3 @@
-/target/
-/.classpath
-/.project
-/bin/
-/.settings/
-.settings/
-docker/*/*.sql
-docker/*/*.sql-esrc
-src/main/resources/onelogin.saml.properties
-src/main/resources/sso.properties
-.sts4-cache/
-node/
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
 # compiled output
