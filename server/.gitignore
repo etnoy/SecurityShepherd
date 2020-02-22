@@ -1,0 +1,7 @@
+/target/
+/.classpath
+/.project
+/bin/
+/.settings/
+.settings/
+.sts4-cache/
