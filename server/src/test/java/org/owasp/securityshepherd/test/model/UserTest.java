@@ -99,7 +99,7 @@ public class UserTest {
 		final User testUser = User.builder().displayName("TestUser").build();
 
 		assertThat(testUser.toString(),
-				is("User(id=0, displayName=TestUser, classId=null, email=null, key=null, auth=null)"));
+				is("User(id=0, displayName=TestUser, classId=null, email=null, key=null)"));
 
 	}
 
@@ -108,37 +108,7 @@ public class UserTest {
 		final UserBuilder builder = User.builder();
 
 		assertThat(builder.toString(), is(
-				"User.UserBuilder(id=0, displayName=null, classId$value=null, email=null, key=null, auth=null)"));
-
-	}
-
-	@Test
-	public void withAuth_ValidAuth_ChangesAuth() {
-
-		final AuthBuilder authBuilder = Auth.builder();
-
-		final Auth originalAuth = authBuilder.build();
-
-		final User newUser = User.builder().displayName("Test User").auth(originalAuth).build();
-
-		assertThat(newUser.getAuth(), is(originalAuth));
-
-		assertThat(newUser.withAuth(originalAuth).getAuth(), is(originalAuth));
-
-		final AuthBuilder[] testedAuthBuilders = { authBuilder, authBuilder.isAdmin(true),
-				authBuilder.badLoginCount(3) };
-
-		User changedUser;
-		Auth newAuth;
-
-		for (AuthBuilder newBuilder : testedAuthBuilders) {
-
-			newAuth = newBuilder.build();
-			changedUser = newUser.withAuth(newAuth);
-			assertThat(changedUser.getAuth(), is(newAuth));
-			assertThat(changedUser, is(newUser));
-
-		}
+				"User.UserBuilder(id=0, displayName=null, classId$value=null, email=null, key=null)"));
 
 	}
 

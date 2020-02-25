@@ -3,6 +3,9 @@ package org.owasp.securityshepherd.persistence.model;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
@@ -15,6 +18,10 @@ import lombok.With;
 public final class Auth implements Serializable {
 
 	private static final long serialVersionUID = -1511082836956413928L;
+
+	@EqualsAndHashCode.Include
+	@Id
+	private final int id;
 
 	@Builder.Default
 	private final boolean isEnabled = false;
@@ -37,9 +44,5 @@ public final class Auth implements Serializable {
 	private final Timestamp lastLogin = null;
 
 	private final String lastLoginMethod;
-
-	private final PasswordAuth password;
-
-	private final SAMLAuth saml;
 
 }

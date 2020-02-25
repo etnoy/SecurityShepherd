@@ -52,14 +52,14 @@ public class SAMLAuthTest {
 	@Test
 	public void toString_ValidData_AsExpected() {
 
-		assertThat(SAMLAuth.builder().samlId("TestID").build().toString(), is("SAMLAuth(samlId=TestID)"));
+		assertThat(SAMLAuth.builder().samlId("TestID").build().toString(), is("SAMLAuth(id=0, samlId=TestID)"));
 
 	}
 	
 	@Test
 	public void builderToString_ValidData_AsExpected() {
 
-		assertThat(SAMLAuth.builder().toString(), is("SAMLAuth.SAMLAuthBuilder(samlId=null)"));
+		assertThat(SAMLAuth.builder().toString(), is("SAMLAuth.SAMLAuthBuilder(id=0, samlId=null)"));
 
 	}
 

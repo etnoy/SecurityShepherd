@@ -4,32 +4,33 @@ import java.util.Base64;
 import java.util.Optional;
 
 import org.owasp.securityshepherd.persistence.model.Configuration;
-import org.owasp.securityshepherd.proxy.ConfigurationRepositoryProxy;
+import org.owasp.securityshepherd.repository.ConfigurationRepository;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public final class ConfigurationService {
 
-	private final ConfigurationRepositoryProxy configurationRepositoryProxy;
+	private final ConfigurationRepository configurationRepository;
 
 	private final KeyService keyService;
 
-	private Configuration create(final String key, final String value) {
+	private Mono<Configuration> create(final String key, final String value) {
 
 		log.debug("Creating configuration key " + key + " with value " + value);
 
-		return configurationRepositoryProxy.save(Configuration.builder().key(key).value(value).build());
+		return configurationRepository.save(Configuration.builder().key(key).value(value).build());
 
 	}
 
 	private void setValue(final String key, final String value) {
 
-		final Optional<Configuration> searchResult = configurationRepositoryProxy.findByKey(key);
+		final Optional<Configuration> searchResult = configurationRepository.findByKey(key);
 
 		Configuration targetConfiguration;
 
@@ -46,13 +47,13 @@ public final class ConfigurationService {
 
 		log.debug("Setting configuration key " + key + " to value " + value);
 
-		configurationRepositoryProxy.save(targetConfiguration);
+		configurationRepository.save(targetConfiguration);
 
 	}
 
 	private Optional<String> get(final String key) {
 
-		final Optional<Configuration> searchResult = configurationRepositoryProxy.findByKey(key);
+		final Optional<Configuration> searchResult = configurationRepository.findByKey(key);
 
 		if (searchResult.isPresent()) {
 
@@ -116,7 +117,7 @@ public final class ConfigurationService {
 
 	private boolean existsByKey(final String key) {
 
-		return configurationRepositoryProxy.existsByKey(key);
+		return configurationRepository.existsByKey(key);
 
 	}
 

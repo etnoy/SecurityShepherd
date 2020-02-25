@@ -28,30 +28,33 @@ public class PasswordUserDetails implements UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return null;
 
-		String role;
-
-		if (user.getAuth().isAdmin()) {
-			role = "admin";
-		} else {
-			role = "player";
-		}
-
-		return Collections.singletonList(new SimpleGrantedAuthority(role));
+//		String role;
+//
+//		if (user.getAuth().isAdmin()) {
+//			role = "admin";
+//		} else {
+//			role = "player";
+//		}
+//
+//		return Collections.singletonList(new SimpleGrantedAuthority(role));
 
 	}
 
 	@Override
 	public String getPassword() {
-		log.trace("Found password hash ", user.getAuth().getPassword().getHashedPassword());
-
-		return user.getAuth().getPassword().getHashedPassword();
+		return null;
+//		log.trace("Found password hash ", user.getAuth().getPassword().getHashedPassword());
+//
+//		return user.getAuth().getPassword().getHashedPassword();
 	}
 
 	@Override
 	public String getUsername() {
-		log.trace("Found username " + user.getAuth().getPassword().getLoginName());
-		return user.getDisplayName();
+		return null;
+//		log.trace("Found username " + user.getAuth().getPassword().getLoginName());
+//		return user.getDisplayName();
 	}
 
 	@Override
@@ -61,25 +64,28 @@ public class PasswordUserDetails implements UserDetails {
 
 	@Override
 	public boolean isAccountNonLocked() {
+		return false;
 
-		final Timestamp suspendedUntil = user.getAuth().getSuspendedUntil();
-
-		if (suspendedUntil == null) {
-			return true;
-		}
-
-		return suspendedUntil.getTime() < System.currentTimeMillis();
+//		final Timestamp suspendedUntil = user.getAuth().getSuspendedUntil();
+//
+//		if (suspendedUntil == null) {
+//			return true;
+//		}
+//
+//		return suspendedUntil.getTime() < System.currentTimeMillis();
 
 	}
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-		return user.getAuth().getPassword().isPasswordNonExpired();
+		return false;
+//		return user.getAuth().getPassword().isPasswordNonExpired();
 	}
 
 	@Override
 	public boolean isEnabled() {
-		return user.getAuth().isEnabled();
+		return false;
+//		return user.getAuth().isEnabled();
 	}
 
 }
