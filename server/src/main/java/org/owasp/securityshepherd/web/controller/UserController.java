@@ -36,11 +36,9 @@ public class UserController {
 	@GetMapping(path = "/api/v1/user/add/{displayName}")
 	public ResponseEntity<Mono<String>> addUser(@PathVariable String displayName) {
 
-		try {
-			return ResponseEntity.status(HttpStatus.CREATED).body(userService.create(displayName).map(user -> user.toString()));
-		} catch (DuplicateUserDisplayNameException e) {
-			return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(Mono.just(e.toString()));
-		}
+		// TODO: Set correct status code on mono exception
+		return ResponseEntity.status(HttpStatus.CREATED)
+				.body(userService.create(displayName).map(user -> user.toString()));
 
 	}
 

@@ -7,22 +7,24 @@ import org.owasp.securityshepherd.validation.PasswordMatches;
 import org.owasp.securityshepherd.validation.ValidEmail;
 import org.owasp.securityshepherd.validation.ValidPassword;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.Value;
 
-@Data
-@NoArgsConstructor
+@Value
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Builder
 @PasswordMatches
 public class UserDto {
 	
 	@NotNull
-	@Size(min = 1, message = "{Size.userDto.firstName}")
+	@Size(min = 1, message = "{Size.userDto.displayName}")
 	private String displayName;
 
 	@NotNull
-	@Size(min = 1, message = "{Size.userDto.firstName}")
+	@Size(min = 1, message = "{Size.userDto.loginName}")
 	private String loginName;
 	
 	@ValidPassword

@@ -32,9 +32,11 @@ import org.owasp.securityshepherd.repository.UserRepository;
 import org.owasp.securityshepherd.service.KeyService;
 import org.owasp.securityshepherd.service.UserService;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -81,7 +83,7 @@ public class UserServiceTest {
 		when(userRepository.findByDisplayName(any(String.class))).thenReturn(Mono.empty());
 		when(userRepository.save(any(User.class))).thenReturn(Mono.just(mockUser));
 
-		final int userId = userService.create("TestUser").block();
+		final User user = userService.create("TestUser").block();
 
 //		assertThat(createdUser, instanceOf(User.class));
 //		assertThat(createdUser, is(mockUser));
@@ -110,16 +112,18 @@ public class UserServiceTest {
 	@Test
 	public void createPasswordUser_DuplicateLoginName_ThrowsException() {
 
-		final String displayName = "createPasswordUser_ValidData";
-		final String loginName = "_createPasswordUser_ValidData_";
+		final String displayName = "createPasswordUser_DuplicateLoginName";
+		final String loginName = "_createPasswordUser_DuplicateLoginName_";
 
-		// String "createPasswordUser_ValidData" bcrypted
-		final String hashedPassword = "$2y$04$2zPOzxj77Ul5amFcsnsyjenMBGpRgEApYsJXyK76dcX2wK7asi7.6";
+		final String password = "a_valid_password";
 
-		when(passwordAuthRepository.findByLoginName(loginName)).thenReturn(Mono.empty());
+		final PasswordAuth mockPasswordAuth = mock(PasswordAuth.class);
 
-		assertThrows(DuplicateUserLoginNameException.class,
-				() -> userService.createPasswordUser(displayName, loginName, hashedPassword).block());
+		when(passwordAuthRepository.findByLoginName(loginName)).thenReturn(Mono.just(mockPasswordAuth));
+		when(userRepository.findByDisplayName(displayName)).thenReturn(Mono.empty());
+
+		StepVerifier.create(userService.createPasswordUser(displayName, loginName, password))
+				.expectError(DuplicateUserLoginNameException.class).verify();
 
 		// Validate method calls
 		// verify(userRepository, times(1)).existsByLoginName(loginName);
@@ -161,34 +165,17 @@ public class UserServiceTest {
 		final String displayName = "createPasswordUser_ValidData";
 		final String loginName = "_createPasswordUser_ValidData_";
 
-		// String "createPasswordUser_ValidData" bcrypted
-		final String hashedPassword = "$2y$04$2zPOzxj77Ul5amFcsnsyjenMBGpRgEApYsJXyK76dcX2wK7asi7.6";
+		final String hashedPassword = "a_valid_password";
 
-		// when(userRepository.existsByDisplayName(displayName)).thenReturn(Mono.just(false));
+		final PasswordAuth mockPasswordAuth = mock(PasswordAuth.class);
 
-		// When saving an user, just return the user back
-		when(userRepository.save(any(User.class))).thenAnswer(user -> (user.getArgument(0)));
+		when(passwordAuthRepository.findByLoginName(loginName)).thenReturn(Mono.empty());
+		when(userRepository.findByDisplayName(displayName)).thenReturn(Mono.empty());
 
-		final User createdUser = userService.createPasswordUser(displayName, loginName, hashedPassword).block();
-
-		assertThat(createdUser.getDisplayName(), is(displayName));
-		// assertThat(createdUser.block().getAuth().getPassword().getLoginName(),
-		// is(loginName));
-		// assertThat(createdUser.block().getAuth().getPassword().getHashedPassword(),
-		// is(hashedPassword));
-
-		// Validate method calls.
-		final InOrder order1 = inOrder(userRepository);
-		final InOrder order2 = inOrder(userRepository);
-
-		// save() should be called after displayname and loginname checks, but we don't
-		// care if loginname or displayname is checked first.
-		// TODO
-		// order1.verify(userRepository, times(1)).existsByDisplayName(displayName);
-		// order1.verify(userRepository, times(1)).save(createdUser.withId(0));
-
-		// order2.verify(userRepository, times(1)).existsByLoginName(loginName);
-		// order2.verify(userRepository, times(1)).save(createdUser.withId(0));
+		StepVerifier.create(userService.createPasswordUser(displayName, loginName, hashedPassword)).assertNext(user -> {
+			assertThat(user.getAuth().getPassword().getLoginName(), is(loginName));
+			assertThat(user.getAuth().getPassword().getHashedPassword(), is(hashedPassword));
+		});
 
 	}
 
@@ -216,12 +203,11 @@ public class UserServiceTest {
 	}
 
 	@Test
-	@Disabled
 	public void get_InvalidUserId_ThrowsException() {
 
-		assertThrows(InvalidUserIdException.class, () -> userService.get(-1));
-		assertThrows(InvalidUserIdException.class, () -> userService.get(-1000));
-		assertThrows(InvalidUserIdException.class, () -> userService.get(0));
+		assertThrows(InvalidUserIdException.class, () -> userService.get(-1).block());
+		assertThrows(InvalidUserIdException.class, () -> userService.get(-1000).block());
+		assertThrows(InvalidUserIdException.class, () -> userService.get(0).block());
 
 	}
 
@@ -285,7 +271,7 @@ public class UserServiceTest {
 		when(keyService.generateRandomBytes(16)).thenReturn(testRandomBytes);
 
 		// Perform the test
-		final Mono<byte[]> userKey = userService.getKey(Mono.just(userId));
+		final Mono<byte[]> userKey = userService.getKey(userId);
 
 		// Validate method calls
 		final InOrder order = inOrder(testUserWithoutKey, userRepository, keyService);
@@ -303,9 +289,9 @@ public class UserServiceTest {
 	@Test
 	public void getKey_InvalidUserId_ThrowsException() {
 
-		assertThrows(InvalidUserIdException.class, () -> userService.getKey(Mono.just(-1)));
-		assertThrows(InvalidUserIdException.class, () -> userService.getKey(Mono.just(-1000)));
-		assertThrows(InvalidUserIdException.class, () -> userService.getKey(Mono.just(0)));
+		assertThrows(InvalidUserIdException.class, () -> userService.getKey(-1));
+		assertThrows(InvalidUserIdException.class, () -> userService.getKey(-1000));
+		assertThrows(InvalidUserIdException.class, () -> userService.getKey(0));
 
 	}
 
@@ -318,11 +304,11 @@ public class UserServiceTest {
 		when(userRepository.findById(1)).thenReturn(Mono.just(testUser));
 		// when(classService.existsById(2)).thenReturn(true);
 
-		int userId = userService.create("TestUser").block();
+		final User user = userService.create("TestUser").block();
 
-		userService.setClassId(Mono.just(userId), Mono.just(2));
+		userService.setClassId(user.getId(), 2);
 
-		User returnedUser = userService.get(userId).block();
+		User returnedUser = userService.get(user.getId()).block();
 		assertThat(returnedUser.getClassId(), is(1));
 
 	}

@@ -40,10 +40,7 @@ public final class UserService {
 
 	private final KeyService keyService;
 
-	@Autowired
-	private PasswordEncoder passwordEncoder;
-
-	public Mono<Integer> create(final String displayName) throws DuplicateUserDisplayNameException {
+	public Mono<User> create(final String displayName) {
 
 		if (displayName == null) {
 			throw new NullPointerException();
@@ -55,8 +52,7 @@ public final class UserService {
 
 		return Mono.just(displayName).filterWhen(name -> doesNotExistByDisplayName(name))
 				.switchIfEmpty(Mono.error(new DuplicateUserDisplayNameException("Display name already exists")))
-				.flatMap(name -> userRepository.save(User.builder().displayName(name).build()))
-				.map(user -> user.getId());
+				.flatMap(name -> userRepository.save(User.builder().displayName(name).build()));
 
 	}
 
@@ -68,60 +64,71 @@ public final class UserService {
 		return passwordAuthRepository.findByLoginName(loginName).map(u -> false).defaultIfEmpty(true);
 	}
 
-	public Mono<Integer> createPasswordUser(final UserDto userDto)
-			throws DuplicateUserLoginNameException, DuplicateUserDisplayNameException {
+	public Mono<User> createPasswordUser(final String displayName, final String loginName, final String hashedPassword) {
 
-		return Mono.just(userDto).filterWhen(dto -> doesNotExistByLoginName(dto.getLoginName()))
-				.switchIfEmpty(Mono.error(new DuplicateUserLoginNameException("Login name already exists")))
-				.filterWhen(name -> doesNotExistByDisplayName(userDto.getDisplayName()))
-				.switchIfEmpty(Mono.error(new DuplicateUserDisplayNameException("Display name already exists")))
-				.flatMap(dto -> {
+		if (displayName == null || loginName == null || hashedPassword == null) {
+			throw new NullPointerException();
+		}
 
-					final UserBuilder userBuilder = User.builder();
-					userBuilder.displayName(userDto.getDisplayName());
-					userBuilder.email(userDto.getEmail());
+		if (displayName.isEmpty() || loginName.isEmpty() || hashedPassword.isEmpty()) {
+			throw new IllegalArgumentException();
+		}
 
-					final PasswordAuthBuilder passwordAuthBuilder = PasswordAuth.builder();
-					passwordAuthBuilder.loginName(userDto.getLoginName());
-					passwordAuthBuilder.hashedPassword(passwordEncoder.encode(userDto.getPassword()));
+		final Mono<String> loginNameMono = Mono.just(loginName).filterWhen(this::doesNotExistByLoginName)
+				.switchIfEmpty(Mono.error(new DuplicateUserLoginNameException("Login name already exists")));
 
-					final PasswordAuth passwordAuth = passwordAuthBuilder.build();
+		final Mono<String> displayNameMono = Mono.just(displayName).filterWhen(this::doesNotExistByDisplayName)
+				.switchIfEmpty(Mono.error(new DuplicateUserDisplayNameException("Display name already exists")));
 
-					final AuthBuilder userAuthBuilder = Auth.builder();
-					userAuthBuilder.password(passwordAuth);
+		final PasswordAuthBuilder passwordAuthBuilder = PasswordAuth.builder();
+		passwordAuthBuilder.loginName(loginName);
+		passwordAuthBuilder.hashedPassword(hashedPassword);
+		final PasswordAuth passwordAuth = passwordAuthBuilder.build();
 
-					final Auth auth = userAuthBuilder.build();
+		final AuthBuilder userAuthBuilder = Auth.builder();
+		userAuthBuilder.password(passwordAuth);
+		final Auth auth = userAuthBuilder.build();
 
-					final Mono<User> user = userRepository.save(userBuilder.build()).flatMap(savedUser -> {
+		final UserBuilder userBuilder = User.builder();
+		userBuilder.displayName(displayName);
+		
+		return Mono.zip(displayNameMono, loginNameMono).flatMap(dto -> {
 
-						final PasswordAuth passwordAuthWithUser = passwordAuth.withUser(savedUser.getId());
-						final Auth authWithUser = auth.withUser(savedUser.getId());
+			final Mono<User> user = userRepository.save(userBuilder.build()).flatMap(savedUser -> {
 
-						passwordAuthRepository.save(passwordAuthWithUser);
-						authRepository.save(authWithUser);
+				final PasswordAuth passwordAuthWithUser = passwordAuth.withUser(savedUser.getId());
+				final Auth authWithUser = auth.withUser(savedUser.getId());
 
-						return Mono.just(savedUser);
+				passwordAuthRepository.save(passwordAuthWithUser);
+				authRepository.save(authWithUser);
 
-					});
+				return Mono.just(savedUser);
 
-					return user;
+			});
 
-				}).map(user -> user.getId());
+			return user;
+
+		});
 
 	}
 
-	public void setDisplayName(final int userId, final String displayName)
-			throws UserIdNotFoundException, InvalidUserIdException {
+	public void setDisplayName(final int userId, final String displayName) {
 
 		Mono<String> displayMono = Mono.just(displayName).filterWhen(name -> doesNotExistByDisplayName(name))
 				.switchIfEmpty(Mono.error(new DuplicateUserDisplayNameException("Display name already exists")));
 
-		Mono.just(userId).flatMap(this::get).zipWith(displayMono)
-				.map(tuple -> tuple.getT1().withDisplayName(tuple.getT2())).flatMap(userRepository::save);
+		Mono.just(userId).flatMap(id -> {
+			try {
+				return get(id);
+			} catch (InvalidUserIdException e) {
+				return Mono.error(e);
+			}
+		}).zipWith(displayMono).map(tuple -> tuple.getT1().withDisplayName(tuple.getT2()))
+				.flatMap(userRepository::save);
 
 	}
 
-	public void setClassId(final Mono<Integer> idMono, final Mono<Integer> classIdMono)
+	public void setClassId(final int id, final int classId)
 			throws ClassIdNotFoundException, InvalidUserIdException, UserIdNotFoundException, InvalidClassIdException {
 
 		// TODO put this check back in reactive form
@@ -131,10 +138,16 @@ public final class UserService {
 //
 //		}
 
-		final Mono<Tuple2<User, Integer>> idDisplayNameMono = idMono.flatMap(this::get)
-				.switchIfEmpty(Mono.error(new UserIdNotFoundException())).zipWith(classIdMono);
-
-		idDisplayNameMono.flatMap(pair -> userRepository.save(pair.getT1().withClassId(pair.getT2())));
+//		final Mono<Tuple2<User, Integer>> idDisplayNameMono = idMono.flatMap(userId -> {
+//			try {
+//				return get(userId);
+//			} catch (InvalidUserIdException e) {
+//				return Mono.error(e);
+//			}
+//		})
+//				.switchIfEmpty(Mono.error(new UserIdNotFoundException())).zipWith(classIdMono);
+//
+//		idDisplayNameMono.flatMap(pair -> userRepository.save(pair.getT1().withClassId(pair.getT2())));
 
 	}
 
@@ -145,24 +158,35 @@ public final class UserService {
 	}
 
 	public Mono<byte[]> getKey(final int userId) throws UserIdNotFoundException, InvalidUserIdException {
+		return null;
 
-		final Mono<User> returnedUser = idMono.flatMap(this::get)
-				.switchIfEmpty(Mono.error(new UserIdNotFoundException()));
-
-		returnedUser.filter(user -> user.getKey() == null).map(user -> user.withKey(keyService.generateRandomBytes(16)))
-				.map(user -> userRepository.save(user));
-
-		return returnedUser.map(user -> user.getKey());
+//		final Mono<User> returnedUser = idMono.flatMap(this::get)
+//				.switchIfEmpty(Mono.error(new UserIdNotFoundException()));
+//
+//		returnedUser.filter(user -> user.getKey() == null).map(user -> user.withKey(keyService.generateRandomBytes(16)))
+//				.map(user -> userRepository.save(user));
+//
+//		return returnedUser.map(user -> user.getKey());
 
 	}
 
 	public Mono<User> findByLoginName(final String loginName) {
 
-		return passwordAuthRepository.findByLoginName(loginName).map(pwAuth -> pwAuth.getUser()).flatMap(this::get);
+		return passwordAuthRepository.findByLoginName(loginName).map(pwAuth -> pwAuth.getUser()).flatMap(userId -> {
+			try {
+				return this.get(userId);
+			} catch (InvalidUserIdException e) {
+				return Mono.error(e);
+			}
+		});
 
 	}
 
-	public Mono<User> get(final int id) {
+	public Mono<User> get(final int id) throws InvalidUserIdException {
+
+		if (id <= 0) {
+			throw new InvalidUserIdException();
+		}
 
 		Mono<User> user = userRepository.findById(id);
 		Mono<PasswordAuth> passwordAuth = passwordAuthRepository.findByUserId(id);
@@ -170,50 +194,6 @@ public final class UserService {
 
 		return user.zipWith(auth.zipWith(passwordAuth).map(tuple -> tuple.getT1().withPassword(tuple.getT2())))
 				.map(tuple -> tuple.getT1().withAuth(tuple.getT2()));
-
-	}
-
-	public Mono<User> createPasswordUser(final String displayName, final String loginName, final String hashedPassword)
-			throws DuplicateUserLoginNameException, DuplicateUserDisplayNameException {
-		return null;
-//
-//		// Validate arguments
-//		if (displayName == null || loginName == null || hashedPassword == null) {
-//			throw new NullPointerException();
-//		}
-//
-//		if (displayName.isEmpty() || loginName.isEmpty() || hashedPassword.isEmpty()) {
-//			throw new IllegalArgumentException();
-//		}
-//
-//		// Check if display name exists
-//		if (userRepository.existsByDisplayName(displayName)) {
-//			throw new DuplicateUserDisplayNameException();
-//		}
-//
-//		// Check if login name exists
-//		if (userRepository.existsByLoginName(loginName)) {
-//			throw new DuplicateUserLoginNameException();
-//		}
-//
-//		log.debug("Creating password login user with display name " + displayName);
-//
-//		final PasswordAuthBuilder passwordAuthBuilder = PasswordAuth.builder();
-//		passwordAuthBuilder.loginName(loginName);
-//		passwordAuthBuilder.hashedPassword(hashedPassword);
-//
-//		final AuthBuilder userAuthBuilder = Auth.builder();
-//		// userAuthBuilder.password(passwordAuthBuilder.build());
-//
-//		final UserBuilder userBuilder = User.builder();
-//		userBuilder.displayName(displayName);
-//		// userBuilder.auth(userAuthBuilder.build());
-//
-//		final Mono<User> savedUser = userRepository.save(userBuilder.build());
-//
-//		// log.debug("Created user with ID " + savedUser.getId());
-//
-//		return savedUser;
 
 	}
 

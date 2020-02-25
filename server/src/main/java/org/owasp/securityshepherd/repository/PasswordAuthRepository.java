@@ -17,6 +17,6 @@ public interface PasswordAuthRepository extends ReactiveCrudRepository<PasswordA
 	public Mono<PasswordAuth> findByUserId(@Param("user") final int user);
 	
 	@Query("SELECT * from password_auth WHERE login_name = :login_name")
-	public Mono<Auth> findByLoginName(@Param("login_name") final String loginName);
+	public Mono<PasswordAuth> findByLoginName(@Param("login_name") final String loginName);
 
 }
