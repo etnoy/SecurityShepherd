@@ -14,6 +14,8 @@ import org.owasp.securityshepherd.persistence.model.User;
 import org.owasp.securityshepherd.persistence.model.Auth.AuthBuilder;
 import org.owasp.securityshepherd.persistence.model.PasswordAuth.PasswordAuthBuilder;
 import org.owasp.securityshepherd.persistence.model.User.UserBuilder;
+import org.owasp.securityshepherd.repository.AuthRepository;
+import org.owasp.securityshepherd.repository.PasswordAuthRepository;
 import org.owasp.securityshepherd.repository.UserRepository;
 import org.owasp.securityshepherd.web.dto.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,12 +34,16 @@ public final class UserService {
 
 	private final UserRepository userRepository;
 
+	private final AuthRepository authRepository;
+
+	private final PasswordAuthRepository passwordAuthRepository;
+
 	private final KeyService keyService;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-	public Mono<User> create(final String displayName) throws DuplicateUserDisplayNameException {
+	public Mono<Integer> create(final String displayName) throws DuplicateUserDisplayNameException {
 
 		if (displayName == null) {
 			throw new NullPointerException();
@@ -49,7 +55,8 @@ public final class UserService {
 
 		return Mono.just(displayName).filterWhen(name -> doesNotExistByDisplayName(name))
 				.switchIfEmpty(Mono.error(new DuplicateUserDisplayNameException("Display name already exists")))
-				.flatMap(name -> userRepository.save(User.builder().displayName(name).build()));
+				.flatMap(name -> userRepository.save(User.builder().displayName(name).build()))
+				.map(user -> user.getId());
 
 	}
 
@@ -57,49 +64,60 @@ public final class UserService {
 		return userRepository.findByDisplayName(displayName).map(u -> false).defaultIfEmpty(true);
 	}
 
-	public Mono<User> createPasswordUser(final UserDto userDto)
+	private Mono<Boolean> doesNotExistByLoginName(final String loginName) {
+		return passwordAuthRepository.findByLoginName(loginName).map(u -> false).defaultIfEmpty(true);
+	}
+
+	public Mono<Integer> createPasswordUser(final UserDto userDto)
 			throws DuplicateUserLoginNameException, DuplicateUserDisplayNameException {
-		return null;
-//
-//		// Check if display name exists
-//		if (userRepository.existsByDisplayName(userDto.getDisplayName())) {
-//			throw new DuplicateUserDisplayNameException();
-//		}
-//
-//		// Check if login name exists
-//		if (userRepository.existsByLoginName(userDto.getLoginName())) {
-//			throw new DuplicateUserLoginNameException();
-//		}
-//
-//		log.debug("Creating password login user with display name " + userDto.getDisplayName());
-//
-//		final PasswordAuthBuilder passwordAuthBuilder = PasswordAuth.builder();
-//		passwordAuthBuilder.loginName(userDto.getLoginName());
-//		passwordAuthBuilder.hashedPassword(passwordEncoder.encode(userDto.getPassword()));
-//
-//		final AuthBuilder userAuthBuilder = Auth.builder();
-//		// userAuthBuilder.password(passwordAuthBuilder.build());
-//
-//		final UserBuilder userBuilder = User.builder();
-//		userBuilder.displayName(userDto.getDisplayName());
-//		userBuilder.email(userDto.getEmail());
-//		// userBuilder.auth(userAuthBuilder.build());
-//
-//		final Mono<User> savedUser = userRepository.save(userBuilder.build());
-//
-//		// log.debug("Created user with ID " + savedUser.getId());
-//
-//		return savedUser;
+
+		return Mono.just(userDto).filterWhen(dto -> doesNotExistByLoginName(dto.getLoginName()))
+				.switchIfEmpty(Mono.error(new DuplicateUserLoginNameException("Login name already exists")))
+				.filterWhen(name -> doesNotExistByDisplayName(userDto.getDisplayName()))
+				.switchIfEmpty(Mono.error(new DuplicateUserDisplayNameException("Display name already exists")))
+				.flatMap(dto -> {
+
+					final UserBuilder userBuilder = User.builder();
+					userBuilder.displayName(userDto.getDisplayName());
+					userBuilder.email(userDto.getEmail());
+
+					final PasswordAuthBuilder passwordAuthBuilder = PasswordAuth.builder();
+					passwordAuthBuilder.loginName(userDto.getLoginName());
+					passwordAuthBuilder.hashedPassword(passwordEncoder.encode(userDto.getPassword()));
+
+					final PasswordAuth passwordAuth = passwordAuthBuilder.build();
+
+					final AuthBuilder userAuthBuilder = Auth.builder();
+					userAuthBuilder.password(passwordAuth);
+
+					final Auth auth = userAuthBuilder.build();
+
+					final Mono<User> user = userRepository.save(userBuilder.build()).flatMap(savedUser -> {
+
+						final PasswordAuth passwordAuthWithUser = passwordAuth.withUser(savedUser.getId());
+						final Auth authWithUser = auth.withUser(savedUser.getId());
+
+						passwordAuthRepository.save(passwordAuthWithUser);
+						authRepository.save(authWithUser);
+
+						return Mono.just(savedUser);
+
+					});
+
+					return user;
+
+				}).map(user -> user.getId());
 
 	}
 
-	public void setDisplayName(final Mono<Integer> idMono, final Mono<String> displayNameMono)
+	public void setDisplayName(final int userId, final String displayName)
 			throws UserIdNotFoundException, InvalidUserIdException {
 
-		final Mono<Tuple2<User, String>> idDisplayNameMono = idMono.flatMap(this::get)
-				.switchIfEmpty(Mono.error(new UserIdNotFoundException())).zipWith(displayNameMono);
+		Mono<String> displayMono = Mono.just(displayName).filterWhen(name -> doesNotExistByDisplayName(name))
+				.switchIfEmpty(Mono.error(new DuplicateUserDisplayNameException("Display name already exists")));
 
-		idDisplayNameMono.flatMap(pair -> userRepository.save(pair.getT1().withDisplayName(pair.getT2())));
+		Mono.just(userId).flatMap(this::get).zipWith(displayMono)
+				.map(tuple -> tuple.getT1().withDisplayName(tuple.getT2())).flatMap(userRepository::save);
 
 	}
 
@@ -126,7 +144,7 @@ public final class UserService {
 
 	}
 
-	public Mono<byte[]> getKey(final Mono<Integer> idMono) throws UserIdNotFoundException, InvalidUserIdException {
+	public Mono<byte[]> getKey(final int userId) throws UserIdNotFoundException, InvalidUserIdException {
 
 		final Mono<User> returnedUser = idMono.flatMap(this::get)
 				.switchIfEmpty(Mono.error(new UserIdNotFoundException()));
@@ -139,15 +157,19 @@ public final class UserService {
 	}
 
 	public Mono<User> findByLoginName(final String loginName) {
-		return null;
 
-		// return userRepository.findByLoginName(loginName);
+		return passwordAuthRepository.findByLoginName(loginName).map(pwAuth -> pwAuth.getUser()).flatMap(this::get);
 
 	}
 
 	public Mono<User> get(final int id) {
 
-		return userRepository.findById(id);
+		Mono<User> user = userRepository.findById(id);
+		Mono<PasswordAuth> passwordAuth = passwordAuthRepository.findByUserId(id);
+		Mono<Auth> auth = authRepository.findByUserId(id);
+
+		return user.zipWith(auth.zipWith(passwordAuth).map(tuple -> tuple.getT1().withPassword(tuple.getT2())))
+				.map(tuple -> tuple.getT1().withAuth(tuple.getT2()));
 
 	}
 

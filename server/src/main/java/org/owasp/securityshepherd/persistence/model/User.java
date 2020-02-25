@@ -34,5 +34,8 @@ public final class User implements Serializable {
 
 	@Column("user_key")
 	private final byte[] key;
+	
+	@Transient
+	private final Auth auth;
 
 }

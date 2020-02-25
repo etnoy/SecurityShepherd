@@ -16,14 +16,13 @@ import lombok.With;
 @With
 public final class PasswordAuth implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 32553442956391684L;
 
 	@EqualsAndHashCode.Include
 	@Id
 	private final int id;
+	
+	private final int user;
 
 	@NonNull
 	private final String loginName;

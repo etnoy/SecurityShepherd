@@ -23,6 +23,8 @@ public final class Auth implements Serializable {
 	@Id
 	private final int id;
 
+	private final int user;
+	
 	@Builder.Default
 	private final boolean isEnabled = false;
 
@@ -44,5 +46,11 @@ public final class Auth implements Serializable {
 	private final Timestamp lastLogin = null;
 
 	private final String lastLoginMethod;
+	
+	@Transient
+	private final PasswordAuth password;
+
+	@Transient
+	private final SAMLAuth saml;
 
 }
