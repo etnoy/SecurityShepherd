@@ -68,6 +68,7 @@ public class UserServiceTest {
 
 		User testUser = mock(User.class);
 		when(testUser.getId()).thenReturn(1);
+		when(userRepository.findByDisplayName(any(String.class))).thenReturn(Mono.empty());
 		when(userRepository.save(any(User.class))).thenReturn(Mono.just(testUser));
 
 		final User createdUser = userService.create("TestUser").block();

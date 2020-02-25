@@ -47,22 +47,13 @@ public final class UserService {
 			throw new IllegalArgumentException();
 		}
 
-		log.debug("Starting up");
-
-		log.debug("Exists equals " + doesNotExistByDisplayName("test12345").block());
-		log.debug("Exists equals " + doesNotExistByDisplayName("test").block());
-
-		final UserBuilder userBuilder = User.builder();
-		userBuilder.displayName(displayName);
-		final User newUser = userBuilder.build();
-
-		return Mono.just(newUser).filterWhen(user -> doesNotExistByDisplayName(user.getDisplayName()))
+		return Mono.just(displayName).filterWhen(name -> doesNotExistByDisplayName(name))
 				.switchIfEmpty(Mono.error(new DuplicateUserDisplayNameException("Display name already exists")))
-				.flatMap(userRepository::save);
+				.flatMap(name -> userRepository.save(User.builder().displayName(name).build()));
 
 	}
 
-	public Mono<Boolean> doesNotExistByDisplayName(final String displayName) {
+	private Mono<Boolean> doesNotExistByDisplayName(final String displayName) {
 		return userRepository.findByDisplayName(displayName).map(u -> false).defaultIfEmpty(true);
 	}
 
