@@ -7,10 +7,10 @@ jobs:
     - cd server
     - mvn clean install -DskipTests -B
   - stage: unit-test
-    services: mysql
     script: 
     - cd server
     - git fetch --unshallow
+    - mysql -e 'CREATE DATABASE IF NOT EXISTS core;'  
     - mvn clean verify sonar:sonar -Pcoverage -Dsonar.projectKey=etnoy_SecurityShepherd -B
   - stage: integration-test
     services: mysql
