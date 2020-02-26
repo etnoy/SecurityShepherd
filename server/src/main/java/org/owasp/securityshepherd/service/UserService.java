@@ -2,8 +2,7 @@ package org.owasp.securityshepherd.service;
 
 import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
 import org.owasp.securityshepherd.exception.DuplicateUserDisplayNameException;
-import org.owasp.securityshepherd.exception.DuplicateUserLoginNameException;
-import org.owasp.securityshepherd.exception.InvalidClassIdException;
+import org.owasp.securityshepherd.exception.DuplicateClassNameException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.LoginNameNotFoundException;
 import org.owasp.securityshepherd.exception.UserIdNotFoundException;
@@ -32,6 +31,8 @@ public final class UserService {
 	private final AuthRepository authRepository;
 
 	private final PasswordAuthRepository passwordAuthRepository;
+
+	private final ClassService classService;
 
 	private final KeyService keyService;
 
@@ -71,7 +72,7 @@ public final class UserService {
 		}
 
 		final Mono<String> loginNameMono = Mono.just(loginName).filterWhen(this::doesNotExistByLoginName)
-				.switchIfEmpty(Mono.error(new DuplicateUserLoginNameException("Login name already exists")));
+				.switchIfEmpty(Mono.error(new DuplicateClassNameException("Login name already exists")));
 
 		final Mono<String> displayNameMono = Mono.just(displayName).filterWhen(this::doesNotExistByDisplayName)
 				.switchIfEmpty(Mono.error(new DuplicateUserDisplayNameException("Display name already exists")));
@@ -109,42 +110,34 @@ public final class UserService {
 
 	}
 
-	public void setDisplayName(final int userId, final String displayName) {
+	public Mono<User> setDisplayName(final int userId, final String displayName) {
 
-		Mono<String> displayMono = Mono.just(displayName).filterWhen(name -> doesNotExistByDisplayName(name))
+		Mono<String> displayNameMono = Mono.just(displayName).filterWhen(name -> doesNotExistByDisplayName(name))
 				.switchIfEmpty(Mono.error(new DuplicateUserDisplayNameException("Display name already exists")));
 
-		Mono.just(userId).flatMap(id -> {
+		return Mono.just(userId).flatMap(id -> {
 			try {
 				return getById(id);
 			} catch (InvalidUserIdException e) {
 				return Mono.error(e);
 			}
-		}).zipWith(displayMono).map(tuple -> tuple.getT1().withDisplayName(tuple.getT2()))
+		}).zipWith(displayNameMono).map(tuple -> tuple.getT1().withDisplayName(tuple.getT2()))
 				.flatMap(userRepository::save);
 
 	}
 
-	public void setClassId(final int id, final int classId)
-			throws ClassIdNotFoundException, InvalidUserIdException, UserIdNotFoundException, InvalidClassIdException {
+	public Mono<User> setClassId(final int id, final int classId) {
 
-		// TODO put this check back in reactive form
-//		if (!classService.existsById(classId)) {
-//
-//			throw new ClassIdNotFoundException();
-//
-//		}
+		Mono<Integer> classIdMono = Mono.just(classId).filterWhen(classService::existsById)
+				.switchIfEmpty(Mono.error(new ClassIdNotFoundException()));
 
-//		final Mono<Tuple2<User, Integer>> idDisplayNameMono = idMono.flatMap(userId -> {
-//			try {
-//				return get(userId);
-//			} catch (InvalidUserIdException e) {
-//				return Mono.error(e);
-//			}
-//		})
-//				.switchIfEmpty(Mono.error(new UserIdNotFoundException())).zipWith(classIdMono);
-//
-//		idDisplayNameMono.flatMap(pair -> userRepository.save(pair.getT1().withClassId(pair.getT2())));
+		return Mono.just(id).flatMap(userId -> {
+			try {
+				return getById(userId);
+			} catch (InvalidUserIdException e) {
+				return Mono.error(e);
+			}
+		}).zipWith(classIdMono).map(tuple -> tuple.getT1().withClassId(tuple.getT2())).flatMap(userRepository::save);
 
 	}
 

@@ -17,7 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.owasp.securityshepherd.exception.DuplicateUserDisplayNameException;
-import org.owasp.securityshepherd.exception.DuplicateUserLoginNameException;
+import org.owasp.securityshepherd.exception.DuplicateClassNameException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.UserIdNotFoundException;
 import org.owasp.securityshepherd.persistence.model.Auth;
@@ -26,6 +26,7 @@ import org.owasp.securityshepherd.persistence.model.User;
 import org.owasp.securityshepherd.repository.AuthRepository;
 import org.owasp.securityshepherd.repository.PasswordAuthRepository;
 import org.owasp.securityshepherd.repository.UserRepository;
+import org.owasp.securityshepherd.service.ClassService;
 import org.owasp.securityshepherd.service.KeyService;
 import org.owasp.securityshepherd.service.UserService;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -49,6 +50,9 @@ public class UserServiceTest {
 
 	@Mock
 	private PasswordAuthRepository passwordAuthRepository;
+
+	@Mock
+	private ClassService classService;
 
 	@Mock
 	private KeyService keyService;
@@ -122,7 +126,7 @@ public class UserServiceTest {
 		when(userRepository.findByDisplayName(displayName)).thenReturn(Mono.empty());
 
 		StepVerifier.create(userService.createPasswordUser(displayName, loginName, password))
-				.expectError(DuplicateUserLoginNameException.class).verify();
+				.expectError(DuplicateClassNameException.class).verify();
 
 	}
 
@@ -295,7 +299,7 @@ public class UserServiceTest {
 		assertThrows(InvalidUserIdException.class, () -> userService.getById(0));
 
 	}
-	
+
 	@Test
 	public void getById_NonExistentUserId_ThrowsException() throws InvalidUserIdException {
 
@@ -306,7 +310,7 @@ public class UserServiceTest {
 		StepVerifier.create(userService.getById(mockId)).expectError(UserIdNotFoundException.class).verify();
 
 	}
-	
+
 	@Test
 	public void getByLoginName_DoesNotExist_ThrowsException() throws InvalidUserIdException {
 
@@ -465,19 +469,26 @@ public class UserServiceTest {
 
 	@Test
 	public void setClassId_ValidClass_Succeeds() throws Exception {
-		User testUser = User.builder().displayName("TestUser").id(1).classId(1).build();
 
-		when(userRepository.save(any(User.class)))
-				.thenAnswer(user -> user.getArgument(0, User.class).withClassId(1).withId(1));
-		when(userRepository.findById(1)).thenReturn(Mono.just(testUser));
-		// when(classService.existsById(2)).thenReturn(true);
+		int userId = 13;
+		int classId = 94;
 
-		// final User user = userService.create("TestUser").block();
+		User mockUser = mock(User.class);
+		User mockUserWithClass = mock(User.class);
 
-//		userService.setClassId(user.getId(), 2);
-//
-//		User returnedUser = userService.get(user.getId()).block();
-//		assertThat(returnedUser.getClassId(), is(1));
+		when(userRepository.existsById(userId)).thenReturn(Mono.just(true));
+		when(userRepository.findById(userId)).thenReturn(Mono.just(mockUser));
+		when(classService.existsById(classId)).thenReturn(Mono.just(true));
+
+		when(mockUser.withClassId(classId)).thenReturn(mockUserWithClass);
+		when(userRepository.save(mockUserWithClass)).thenReturn(Mono.just(mockUserWithClass));
+		when(mockUserWithClass.getClassId()).thenReturn(classId);
+
+		StepVerifier.create(userService.setClassId(userId, classId)).assertNext(user -> {
+
+			assertThat(user.getClassId(), is(classId));
+
+		}).expectComplete().verify();
 
 	}
 
@@ -487,16 +498,27 @@ public class UserServiceTest {
 		String newDisplayName = "newName";
 
 		User testUser = mock(User.class);
-		when(userRepository.findById(123)).thenReturn(Mono.just(testUser));
+
+		int mockId = 3;
+
+		when(userRepository.existsById(mockId)).thenReturn(Mono.just(true));
+		when(userRepository.findById(mockId)).thenReturn(Mono.just(testUser));
+		when(userRepository.findByDisplayName(newDisplayName)).thenReturn(Mono.empty());
+
 		when(testUser.withDisplayName(newDisplayName)).thenReturn(testUser);
 		when(userRepository.save(any(User.class))).thenReturn(Mono.just(testUser));
+		when(testUser.getDisplayName()).thenReturn(newDisplayName);
 
-		userService.setDisplayName(123, newDisplayName);
+		StepVerifier.create(userService.setDisplayName(mockId, newDisplayName)).assertNext(user -> {
 
-		// InOrder order = inOrder(testUser, userRepository);
+			assertThat(user.getDisplayName(), is(newDisplayName));
 
-		// order.verify(testUser, times(1)).withDisplayName(newDisplayName);
-		// order.verify(userRepository, times(1)).save(testUser);
+			InOrder order = inOrder(testUser, userRepository);
+
+			order.verify(testUser, times(1)).withDisplayName(newDisplayName);
+			order.verify(userRepository, times(1)).save(testUser);
+
+		}).expectComplete().verify();
 
 	}
 
@@ -506,7 +528,7 @@ public class UserServiceTest {
 		Hooks.onOperatorDebug();
 
 		// Set up userService to use our mocked repos and services
-		userService = new UserService(userRepository, authRepository, passwordAuthRepository, keyService);
+		userService = new UserService(userRepository, authRepository, passwordAuthRepository, classService, keyService);
 	}
 
 }
