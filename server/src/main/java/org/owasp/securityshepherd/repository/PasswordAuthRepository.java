@@ -1,8 +1,6 @@
 package org.owasp.securityshepherd.repository;
 
-import org.owasp.securityshepherd.persistence.model.Auth;
 import org.owasp.securityshepherd.persistence.model.PasswordAuth;
-import org.owasp.securityshepherd.persistence.model.User;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;

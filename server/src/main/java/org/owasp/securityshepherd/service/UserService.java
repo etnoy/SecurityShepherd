@@ -1,7 +1,5 @@
 package org.owasp.securityshepherd.service;
 
-import java.util.Optional;
-
 import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
 import org.owasp.securityshepherd.exception.DuplicateUserDisplayNameException;
 import org.owasp.securityshepherd.exception.DuplicateUserLoginNameException;
@@ -17,15 +15,11 @@ import org.owasp.securityshepherd.persistence.model.User.UserBuilder;
 import org.owasp.securityshepherd.repository.AuthRepository;
 import org.owasp.securityshepherd.repository.PasswordAuthRepository;
 import org.owasp.securityshepherd.repository.UserRepository;
-import org.owasp.securityshepherd.web.dto.UserDto;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
-import reactor.util.function.Tuple2;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -64,7 +58,8 @@ public final class UserService {
 		return passwordAuthRepository.findByLoginName(loginName).map(u -> false).defaultIfEmpty(true);
 	}
 
-	public Mono<User> createPasswordUser(final String displayName, final String loginName, final String hashedPassword) {
+	public Mono<User> createPasswordUser(final String displayName, final String loginName,
+			final String hashedPassword) {
 
 		if (displayName == null || loginName == null || hashedPassword == null) {
 			throw new NullPointerException();
@@ -91,7 +86,7 @@ public final class UserService {
 
 		final UserBuilder userBuilder = User.builder();
 		userBuilder.displayName(displayName);
-		
+
 		return Mono.zip(displayNameMono, loginNameMono).flatMap(dto -> {
 
 			final Mono<User> user = userRepository.save(userBuilder.build()).flatMap(savedUser -> {
@@ -157,16 +152,16 @@ public final class UserService {
 
 	}
 
-	public Mono<byte[]> getKey(final int userId) throws UserIdNotFoundException, InvalidUserIdException {
-		return null;
-
-//		final Mono<User> returnedUser = idMono.flatMap(this::get)
-//				.switchIfEmpty(Mono.error(new UserIdNotFoundException()));
-//
-//		returnedUser.filter(user -> user.getKey() == null).map(user -> user.withKey(keyService.generateRandomBytes(16)))
-//				.map(user -> userRepository.save(user));
-//
-//		return returnedUser.map(user -> user.getKey());
+	public Mono<byte[]> getKey(final int id) throws InvalidUserIdException {
+		// TODO validate input
+		return get(id).flatMap(user -> {
+			byte[] key = user.getKey();
+			if (key == null) {
+				key = keyService.generateRandomBytes(16);
+				userRepository.save(user.withKey(key));
+			}
+			return Mono.just(key);
+		});
 
 	}
 
@@ -188,12 +183,28 @@ public final class UserService {
 			throw new InvalidUserIdException();
 		}
 
-		Mono<User> user = userRepository.findById(id);
-		Mono<PasswordAuth> passwordAuth = passwordAuthRepository.findByUserId(id);
-		Mono<Auth> auth = authRepository.findByUserId(id);
+		Mono<User> user = Mono.just(id).filterWhen(userRepository::existsById)
+				.switchIfEmpty(Mono.error(new UserIdNotFoundException())).flatMap(userRepository::findById);
 
-		return user.zipWith(auth.zipWith(passwordAuth).map(tuple -> tuple.getT1().withPassword(tuple.getT2())))
-				.map(tuple -> tuple.getT1().withAuth(tuple.getT2()));
+		Mono<PasswordAuth> passwordAuth = Mono.just(id).flatMap(userId -> {
+			Mono<PasswordAuth> returnedAuth = passwordAuthRepository.findByUserId(userId);
+			if (returnedAuth == null) {
+				return Mono.empty();
+			}
+			return returnedAuth;
+		});
+
+		Mono<Auth> auth = Mono.just(id).flatMap(userId -> {
+			Mono<Auth> returnedAuth = authRepository.findByUserId(userId);
+			if (returnedAuth == null) {
+				return Mono.empty();
+			}
+			return returnedAuth;
+		});
+
+		auth = auth.zipWith(passwordAuth).map(tuple -> tuple.getT1().withPassword(tuple.getT2())).switchIfEmpty(auth);
+
+		return user.zipWith(auth).map(tuple -> tuple.getT1().withAuth(tuple.getT2())).switchIfEmpty(user);
 
 	}
 
