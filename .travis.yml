@@ -17,6 +17,7 @@ jobs:
     services: mysql
     script:
     - cd server
+    - mysql -e 'CREATE DATABASE IF NOT EXISTS core;'  
     - mvn verify -DskipUTs=true -B
     
 stages:
