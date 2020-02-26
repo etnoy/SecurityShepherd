@@ -5,6 +5,7 @@ import org.owasp.securityshepherd.exception.DuplicateUserDisplayNameException;
 import org.owasp.securityshepherd.exception.DuplicateUserLoginNameException;
 import org.owasp.securityshepherd.exception.InvalidClassIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
+import org.owasp.securityshepherd.exception.LoginNameNotFoundException;
 import org.owasp.securityshepherd.exception.UserIdNotFoundException;
 import org.owasp.securityshepherd.persistence.model.Auth;
 import org.owasp.securityshepherd.persistence.model.PasswordAuth;
@@ -74,7 +75,7 @@ public final class UserService {
 
 		final Mono<String> displayNameMono = Mono.just(displayName).filterWhen(this::doesNotExistByDisplayName)
 				.switchIfEmpty(Mono.error(new DuplicateUserDisplayNameException("Display name already exists")));
-		
+
 		return Mono.zip(displayNameMono, loginNameMono).flatMap(tuple -> {
 
 			final PasswordAuthBuilder passwordAuthBuilder = PasswordAuth.builder();
@@ -166,15 +167,17 @@ public final class UserService {
 
 	}
 
-	public Mono<User> findByLoginName(final String loginName) {
+	public Mono<User> getByLoginName(final String loginName) {
 
-		return passwordAuthRepository.findByLoginName(loginName).map(passwordAuth -> passwordAuth.getUser()).flatMap(userId -> {
-			try {
-				return this.getById(userId);
-			} catch (InvalidUserIdException e) {
-				return Mono.error(e);
-			}
-		});
+		return passwordAuthRepository.findByLoginName(loginName)
+				.switchIfEmpty(Mono.error(new LoginNameNotFoundException())).map(passwordAuth -> passwordAuth.getUser())
+				.flatMap(userId -> {
+					try {
+						return this.getById(userId);
+					} catch (InvalidUserIdException e) {
+						return Mono.error(e);
+					}
+				});
 
 	}
 

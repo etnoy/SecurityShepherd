@@ -14,6 +14,7 @@ import org.owasp.securityshepherd.persistence.model.User.UserBuilder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 @ExtendWith(SpringExtension.class)
@@ -91,7 +92,7 @@ public class UserTest {
 	@Test
 	public void equals_AutomaticTesting() {
 
-		EqualsVerifier.forClass(User.class).verify();
+		EqualsVerifier.forClass(User.class).withIgnoredAnnotations(NonNull.class).verify();
 
 	}
 
