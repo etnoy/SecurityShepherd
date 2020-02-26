@@ -16,16 +16,14 @@ import lombok.With;
 @With
 public final class SAMLAuth implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 211951930649985921L;
 	
-	@EqualsAndHashCode.Include
 	@Id
-	private final int id;
+	private int id;
+	
+	private int user;
 	
 	@NonNull
-	private final String samlId;
+	private String samlId;
 
 }

@@ -25,14 +25,14 @@ public class PasswordAuthTest {
 	public void builderToString_ValidData_AsExpected() {
 
 		assertThat(PasswordAuth.builder().toString(), is(
-				"PasswordAuth.PasswordAuthBuilder(id=0, user=0, loginName=null, hashedPassword=null, isPasswordNonExpired$value=false)"));
+				"PasswordAuth.PasswordAuthBuilder(id=0, user=0, loginName=null, hashedPassword=null, isPasswordNonExpired=false)"));
 
 	}
 
 	@Test
 	public void buildHashedPassword_ValidHashedPassword_Builds() {
 
-		final String[] hashedPasswordsToTest = { null, "abc123", "0xdeadbeef", "", "me@example.com", "a", "1",
+		final String[] hashedPasswordsToTest = {"abc123", "0xdeadbeef", "", "me@example.com", "a", "1",
 				"password" };
 
 		for (String hashedPassword : hashedPasswordsToTest) {
@@ -53,7 +53,8 @@ public class PasswordAuthTest {
 
 		for (boolean isPasswordNonExpired : BOOLEANS) {
 
-			final PasswordAuthBuilder builder = PasswordAuth.builder().loginName("TestUser");
+			final PasswordAuthBuilder builder = PasswordAuth.builder().loginName("TestUser")
+					.hashedPassword("passwordHash");
 
 			builder.isPasswordNonExpired(isPasswordNonExpired);
 
@@ -78,7 +79,7 @@ public class PasswordAuthTest {
 
 		for (String loginName : loginNamesToTest) {
 
-			final PasswordAuthBuilder builder = PasswordAuth.builder();
+			final PasswordAuthBuilder builder = PasswordAuth.builder().hashedPassword("passwordHash");
 
 			builder.loginName(loginName);
 
@@ -97,17 +98,20 @@ public class PasswordAuthTest {
 	@Test
 	public void toString_ValidData_AsExpected() {
 
-		assertThat(PasswordAuth.builder().loginName("TestUser").build().toString(),
-				is("PasswordAuth(id=0, user=0, loginName=TestUser, hashedPassword=null, isPasswordNonExpired=false)"));
+		assertThat(PasswordAuth.builder().loginName("TestUser").hashedPassword("hashedPassword").build().toString(),
+				is("PasswordAuth(id=0, user=0, loginName=TestUser, hashedPassword=hashedPassword, isPasswordNonExpired=false)"));
 
 	}
 
 	@Test
 	public void withHashedPassword_ValidHashedPassword_ChangesHashedPassword() {
 
-		final PasswordAuth passwordAuth = PasswordAuth.builder().loginName("abc123hash").build();
+		final String originalHashedPassword = "passwordHash";
 
-		final String[] testedHashedPasswords = { "abc123hash", null, "", "!\"+,-", "userName",
+		final PasswordAuth passwordAuth = PasswordAuth.builder().loginName("abc123hash")
+				.hashedPassword(originalHashedPassword).build();
+
+		final String[] testedHashedPasswords = { originalHashedPassword, "abc123hash", "", "!\"+,-", "userName",
 				"Long  With     Whitespace", "12345" };
 
 		for (String hashedPassword : testedHashedPasswords) {
@@ -130,7 +134,7 @@ public class PasswordAuthTest {
 	@Test
 	public void withLoginName_ValidLoginName_ChangesLoginName() {
 
-		final PasswordAuth passwordAuth = PasswordAuth.builder().loginName("me@example.com").build();
+		final PasswordAuth passwordAuth = PasswordAuth.builder().loginName("me@example.com").hashedPassword("passwordHash").build();
 
 		final String[] testedLoginNames = { "me@example.com", "", "userName", "Long  With     Whitespace", "12345" };
 
@@ -146,7 +150,7 @@ public class PasswordAuthTest {
 	@Test
 	public void withPasswordExpired_ValidBoolean_ChangesPasswordExpired() {
 
-		final PasswordAuth testPasswordAuth = PasswordAuth.builder().loginName("TestUser").build();
+		final PasswordAuth testPasswordAuth = PasswordAuth.builder().loginName("TestUser").hashedPassword("passwordHash").build();
 
 		final PasswordAuth changedPasswordAuth1 = testPasswordAuth.withPasswordNonExpired(false);
 		assertThat(changedPasswordAuth1.isPasswordNonExpired(), is(false));

@@ -91,7 +91,7 @@ public class UserTest {
 	@Test
 	public void equals_AutomaticTesting() {
 
-		EqualsVerifier.forClass(User.class).withOnlyTheseFields("id").verify();
+		EqualsVerifier.forClass(User.class).verify();
 
 	}
 
@@ -110,7 +110,7 @@ public class UserTest {
 		final UserBuilder builder = User.builder();
 
 		assertThat(builder.toString(), is(
-				"User.UserBuilder(id=0, displayName=null, classId$value=null, email=null, key=null, auth=null)"));
+				"User.UserBuilder(id=0, displayName=null, classId=null, email=null, key=null, auth=null)"));
 
 	}
 
@@ -138,7 +138,6 @@ public class UserTest {
 			newAuth = newBuilder.build();
 			changedUser = newUser.withAuth(newAuth);
 			assertThat(changedUser.getAuth(), is(newAuth));
-			assertThat(changedUser, is(newUser));
 
 		}
 
@@ -161,7 +160,6 @@ public class UserTest {
 
 			changedUser = newUser.withClassId(newClassId);
 			assertThat(changedUser.getClassId(), is(newClassId));
-			assertThat(changedUser, is(newUser));
 
 		}
 
@@ -191,7 +189,6 @@ public class UserTest {
 
 			changedUser = newUser.withDisplayName(newDisplayName);
 			assertThat(changedUser.getDisplayName(), is(newDisplayName));
-			assertThat(changedUser, is(newUser));
 
 		}
 
@@ -217,7 +214,6 @@ public class UserTest {
 
 			changedUser = newUser.withEmail(newEmail);
 			assertThat(changedUser.getEmail(), is(newEmail));
-			assertThat(changedUser, is(newUser));
 
 		}
 
@@ -263,7 +259,6 @@ public class UserTest {
 
 			changedUser = newUser.withKey(newKey);
 			assertThat(changedUser.getKey(), is(newKey));
-			assertThat(changedUser, is(newUser));
 
 		}
 

@@ -21,32 +21,26 @@ public final class Auth implements Serializable {
 
 	@EqualsAndHashCode.Include
 	@Id
-	private final int id;
+	private int id;
 
-	private final int user;
-	
-	@Builder.Default
-	private final boolean isEnabled = false;
+	private int user;
 
-	@Builder.Default
-	private final int badLoginCount = 0;
+	private boolean isEnabled;
 
-	@Builder.Default
-	private final boolean isAdmin = false;
+	private int badLoginCount;
 
-	@Builder.Default
-	private final Timestamp suspendedUntil = null;
+	private boolean isAdmin;
 
-	private final String suspensionMessage;
+	private Timestamp suspendedUntil;
 
-	@Builder.Default
-	private final Timestamp accountCreated = null;
+	private String suspensionMessage;
 
-	@Builder.Default
-	private final Timestamp lastLogin = null;
+	private Timestamp accountCreated;
+
+	private Timestamp lastLogin;
 
 	private final String lastLoginMethod;
-	
+
 	@Transient
 	private final PasswordAuth password;
 

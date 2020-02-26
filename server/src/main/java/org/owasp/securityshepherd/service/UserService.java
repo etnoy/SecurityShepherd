@@ -74,20 +74,21 @@ public final class UserService {
 
 		final Mono<String> displayNameMono = Mono.just(displayName).filterWhen(this::doesNotExistByDisplayName)
 				.switchIfEmpty(Mono.error(new DuplicateUserDisplayNameException("Display name already exists")));
+		
+		return Mono.zip(displayNameMono, loginNameMono).flatMap(tuple -> {
 
-		final PasswordAuthBuilder passwordAuthBuilder = PasswordAuth.builder();
-		passwordAuthBuilder.loginName(loginName);
-		passwordAuthBuilder.hashedPassword(hashedPassword);
-		final PasswordAuth passwordAuth = passwordAuthBuilder.build();
+			final PasswordAuthBuilder passwordAuthBuilder = PasswordAuth.builder();
+			passwordAuthBuilder.loginName(tuple.getT2());
+			passwordAuthBuilder.hashedPassword(hashedPassword);
+			final PasswordAuth passwordAuth = passwordAuthBuilder.build();
 
-		final AuthBuilder userAuthBuilder = Auth.builder();
-		userAuthBuilder.password(passwordAuth);
-		final Auth auth = userAuthBuilder.build();
+			final AuthBuilder userAuthBuilder = Auth.builder();
+			userAuthBuilder.password(passwordAuth);
+			final Auth auth = userAuthBuilder.build();
 
-		final UserBuilder userBuilder = User.builder();
-		userBuilder.displayName(displayName);
-
-		return Mono.zip(displayNameMono, loginNameMono).flatMap(dto -> {
+			final UserBuilder userBuilder = User.builder();
+			userBuilder.displayName(tuple.getT1());
+			userBuilder.auth(auth);
 
 			final Mono<User> user = userRepository.save(userBuilder.build()).flatMap(savedUser -> {
 
@@ -114,7 +115,7 @@ public final class UserService {
 
 		Mono.just(userId).flatMap(id -> {
 			try {
-				return get(id);
+				return getById(id);
 			} catch (InvalidUserIdException e) {
 				return Mono.error(e);
 			}
@@ -154,7 +155,7 @@ public final class UserService {
 
 	public Mono<byte[]> getKey(final int id) throws InvalidUserIdException {
 		// TODO validate input
-		return get(id).flatMap(user -> {
+		return getById(id).flatMap(user -> {
 			byte[] key = user.getKey();
 			if (key == null) {
 				key = keyService.generateRandomBytes(16);
@@ -167,9 +168,9 @@ public final class UserService {
 
 	public Mono<User> findByLoginName(final String loginName) {
 
-		return passwordAuthRepository.findByLoginName(loginName).map(pwAuth -> pwAuth.getUser()).flatMap(userId -> {
+		return passwordAuthRepository.findByLoginName(loginName).map(passwordAuth -> passwordAuth.getUser()).flatMap(userId -> {
 			try {
-				return this.get(userId);
+				return this.getById(userId);
 			} catch (InvalidUserIdException e) {
 				return Mono.error(e);
 			}
@@ -177,7 +178,7 @@ public final class UserService {
 
 	}
 
-	public Mono<User> get(final int id) throws InvalidUserIdException {
+	public Mono<User> getById(final int id) throws InvalidUserIdException {
 
 		if (id <= 0) {
 			throw new InvalidUserIdException();

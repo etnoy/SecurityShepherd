@@ -30,7 +30,7 @@ public class AuthTest {
 		final AuthBuilder builder = Auth.builder();
 
 		assertThat(builder.toString(), is(
-				"Auth.AuthBuilder(id=0, user=0, isEnabled$value=false, badLoginCount$value=0, isAdmin$value=false, suspendedUntil$value=null, suspensionMessage=null, accountCreated$value=null, lastLogin$value=null, lastLoginMethod=null, password=null, saml=null)"));
+				"Auth.AuthBuilder(id=0, user=0, isEnabled=false, badLoginCount=0, isAdmin=false, suspendedUntil=null, suspensionMessage=null, accountCreated=null, lastLogin=null, lastLoginMethod=null, password=null, saml=null)"));
 
 	}
 
@@ -147,7 +147,7 @@ public class AuthTest {
 		for (String loginName : loginNamesToTest) {
 
 			final AuthBuilder builder = Auth.builder();
-			final PasswordAuth passwordAuth = PasswordAuth.builder().loginName(loginName).build();
+			final PasswordAuth passwordAuth = PasswordAuth.builder().loginName(loginName).hashedPassword("passwordHash").build();
 
 			builder.password(passwordAuth);
 
@@ -348,8 +348,8 @@ public class AuthTest {
 	@Test
 	public void withPassword_ValidPasswordAuth_ChangesPasswordAuth() {
 
-		final PasswordAuth passwordAuth1 = PasswordAuth.builder().loginName("TestPassword1").build();
-		final PasswordAuth passwordAuth2 = PasswordAuth.builder().loginName("TestPassword2").build();
+		final PasswordAuth passwordAuth1 = PasswordAuth.builder().loginName("TestPassword1").hashedPassword("passwordHash").build();
+		final PasswordAuth passwordAuth2 = PasswordAuth.builder().loginName("TestPassword2").hashedPassword("passwordHash").build();
 
 		final Auth testAuth = Auth.builder().password(passwordAuth1).build();
 
