@@ -82,9 +82,8 @@ public class ClassServiceTest {
 	@Test
 	public void getById_InvalidClassId_ThrowsException() throws Exception {
 
-		assertThrows(InvalidClassIdException.class, () -> classService.getById(-1));
-		assertThrows(InvalidClassIdException.class, () -> classService.getById(-1000));
-		assertThrows(InvalidClassIdException.class, () -> classService.getById(0));
+		StepVerifier.create(classService.getById(-1)).expectError(InvalidClassIdException.class).verify();
+		StepVerifier.create(classService.getById(0)).expectError(InvalidClassIdException.class).verify();
 
 	}
 

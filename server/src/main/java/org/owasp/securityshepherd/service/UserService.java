@@ -115,10 +115,10 @@ public final class UserService {
 		return passwordAuthRepository.findByLoginName(loginName).map(u -> false).defaultIfEmpty(true);
 	}
 
-	public Mono<User> getById(final int id) throws InvalidUserIdException {
+	public Mono<User> getById(final int id) {
 
 		if (id <= 0) {
-			throw new InvalidUserIdException();
+			return Mono.error(new InvalidUserIdException());
 		}
 
 		final Mono<User> user = Mono.just(id).filterWhen(userRepository::existsById)
@@ -155,16 +155,10 @@ public final class UserService {
 		if (loginName.isEmpty()) {
 			throw new IllegalArgumentException();
 		}
-		
+
 		return passwordAuthRepository.findByLoginName(loginName)
 				.switchIfEmpty(Mono.error(new LoginNameNotFoundException())).map(passwordAuth -> passwordAuth.getUser())
-				.flatMap(userId -> {
-					try {
-						return this.getById(userId);
-					} catch (InvalidUserIdException e) {
-						return Mono.error(e);
-					}
-				});
+				.flatMap(this::getById);
 
 	}
 
@@ -199,13 +193,8 @@ public final class UserService {
 		final Mono<Integer> classIdMono = Mono.just(classId).filterWhen(classService::existsById)
 				.switchIfEmpty(Mono.error(new ClassIdNotFoundException()));
 
-		return Mono.just(userId).flatMap(id -> {
-			try {
-				return getById(id);
-			} catch (InvalidUserIdException e) {
-				return Mono.error(e);
-			}
-		}).zipWith(classIdMono).map(tuple -> tuple.getT1().withClassId(tuple.getT2())).flatMap(userRepository::save);
+		return Mono.just(userId).flatMap(this::getById).zipWith(classIdMono)
+				.map(tuple -> tuple.getT1().withClassId(tuple.getT2())).flatMap(userRepository::save);
 
 	}
 
@@ -222,18 +211,12 @@ public final class UserService {
 		if (displayName.isEmpty()) {
 			throw new IllegalArgumentException();
 		}
-		
+
 		final Mono<String> displayNameMono = Mono.just(displayName).filterWhen(name -> doesNotExistByDisplayName(name))
 				.switchIfEmpty(Mono.error(new DuplicateUserDisplayNameException("Display name already exists")));
 
-		return Mono.just(userId).flatMap(id -> {
-			try {
-				return getById(id);
-			} catch (InvalidUserIdException e) {
-				return Mono.error(e);
-			}
-		}).zipWith(displayNameMono).map(tuple -> tuple.getT1().withDisplayName(tuple.getT2()))
-				.flatMap(userRepository::save);
+		return Mono.just(userId).flatMap(this::getById).zipWith(displayNameMono)
+				.map(tuple -> tuple.getT1().withDisplayName(tuple.getT2())).flatMap(userRepository::save);
 
 	}
 

@@ -56,10 +56,10 @@ public final class ClassService {
 
 	}
 
-	public Mono<ClassEntity> getById(final int id) throws InvalidClassIdException {
+	public Mono<ClassEntity> getById(final int id) {
 
 		if (id <= 0) {
-			throw new InvalidClassIdException();
+			return Mono.error(new InvalidClassIdException());
 		}
 
 		return Mono.just(id).filterWhen(classRepository::existsById)
@@ -80,13 +80,8 @@ public final class ClassService {
 		Mono<String> nameMono = Mono.just(name).filterWhen(this::doesNotExistByName)
 				.switchIfEmpty(Mono.error(new DuplicateClassNameException("Class name already exists")));
 
-		return Mono.just(id).flatMap(classId -> {
-			try {
-				return getById(classId);
-			} catch (InvalidClassIdException e) {
-				return Mono.error(e);
-			}
-		}).zipWith(nameMono).map(tuple -> tuple.getT1().withName(tuple.getT2())).flatMap(classRepository::save);
+		return Mono.just(id).flatMap(this::getById).zipWith(nameMono)
+				.map(tuple -> tuple.getT1().withName(tuple.getT2())).flatMap(classRepository::save);
 
 	}
 
