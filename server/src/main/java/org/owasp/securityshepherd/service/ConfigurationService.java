@@ -51,7 +51,7 @@ public final class ConfigurationService {
 
 	}
 
-	private Optional<String> get(final String key) {
+	private Mono<String> get(final String key) {
 
 		final Optional<Configuration> searchResult = configurationRepository.findByKey(key);
 
@@ -67,7 +67,7 @@ public final class ConfigurationService {
 
 	}
 
-	public byte[] getServerKey() {
+	public Mono<byte[]> getServerKey() {
 
 		// Look for server key in database
 		final Optional<String> returnedKey = get("serverKey");
@@ -86,7 +86,7 @@ public final class ConfigurationService {
 
 	}
 
-	public byte[] refreshServerKey() {
+	public Mono<byte[]> refreshServerKey() {
 
 		log.info("Generating new server key");
 
@@ -115,7 +115,7 @@ public final class ConfigurationService {
 
 	}
 
-	private boolean existsByKey(final String key) {
+	private Mono<Boolean> existsByKey(final String key) {
 
 		return configurationRepository.existsByKey(key);
 

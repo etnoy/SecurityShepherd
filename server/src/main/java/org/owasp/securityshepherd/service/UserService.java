@@ -162,17 +162,16 @@ public final class UserService {
 
 	}
 
-	public Mono<byte[]> getKey(final int id) throws InvalidUserIdException {
+	public Mono<byte[]> getKey(final int id) {
 
 		if (id <= 0) {
-			throw new InvalidUserIdException();
+			return Mono.error(new InvalidUserIdException());
 		}
 
 		return getById(id).flatMap(user -> {
 			byte[] key = user.getKey();
 			if (key == null) {
-				key = keyService.generateRandomBytes(16);
-				userRepository.save(user.withKey(key));
+				keyService.generateRandomBytes(16).map(user::withKey).flatMap(userRepository::save);
 			}
 			return Mono.just(key);
 		});

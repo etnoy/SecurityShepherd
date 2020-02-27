@@ -28,7 +28,7 @@ public final class Module implements Serializable {
 
 	private boolean isFlagEnabled;
 
-	private boolean isExactFlag;
+	private boolean isFlagExact;
 
 	private String flag;
 

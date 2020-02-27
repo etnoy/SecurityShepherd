@@ -23,6 +23,7 @@ import org.owasp.securityshepherd.exception.DuplicateClassNameException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.UserIdNotFoundException;
 import org.owasp.securityshepherd.persistence.model.Auth;
+import org.owasp.securityshepherd.persistence.model.Module;
 import org.owasp.securityshepherd.persistence.model.PasswordAuth;
 import org.owasp.securityshepherd.persistence.model.User;
 import org.owasp.securityshepherd.repository.AuthRepository;
@@ -85,6 +86,13 @@ public class UserServiceTest {
 	}
 
 	@Test
+	public void create_DisplayNameAlreadyExists_ThrowsException() {
+
+//TODO
+
+	}
+
+	@Test
 	public void create_ValidDisplayName_CreatesUser() throws Exception {
 
 		final String displayName = "TestUser";
@@ -92,8 +100,12 @@ public class UserServiceTest {
 
 		when(userRepository.findByDisplayName(displayName)).thenReturn(Mono.just(mockUser));
 
-		StepVerifier.create(userService.create(displayName)).expectError(DuplicateUserDisplayNameException.class)
-				.verify();
+		StepVerifier.create(userService.create(displayName)).assertNext(user -> {
+
+			assertThat(user.getDisplayName(), is(displayName));
+			verify(userRepository, times(1)).save(any(User.class));
+
+		}).expectComplete().verify();
 
 	}
 
@@ -449,7 +461,7 @@ public class UserServiceTest {
 		when(userRepository.save(testUserWithKey)).thenReturn(Mono.just(testUserWithKey));
 
 		// Set up the mock key service
-		when(keyService.generateRandomBytes(16)).thenReturn(testRandomBytes);
+		when(keyService.generateRandomBytes(16)).thenReturn(Mono.just(testRandomBytes));
 
 		StepVerifier.create(userService.getKey(mockId)).assertNext(key -> {
 
