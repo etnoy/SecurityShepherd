@@ -17,6 +17,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.owasp.securityshepherd.exception.DuplicateUserDisplayNameException;
+import org.owasp.securityshepherd.exception.InvalidClassIdException;
+import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
 import org.owasp.securityshepherd.exception.DuplicateClassNameException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.UserIdNotFoundException;
@@ -189,21 +191,6 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void findByLoginName_PasswordAuthHasInvalidUserIdThrowsException() throws InvalidUserIdException {
-
-		final PasswordAuth mockPasswordAuth = mock(PasswordAuth.class);
-
-		final String loginName = "MockUser";
-		final int mockId = -999;
-
-		when(passwordAuthRepository.findByLoginName(loginName)).thenReturn(Mono.just(mockPasswordAuth));
-		when(mockPasswordAuth.getUser()).thenReturn(mockId);
-
-		StepVerifier.create(userService.getByLoginName(loginName)).expectError(InvalidUserIdException.class).verify();
-
-	}
-
-	@Test
 	public void getById_ExistingUserId_ReturnsUserEntity() throws InvalidUserIdException {
 
 		final PasswordAuth mockPasswordAuth = mock(PasswordAuth.class);
@@ -312,20 +299,16 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void getByLoginName_DoesNotExist_ThrowsException() throws InvalidUserIdException {
+	public void getByLoginName_EmptyLoginName_ThrowsException() throws InvalidUserIdException {
 
-		final PasswordAuth mockPasswordAuth = mock(PasswordAuth.class);
+		assertThrows(IllegalArgumentException.class, () -> userService.getByLoginName(""));
 
-		final String loginName = "MockUser";
-		final int mockId = 117;
+	}
 
-		when(mockPasswordAuth.getUser()).thenReturn(mockId);
-		when(passwordAuthRepository.findByLoginName(loginName)).thenReturn(Mono.just(mockPasswordAuth));
+	@Test
+	public void getByLoginName_NullLoginName_ThrowsException() throws InvalidUserIdException {
 
-		when(userRepository.findById(mockId)).thenReturn(Mono.empty());
-		when(userRepository.existsById(mockId)).thenReturn(Mono.just(false));
-
-		StepVerifier.create(userService.getByLoginName(loginName)).expectError(UserIdNotFoundException.class).verify();
+		assertThrows(NullPointerException.class, () -> userService.getByLoginName(null));
 
 	}
 
@@ -344,6 +327,21 @@ public class UserServiceTest {
 		when(userRepository.existsById(mockId)).thenReturn(Mono.just(false));
 
 		StepVerifier.create(userService.getByLoginName(loginName)).expectError(UserIdNotFoundException.class).verify();
+
+	}
+
+	@Test
+	public void getByLoginName_PasswordAuthHasInvalidUserId_ThrowsException() throws InvalidUserIdException {
+
+		final PasswordAuth mockPasswordAuth = mock(PasswordAuth.class);
+
+		final String loginName = "MockUser";
+		final int mockId = -999;
+
+		when(passwordAuthRepository.findByLoginName(loginName)).thenReturn(Mono.just(mockPasswordAuth));
+		when(mockPasswordAuth.getUser()).thenReturn(mockId);
+
+		StepVerifier.create(userService.getByLoginName(loginName)).expectError(InvalidUserIdException.class).verify();
 
 	}
 
@@ -384,6 +382,24 @@ public class UserServiceTest {
 			verify(passwordAuthRepository, times(1)).findByUserId(mockId);
 
 		}).expectComplete().verify();
+
+	}
+
+	@Test
+	public void getByLoginName_UserIdDoesNotExist_ThrowsException() throws InvalidUserIdException {
+
+		final PasswordAuth mockPasswordAuth = mock(PasswordAuth.class);
+
+		final String loginName = "MockUser";
+		final int mockId = 117;
+
+		when(mockPasswordAuth.getUser()).thenReturn(mockId);
+		when(passwordAuthRepository.findByLoginName(loginName)).thenReturn(Mono.just(mockPasswordAuth));
+
+		when(userRepository.findById(mockId)).thenReturn(Mono.empty());
+		when(userRepository.existsById(mockId)).thenReturn(Mono.just(false));
+
+		StepVerifier.create(userService.getByLoginName(loginName)).expectError(UserIdNotFoundException.class).verify();
 
 	}
 
@@ -468,7 +484,38 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void setClassId_ValidClass_Succeeds() throws Exception {
+	public void setClassId_ClassIdDoesNotExist_ThrowsException() throws Exception {
+
+		int userId = 12;
+		int classId = 84;
+
+		User mockUser = mock(User.class);
+
+		when(userRepository.existsById(userId)).thenReturn(Mono.just(true));
+		when(userRepository.findById(userId)).thenReturn(Mono.just(mockUser));
+		when(classService.existsById(classId)).thenReturn(Mono.just(false));
+
+		StepVerifier.create(userService.setClassId(userId, classId)).expectError(ClassIdNotFoundException.class)
+				.verify();
+
+	}
+
+	@Test
+	public void setClassId_InvalidClassId_ThrowsException() throws Exception {
+
+		assertThrows(InvalidClassIdException.class, () -> userService.setClassId(10, -3));
+
+	}
+
+	@Test
+	public void setClassId_InvalidUserId_ThrowsException() throws Exception {
+
+		assertThrows(InvalidUserIdException.class, () -> userService.setClassId(-5, 61));
+
+	}
+
+	@Test
+	public void setClassId_ValidClassId_Succeeds() throws Exception {
 
 		int userId = 13;
 		int classId = 94;
@@ -493,11 +540,47 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void setDisplayName_ValidName_Succeeds() throws UserIdNotFoundException, InvalidUserIdException {
+	public void setDisplayName_InvalidUserId_ThrowsException() throws InvalidUserIdException {
+
+		assertThrows(InvalidUserIdException.class, () -> userService.setDisplayName(-1, "displayName"));
+		assertThrows(InvalidUserIdException.class, () -> userService.setDisplayName(0, "displayName"));
+		assertThrows(InvalidUserIdException.class, () -> userService.setDisplayName(-1000, "displayName"));
+
+	}
+
+	@Test
+	public void setDisplayName_EmptyDisplayName_ThrowsException() throws InvalidUserIdException {
+
+		assertThrows(IllegalArgumentException.class, () -> userService.setDisplayName(1, ""));
+
+	}
+
+	@Test
+	public void setDisplayName_NullDisplayName_ThrowsException() throws InvalidUserIdException {
+
+		assertThrows(NullPointerException.class, () -> userService.setDisplayName(1, null));
+
+	}
+
+	@Test
+	public void setDisplayName_UserIdDoesNotExist_ThrowsException() throws InvalidUserIdException {
 
 		String newDisplayName = "newName";
 
+		int mockId = 3;
+
+		when(userRepository.existsById(mockId)).thenReturn(Mono.just(false));
+
+		StepVerifier.create(userService.setDisplayName(mockId, newDisplayName))
+				.expectError(UserIdNotFoundException.class).verify();
+
+	}
+
+	@Test
+	public void setDisplayName_ValidName_Succeeds() throws Exception {
+
 		User testUser = mock(User.class);
+		String newDisplayName = "newName";
 
 		int mockId = 3;
 

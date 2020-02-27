@@ -1,7 +1,10 @@
 package org.owasp.securityshepherd.service;
 
 import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
+import org.owasp.securityshepherd.exception.DuplicateClassNameException;
+import org.owasp.securityshepherd.exception.DuplicateUserDisplayNameException;
 import org.owasp.securityshepherd.exception.InvalidClassIdException;
+import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.UserIdNotFoundException;
 import org.owasp.securityshepherd.persistence.model.ClassEntity;
 import org.owasp.securityshepherd.persistence.model.User;
@@ -49,11 +52,22 @@ public final class ClassService {
 			throws ClassIdNotFoundException, InvalidClassIdException {
 
 		if (name == null) {
-			throw new IllegalArgumentException("name can't be null");
+			throw new IllegalArgumentException("Class name can't be null");
 		}
 
-		return getById(id).switchIfEmpty(Mono.error(new ClassIdNotFoundException()))
-				.flatMap(classEntity -> classRepository.save(classEntity.withName(name)));
+		Mono<String> nameMono = Mono.just(name).filterWhen(this::doesNotExistByName)
+				.switchIfEmpty(Mono.error(new DuplicateClassNameException("Class name already exists")));
+
+		return Mono.just(id).flatMap(classId -> {
+			try {
+				return getById(classId);
+			} catch (InvalidClassIdException e) {
+				return Mono.error(e);
+			}
+		}).zipWith(nameMono).map(tuple -> tuple.getT1().withName(tuple.getT2())).flatMap(classRepository::save);
+
+		// return getById(id).switchIfEmpty(Mono.error(new ClassIdNotFoundException()))
+		// .flatMap(classEntity -> classRepository.save(classEntity.withName(name)));
 
 	}
 

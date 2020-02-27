@@ -2,6 +2,7 @@ package org.owasp.securityshepherd.service;
 
 import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
 import org.owasp.securityshepherd.exception.DuplicateUserDisplayNameException;
+import org.owasp.securityshepherd.exception.InvalidClassIdException;
 import org.owasp.securityshepherd.exception.DuplicateClassNameException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.LoginNameNotFoundException;
@@ -110,9 +111,21 @@ public final class UserService {
 
 	}
 
-	public Mono<User> setDisplayName(final int userId, final String displayName) {
+	public Mono<User> setDisplayName(final int userId, final String displayName) throws InvalidUserIdException {
 
-		Mono<String> displayNameMono = Mono.just(displayName).filterWhen(name -> doesNotExistByDisplayName(name))
+		if (userId <= 0) {
+			throw new InvalidUserIdException();
+		}
+
+		if (displayName == null) {
+			throw new NullPointerException();
+		}
+
+		if (displayName.isEmpty()) {
+			throw new IllegalArgumentException();
+		}
+		
+		final Mono<String> displayNameMono = Mono.just(displayName).filterWhen(name -> doesNotExistByDisplayName(name))
 				.switchIfEmpty(Mono.error(new DuplicateUserDisplayNameException("Display name already exists")));
 
 		return Mono.just(userId).flatMap(id -> {
@@ -126,14 +139,23 @@ public final class UserService {
 
 	}
 
-	public Mono<User> setClassId(final int id, final int classId) {
+	public Mono<User> setClassId(final int userId, final int classId)
+			throws InvalidUserIdException, InvalidClassIdException {
 
-		Mono<Integer> classIdMono = Mono.just(classId).filterWhen(classService::existsById)
+		if (userId <= 0) {
+			throw new InvalidUserIdException();
+		}
+
+		if (classId <= 0) {
+			throw new InvalidClassIdException();
+		}
+
+		final Mono<Integer> classIdMono = Mono.just(classId).filterWhen(classService::existsById)
 				.switchIfEmpty(Mono.error(new ClassIdNotFoundException()));
 
-		return Mono.just(id).flatMap(userId -> {
+		return Mono.just(userId).flatMap(id -> {
 			try {
-				return getById(userId);
+				return getById(id);
 			} catch (InvalidUserIdException e) {
 				return Mono.error(e);
 			}
@@ -148,7 +170,11 @@ public final class UserService {
 	}
 
 	public Mono<byte[]> getKey(final int id) throws InvalidUserIdException {
-		// TODO validate input
+
+		if (id <= 0) {
+			throw new InvalidUserIdException();
+		}
+
 		return getById(id).flatMap(user -> {
 			byte[] key = user.getKey();
 			if (key == null) {
@@ -162,6 +188,14 @@ public final class UserService {
 
 	public Mono<User> getByLoginName(final String loginName) {
 
+		if (loginName == null) {
+			throw new NullPointerException();
+		}
+
+		if (loginName.isEmpty()) {
+			throw new IllegalArgumentException();
+		}
+		
 		return passwordAuthRepository.findByLoginName(loginName)
 				.switchIfEmpty(Mono.error(new LoginNameNotFoundException())).map(passwordAuth -> passwordAuth.getUser())
 				.flatMap(userId -> {
@@ -180,10 +214,10 @@ public final class UserService {
 			throw new InvalidUserIdException();
 		}
 
-		Mono<User> user = Mono.just(id).filterWhen(userRepository::existsById)
+		final Mono<User> user = Mono.just(id).filterWhen(userRepository::existsById)
 				.switchIfEmpty(Mono.error(new UserIdNotFoundException())).flatMap(userRepository::findById);
 
-		Mono<PasswordAuth> passwordAuth = Mono.just(id).flatMap(userId -> {
+		final Mono<PasswordAuth> passwordAuth = Mono.just(id).flatMap(userId -> {
 			Mono<PasswordAuth> returnedAuth = passwordAuthRepository.findByUserId(userId);
 			if (returnedAuth == null) {
 				return Mono.empty();
