@@ -2,12 +2,8 @@ package org.owasp.securityshepherd.service;
 
 import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
 import org.owasp.securityshepherd.exception.DuplicateClassNameException;
-import org.owasp.securityshepherd.exception.DuplicateUserDisplayNameException;
 import org.owasp.securityshepherd.exception.InvalidClassIdException;
-import org.owasp.securityshepherd.exception.InvalidUserIdException;
-import org.owasp.securityshepherd.exception.UserIdNotFoundException;
 import org.owasp.securityshepherd.persistence.model.ClassEntity;
-import org.owasp.securityshepherd.persistence.model.User;
 import org.owasp.securityshepherd.persistence.model.ClassEntity.ClassBuilder;
 import org.owasp.securityshepherd.repository.ClassRepository;
 import org.springframework.stereotype.Service;
@@ -71,13 +67,12 @@ public final class ClassService {
 
 	}
 
-	public Mono<ClassEntity> setName(final int id, final String name)
-			throws ClassIdNotFoundException, InvalidClassIdException {
+	public Mono<ClassEntity> setName(final int id, final String name) throws InvalidClassIdException {
 
 		if (name == null) {
 			throw new IllegalArgumentException("Class name can't be null");
 		}
-		
+
 		if (id <= 0) {
 			throw new InvalidClassIdException();
 		}
@@ -92,9 +87,6 @@ public final class ClassService {
 				return Mono.error(e);
 			}
 		}).zipWith(nameMono).map(tuple -> tuple.getT1().withName(tuple.getT2())).flatMap(classRepository::save);
-
-		// return getById(id).switchIfEmpty(Mono.error(new ClassIdNotFoundException()))
-		// .flatMap(classEntity -> classRepository.save(classEntity.withName(name)));
 
 	}
 

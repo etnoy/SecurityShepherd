@@ -91,7 +91,7 @@ public final class UserService {
 			userBuilder.displayName(tuple.getT1());
 			userBuilder.auth(auth);
 
-			final Mono<User> user = userRepository.save(userBuilder.build()).flatMap(savedUser -> {
+			return userRepository.save(userBuilder.build()).flatMap(savedUser -> {
 
 				final PasswordAuth passwordAuthWithUser = passwordAuth.withUser(savedUser.getId());
 				final Auth authWithUser = auth.withUser(savedUser.getId());
@@ -102,8 +102,6 @@ public final class UserService {
 				return Mono.just(savedUser);
 
 			});
-
-			return user;
 
 		});
 

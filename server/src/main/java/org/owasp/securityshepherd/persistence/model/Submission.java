@@ -12,30 +12,25 @@ import lombok.NonNull;
 import lombok.With;
 
 @Value
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode
 @Builder
 @With
 public final class Submission implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -5485881248601955741L;
 
-	@EqualsAndHashCode.Include
 	@Id
-	private final int id;
+	private int id;
 
-	private final int userId;
+	private int userId;
 
-	private final int moduleId;
+	private int moduleId;
 
 	@NonNull
-	private final Timestamp time;
+	private Timestamp time;
 
-	@Builder.Default
-	private final boolean isValid = false;
+	private boolean isValid;
 
-	private final String flag;
+	private String flag;
 
 }

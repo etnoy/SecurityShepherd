@@ -133,7 +133,7 @@ public class ModuleTest {
 
 	@Test
 	public void equals_AutomaticTesting() {
-		EqualsVerifier.forClass(Module.class).withOnlyTheseFields("id").verify();
+		EqualsVerifier.forClass(Module.class).verify();
 	}
 
 	@Test
@@ -142,7 +142,7 @@ public class ModuleTest {
 		final ModuleBuilder builder = Module.builder();
 
 		assertThat(builder.toString(), is(
-				"Module.ModuleBuilder(id=0, name=null, description=null, isFlagEnabled$value=false, isExactFlag$value=false, flag=null, isOpen$value=false)"));
+				"Module.ModuleBuilder(id=0, name=null, description=null, isFlagEnabled=false, isExactFlag=false, flag=null, isOpen=false)"));
 
 	}
 
@@ -171,7 +171,6 @@ public class ModuleTest {
 
 			changedModule = testModule.withDescription(newDescription);
 			assertThat(changedModule.getDescription(), is(newDescription));
-			assertThat(changedModule, is(testModule));
 
 		}
 
@@ -206,7 +205,6 @@ public class ModuleTest {
 
 			changedModule = testModule.withFlag(newFlag);
 			assertThat(changedModule.getFlag(), is(newFlag));
-			assertThat(changedModule, is(testModule));
 
 		}
 
@@ -269,7 +267,6 @@ public class ModuleTest {
 
 			changedModule = testModule.withName(newName);
 			assertThat(changedModule.getName(), is(newName));
-			assertThat(changedModule, is(testModule));
 
 		}
 
