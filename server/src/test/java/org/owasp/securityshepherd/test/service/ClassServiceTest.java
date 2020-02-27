@@ -102,17 +102,17 @@ public class ClassServiceTest {
 	}
 
 	@Test
-	public void setName_ValidName_CallsRepository() throws Exception {
+	public void setName_ValidName_SetsName() throws Exception {
 
 		final ClassEntity mockClass = mock(ClassEntity.class);
 		final ClassEntity mockClassWithName = mock(ClassEntity.class);
 
-		final String mockName = "TestClass";
 		final String newName = "newTestClass";
 
 		final int mockId = 123;
 
 		when(classRepository.findById(mockId)).thenReturn(Mono.just(mockClass));
+		when(classRepository.existsById(mockId)).thenReturn(Mono.just(true));
 
 		when(classRepository.findByName(newName)).thenReturn(Mono.empty());
 		when(mockClass.withName(newName)).thenReturn(mockClassWithName);
@@ -128,11 +128,6 @@ public class ClassServiceTest {
 			verify(classRepository, times(1)).findByName(newName);
 
 		}).expectComplete().verify();
-
-		InOrder order = inOrder(mockClass, classRepository);
-
-		order.verify(mockClass, times(1)).withName("newClassName");
-		order.verify(classRepository, times(1)).save(mockClass);
 
 	}
 
@@ -164,8 +159,17 @@ public class ClassServiceTest {
 	@Test
 	public void setName_NonExistentId_ThrowsException() throws Exception {
 
-		StepVerifier.create(classService.setName(123456789, "newName")).expectError(ClassIdNotFoundException.class)
-				.verify();
+		final ClassEntity mockClass = mock(ClassEntity.class);
+		final String newName = "newTestClass";
+
+		final int mockId = 1234567;
+
+		when(classRepository.existsById(mockId)).thenReturn(Mono.just(false));
+
+		when(classRepository.findById(mockId)).thenReturn(Mono.just(mockClass));
+		when(classRepository.findByName(newName)).thenReturn(Mono.just(mockClass));
+
+		StepVerifier.create(classService.setName(mockId, newName)).expectError(ClassIdNotFoundException.class).verify();
 
 	}
 

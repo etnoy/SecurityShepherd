@@ -23,6 +23,12 @@ public final class ClassService {
 
 	private final ClassRepository classRepository;
 
+	public Mono<Long> count() {
+
+		return classRepository.count();
+
+	}
+
 	public Mono<ClassEntity> create(final String name) {
 
 		if (name == null) {
@@ -48,11 +54,32 @@ public final class ClassService {
 		return classRepository.findByName(name).map(u -> false).defaultIfEmpty(true);
 	}
 
+	public Mono<Boolean> existsById(final int id) {
+
+		return classRepository.existsById(id);
+
+	}
+
+	public Mono<ClassEntity> getById(final int id) throws InvalidClassIdException {
+
+		if (id <= 0) {
+			throw new InvalidClassIdException();
+		}
+
+		return Mono.just(id).filterWhen(classRepository::existsById)
+				.switchIfEmpty(Mono.error(new ClassIdNotFoundException())).flatMap(classRepository::findById);
+
+	}
+
 	public Mono<ClassEntity> setName(final int id, final String name)
 			throws ClassIdNotFoundException, InvalidClassIdException {
 
 		if (name == null) {
 			throw new IllegalArgumentException("Class name can't be null");
+		}
+		
+		if (id <= 0) {
+			throw new InvalidClassIdException();
 		}
 
 		Mono<String> nameMono = Mono.just(name).filterWhen(this::doesNotExistByName)
@@ -68,29 +95,6 @@ public final class ClassService {
 
 		// return getById(id).switchIfEmpty(Mono.error(new ClassIdNotFoundException()))
 		// .flatMap(classEntity -> classRepository.save(classEntity.withName(name)));
-
-	}
-
-	public Mono<Long> count() {
-
-		return classRepository.count();
-
-	}
-
-	public Mono<Boolean> existsById(final int id) {
-
-		return classRepository.existsById(id);
-
-	}
-
-	public Mono<ClassEntity> getById(final int id) throws InvalidClassIdException {
-
-		if (id <= 0) {
-			throw new InvalidClassIdException();
-		}
-
-		return Mono.just(id).filterWhen(classRepository::existsById)
-				.switchIfEmpty(Mono.error(new ClassIdNotFoundException())).flatMap(classRepository::findById);
 
 	}
 
