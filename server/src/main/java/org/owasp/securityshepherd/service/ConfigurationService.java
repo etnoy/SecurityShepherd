@@ -1,8 +1,8 @@
 package org.owasp.securityshepherd.service;
 
 import java.util.Base64;
-import java.util.Optional;
 
+import org.owasp.securityshepherd.exception.ConfigurationKeyNotFoundException;
 import org.owasp.securityshepherd.persistence.model.Configuration;
 import org.owasp.securityshepherd.repository.ConfigurationRepository;
 import org.springframework.stereotype.Service;
@@ -24,101 +24,52 @@ public final class ConfigurationService {
 
 		log.debug("Creating configuration key " + key + " with value " + value);
 
-		return configurationRepository.save(Configuration.builder().key(key).value(value).build());
+		return Mono.just(Configuration.builder().key(key).value(value).build()).flatMap(configurationRepository::save);
 
 	}
 
-	private void setValue(final String key, final String value) {
+	private Mono<Configuration> setValue(final String key, final String value) {
 
-		final Optional<Configuration> searchResult = configurationRepository.findByKey(key);
-
-		Configuration targetConfiguration;
-
-		if (searchResult.isPresent()) {
-
-			targetConfiguration = searchResult.get().withValue(value);
-
-		} else {
-
-			log.debug("Key " + key + " does not exist");
-			throw new IllegalArgumentException("setValue requires an existing key");
-
-		}
-
-		log.debug("Setting configuration key " + key + " to value " + value);
-
-		configurationRepository.save(targetConfiguration);
+		return configurationRepository.findByKey(key)
+				.switchIfEmpty(
+						Mono.error(new ConfigurationKeyNotFoundException("Configuration key " + key + " not found")))
+				.map(configuration -> configuration.withValue(value)).flatMap(configurationRepository::save);
 
 	}
 
-	private Mono<String> get(final String key) {
+	private Mono<String> getByKey(final String key) {
 
-		final Optional<Configuration> searchResult = configurationRepository.findByKey(key);
-
-		if (searchResult.isPresent()) {
-
-			return Optional.of(searchResult.get().getValue());
-
-		} else {
-
-			return Optional.empty();
-
-		}
+		return configurationRepository.findByKey(key)
+				.switchIfEmpty(
+						Mono.error(new ConfigurationKeyNotFoundException("Configuration key " + key + " not found")))
+				.map(configuration -> configuration.getValue());
 
 	}
 
 	public Mono<byte[]> getServerKey() {
 
-		// Look for server key in database
-		final Optional<String> returnedKey = get("serverKey");
-
-		if (returnedKey.isPresent()) {
-
-			// Server key exists in database, return it
-			return Base64.getDecoder().decode(returnedKey.get());
-
-		} else {
-
-			// Key not found in configuration, generate it and return
-			return refreshServerKey();
-
-		}
+		return getByKey("serverKey").map(Base64.getDecoder()::decode)
+				.onErrorResume(ConfigurationKeyNotFoundException.class, notFound -> refreshServerKey());
 
 	}
 
 	public Mono<byte[]> refreshServerKey() {
 
-		log.info("Generating new server key");
-
 		final String serverKeyConfigurationKey = "serverKey";
 
-		final byte[] newServerKey = keyService.generateRandomBytes(16);
-
-		// Create a String containing the key for storage in db
-		final String newKeyString = Base64.getEncoder().encodeToString(newServerKey);
-
-		// Look for server key in database
-		if (existsByKey(serverKeyConfigurationKey)) {
-
-			// Server key found in database, replace it with the new key
-			setValue(serverKeyConfigurationKey, newKeyString);
-
-		} else {
-
-			// Key not found in database, store it there
-			create(serverKeyConfigurationKey, newKeyString);
-
-		}
-
-		// Return the generated server key to caller
-		return newServerKey;
+		return keyService.generateRandomBytes(16).zipWith(existsByKey(serverKeyConfigurationKey)).flatMap(tuple -> {
+			if (tuple.getT2()) {
+				setValue(serverKeyConfigurationKey, Base64.getEncoder().encodeToString(tuple.getT1()));
+			} else {
+				create(serverKeyConfigurationKey, Base64.getEncoder().encodeToString(tuple.getT1()));
+			}
+			return Mono.just(tuple.getT1());
+		});
 
 	}
 
 	private Mono<Boolean> existsByKey(final String key) {
-
-		return configurationRepository.existsByKey(key);
-
+		return configurationRepository.findByKey(key).map(u -> true).defaultIfEmpty(false);
 	}
 
 }
