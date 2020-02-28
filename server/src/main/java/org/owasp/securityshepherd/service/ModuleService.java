@@ -65,7 +65,7 @@ public final class ModuleService {
 					if (module.isFlagExact()) {
 						return Mono.just(module.getFlag().equalsIgnoreCase(submittedFlag));
 					} else {
-						return getDynamicFlag(userId, module.getId()).map(flag -> submittedFlag.equalsIgnoreCase(flag));
+						return getDynamicFlag(userId, moduleId).map(flag -> submittedFlag.equalsIgnoreCase(flag));
 					}
 				});
 
@@ -130,7 +130,7 @@ public final class ModuleService {
 		}
 
 		final Mono<byte[]> baseFlag = getById(moduleId).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
-				.filter(module -> !module.isFlagEnabled())
+				.filter(module -> module.isFlagEnabled())
 				.switchIfEmpty(Mono.error(new InvalidFlagStateException("Can't get dynamic flag if flag is disabled")))
 				.map(module -> module.getFlag().getBytes());
 
