@@ -424,21 +424,21 @@ public class UserServiceTest {
 		final int mockId = 17;
 
 		// Mock a test user that has a key
-		final User testUserWithKey = mock(User.class);
-		when(testUserWithKey.getKey()).thenReturn(testRandomBytes);
+		final User mockUserWithKey = mock(User.class);
+		when(mockUserWithKey.getKey()).thenReturn(testRandomBytes);
 
 		when(userRepository.existsById(mockId)).thenReturn(Mono.just(true));
-		when(userRepository.findById(mockId)).thenReturn(Mono.just(testUserWithKey));
+		when(userRepository.findById(mockId)).thenReturn(Mono.just(mockUserWithKey));
 
 		StepVerifier.create(userService.getKeyById(mockId)).assertNext(key -> {
 
-			final InOrder order = inOrder(testUserWithKey, userRepository);
+			final InOrder order = inOrder(mockUserWithKey, userRepository);
 
 			// userService should query the repository
 			order.verify(userRepository, times(1)).findById(mockId);
 
 			// and then extract the key
-			order.verify(testUserWithKey, times(1)).getKey();
+			order.verify(mockUserWithKey, times(1)).getKey();
 
 			// Assert that we got the correct key
 			assertThat(key, is(testRandomBytes));
@@ -455,24 +455,24 @@ public class UserServiceTest {
 		final int mockId = 19;
 
 		// This user does not have a key
-		final User testUserWithoutKey = mock(User.class);
-		when(testUserWithoutKey.getKey()).thenReturn(null);
+		final User mockUserWithoutKey = mock(User.class);
+		when(mockUserWithoutKey.getKey()).thenReturn(null);
 
 		// When that user is given a key, return an entity that has the key
-		final User testUserWithKey = mock(User.class);
-		when(userRepository.findById(mockId)).thenReturn(Mono.just(testUserWithoutKey));
-		when(testUserWithoutKey.getKey()).thenReturn(null);
+		final User mockUserWithKey = mock(User.class);
+		when(userRepository.findById(mockId)).thenReturn(Mono.just(mockUserWithoutKey));
+		when(mockUserWithoutKey.getKey()).thenReturn(null);
 
-		when(testUserWithoutKey.withKey(testRandomBytes)).thenReturn(testUserWithKey);
+		when(mockUserWithoutKey.withKey(testRandomBytes)).thenReturn(mockUserWithKey);
 
 		// Set up the mock repository
 		when(userRepository.existsById(mockId)).thenReturn(Mono.just(true));
-		when(userRepository.save(testUserWithKey)).thenReturn(Mono.just(testUserWithKey));
+		when(userRepository.save(mockUserWithKey)).thenReturn(Mono.just(mockUserWithKey));
 
 		// Set up the mock key service
 		when(keyService.generateRandomBytes(16)).thenReturn(Mono.just(testRandomBytes));
 
-		when(testUserWithKey.getKey()).thenReturn(testRandomBytes);
+		when(mockUserWithKey.getKey()).thenReturn(testRandomBytes);
 
 		StepVerifier.create(userService.getKeyById(mockId)).assertNext(key -> {
 
@@ -482,12 +482,12 @@ public class UserServiceTest {
 			ArgumentCaptor<User> argument = ArgumentCaptor.forClass(User.class);
 
 			verify(userRepository, times(1)).findById(mockId);
-			verify(testUserWithoutKey, times(1)).getKey();
+			verify(mockUserWithoutKey, times(1)).getKey();
 			verify(keyService, times(1)).generateRandomBytes(16);
-			verify(testUserWithoutKey, times(1)).withKey(testRandomBytes);
-			verify(testUserWithKey, times(1)).getKey();
+			verify(mockUserWithoutKey, times(1)).withKey(testRandomBytes);
+			verify(mockUserWithKey, times(1)).getKey();
 			verify(userRepository, times(1)).save(argument.capture());
-			assertThat(argument.getValue(), is(testUserWithKey));
+			assertThat(argument.getValue(), is(mockUserWithKey));
 			assertThat(argument.getValue().getKey(), is(testRandomBytes));
 
 		}).expectComplete().verify();
@@ -590,27 +590,27 @@ public class UserServiceTest {
 	@Test
 	public void setDisplayName_ValidName_Succeeds() throws Exception {
 
-		User testUser = mock(User.class);
+		User mockUser = mock(User.class);
 		String newDisplayName = "newName";
 
 		int mockId = 3;
 
 		when(userRepository.existsById(mockId)).thenReturn(Mono.just(true));
-		when(userRepository.findById(mockId)).thenReturn(Mono.just(testUser));
+		when(userRepository.findById(mockId)).thenReturn(Mono.just(mockUser));
 		when(userRepository.findByDisplayName(newDisplayName)).thenReturn(Mono.empty());
 
-		when(testUser.withDisplayName(newDisplayName)).thenReturn(testUser);
-		when(userRepository.save(any(User.class))).thenReturn(Mono.just(testUser));
-		when(testUser.getDisplayName()).thenReturn(newDisplayName);
+		when(mockUser.withDisplayName(newDisplayName)).thenReturn(mockUser);
+		when(userRepository.save(any(User.class))).thenReturn(Mono.just(mockUser));
+		when(mockUser.getDisplayName()).thenReturn(newDisplayName);
 
 		StepVerifier.create(userService.setDisplayName(mockId, newDisplayName)).assertNext(user -> {
 
 			assertThat(user.getDisplayName(), is(newDisplayName));
 
-			InOrder order = inOrder(testUser, userRepository);
+			InOrder order = inOrder(mockUser, userRepository);
 
-			order.verify(testUser, times(1)).withDisplayName(newDisplayName);
-			order.verify(userRepository, times(1)).save(testUser);
+			order.verify(mockUser, times(1)).withDisplayName(newDisplayName);
+			order.verify(userRepository, times(1)).save(mockUser);
 
 		}).expectComplete().verify();
 

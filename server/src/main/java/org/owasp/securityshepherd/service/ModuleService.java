@@ -52,9 +52,7 @@ public final class ModuleService {
 
 	}
 
-	public Mono<Boolean> verifyFlag(final int userId, final int moduleId, final String submittedFlag)
-			throws ModuleIdNotFoundException, UserIdNotFoundException, InvalidUserIdException,
-			InvalidFlagStateException {
+	public Mono<Boolean> verifyFlag(final int userId, final int moduleId, final String submittedFlag) {
 
 		if (submittedFlag == null) {
 			return Mono.just(false);

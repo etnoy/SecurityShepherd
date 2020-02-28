@@ -42,6 +42,7 @@ import org.springframework.data.relational.core.conversion.DbActionExecutionExce
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -336,6 +337,9 @@ public class ModuleServiceTest {
 
 	@BeforeEach
 	private void setUp() {
+		// Print more verbose errors if something goes wrong
+		Hooks.onOperatorDebug();
+
 		moduleService = new ModuleService(moduleRepository, userService, configurationService, keyService,
 				cryptoService);
 	}
@@ -355,12 +359,25 @@ public class ModuleServiceTest {
 	@Test
 	public void verifyFlag_InvalidDynamicFlag_ReturnFalse() throws Exception {
 
-		final int mockUserId = 11;
-		final int mockModuleId = 21;
+		final Module mockModule = mock(Module.class);
 
-		StepVerifier.create(moduleService.verifyFlag(mockUserId, mockModuleId, "invalidflag")).assertNext(isValid -> {
+		final int mockUserId = 193;
+		final int mockModuleId = 34;
+		final String invalidFlag = "invalidFlag";
 
-			assertThat(isValid, is(true));
+		when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
+
+		when(mockModule.isFlagEnabled()).thenReturn(true);
+		when(mockModule.isFlagExact()).thenReturn(false);
+		when(mockModule.getFlag()).thenReturn("validFlag");
+
+		StepVerifier.create(moduleService.verifyFlag(mockUserId, mockModuleId, invalidFlag)).assertNext(isValid -> {
+
+			assertThat(isValid, is(false));
+			verify(moduleRepository, times(1)).findById(mockModuleId);
+			verify(mockModule, times(1)).isFlagEnabled();
+			verify(mockModule, times(1)).isFlagExact();
+			verify(mockModule, times(1)).getFlag();
 
 		});
 
@@ -389,28 +406,27 @@ public class ModuleServiceTest {
 	@Test
 	public void verifyFlag_ValidDynamicFlag_ReturnsTrue() throws Exception {
 
-		final int mockUserId=3;
-		final int mockModuleId=23;
+		final int mockUserId = 3;
+		final int mockModuleId = 23;
 
 		final String validDynamicFlag = "itsaflag";
 
-		StepVerifier.create(moduleService.verifyFlag(mockUserId, mockModuleId, validDynamicFlag)).assertNext(isValid -> {
+		StepVerifier.create(moduleService.verifyFlag(mockUserId, mockModuleId, validDynamicFlag))
+				.assertNext(isValid -> {
 
-			assertThat(isValid, is(true));
+					assertThat(isValid, is(true));
 
-		});
+				});
 
 	}
 
 	@Test
-	public void verifyFlag_ValidExactFlag_ReturnsTrue()
-			throws Exception {
+	public void verifyFlag_ValidExactFlag_ReturnsTrue() throws Exception {
 
-		final int mockUserId=8;
-		final int mockModuleId=7;
-		
+		final int mockUserId = 8;
+		final int mockModuleId = 7;
+
 		final String validExactFlag = "itsaflag";
-
 
 		StepVerifier.create(moduleService.verifyFlag(mockUserId, mockModuleId, validExactFlag)).assertNext(isValid -> {
 
@@ -422,11 +438,11 @@ public class ModuleServiceTest {
 	@Test
 	public void verifyFlag_ValidExactUpperLowerCaseFlag_ReturnsTrue() throws Exception {
 
-		final int mockUserId=24;
-		final int mockModuleId=25;
-		
+		final int mockUserId = 24;
+		final int mockModuleId = 25;
+
 		final String validExactFlag = "UPPERCASEFLAG";
-		
+
 		StepVerifier.create(moduleService.verifyFlag(mockUserId, mockModuleId, validExactFlag)).assertNext(isValid -> {
 
 			assertThat(isValid, is(true));
