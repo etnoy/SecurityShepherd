@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.owasp.securityshepherd.exception.DuplicateUserDisplayNameException;
@@ -35,6 +36,7 @@ import org.owasp.securityshepherd.service.UserService;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -72,6 +74,13 @@ public class UserServiceTest {
 	}
 
 	@Test
+	public void create_DisplayNameAlreadyExists_ThrowsException() {
+
+//TODO
+
+	}
+
+	@Test
 	public void create_EmptyArgument_ThrowsException() {
 
 		assertThrows(IllegalArgumentException.class, () -> userService.create(""));
@@ -86,23 +95,22 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void create_DisplayNameAlreadyExists_ThrowsException() {
-
-//TODO
-
-	}
-
-	@Test
 	public void create_ValidDisplayName_CreatesUser() throws Exception {
 
 		final String displayName = "TestUser";
 		final User mockUser = mock(User.class);
+		final int mockId = 22;
 
-		when(userRepository.findByDisplayName(displayName)).thenReturn(Mono.just(mockUser));
+		when(userRepository.findByDisplayName(displayName)).thenReturn(Mono.empty());
+
+		when(userRepository.save(any(User.class)))
+				.thenAnswer(user -> Mono.just(user.getArgument(0, User.class).withId(mockId)));
 
 		StepVerifier.create(userService.create(displayName)).assertNext(user -> {
 
 			assertThat(user.getDisplayName(), is(displayName));
+
+			verify(userRepository, times(1)).findByDisplayName(displayName);
 			verify(userRepository, times(1)).save(any(User.class));
 
 		}).expectComplete().verify();
@@ -401,16 +409,15 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void getKey_InvalidUserId_ThrowsException() {
+	public void getKeyById_InvalidUserId_ThrowsException() {
 
-		assertThrows(InvalidUserIdException.class, () -> userService.getKey(-1));
-		assertThrows(InvalidUserIdException.class, () -> userService.getKey(-1000));
-		assertThrows(InvalidUserIdException.class, () -> userService.getKey(0));
+		StepVerifier.create(Flux.just(-1, -1000, 0).next().flatMap(userService::getKeyById))
+				.expectError(InvalidUserIdException.class).verify();
 
 	}
 
 	@Test
-	public void getKey_KeyExists_ReturnsKey() throws Exception {
+	public void getKeyById_KeyExists_ReturnsKey() throws Exception {
 
 		// Establish a random key
 		final byte[] testRandomBytes = { -108, 101, -7, -36, 17, -26, -24, 0, -32, -117, 75, -127, 22, 62, 9, 19 };
@@ -423,7 +430,7 @@ public class UserServiceTest {
 		when(userRepository.existsById(mockId)).thenReturn(Mono.just(true));
 		when(userRepository.findById(mockId)).thenReturn(Mono.just(testUserWithKey));
 
-		StepVerifier.create(userService.getKey(mockId)).assertNext(key -> {
+		StepVerifier.create(userService.getKeyById(mockId)).assertNext(key -> {
 
 			final InOrder order = inOrder(testUserWithKey, userRepository);
 
@@ -441,7 +448,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void getKey_NoKeyExists_GeneratesKey() throws Exception {
+	public void getKeyById_NoKeyExists_GeneratesKey() throws Exception {
 
 		// Establish a random key
 		final byte[] testRandomBytes = { -108, 101, -7, -36, 17, -26, -24, 0, -32, -117, 75, -127, 22, 62, 9, 19 };
@@ -453,28 +460,35 @@ public class UserServiceTest {
 
 		// When that user is given a key, return an entity that has the key
 		final User testUserWithKey = mock(User.class);
+		when(userRepository.findById(mockId)).thenReturn(Mono.just(testUserWithoutKey));
+		when(testUserWithoutKey.getKey()).thenReturn(null);
+
 		when(testUserWithoutKey.withKey(testRandomBytes)).thenReturn(testUserWithKey);
 
 		// Set up the mock repository
 		when(userRepository.existsById(mockId)).thenReturn(Mono.just(true));
-		when(userRepository.findById(mockId)).thenReturn(Mono.just(testUserWithoutKey));
 		when(userRepository.save(testUserWithKey)).thenReturn(Mono.just(testUserWithKey));
 
 		// Set up the mock key service
 		when(keyService.generateRandomBytes(16)).thenReturn(Mono.just(testRandomBytes));
 
-		StepVerifier.create(userService.getKey(mockId)).assertNext(key -> {
+		when(testUserWithKey.getKey()).thenReturn(testRandomBytes);
 
-			final InOrder order = inOrder(testUserWithoutKey, userRepository, keyService);
-
-			order.verify(userRepository, times(1)).findById(mockId);
-			order.verify(testUserWithoutKey, times(1)).getKey();
-			order.verify(keyService, times(1)).generateRandomBytes(16);
-			order.verify(testUserWithoutKey, times(1)).withKey(testRandomBytes);
-			order.verify(userRepository, times(1)).save(testUserWithKey);
+		StepVerifier.create(userService.getKeyById(mockId)).assertNext(key -> {
 
 			// Assert that we got the correct key
 			assertThat(key, is(testRandomBytes));
+
+			ArgumentCaptor<User> argument = ArgumentCaptor.forClass(User.class);
+
+			verify(userRepository, times(1)).findById(mockId);
+			verify(testUserWithoutKey, times(1)).getKey();
+			verify(keyService, times(1)).generateRandomBytes(16);
+			verify(testUserWithoutKey, times(1)).withKey(testRandomBytes);
+			verify(testUserWithKey, times(1)).getKey();
+			verify(userRepository, times(1)).save(argument.capture());
+			assertThat(argument.getValue(), is(testUserWithKey));
+			assertThat(argument.getValue().getKey(), is(testRandomBytes));
 
 		}).expectComplete().verify();
 
@@ -537,18 +551,18 @@ public class UserServiceTest {
 	}
 
 	@Test
+	public void setDisplayName_EmptyDisplayName_ThrowsException() throws InvalidUserIdException {
+
+		assertThrows(IllegalArgumentException.class, () -> userService.setDisplayName(1, ""));
+
+	}
+
+	@Test
 	public void setDisplayName_InvalidUserId_ThrowsException() throws InvalidUserIdException {
 
 		assertThrows(InvalidUserIdException.class, () -> userService.setDisplayName(-1, "displayName"));
 		assertThrows(InvalidUserIdException.class, () -> userService.setDisplayName(0, "displayName"));
 		assertThrows(InvalidUserIdException.class, () -> userService.setDisplayName(-1000, "displayName"));
-
-	}
-
-	@Test
-	public void setDisplayName_EmptyDisplayName_ThrowsException() throws InvalidUserIdException {
-
-		assertThrows(IllegalArgumentException.class, () -> userService.setDisplayName(1, ""));
 
 	}
 

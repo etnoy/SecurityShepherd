@@ -136,7 +136,7 @@ public final class ModuleService {
 				.switchIfEmpty(Mono.error(new InvalidFlagStateException("Can't get dynamic flag if flag is disabled")))
 				.map(module -> module.getFlag().getBytes());
 
-		final Mono<byte[]> keyMono = userService.getKey(userId).zipWith(configurationService.getServerKey())
+		final Mono<byte[]> keyMono = userService.getKeyById(userId).zipWith(configurationService.getServerKey())
 				.map(tuple -> Bytes.concat(tuple.getT1(), tuple.getT2()));
 
 		return keyMono.zipWith(baseFlag).flatMap(tuple -> {

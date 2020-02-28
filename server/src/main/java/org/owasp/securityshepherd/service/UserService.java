@@ -162,19 +162,22 @@ public final class UserService {
 
 	}
 
-	public Mono<byte[]> getKey(final int id) {
+	public Mono<byte[]> getKeyById(final int id) {
 
 		if (id <= 0) {
 			return Mono.error(new InvalidUserIdException());
 		}
 
-		return getById(id).flatMap(user -> {
-			byte[] key = user.getKey();
-			if (key == null) {
-				keyService.generateRandomBytes(16).map(user::withKey).flatMap(userRepository::save);
-			}
-			return Mono.just(key);
-		});
+		return Mono.just(id).filterWhen(userRepository::existsById)
+				.switchIfEmpty(Mono.error(new UserIdNotFoundException())).flatMap(userRepository::findById)
+				.flatMap(user -> {
+					byte[] key = user.getKey();
+					if (key == null) {
+						return keyService.generateRandomBytes(16).map(newKey -> user.withKey(newKey))
+								.flatMap(userRepository::save).map(User::getKey);
+					}
+					return Mono.just(key);
+				});
 
 	}
 

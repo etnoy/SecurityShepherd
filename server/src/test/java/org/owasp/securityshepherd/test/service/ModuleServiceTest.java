@@ -167,7 +167,7 @@ public class ModuleServiceTest {
 		final byte[] mockedServerKey = { -118, 9, -7, -35, 17, -116, -94, 0, -32, -117, 65, -127, 12, 82, 9, 29 };
 		final String mockedBaseFlag = "ZrLBRsS0QfL5TDz5";
 
-		when(userService.getKey(userId)).thenReturn(Mono.just(mockedUserKey));
+		when(userService.getKeyById(userId)).thenReturn(Mono.just(mockedUserKey));
 		when(configurationService.getServerKey()).thenReturn(Mono.just(mockedServerKey));
 		when(mockModule.getFlag()).thenReturn(mockedBaseFlag);
 
