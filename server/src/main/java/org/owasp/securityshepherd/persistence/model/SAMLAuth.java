@@ -2,6 +2,8 @@ package org.owasp.securityshepherd.persistence.model;
 
 import java.io.Serializable;
 
+import org.springframework.data.annotation.Id;
+
 import lombok.Builder;
 import lombok.Value;
 import lombok.EqualsAndHashCode;
@@ -14,15 +16,14 @@ import lombok.With;
 @With
 public final class SAMLAuth implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 211951930649985921L;
+	
+	@Id
+	private int id;
+	
+	private int user;
+	
 	@NonNull
-	private final String samlId;
-
-	SAMLAuth(final String samlId) {
-		this.samlId = samlId;
-	}
+	private String samlId;
 
 }

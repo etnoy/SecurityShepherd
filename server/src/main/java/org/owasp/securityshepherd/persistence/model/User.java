@@ -3,6 +3,7 @@ package org.owasp.securityshepherd.persistence.model;
 import java.io.Serializable;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Column;
 
 import lombok.Builder;
@@ -12,28 +13,27 @@ import lombok.Value;
 import lombok.With;
 
 @Value
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode
 @Builder
 @With
 public final class User implements Serializable {
 
 	private static final long serialVersionUID = 3097353498257801154L;
 
-	@EqualsAndHashCode.Include
 	@Id
 	private final int id;
 
 	@NonNull
 	private final String displayName;
-	
-	@Builder.Default
-	private final Integer classId = null;
+
+	private final Integer classId;
 
 	private final String email;
 
 	@Column("user_key")
 	private final byte[] key;
-	
+
+	@Transient
 	private final Auth auth;
 
 }

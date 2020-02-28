@@ -1,25 +1,31 @@
 package org.owasp.securityshepherd.service;
 
-import java.util.Optional;
-
 import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
+import org.owasp.securityshepherd.exception.DuplicateClassNameException;
 import org.owasp.securityshepherd.exception.InvalidClassIdException;
 import org.owasp.securityshepherd.persistence.model.ClassEntity;
 import org.owasp.securityshepherd.persistence.model.ClassEntity.ClassBuilder;
-import org.owasp.securityshepherd.proxy.ClassRepositoryProxy;
+import org.owasp.securityshepherd.repository.ClassRepository;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public final class ClassService {
 
-	private final ClassRepositoryProxy classRepository;
+	private final ClassRepository classRepository;
 
-	public ClassEntity create(final String name) {
+	public Mono<Long> count() {
+
+		return classRepository.count();
+
+	}
+
+	public Mono<ClassEntity> create(final String name) {
 
 		if (name == null) {
 			throw new NullPointerException();
@@ -34,53 +40,48 @@ public final class ClassService {
 		final ClassBuilder classBuilder = ClassEntity.builder();
 		classBuilder.name(name);
 
-		final ClassEntity savedClass = classRepository.save(classBuilder.build());
+		return classRepository.save(classBuilder.build());
 
-		log.debug("Created user with ID " + savedClass.getId());
-
-		return savedClass;
+		// log.debug("Created user with ID " + savedClass.getId());
 
 	}
 
-	public void setName(final int id, final String name) throws ClassIdNotFoundException, InvalidClassIdException {
-
-		if (name == null) {
-			throw new IllegalArgumentException("name can't be null");
-		}
-
-		Optional<ClassEntity> returnedClass = get(id);
-
-		if (returnedClass.isPresent()) {
-
-			classRepository.save(returnedClass.get().withName(name));
-
-		} else {
-
-			throw new ClassIdNotFoundException();
-
-		}
-
+	private Mono<Boolean> doesNotExistByName(final String name) {
+		return classRepository.findByName(name).map(u -> false).defaultIfEmpty(true);
 	}
 
-	public long count() {
-
-		return classRepository.count();
-
-	}
-
-	public boolean existsById(final int id) {
+	public Mono<Boolean> existsById(final int id) {
 
 		return classRepository.existsById(id);
 
 	}
 
-	public Optional<ClassEntity> get(final int id) throws InvalidClassIdException {
+	public Mono<ClassEntity> getById(final int id) {
+
+		if (id <= 0) {
+			return Mono.error(new InvalidClassIdException());
+		}
+
+		return Mono.just(id).filterWhen(classRepository::existsById)
+				.switchIfEmpty(Mono.error(new ClassIdNotFoundException())).flatMap(classRepository::findById);
+
+	}
+
+	public Mono<ClassEntity> setName(final int id, final String name) throws InvalidClassIdException {
+
+		if (name == null) {
+			throw new IllegalArgumentException("Class name can't be null");
+		}
 
 		if (id <= 0) {
 			throw new InvalidClassIdException();
 		}
 
-		return classRepository.findById(id);
+		Mono<String> nameMono = Mono.just(name).filterWhen(this::doesNotExistByName)
+				.switchIfEmpty(Mono.error(new DuplicateClassNameException("Class name already exists")));
+
+		return Mono.just(id).flatMap(this::getById).zipWith(nameMono)
+				.map(tuple -> tuple.getT1().withName(tuple.getT2())).flatMap(classRepository::save);
 
 	}
 

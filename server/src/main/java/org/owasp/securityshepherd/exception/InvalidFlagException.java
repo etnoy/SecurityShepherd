@@ -1,6 +1,6 @@
 package org.owasp.securityshepherd.exception;
 
-abstract class InvalidFlagException extends Exception {
+public abstract class InvalidFlagException extends Exception {
 
 	/**
 	 * 

@@ -11,34 +11,27 @@ import lombok.Value;
 import lombok.With;
 
 @Value
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode
 @Builder
 @With
 public final class Module implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 6391362512222766270L;
 
-	@EqualsAndHashCode.Include
 	@Id
-	private final int id;
+	private int id;
 
 	@NonNull
-	private final String name;
+	private String name;
 
-	private final String description;
+	private String description;
 
-	@Builder.Default
-	private final boolean isFlagEnabled = false;
+	private boolean isFlagEnabled;
 
-	@Builder.Default
-	private final boolean isExactFlag = false;
+	private boolean isFlagExact;
 
-	private final String flag;
+	private String flag;
 
-	@Builder.Default
-	private final boolean isOpen = false;
+	private boolean isOpen;
 
 }

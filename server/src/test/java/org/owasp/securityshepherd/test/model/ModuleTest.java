@@ -61,14 +61,14 @@ public class ModuleTest {
 	@Test
 	public void buildIsExactFlag_TrueOrFalse_MatchesBuild() {
 
-		for (boolean isExactFlag : BOOLEANS) {
+		for (boolean isFlagExact : BOOLEANS) {
 
 			final ModuleBuilder builder = Module.builder().name("TestModule");
 
-			builder.isExactFlag(isExactFlag);
+			builder.isFlagExact(isFlagExact);
 
 			assertThat(builder.build(), instanceOf(Module.class));
-			assertThat(builder.build().isExactFlag(), is(isExactFlag));
+			assertThat(builder.build().isFlagExact(), is(isFlagExact));
 
 		}
 
@@ -133,7 +133,7 @@ public class ModuleTest {
 
 	@Test
 	public void equals_AutomaticTesting() {
-		EqualsVerifier.forClass(Module.class).withOnlyTheseFields("id").verify();
+		EqualsVerifier.forClass(Module.class).verify();
 	}
 
 	@Test
@@ -142,7 +142,7 @@ public class ModuleTest {
 		final ModuleBuilder builder = Module.builder();
 
 		assertThat(builder.toString(), is(
-				"Module.ModuleBuilder(id=0, name=null, description=null, isFlagEnabled$value=false, isExactFlag$value=false, flag=null, isOpen$value=false)"));
+				"Module.ModuleBuilder(id=0, name=null, description=null, isFlagEnabled=false, isFlagExact=false, flag=null, isOpen=false)"));
 
 	}
 
@@ -152,7 +152,7 @@ public class ModuleTest {
 		final Module testModule = Module.builder().name("TestModule").build();
 
 		assertThat(testModule.toString(), is(
-				"Module(id=0, name=TestModule, description=null, isFlagEnabled=false, isExactFlag=false, flag=null, isOpen=false)"));
+				"Module(id=0, name=TestModule, description=null, isFlagEnabled=false, isFlagExact=false, flag=null, isOpen=false)"));
 
 	}
 
@@ -171,23 +171,22 @@ public class ModuleTest {
 
 			changedModule = testModule.withDescription(newDescription);
 			assertThat(changedModule.getDescription(), is(newDescription));
-			assertThat(changedModule, is(testModule));
 
 		}
 
 	}
 
 	@Test
-	public void withExactFlag_ValidBoolean_ChangesIsExactFlag() {
+	public void withFlagExact_ValidBoolean_ChangesIsExactFlag() {
 
 		final Module testModule = Module.builder().name("TestModule").build();
 
-		assertThat(testModule.isExactFlag(), is(false));
+		assertThat(testModule.isFlagExact(), is(false));
 
-		Module changedModule = testModule.withExactFlag(false);
-		assertThat(changedModule.isExactFlag(), is(false));
-		changedModule = testModule.withExactFlag(true);
-		assertThat(changedModule.isExactFlag(), is(true));
+		Module changedModule = testModule.withFlagExact(false);
+		assertThat(changedModule.isFlagExact(), is(false));
+		changedModule = testModule.withFlagExact(true);
+		assertThat(changedModule.isFlagExact(), is(true));
 
 	}
 
@@ -206,7 +205,6 @@ public class ModuleTest {
 
 			changedModule = testModule.withFlag(newFlag);
 			assertThat(changedModule.getFlag(), is(newFlag));
-			assertThat(changedModule, is(testModule));
 
 		}
 
@@ -269,7 +267,6 @@ public class ModuleTest {
 
 			changedModule = testModule.withName(newName);
 			assertThat(changedModule.getName(), is(newName));
-			assertThat(changedModule, is(testModule));
 
 		}
 

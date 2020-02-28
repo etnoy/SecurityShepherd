@@ -144,7 +144,7 @@ public class SubmissionTest {
 
 	@Test
 	public void equals_AutomaticTesting() {
-		EqualsVerifier.forClass(Submission.class).withOnlyTheseFields("id").verify();
+		EqualsVerifier.forClass(Submission.class).verify();
 	}
 
 	@Test
@@ -152,8 +152,8 @@ public class SubmissionTest {
 
 		final SubmissionBuilder builder = Submission.builder();
 
-		assertThat(builder.toString(), is(
-				"Submission.SubmissionBuilder(id=0, userId=0, moduleId=0, time=null, isValid$value=false, flag=null)"));
+		assertThat(builder.toString(),
+				is("Submission.SubmissionBuilder(id=0, userId=0, moduleId=0, time=null, isValid=false, flag=null)"));
 
 	}
 
@@ -179,7 +179,6 @@ public class SubmissionTest {
 
 			final Submission changedSubmission = testSubmission.withFlag(newFlag);
 			assertThat(changedSubmission.getFlag(), is(newFlag));
-			assertThat(changedSubmission, is(testSubmission));
 
 		}
 

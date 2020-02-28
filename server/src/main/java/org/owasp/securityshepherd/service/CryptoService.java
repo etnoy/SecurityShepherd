@@ -10,12 +10,13 @@ import org.owasp.securityshepherd.exception.CryptographicException;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
 @Service
 public final class CryptoService {
 
-	public byte[] hmac(final byte[] key, final byte[] message) {
+	public Mono<byte[]> hmac(final byte[] key, final byte[] message) {
 
 		final Mac hmac512;
 
@@ -33,7 +34,7 @@ public final class CryptoService {
 			throw new CryptographicException("Key was invalid when initializing HMAC-SHA512", e);
 		}
 
-		return hmac512.doFinal(message);
+		return Mono.just(hmac512.doFinal(message));
 	}
 
 }
