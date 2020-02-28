@@ -65,10 +65,15 @@ public class UserServiceTest {
 	@Test
 	public void count_ReturnsNumberOfUsers() throws Exception {
 
-		when(userRepository.count()).thenReturn(Mono.just(11L));
+		final long mockedUserCount = 11L;
+
+		when(userRepository.count()).thenReturn(Mono.just(mockedUserCount));
 
 		StepVerifier.create(userService.count()).assertNext(count -> {
-			assertThat(count, is(11L));
+
+			assertThat(count, is(mockedUserCount));
+			verify(userRepository, times(1)).count();
+
 		}).expectComplete().verify();
 
 	}
@@ -76,7 +81,14 @@ public class UserServiceTest {
 	@Test
 	public void create_DisplayNameAlreadyExists_ThrowsException() {
 
-//TODO
+		final String displayName = "createPasswordUser_DuplicateDisplayName";
+
+		final User mockUser = mock(User.class);
+
+		when(userRepository.findByDisplayName(displayName)).thenReturn(Mono.just(mockUser));
+
+		StepVerifier.create(userService.create(displayName))
+				.expectError(DuplicateUserDisplayNameException.class).verify();
 
 	}
 
@@ -98,7 +110,6 @@ public class UserServiceTest {
 	public void create_ValidDisplayName_CreatesUser() throws Exception {
 
 		final String displayName = "TestUser";
-		final User mockUser = mock(User.class);
 		final int mockId = 22;
 
 		when(userRepository.findByDisplayName(displayName)).thenReturn(Mono.empty());
@@ -301,9 +312,8 @@ public class UserServiceTest {
 	@Test
 	public void getById_InvalidUserId_ThrowsException() throws InvalidUserIdException {
 
-		StepVerifier.create(userService.getById(0)).expectError(InvalidUserIdException.class).verify();
-		StepVerifier.create(userService.getById(-1)).expectError(InvalidUserIdException.class).verify();
-		StepVerifier.create(userService.getById(-1000)).expectError(InvalidUserIdException.class).verify();
+		StepVerifier.create(Flux.just(-1, -1000, 0, -99999).next().flatMap(userService::getById))
+				.expectError(InvalidUserIdException.class).verify();
 
 	}
 

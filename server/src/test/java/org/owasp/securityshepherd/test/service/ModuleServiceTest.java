@@ -27,6 +27,7 @@ import org.owasp.securityshepherd.exception.EntityIdException;
 import org.owasp.securityshepherd.exception.InvalidFlagStateException;
 import org.owasp.securityshepherd.exception.InvalidFlagException;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
+import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
 import org.owasp.securityshepherd.exception.UserIdNotFoundException;
 import org.owasp.securityshepherd.persistence.model.Module;
@@ -42,6 +43,7 @@ import org.springframework.data.relational.core.conversion.DbActionExecutionExce
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -110,10 +112,10 @@ public class ModuleServiceTest {
 	}
 
 	@Test
-	public void getById_NegativeUserId_ThrowsException() {
+	public void getById_NegativeModuleId_ThrowsException() {
 
-		assertThrows(IllegalArgumentException.class, () -> moduleService.getById(-1));
-		assertThrows(IllegalArgumentException.class, () -> moduleService.getById(-1000));
+		StepVerifier.create(Flux.just(-1, -1000, 0, -99).next().flatMap(moduleService::getById))
+				.expectError(InvalidModuleIdException.class).verify();
 
 	}
 
@@ -126,12 +128,6 @@ public class ModuleServiceTest {
 
 		StepVerifier.create(moduleService.getById(mockId)).expectError(ModuleIdNotFoundException.class).verify();
 
-	}
-
-	@Test
-	public void getById_ZeroUserId_ThrowsException() throws Exception {
-
-		assertThrows(IllegalArgumentException.class, () -> moduleService.getById(0));
 	}
 
 	@Test
@@ -288,19 +284,40 @@ public class ModuleServiceTest {
 
 		final String exactFlag = "setExactFlag_ValidFlag_flag";
 
-		final Module mockModule = mock(Module.class);
-		final int mockId = 5;
+		final Module mockModuleWithoutFlag = mock(Module.class);
+		final Module mockModuleWithFlagEnabled = mock(Module.class);
+		final Module mockModuleWithExactFlagEnabled = mock(Module.class);
+		final Module mockModuleWithExactFlagEnabledAndSet = mock(Module.class);
 
-		when(mockModule.getId()).thenReturn(5);
-		when(moduleRepository.findById(mockId)).thenReturn(Mono.just(mockModule));
+		final int mockModuleId = 239;
 
-		StepVerifier.create(moduleService.setExactFlag(mockId, exactFlag)).assertNext(module -> {
+		when(mockModuleWithoutFlag.getId()).thenReturn(mockModuleId);
+
+		when(mockModuleWithoutFlag.withFlagEnabled(true)).thenReturn(mockModuleWithFlagEnabled);
+		when(mockModuleWithFlagEnabled.withFlagExact(true)).thenReturn(mockModuleWithExactFlagEnabled);
+		when(mockModuleWithExactFlagEnabled.withFlag(exactFlag)).thenReturn(mockModuleWithExactFlagEnabledAndSet);
+
+		when(mockModuleWithExactFlagEnabledAndSet.isFlagEnabled()).thenReturn(true);
+		when(mockModuleWithExactFlagEnabledAndSet.isFlagExact()).thenReturn(true);
+		when(mockModuleWithExactFlagEnabledAndSet.getFlag()).thenReturn(exactFlag);
+
+		when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.just(mockModuleWithoutFlag));
+		when(moduleRepository.save(mockModuleWithExactFlagEnabledAndSet))
+				.thenReturn(Mono.just(mockModuleWithExactFlagEnabledAndSet));
+
+		StepVerifier.create(moduleService.setExactFlag(mockModuleId, exactFlag)).assertNext(module -> {
 
 			assertThat(module.isFlagEnabled(), is(true));
 			assertThat(module.isFlagExact(), is(true));
 			assertThat(module.getFlag(), is(exactFlag));
 
-			verify(moduleRepository, times(1)).save(any(Module.class));
+			ArgumentCaptor<Integer> findArgument = ArgumentCaptor.forClass(Integer.class);
+			verify(moduleRepository, times(1)).findById(findArgument.capture());
+			assertThat(findArgument.getValue(), is(mockModuleId));
+
+			ArgumentCaptor<Module> saveArgument = ArgumentCaptor.forClass(Module.class);
+			verify(moduleRepository, times(1)).save(saveArgument.capture());
+			assertThat(saveArgument.getValue().getFlag(), is(exactFlag));
 
 		}).expectComplete().verify();
 
