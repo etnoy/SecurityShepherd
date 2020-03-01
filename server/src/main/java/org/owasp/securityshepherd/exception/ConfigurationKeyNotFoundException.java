@@ -1,7 +1,5 @@
 package org.owasp.securityshepherd.exception;
 
-import lombok.NoArgsConstructor;
-
 public class ConfigurationKeyNotFoundException extends Exception {
 
 	/**

@@ -2,11 +2,11 @@ package org.owasp.securityshepherd.service;
 
 import org.owasp.securityshepherd.exception.DuplicateModuleNameException;
 import org.owasp.securityshepherd.exception.EntityIdException;
+import org.owasp.securityshepherd.exception.InvalidFlagException;
 import org.owasp.securityshepherd.exception.InvalidFlagStateException;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
-import org.owasp.securityshepherd.exception.UserIdNotFoundException;
 import org.owasp.securityshepherd.persistence.model.Module;
 import org.owasp.securityshepherd.repository.ModuleRepository;
 import org.springframework.stereotype.Service;
@@ -32,8 +32,8 @@ public final class ModuleService {
 
 	private final CryptoService cryptoService;
 
-	private Mono<Boolean> doesNotExistByName(final String displayName) {
-		return moduleRepository.findByName(displayName).map(u -> false).defaultIfEmpty(true);
+	private Mono<Boolean> doesNotExistByName(final String name) {
+		return moduleRepository.findByName(name).map(u -> false).defaultIfEmpty(true);
 	}
 
 	public Mono<Module> create(final String name) {
@@ -71,7 +71,7 @@ public final class ModuleService {
 
 	}
 
-	public Mono<Module> setExactFlag(final int id, final String exactFlag) throws EntityIdException {
+	public Mono<Module> setExactFlag(final int id, final String exactFlag) throws EntityIdException, InvalidFlagException {
 
 		if (id <= 0) {
 
@@ -81,11 +81,11 @@ public final class ModuleService {
 
 		if (exactFlag == null) {
 
-			throw new NullPointerException("Flag can't be null");
+			throw new InvalidFlagException("Flag can't be null");
 
 		} else if (exactFlag.isEmpty()) {
 
-			throw new IllegalArgumentException("Flag can't be empty");
+			throw new InvalidFlagException("Flag can't be empty");
 
 		}
 
@@ -105,7 +105,6 @@ public final class ModuleService {
 
 		return getById(id).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
 				.map(module -> module.withFlagEnabled(true).withFlagExact(false))
-
 				.flatMap(module -> {
 					if (module.getFlag() == null) {
 						return keyService.generateRandomString(16).map(module::withFlag);

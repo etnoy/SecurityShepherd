@@ -1,7 +1,5 @@
 package org.owasp.securityshepherd.repository;
 
-import java.util.Optional;
-
 import org.owasp.securityshepherd.persistence.model.Configuration;
 import org.springframework.data.r2dbc.repository.Modifying;
 import org.springframework.data.r2dbc.repository.Query;

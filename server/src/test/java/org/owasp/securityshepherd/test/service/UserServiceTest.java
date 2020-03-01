@@ -24,7 +24,6 @@ import org.owasp.securityshepherd.exception.DuplicateClassNameException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.UserIdNotFoundException;
 import org.owasp.securityshepherd.persistence.model.Auth;
-import org.owasp.securityshepherd.persistence.model.Module;
 import org.owasp.securityshepherd.persistence.model.PasswordAuth;
 import org.owasp.securityshepherd.persistence.model.User;
 import org.owasp.securityshepherd.repository.AuthRepository;
