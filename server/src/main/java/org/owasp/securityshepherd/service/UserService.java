@@ -53,7 +53,7 @@ public final class UserService {
 			throw new IllegalArgumentException();
 		}
 
-		return Mono.just(displayName).filterWhen(name -> doesNotExistByDisplayName(name))
+		return Mono.just(displayName).filterWhen(this::doesNotExistByDisplayName)
 				.switchIfEmpty(Mono.error(new DuplicateUserDisplayNameException("Display name already exists")))
 				.flatMap(name -> userRepository.save(User.builder().displayName(name).build()));
 

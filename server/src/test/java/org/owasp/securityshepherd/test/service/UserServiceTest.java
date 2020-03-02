@@ -62,7 +62,7 @@ public class UserServiceTest {
 	private KeyService keyService;
 
 	@Test
-	public void count_ReturnsNumberOfUsers() throws Exception {
+	public void count_FiniteNumberOfUsers_ReturnsCount() throws Exception {
 
 		final long mockedUserCount = 11L;
 

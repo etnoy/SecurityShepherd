@@ -131,6 +131,8 @@ public final class ModuleService {
 		final Mono<byte[]> baseFlag = getById(moduleId).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
 				.filter(module -> module.isFlagEnabled())
 				.switchIfEmpty(Mono.error(new InvalidFlagStateException("Can't get dynamic flag if flag is disabled")))
+				.filter(module -> !module.isFlagExact())
+				.switchIfEmpty(Mono.error(new InvalidFlagStateException("Can't get dynamic flag if flag is exact")))
 				.map(module -> module.getFlag().getBytes());
 
 		final Mono<byte[]> keyMono = userService.getKeyById(userId).zipWith(configurationService.getServerKey())
@@ -147,6 +149,18 @@ public final class ModuleService {
 		if (id <= 0) {
 
 			return Mono.error(new InvalidModuleIdException());
+
+		}
+		
+		if (name == null) {
+
+			return Mono.error(new NullPointerException());
+
+		}
+		
+		if (name.isEmpty()) {
+
+			return Mono.error(new IllegalArgumentException());
 
 		}
 

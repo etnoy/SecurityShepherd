@@ -14,6 +14,7 @@ import org.owasp.securityshepherd.persistence.model.Submission.SubmissionBuilder
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 @ExtendWith(SpringExtension.class)
@@ -144,7 +145,7 @@ public class SubmissionTest {
 
 	@Test
 	public void equals_AutomaticTesting() {
-		EqualsVerifier.forClass(Submission.class).verify();
+		EqualsVerifier.forClass(Submission.class).withIgnoredAnnotations(NonNull.class).verify();
 	}
 
 	@Test

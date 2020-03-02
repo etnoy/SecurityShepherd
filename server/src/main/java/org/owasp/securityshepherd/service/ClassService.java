@@ -2,8 +2,10 @@ package org.owasp.securityshepherd.service;
 
 import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
 import org.owasp.securityshepherd.exception.DuplicateClassNameException;
+import org.owasp.securityshepherd.exception.DuplicateUserDisplayNameException;
 import org.owasp.securityshepherd.exception.InvalidClassIdException;
 import org.owasp.securityshepherd.persistence.model.ClassEntity;
+import org.owasp.securityshepherd.persistence.model.User;
 import org.owasp.securityshepherd.persistence.model.ClassEntity.ClassBuilder;
 import org.owasp.securityshepherd.repository.ClassRepository;
 import org.springframework.stereotype.Service;
@@ -37,10 +39,9 @@ public final class ClassService {
 
 		log.debug("Creating class with name " + name);
 
-		final ClassBuilder classBuilder = ClassEntity.builder();
-		classBuilder.name(name);
-
-		return classRepository.save(classBuilder.build());
+		return Mono.just(name).filterWhen(this::doesNotExistByName)
+				.switchIfEmpty(Mono.error(new DuplicateClassNameException("Class name already exists")))
+				.flatMap(className -> classRepository.save(ClassEntity.builder().name(className).build()));
 
 		// log.debug("Created user with ID " + savedClass.getId());
 
