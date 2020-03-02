@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.persistence.model.Auth;
 import org.owasp.securityshepherd.persistence.model.PasswordAuth;
 import org.owasp.securityshepherd.persistence.model.SAMLAuth;
+import org.owasp.securityshepherd.persistence.model.User;
 import org.owasp.securityshepherd.persistence.model.Auth.AuthBuilder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -147,7 +148,8 @@ public class AuthTest {
 		for (String loginName : loginNamesToTest) {
 
 			final AuthBuilder builder = Auth.builder();
-			final PasswordAuth passwordAuth = PasswordAuth.builder().loginName(loginName).hashedPassword("passwordHash").build();
+			final PasswordAuth passwordAuth = PasswordAuth.builder().loginName(loginName).hashedPassword("passwordHash")
+					.build();
 
 			builder.password(passwordAuth);
 
@@ -307,6 +309,25 @@ public class AuthTest {
 	}
 
 	@Test
+	public void withId_ValidId_ChangesId() {
+
+		final int originalId = 1;
+		final int[] testedIds = { originalId, 0, -1, 1000, -1000, 123456789 };
+
+		final Auth newAuth = Auth.builder().id(originalId).build();
+
+		assertThat(newAuth.getId(), is(originalId));
+
+		for (int newId : testedIds) {
+
+			final Auth changedAuth = newAuth.withId(newId);
+			assertThat(changedAuth.getId(), is(newId));
+
+		}
+
+	}
+
+	@Test
 	public void withLastLogin_ValidTime_ChangesLastLoginTime() {
 
 		final Timestamp originalTime = new Timestamp(0);
@@ -348,8 +369,10 @@ public class AuthTest {
 	@Test
 	public void withPassword_ValidPasswordAuth_ChangesPasswordAuth() {
 
-		final PasswordAuth passwordAuth1 = PasswordAuth.builder().loginName("TestPassword1").hashedPassword("passwordHash").build();
-		final PasswordAuth passwordAuth2 = PasswordAuth.builder().loginName("TestPassword2").hashedPassword("passwordHash").build();
+		final PasswordAuth passwordAuth1 = PasswordAuth.builder().loginName("TestPassword1")
+				.hashedPassword("passwordHash").build();
+		final PasswordAuth passwordAuth2 = PasswordAuth.builder().loginName("TestPassword2")
+				.hashedPassword("passwordHash").build();
 
 		final Auth testAuth = Auth.builder().password(passwordAuth1).build();
 
