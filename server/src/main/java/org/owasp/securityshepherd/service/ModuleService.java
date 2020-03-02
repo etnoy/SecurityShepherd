@@ -169,7 +169,7 @@ public final class ModuleService {
 
 		}
 
-		return moduleRepository.findById(id);
+		return moduleRepository.findById(id).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()));
 
 	}
 
