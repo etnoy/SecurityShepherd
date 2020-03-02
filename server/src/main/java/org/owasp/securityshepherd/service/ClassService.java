@@ -2,11 +2,8 @@ package org.owasp.securityshepherd.service;
 
 import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
 import org.owasp.securityshepherd.exception.DuplicateClassNameException;
-import org.owasp.securityshepherd.exception.DuplicateUserDisplayNameException;
 import org.owasp.securityshepherd.exception.InvalidClassIdException;
 import org.owasp.securityshepherd.persistence.model.ClassEntity;
-import org.owasp.securityshepherd.persistence.model.User;
-import org.owasp.securityshepherd.persistence.model.ClassEntity.ClassBuilder;
 import org.owasp.securityshepherd.repository.ClassRepository;
 import org.springframework.stereotype.Service;
 
