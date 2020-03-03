@@ -31,4 +31,14 @@ public final class PasswordAuth implements Serializable {
 
 	private boolean isPasswordNonExpired;
 
+	PasswordAuth(final int id, final int user, final String loginName, final String hashedPassword,
+			final boolean isPasswordNonExpired) {
+
+		this.id = id;
+		this.user = user;
+		this.loginName = loginName;
+		this.hashedPassword = hashedPassword;
+		this.isPasswordNonExpired = isPasswordNonExpired;
+	}
+
 }

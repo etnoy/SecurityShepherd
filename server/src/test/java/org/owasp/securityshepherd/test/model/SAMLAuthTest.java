@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.owasp.securityshepherd.persistence.model.PasswordAuth;
 import org.owasp.securityshepherd.persistence.model.SAMLAuth;
 import org.owasp.securityshepherd.persistence.model.SAMLAuth.SAMLAuthBuilder;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,6 +19,13 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class SAMLAuthTest {
+
+	@Test
+	public void builderToString_ValidData_AsExpected() {
+
+		assertThat(SAMLAuth.builder().toString(), is("SAMLAuth.SAMLAuthBuilder(id=0, user=0, samlId=null)"));
+
+	}
 
 	@Test
 	public void buildSamlid_NullSamlId_ThrowsException() {
@@ -55,11 +63,22 @@ public class SAMLAuthTest {
 		assertThat(SAMLAuth.builder().samlId("TestID").build().toString(), is("SAMLAuth(id=0, user=0, samlId=TestID)"));
 
 	}
-	
-	@Test
-	public void builderToString_ValidData_AsExpected() {
 
-		assertThat(SAMLAuth.builder().toString(), is("SAMLAuth.SAMLAuthBuilder(id=0, user=0, samlId=null)"));
+	@Test
+	public void withId_ValidId_ChangesId() {
+
+		final int originalId = 1;
+		final int[] testedIds = { originalId, 0, -1, 1000, -1000, 123456789 };
+
+		final SAMLAuth newPasswordAuth = SAMLAuth.builder().id(originalId).build();
+
+		assertThat(newPasswordAuth.getId(), is(originalId));
+
+		for (int newId : testedIds) {
+
+			assertThat(newPasswordAuth.withId(newId).getId(), is(newId));
+
+		}
 
 	}
 
@@ -81,6 +100,24 @@ public class SAMLAuthTest {
 
 			final SAMLAuth changedAuth = samlAuth.withSamlId(newSamlId);
 			assertThat(changedAuth.getSamlId(), is(newSamlId));
+
+		}
+
+	}
+
+	@Test
+	public void withUser_ValidUser_ChangesUser() {
+
+		final int originalUser = 1;
+		final int[] testedUsers = { originalUser, 0, -1, 1000, -1000, 123456789 };
+
+		final SAMLAuth newPasswordAuth = SAMLAuth.builder().user(originalUser).build();
+
+		assertThat(newPasswordAuth.getUser(), is(originalUser));
+
+		for (int newUser : testedUsers) {
+
+			assertThat(newPasswordAuth.withUser(newUser).getUser(), is(newUser));
 
 		}
 

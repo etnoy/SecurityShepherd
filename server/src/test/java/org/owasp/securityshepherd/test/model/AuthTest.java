@@ -324,8 +324,9 @@ public class AuthTest {
 
 		}
 
+	
 	}
-
+	
 	@Test
 	public void withLastLogin_ValidTime_ChangesLastLoginTime() {
 
@@ -433,6 +434,25 @@ public class AuthTest {
 
 			final Auth changedAuth = auth.withSuspensionMessage(newSuspensionMessage);
 			assertThat(changedAuth.getSuspensionMessage(), is(newSuspensionMessage));
+
+		}
+
+	}
+
+	@Test
+	public void withUser_ValidUser_ChangesUser() {
+
+		final int originalUser = 1;
+		final int[] testedUsers = { originalUser, 0, -1, 1000, -1000, 123456789 };
+
+		final Auth newAuth = Auth.builder().user(originalUser).build();
+
+		assertThat(newAuth.getUser(), is(originalUser));
+
+		for (int newUser : testedUsers) {
+
+			final Auth changedAuth = newAuth.withUser(newUser);
+			assertThat(changedAuth.getUser(), is(newUser));
 
 		}
 
