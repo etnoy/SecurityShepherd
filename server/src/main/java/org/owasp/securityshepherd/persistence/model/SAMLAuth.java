@@ -26,7 +26,6 @@ public final class SAMLAuth implements Serializable {
 	@NonNull
 	private String samlId;
 
-	@java.lang.SuppressWarnings("all")
 	SAMLAuth(final int id, final int user, final String samlId) {
 
 		this.id = id;

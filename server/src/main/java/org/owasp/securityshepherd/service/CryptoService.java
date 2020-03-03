@@ -18,6 +18,18 @@ public final class CryptoService {
 
 	public Mono<byte[]> hmac(final byte[] key, final byte[] message) {
 
+		if (key == null) {
+
+			return Mono.error(new NullPointerException());
+
+		}
+
+		if (message == null) {
+
+			return Mono.error(new NullPointerException());
+
+		}
+
 		final Mac hmac512;
 
 		try {
