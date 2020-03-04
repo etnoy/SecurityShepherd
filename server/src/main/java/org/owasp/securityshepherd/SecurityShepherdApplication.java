@@ -13,22 +13,23 @@ import io.r2dbc.spi.ConnectionFactory;
 @SpringBootApplication
 public class SecurityShepherdApplication {
 
-	public static void main(String[] args) throws Throwable {
-		SpringApplication.run(SecurityShepherdApplication.class, args);
-	}
-	
-	@Bean
-	public ConnectionFactoryInitializer initializer(ConnectionFactory connectionFactory) {
+  public static void main(String[] args) throws Throwable {
+    SpringApplication.run(SecurityShepherdApplication.class, args);
+  }
 
-		ConnectionFactoryInitializer initializer = new ConnectionFactoryInitializer();
-		initializer.setConnectionFactory(connectionFactory);
+  @Bean
+  public ConnectionFactoryInitializer initializer(ConnectionFactory connectionFactory) {
 
-		CompositeDatabasePopulator populator = new CompositeDatabasePopulator();
-		populator.addPopulators(new ResourceDatabasePopulator(new ClassPathResource("schema-mysql.sql")));
-		populator.addPopulators(new ResourceDatabasePopulator(new ClassPathResource("data-mysql.sql")));
-		initializer.setDatabasePopulator(populator);
+    ConnectionFactoryInitializer initializer = new ConnectionFactoryInitializer();
+    initializer.setConnectionFactory(connectionFactory);
 
-		return initializer;
-	}
+    CompositeDatabasePopulator populator = new CompositeDatabasePopulator();
+    populator
+        .addPopulators(new ResourceDatabasePopulator(new ClassPathResource("schema-mysql.sql")));
+    populator.addPopulators(new ResourceDatabasePopulator(new ClassPathResource("data-mysql.sql")));
+    initializer.setDatabasePopulator(populator);
+
+    return initializer;
+  }
 
 }

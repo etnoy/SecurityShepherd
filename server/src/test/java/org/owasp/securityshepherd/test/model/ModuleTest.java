@@ -19,272 +19,275 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 @SpringBootTest
 public class ModuleTest {
 
-	private static final boolean[] BOOLEANS = { false, true };
+  private static final boolean[] BOOLEANS = {false, true};
 
-	@Test
-	public void build_NoArguments_ThrowsException() {
+  @Test
+  public void build_NoArguments_ThrowsException() {
 
-		assertThrows(NullPointerException.class, () -> Module.builder().build());
+    assertThrows(NullPointerException.class, () -> Module.builder().build());
 
-	}
+  }
 
-	@Test
-	public void buildDescription_ValidDescription_Builds() {
+  @Test
+  public void buildDescription_ValidDescription_Builds() {
 
-		final String[] descriptionsToTest = { "TestDescription", null, "", "a", "12345" };
+    final String[] descriptionsToTest = {"TestDescription", null, "", "a", "12345"};
 
-		for (String description : descriptionsToTest) {
+    for (String description : descriptionsToTest) {
 
-			final ModuleBuilder builder = Module.builder().name("TestModule");
+      final ModuleBuilder builder = Module.builder().name("TestModule");
 
-			builder.description(description);
+      builder.description(description);
 
-			assertThat(builder.build(), instanceOf(Module.class));
-			assertThat(builder.build().getDescription(), is(description));
+      assertThat(builder.build(), instanceOf(Module.class));
+      assertThat(builder.build().getDescription(), is(description));
 
-		}
+    }
 
-	}
+  }
 
-	@Test
-	public void buildId_ValidId_Builds() {
+  @Test
+  public void buildId_ValidId_Builds() {
 
-		final ModuleBuilder builder = Module.builder();
+    final ModuleBuilder builder = Module.builder();
 
-		builder.id(123456);
-		builder.name("TestModule");
+    builder.id(123456);
+    builder.name("TestModule");
 
-		assertThat(builder.build(), instanceOf(Module.class));
-		assertThat(builder.build().getId(), is(123456));
+    assertThat(builder.build(), instanceOf(Module.class));
+    assertThat(builder.build().getId(), is(123456));
 
-	}
+  }
 
-	@Test
-	public void buildIsExactFlag_TrueOrFalse_MatchesBuild() {
+  @Test
+  public void buildIsExactFlag_TrueOrFalse_MatchesBuild() {
 
-		for (boolean isFlagExact : BOOLEANS) {
+    for (boolean isFlagExact : BOOLEANS) {
 
-			final ModuleBuilder builder = Module.builder().name("TestModule");
+      final ModuleBuilder builder = Module.builder().name("TestModule");
 
-			builder.isFlagExact(isFlagExact);
+      builder.isFlagExact(isFlagExact);
 
-			assertThat(builder.build(), instanceOf(Module.class));
-			assertThat(builder.build().isFlagExact(), is(isFlagExact));
+      assertThat(builder.build(), instanceOf(Module.class));
+      assertThat(builder.build().isFlagExact(), is(isFlagExact));
 
-		}
+    }
 
-	}
+  }
 
-	@Test
-	public void buildIsFlagEnabled_TrueOrFalse_MatchesBuild() {
+  @Test
+  public void buildIsFlagEnabled_TrueOrFalse_MatchesBuild() {
 
-		for (boolean isFlagEnabled : BOOLEANS) {
+    for (boolean isFlagEnabled : BOOLEANS) {
 
-			final ModuleBuilder builder = Module.builder().name("TestModule");
+      final ModuleBuilder builder = Module.builder().name("TestModule");
 
-			builder.isFlagEnabled(isFlagEnabled);
+      builder.isFlagEnabled(isFlagEnabled);
 
-			assertThat(builder.build(), instanceOf(Module.class));
-			assertThat(builder.build().isFlagEnabled(), is(isFlagEnabled));
+      assertThat(builder.build(), instanceOf(Module.class));
+      assertThat(builder.build().isFlagEnabled(), is(isFlagEnabled));
 
-		}
+    }
 
-	}
+  }
 
-	@Test
-	public void buildIsOpen_TrueOrFalse_MatchesBuild() {
+  @Test
+  public void buildIsOpen_TrueOrFalse_MatchesBuild() {
 
-		for (boolean isOpen : BOOLEANS) {
+    for (boolean isOpen : BOOLEANS) {
 
-			final ModuleBuilder builder = Module.builder().name("TestModule");
+      final ModuleBuilder builder = Module.builder().name("TestModule");
 
-			builder.isOpen(isOpen);
+      builder.isOpen(isOpen);
 
-			assertThat(builder.build(), instanceOf(Module.class));
-			assertThat(builder.build().isOpen(), is(isOpen));
+      assertThat(builder.build(), instanceOf(Module.class));
+      assertThat(builder.build().isOpen(), is(isOpen));
 
-		}
+    }
 
-	}
+  }
 
-	@Test
-	public void buildName_NullName_ThrowsNullPointerException() {
+  @Test
+  public void buildName_NullName_ThrowsNullPointerException() {
 
-		assertThrows(NullPointerException.class, () -> Module.builder().name(null).build());
+    assertThrows(NullPointerException.class, () -> Module.builder().name(null).build());
 
-	}
+  }
 
-	@Test
-	public void buildName_ValidName_Builds() {
+  @Test
+  public void buildName_ValidName_Builds() {
 
-		final String[] namesToTest = { "TestModule", "", "a", "12345" };
+    final String[] namesToTest = {"TestModule", "", "a", "12345"};
 
-		for (String name : namesToTest) {
+    for (String name : namesToTest) {
 
-			final ModuleBuilder builder = Module.builder();
+      final ModuleBuilder builder = Module.builder();
 
-			builder.name(name);
+      builder.name(name);
 
-			assertThat(builder.build(), instanceOf(Module.class));
-			assertThat(builder.build().getName(), is(name));
+      assertThat(builder.build(), instanceOf(Module.class));
+      assertThat(builder.build().getName(), is(name));
 
-		}
+    }
 
-	}
+  }
 
-	@Test
-	public void equals_AutomaticTesting() {
-		EqualsVerifier.forClass(Module.class).withIgnoredAnnotations(NonNull.class).verify();
-	}
+  @Test
+  public void equals_AutomaticTesting() {
+    EqualsVerifier.forClass(Module.class).withIgnoredAnnotations(NonNull.class).verify();
+  }
 
-	@Test
-	public void moduleBuilderToString_ValidData_AsExpected() {
+  @Test
+  public void moduleBuilderToString_ValidData_AsExpected() {
 
-		final ModuleBuilder builder = Module.builder();
+    final ModuleBuilder builder = Module.builder();
 
-		assertThat(builder.toString(), is(
-				"Module.ModuleBuilder(id=0, name=null, description=null, isFlagEnabled=false, isFlagExact=false, flag=null, isOpen=false)"));
+    assertThat(builder.toString(), is(
+        "Module.ModuleBuilder(id=0, name=null, description=null, isFlagEnabled=false, isFlagExact=false, flag=null, isOpen=false)"));
 
-	}
+  }
 
-	@Test
-	public void toString_ValidData_AsExpected() {
+  @Test
+  public void toString_ValidData_AsExpected() {
 
-		final Module testModule = Module.builder().name("TestModule").build();
+    final Module testModule = Module.builder().name("TestModule").build();
 
-		assertThat(testModule.toString(), is(
-				"Module(id=0, name=TestModule, description=null, isFlagEnabled=false, isFlagExact=false, flag=null, isOpen=false)"));
+    assertThat(testModule.toString(), is(
+        "Module(id=0, name=TestModule, description=null, isFlagEnabled=false, isFlagExact=false, flag=null, isOpen=false)"));
 
-	}
+  }
 
-	@Test
-	public void withDescription_ValidDescription_ChangesDescription() {
+  @Test
+  public void withDescription_ValidDescription_ChangesDescription() {
 
-		final String[] testedDescriptions = { "Description", null, "", "a", "Long Description With Spaces", "12345" };
+    final String[] testedDescriptions =
+        {"Description", null, "", "a", "Long Description With Spaces", "12345"};
 
-		final Module testModule = Module.builder().name("TestModule").description("Description").build();
+    final Module testModule =
+        Module.builder().name("TestModule").description("Description").build();
 
-		assertThat(testModule.getDescription(), is("Description"));
+    assertThat(testModule.getDescription(), is("Description"));
 
-		Module changedModule;
+    Module changedModule;
 
-		for (String newDescription : testedDescriptions) {
+    for (String newDescription : testedDescriptions) {
 
-			changedModule = testModule.withDescription(newDescription);
-			assertThat(changedModule.getDescription(), is(newDescription));
+      changedModule = testModule.withDescription(newDescription);
+      assertThat(changedModule.getDescription(), is(newDescription));
 
-		}
+    }
 
-	}
+  }
 
-	@Test
-	public void withFlagExact_ValidBoolean_ChangesIsExactFlag() {
+  @Test
+  public void withFlag_ValidFlag_ChangesFlag() {
 
-		final Module testModule = Module.builder().name("TestModule").build();
+    final String[] testedFlags = {"abc123xyz789", null, "", "a", "Long Flag With Spaces", "12345"};
 
-		assertThat(testModule.isFlagExact(), is(false));
+    final Module testModule = Module.builder().name("TestModule").flag("abc123xyz789").build();
 
-		Module changedModule = testModule.withFlagExact(false);
-		assertThat(changedModule.isFlagExact(), is(false));
-		changedModule = testModule.withFlagExact(true);
-		assertThat(changedModule.isFlagExact(), is(true));
+    assertThat(testModule.getFlag(), is("abc123xyz789"));
 
-	}
+    Module changedModule;
 
-	@Test
-	public void withFlag_ValidFlag_ChangesFlag() {
+    for (String newFlag : testedFlags) {
 
-		final String[] testedFlags = { "abc123xyz789", null, "", "a", "Long Flag With Spaces", "12345" };
+      changedModule = testModule.withFlag(newFlag);
+      assertThat(changedModule.getFlag(), is(newFlag));
 
-		final Module testModule = Module.builder().name("TestModule").flag("abc123xyz789").build();
+    }
 
-		assertThat(testModule.getFlag(), is("abc123xyz789"));
+  }
 
-		Module changedModule;
+  @Test
+  public void withFlagEnabled_ValidBoolean_ChangesIsFlagEnabled() {
 
-		for (String newFlag : testedFlags) {
+    final Module testModule = Module.builder().name("TestModule").build();
 
-			changedModule = testModule.withFlag(newFlag);
-			assertThat(changedModule.getFlag(), is(newFlag));
+    assertThat(testModule.isFlagEnabled(), is(false));
 
-		}
+    Module changedModule = testModule.withFlagEnabled(false);
+    assertThat(changedModule.isFlagEnabled(), is(false));
+    changedModule = testModule.withFlagEnabled(true);
+    assertThat(changedModule.isFlagEnabled(), is(true));
 
-	}
+  }
 
-	@Test
-	public void withFlagEnabled_ValidBoolean_ChangesIsFlagEnabled() {
+  @Test
+  public void withFlagExact_ValidBoolean_ChangesIsExactFlag() {
 
-		final Module testModule = Module.builder().name("TestModule").build();
+    final Module testModule = Module.builder().name("TestModule").build();
 
-		assertThat(testModule.isFlagEnabled(), is(false));
+    assertThat(testModule.isFlagExact(), is(false));
 
-		Module changedModule = testModule.withFlagEnabled(false);
-		assertThat(changedModule.isFlagEnabled(), is(false));
-		changedModule = testModule.withFlagEnabled(true);
-		assertThat(changedModule.isFlagEnabled(), is(true));
+    Module changedModule = testModule.withFlagExact(false);
+    assertThat(changedModule.isFlagExact(), is(false));
+    changedModule = testModule.withFlagExact(true);
+    assertThat(changedModule.isFlagExact(), is(true));
 
-	}
+  }
 
-	@Test
-	public void withId_ValidId_ChangesId() {
+  @Test
+  public void withId_ValidId_ChangesId() {
 
-		final int originalId = 1;
-		final int[] testedIds = { originalId, 0, -1, 1000, -1000, 123456789, -12346789 };
+    final int originalId = 1;
+    final int[] testedIds = {originalId, 0, -1, 1000, -1000, 123456789, -12346789};
 
-		final Module testModule = Module.builder().id(originalId).name("TestModule").build();
+    final Module testModule = Module.builder().id(originalId).name("TestModule").build();
 
-		assertThat(testModule.getId(), is(originalId));
+    assertThat(testModule.getId(), is(originalId));
 
-		Module changedModule;
+    Module changedModule;
 
-		for (int newId : testedIds) {
+    for (int newId : testedIds) {
 
-			changedModule = testModule.withId(newId);
-			assertThat(changedModule.getId(), is(newId));
+      changedModule = testModule.withId(newId);
+      assertThat(changedModule.getId(), is(newId));
 
-		}
+    }
 
-	}
+  }
 
-	@Test
-	public void withName_NullName_ThrowsException() {
+  @Test
+  public void withName_NullName_ThrowsException() {
 
-		assertThrows(NullPointerException.class, () -> Module.builder().name("TestModule").build().withName(null));
+    assertThrows(NullPointerException.class,
+        () -> Module.builder().name("TestModule").build().withName(null));
 
-	}
+  }
 
-	@Test
-	public void withName_ValidName_ChangesName() {
+  @Test
+  public void withName_ValidName_ChangesName() {
 
-		final String[] testedNames = { "TestModule", "", "name", "Long Name With Spaces", "12345" };
+    final String[] testedNames = {"TestModule", "", "name", "Long Name With Spaces", "12345"};
 
-		final Module testModule = Module.builder().name("TestModule").build();
+    final Module testModule = Module.builder().name("TestModule").build();
 
-		assertThat(testModule.getName(), is("TestModule"));
+    assertThat(testModule.getName(), is("TestModule"));
 
-		Module changedModule;
+    Module changedModule;
 
-		for (String newName : testedNames) {
+    for (String newName : testedNames) {
 
-			changedModule = testModule.withName(newName);
-			assertThat(changedModule.getName(), is(newName));
+      changedModule = testModule.withName(newName);
+      assertThat(changedModule.getName(), is(newName));
 
-		}
+    }
 
-	}
+  }
 
-	@Test
-	public void withOpen_ValidBoolean_ChangesOpen() {
+  @Test
+  public void withOpen_ValidBoolean_ChangesOpen() {
 
-		final Module testModule = Module.builder().name("TestModule").build();
+    final Module testModule = Module.builder().name("TestModule").build();
 
-		assertThat(testModule.isOpen(), is(false));
+    assertThat(testModule.isOpen(), is(false));
 
-		Module changedModule = testModule.withOpen(false);
-		assertThat(changedModule.isOpen(), is(false));
-		changedModule = testModule.withOpen(true);
-		assertThat(changedModule.isOpen(), is(true));
+    Module changedModule = testModule.withOpen(false);
+    assertThat(changedModule.isOpen(), is(false));
+    changedModule = testModule.withOpen(true);
+    assertThat(changedModule.isOpen(), is(true));
 
-	}
+  }
 
 }

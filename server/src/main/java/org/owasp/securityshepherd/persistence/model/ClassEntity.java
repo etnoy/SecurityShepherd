@@ -18,21 +18,21 @@ import lombok.With;
 @With
 public final class ClassEntity implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 7375094814834027958L;
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 7375094814834027958L;
 
-	@EqualsAndHashCode.Include
-	@Id
-	private final int id;
+  @EqualsAndHashCode.Include
+  @Id
+  private final int id;
 
-	@NonNull
-	private final String name;
+  @NonNull
+  private final String name;
 
-	ClassEntity(final int id, final String name) {
-		this.id = id;
-		this.name = name;
-	}
+  ClassEntity(final int id, final String name) {
+    this.id = id;
+    this.name = name;
+  }
 
 }

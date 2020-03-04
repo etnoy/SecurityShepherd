@@ -19,52 +19,55 @@ import reactor.test.StepVerifier;
 @SpringBootTest
 public class CryptoServiceTest {
 
-	@Autowired
-	CryptoService cryptoService;
+  @Autowired
+  CryptoService cryptoService;
 
-	@BeforeEach
-	private void setUp() {
-		// Print more verbose errors if something goes wrong
-		Hooks.onOperatorDebug();
-	}
+  @Test
+  public void hmac_NullKey_ThrowsException() throws Exception {
 
-	@Test
-	public void hmac_ValidData_ReturnsHash() throws Exception {
+    final byte[] message = {120, 56, 111, -98, -118, 44, -65, -127, 39, 35};
 
-		final byte[] key = { -91, -79, 67, -107, 9, 91, 62, -95, 80, 78 };
+    StepVerifier.create(cryptoService.hmac(null, message)).expectError(NullPointerException.class)
+        .verify();
 
-		final byte[] message = { 120, 56, 111, -98, -118, 44, -65, -127, 39, 35 };
+  }
 
-		final byte[] expectedHash = { 46, 102, -1, 90, 100, 13, 14, -96, 57, 8, 67, 116, 104, -45, 12, -122, -80, -110,
-				110, 19, 12, 77, 66, -39, 95, 26, -17, 107, 58, -106, 48, -6, 108, 22, -113, -49, 5, -21, -52, 119, 46,
-				102, 39, -9, 45, 124, -103, -100, 43, -1, 84, 105, -35, -81, 65, -97, -49, 23, 2, 111, 20, 58, 56, -2 };
+  @Test
+  public void hmac_NullMessage_ThrowsException() throws Exception {
 
-		StepVerifier.create(cryptoService.hmac(key, message)).assertNext(hash -> {
+    final byte[] key = {-91, -79, 67, -107, 9, 91, 62, -95, 80, 78};
 
-			assertThat(hash, is(expectedHash));
+    StepVerifier.create(cryptoService.hmac(key, null)).expectError(NullPointerException.class)
+        .verify();
 
-			assertThat(hash.length, greaterThan(1));
+  }
 
-		}).expectComplete().verify();
+  @Test
+  public void hmac_ValidData_ReturnsHash() throws Exception {
 
-	}
+    final byte[] key = {-91, -79, 67, -107, 9, 91, 62, -95, 80, 78};
 
-	@Test
-	public void hmac_NullMessage_ThrowsException() throws Exception {
+    final byte[] message = {120, 56, 111, -98, -118, 44, -65, -127, 39, 35};
 
-		final byte[] key = { -91, -79, 67, -107, 9, 91, 62, -95, 80, 78 };
+    final byte[] expectedHash = {46, 102, -1, 90, 100, 13, 14, -96, 57, 8, 67, 116, 104, -45, 12,
+        -122, -80, -110, 110, 19, 12, 77, 66, -39, 95, 26, -17, 107, 58, -106, 48, -6, 108, 22,
+        -113, -49, 5, -21, -52, 119, 46, 102, 39, -9, 45, 124, -103, -100, 43, -1, 84, 105, -35,
+        -81, 65, -97, -49, 23, 2, 111, 20, 58, 56, -2};
 
-		StepVerifier.create(cryptoService.hmac(key, null)).expectError(NullPointerException.class).verify();
+    StepVerifier.create(cryptoService.hmac(key, message)).assertNext(hash -> {
 
-	}
+      assertThat(hash, is(expectedHash));
 
-	@Test
-	public void hmac_NullKey_ThrowsException() throws Exception {
+      assertThat(hash.length, greaterThan(1));
 
-		final byte[] message = { 120, 56, 111, -98, -118, 44, -65, -127, 39, 35 };
+    }).expectComplete().verify();
 
-		StepVerifier.create(cryptoService.hmac(null, message)).expectError(NullPointerException.class).verify();
+  }
 
-	}
+  @BeforeEach
+  private void setUp() {
+    // Print more verbose errors if something goes wrong
+    Hooks.onOperatorDebug();
+  }
 
 }

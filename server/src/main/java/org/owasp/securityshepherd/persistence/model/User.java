@@ -18,22 +18,22 @@ import lombok.With;
 @With
 public final class User implements Serializable {
 
-	private static final long serialVersionUID = 3097353498257801154L;
+  private static final long serialVersionUID = 3097353498257801154L;
 
-	@Id
-	private final int id;
+  @Id
+  private final int id;
 
-	@NonNull
-	private final String displayName;
+  @NonNull
+  private final String displayName;
 
-	private final Integer classId;
+  private final Integer classId;
 
-	private final String email;
+  private final String email;
 
-	@Column("user_key")
-	private final byte[] key;
+  @Column("user_key")
+  private final byte[] key;
 
-	@Transient
-	private final Auth auth;
+  @Transient
+  private final Auth auth;
 
 }

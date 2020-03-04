@@ -17,25 +17,25 @@ import lombok.With;
 @With
 public final class Configuration implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -3877275355721047824L;
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -3877275355721047824L;
 
-	@Id
-	private final int id;
+  @Id
+  private final int id;
 
-	@NonNull
-	@Column("config_key")
-	private final String key;
+  @NonNull
+  @Column("config_key")
+  private final String key;
 
-	@NonNull
-	private final String value;
+  @NonNull
+  private final String value;
 
-	Configuration(final int id, final String key, final String value) {
-		this.id = id;
-		this.key = key;
-		this.value = value;
-	}
+  Configuration(final int id, final String key, final String value) {
+    this.id = id;
+    this.key = key;
+    this.value = value;
+  }
 
 }

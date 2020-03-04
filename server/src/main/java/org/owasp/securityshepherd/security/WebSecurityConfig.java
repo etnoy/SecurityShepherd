@@ -12,21 +12,23 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-	@Override
-	protected void configure(final HttpSecurity http) throws Exception {
+  @Override
+  protected void configure(final HttpSecurity http) throws Exception {
 
-	    http.csrf().disable()
-	    .authorizeRequests()
-	    .antMatchers("/api/v1/use/registration").permitAll()  //context path here
-	    .anyRequest().anonymous();
-	    
-		//http.authorizeRequests().antMatchers("/register").permitAll().antMatchers(HttpMethod.POST, "/api/v1/user/registration").permitAll().antMatchers("/","/index").hasAnyRole("admin", "player").and().formLogin()
-		//		.loginPage("/login").permitAll().and().logout().permitAll();
-	}
+    http.csrf().disable().authorizeRequests().antMatchers("/api/v1/use/registration").permitAll() // context
+                                                                                                  // path
+                                                                                                  // here
+        .anyRequest().anonymous();
 
-	@Bean
-	public PasswordEncoder encoder() {
-		return new BCryptPasswordEncoder(11);
-	}
+    // http.authorizeRequests().antMatchers("/register").permitAll().antMatchers(HttpMethod.POST,
+    // "/api/v1/user/registration").permitAll().antMatchers("/","/index").hasAnyRole("admin",
+    // "player").and().formLogin()
+    // .loginPage("/login").permitAll().and().logout().permitAll();
+  }
+
+  @Bean
+  public PasswordEncoder encoder() {
+    return new BCryptPasswordEncoder(11);
+  }
 
 }

@@ -19,63 +19,62 @@ import reactor.test.StepVerifier;
 @SpringBootTest
 public class KeyServiceTest {
 
-	@Autowired
-	private KeyService keyService;
+  @Autowired
+  private KeyService keyService;
 
-	@Test
-	public void convertByteKeyToString_ValidInput_ReturnsExpectedOutput() throws Exception {
+  @Test
+  public void convertByteKeyToString_ValidInput_ReturnsExpectedOutput() throws Exception {
 
-		assertThat(keyService.convertStringKeyToBytes("thisisaflag"),
-				is(new byte[] { 116, 104, 105, 115, 105, 115, 97, 102, 108, 97, 103 }));
+    assertThat(keyService.convertStringKeyToBytes("thisisaflag"),
+        is(new byte[] {116, 104, 105, 115, 105, 115, 97, 102, 108, 97, 103}));
 
-	}
-	
-	@Test
-	public void convertStringKeyToBytes_ValidInput_ReturnsExpectedOutput() throws Exception {
+  }
 
-		assertThat(
-				keyService.convertByteKeyToString(new byte[] { 116, 104, 105, 115, 105, 115, 97, 102, 108, 97, 103 }),
-				is("thisisaflag"));
+  @Test
+  public void convertStringKeyToBytes_ValidInput_ReturnsExpectedOutput() throws Exception {
 
-	}
+    assertThat(keyService.convertByteKeyToString(
+        new byte[] {116, 104, 105, 115, 105, 115, 97, 102, 108, 97, 103}), is("thisisaflag"));
 
-	@Test
-	public void generateRandomBytes_ValidLength_ReturnsRandomBytes() throws Exception {
+  }
 
-		final int[] testedLengths = { 0, 1, 12, 16, 128, 4096 };
+  @Test
+  public void generateRandomBytes_ValidLength_ReturnsRandomBytes() throws Exception {
 
-		for (int length : testedLengths) {
+    final int[] testedLengths = {0, 1, 12, 16, 128, 4096};
 
-			StepVerifier.create(keyService.generateRandomBytes(length)).assertNext(randomBytes -> {
+    for (int length : testedLengths) {
 
-				assertThat(randomBytes, is(notNullValue()));
-				assertThat(randomBytes.length, is(length));
+      StepVerifier.create(keyService.generateRandomBytes(length)).assertNext(randomBytes -> {
 
-			}).expectComplete().verify();
-		}
-	}
+        assertThat(randomBytes, is(notNullValue()));
+        assertThat(randomBytes.length, is(length));
 
-	@Test
-	public void generateRandomString_ValidLength_ReturnsRandomString() throws Exception {
+      }).expectComplete().verify();
+    }
+  }
 
-		final int[] testedLengths = { 0, 1, 12, 16, 128, 4096 };
+  @Test
+  public void generateRandomString_ValidLength_ReturnsRandomString() throws Exception {
 
-		for (int length : testedLengths) {
+    final int[] testedLengths = {0, 1, 12, 16, 128, 4096};
 
-			StepVerifier.create(keyService.generateRandomString(length)).assertNext(randomBytes -> {
+    for (int length : testedLengths) {
 
-				assertThat(randomBytes, is(notNullValue()));
-				assertThat(randomBytes.length(), is(length));
+      StepVerifier.create(keyService.generateRandomString(length)).assertNext(randomBytes -> {
 
-			}).expectComplete().verify();
-		}
-	}
+        assertThat(randomBytes, is(notNullValue()));
+        assertThat(randomBytes.length(), is(length));
 
-	@BeforeEach
-	private void setUp() {
-		// Print more verbose errors if something goes wrong
-		Hooks.onOperatorDebug();
+      }).expectComplete().verify();
+    }
+  }
 
-	}
+  @BeforeEach
+  private void setUp() {
+    // Print more verbose errors if something goes wrong
+    Hooks.onOperatorDebug();
+
+  }
 
 }

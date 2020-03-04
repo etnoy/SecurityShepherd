@@ -16,21 +16,21 @@ import lombok.With;
 @With
 public final class SAMLAuth implements Serializable {
 
-	private static final long serialVersionUID = 211951930649985921L;
+  private static final long serialVersionUID = 211951930649985921L;
 
-	@Id
-	private int id;
+  @Id
+  private int id;
 
-	private int user;
+  private int user;
 
-	@NonNull
-	private String samlId;
+  @NonNull
+  private String samlId;
 
-	SAMLAuth(final int id, final int user, final String samlId) {
+  SAMLAuth(final int id, final int user, final String samlId) {
 
-		this.id = id;
-		this.user = user;
-		this.samlId = samlId;
-	}
+    this.id = id;
+    this.user = user;
+    this.samlId = samlId;
+  }
 
 }

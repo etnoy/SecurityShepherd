@@ -17,20 +17,20 @@ import lombok.With;
 @With
 public final class Submission implements Serializable {
 
-	private static final long serialVersionUID = -5485881248601955741L;
+  private static final long serialVersionUID = -5485881248601955741L;
 
-	@Id
-	private int id;
+  @Id
+  private int id;
 
-	private int userId;
+  private int userId;
 
-	private int moduleId;
+  private int moduleId;
 
-	@NonNull
-	private Timestamp time;
+  @NonNull
+  private Timestamp time;
 
-	private boolean isValid;
+  private boolean isValid;
 
-	private String flag;
+  private String flag;
 
 }

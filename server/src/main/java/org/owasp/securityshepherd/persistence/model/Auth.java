@@ -17,34 +17,34 @@ import lombok.With;
 @With
 public final class Auth implements Serializable {
 
-	private static final long serialVersionUID = -1511082836956413928L;
+  private static final long serialVersionUID = -1511082836956413928L;
 
-	@EqualsAndHashCode.Include
-	@Id
-	private int id;
+  @EqualsAndHashCode.Include
+  @Id
+  private int id;
 
-	private int user;
+  private int user;
 
-	private boolean isEnabled;
+  private boolean isEnabled;
 
-	private int badLoginCount;
+  private int badLoginCount;
 
-	private boolean isAdmin;
+  private boolean isAdmin;
 
-	private Timestamp suspendedUntil;
+  private Timestamp suspendedUntil;
 
-	private String suspensionMessage;
+  private String suspensionMessage;
 
-	private Timestamp accountCreated;
+  private Timestamp accountCreated;
 
-	private Timestamp lastLogin;
+  private Timestamp lastLogin;
 
-	private final String lastLoginMethod;
+  private final String lastLoginMethod;
 
-	@Transient
-	private final PasswordAuth password;
+  @Transient
+  private final PasswordAuth password;
 
-	@Transient
-	private final SAMLAuth saml;
+  @Transient
+  private final SAMLAuth saml;
 
 }

@@ -16,22 +16,22 @@ import lombok.With;
 @With
 public final class Module implements Serializable {
 
-	private static final long serialVersionUID = 6391362512222766270L;
+  private static final long serialVersionUID = 6391362512222766270L;
 
-	@Id
-	private int id;
+  @Id
+  private int id;
 
-	@NonNull
-	private String name;
+  @NonNull
+  private String name;
 
-	private String description;
+  private String description;
 
-	private boolean isFlagEnabled;
+  private boolean isFlagEnabled;
 
-	private boolean isFlagExact;
+  private boolean isFlagExact;
 
-	private String flag;
+  private String flag;
 
-	private boolean isOpen;
+  private boolean isOpen;
 
 }

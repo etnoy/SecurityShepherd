@@ -12,14 +12,14 @@ import reactor.core.publisher.Mono;
 @Repository
 public interface ModuleRepository extends ReactiveCrudRepository<Module, Integer> {
 
-	@Query("select count(1) from module where name = :name")
-	public Mono<Boolean> existsByName(@Param("name") final String name);
+  @Modifying
+  @Query("delete from module where name = :name")
+  public void deleteByName(@Param("name") final String name);
 
-	@Modifying
-	@Query("delete from module where name = :name")
-	public void deleteByName(@Param("name") final String name);
+  @Query("select count(1) from module where name = :name")
+  public Mono<Boolean> existsByName(@Param("name") final String name);
 
-	@Query("select * from module where name = :name")
-	public Mono<Module> findByName(@Param("name") final String name);
+  @Query("select * from module where name = :name")
+  public Mono<Module> findByName(@Param("name") final String name);
 
 }

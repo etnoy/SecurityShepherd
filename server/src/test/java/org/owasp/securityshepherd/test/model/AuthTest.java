@@ -22,440 +22,441 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 @SpringBootTest
 public class AuthTest {
 
-	private static final boolean[] BOOLEANS = { false, true };
+  private static final boolean[] BOOLEANS = {false, true};
 
-	@Test
-	public void authBuildertoString_ValidData_AsExpected() {
+  @Test
+  public void authBuildertoString_ValidData_AsExpected() {
 
-		final AuthBuilder builder = Auth.builder();
+    final AuthBuilder builder = Auth.builder();
 
-		assertThat(builder.toString(), is(
-				"Auth.AuthBuilder(id=0, user=0, isEnabled=false, badLoginCount=0, isAdmin=false, suspendedUntil=null, suspensionMessage=null, accountCreated=null, lastLogin=null, lastLoginMethod=null, password=null, saml=null)"));
+    assertThat(builder.toString(), is(
+        "Auth.AuthBuilder(id=0, user=0, isEnabled=false, badLoginCount=0, isAdmin=false, suspendedUntil=null, suspensionMessage=null, accountCreated=null, lastLogin=null, lastLoginMethod=null, password=null, saml=null)"));
 
-	}
+  }
 
-	@Test
-	public void buildAccountCreated_ValidTime_Builds() {
+  @Test
+  public void buildAccountCreated_ValidTime_Builds() {
 
-		final int[] timesToTest = { 0, 1, 2, 1000, 4000, 1581806000, 42 };
+    final int[] timesToTest = {0, 1, 2, 1000, 4000, 1581806000, 42};
 
-		for (int accountCreated : timesToTest) {
+    for (int accountCreated : timesToTest) {
 
-			final AuthBuilder builder = Auth.builder();
+      final AuthBuilder builder = Auth.builder();
 
-			builder.accountCreated(new Timestamp(accountCreated));
+      builder.accountCreated(new Timestamp(accountCreated));
 
-			assertThat(builder.build(), instanceOf(Auth.class));
-			assertThat(builder.build().getAccountCreated(), is(new Timestamp(accountCreated)));
+      assertThat(builder.build(), instanceOf(Auth.class));
+      assertThat(builder.build().getAccountCreated(), is(new Timestamp(accountCreated)));
 
-		}
+    }
 
-	}
+  }
 
-	@Test
-	public void buildBadLoginCount_ValidBadLoginCount_Builds() {
+  @Test
+  public void buildBadLoginCount_ValidBadLoginCount_Builds() {
 
-		final int[] badLoginCountsToTest = { 0, 1, 1000, -1, 999999, 42, 567890, -1234567 };
+    final int[] badLoginCountsToTest = {0, 1, 1000, -1, 999999, 42, 567890, -1234567};
 
-		for (int badLoginCount : badLoginCountsToTest) {
+    for (int badLoginCount : badLoginCountsToTest) {
 
-			final AuthBuilder builder = Auth.builder();
+      final AuthBuilder builder = Auth.builder();
 
-			builder.badLoginCount(badLoginCount);
+      builder.badLoginCount(badLoginCount);
 
-			assertThat(builder.build(), instanceOf(Auth.class));
-			assertThat(builder.build().getBadLoginCount(), is(badLoginCount));
+      assertThat(builder.build(), instanceOf(Auth.class));
+      assertThat(builder.build().getBadLoginCount(), is(badLoginCount));
 
-		}
+    }
 
-	}
+  }
 
-	@Test
-	public void buildIsAdmin_TrueOrFalse_MatchesBuild() {
+  @Test
+  public void buildIsAdmin_TrueOrFalse_MatchesBuild() {
 
-		for (boolean isAdmin : BOOLEANS) {
+    for (boolean isAdmin : BOOLEANS) {
 
-			final AuthBuilder builder = Auth.builder();
+      final AuthBuilder builder = Auth.builder();
 
-			builder.isAdmin(isAdmin);
+      builder.isAdmin(isAdmin);
 
-			assertThat(builder.build(), instanceOf(Auth.class));
-			assertThat(builder.build().isAdmin(), is(isAdmin));
+      assertThat(builder.build(), instanceOf(Auth.class));
+      assertThat(builder.build().isAdmin(), is(isAdmin));
 
-		}
+    }
 
-	}
+  }
 
-	@Test
-	public void buildIsEnabled_TrueOrFalse_MatchesBuild() {
+  @Test
+  public void buildIsEnabled_TrueOrFalse_MatchesBuild() {
 
-		for (boolean isEnabled : BOOLEANS) {
+    for (boolean isEnabled : BOOLEANS) {
 
-			final AuthBuilder builder = Auth.builder();
+      final AuthBuilder builder = Auth.builder();
 
-			builder.isEnabled(isEnabled);
+      builder.isEnabled(isEnabled);
 
-			assertThat(builder.build(), instanceOf(Auth.class));
-			assertThat(builder.build().isEnabled(), is(isEnabled));
+      assertThat(builder.build(), instanceOf(Auth.class));
+      assertThat(builder.build().isEnabled(), is(isEnabled));
 
-		}
+    }
 
-	}
+  }
 
-	@Test
-	public void buildLastLogin_ValidTime_Builds() {
+  @Test
+  public void buildLastLogin_ValidTime_Builds() {
 
-		final int[] timesToTest = { 0, 1, 2, 1000, 4000, 1581806000, 42 };
+    final int[] timesToTest = {0, 1, 2, 1000, 4000, 1581806000, 42};
 
-		for (int lastLogin : timesToTest) {
+    for (int lastLogin : timesToTest) {
 
-			final AuthBuilder builder = Auth.builder();
+      final AuthBuilder builder = Auth.builder();
 
-			builder.lastLogin(new Timestamp(lastLogin));
+      builder.lastLogin(new Timestamp(lastLogin));
 
-			assertThat(builder.build(), instanceOf(Auth.class));
-			assertThat(builder.build().getLastLogin(), is(new Timestamp(lastLogin)));
+      assertThat(builder.build(), instanceOf(Auth.class));
+      assertThat(builder.build().getLastLogin(), is(new Timestamp(lastLogin)));
 
-		}
+    }
 
-	}
+  }
 
-	@Test
-	public void buildLastLoginMethod_ValidLastLoginMethod_Builds() {
+  @Test
+  public void buildLastLoginMethod_ValidLastLoginMethod_Builds() {
 
-		final String[] lastLoginMethodsToTest = { "password", "saml", "ldap", null, "", "a", "login method with spaces",
-				"_+^" };
+    final String[] lastLoginMethodsToTest =
+        {"password", "saml", "ldap", null, "", "a", "login method with spaces", "_+^"};
 
-		for (String lastLoginMethod : lastLoginMethodsToTest) {
+    for (String lastLoginMethod : lastLoginMethodsToTest) {
 
-			final AuthBuilder builder = Auth.builder();
+      final AuthBuilder builder = Auth.builder();
 
-			builder.lastLoginMethod(lastLoginMethod);
+      builder.lastLoginMethod(lastLoginMethod);
 
-			assertThat(builder.build(), instanceOf(Auth.class));
-			assertThat(builder.build().getLastLoginMethod(), is(lastLoginMethod));
+      assertThat(builder.build(), instanceOf(Auth.class));
+      assertThat(builder.build().getLastLoginMethod(), is(lastLoginMethod));
 
-		}
+    }
 
-	}
+  }
 
-	@Test
-	public void buildPassword_ValidPasswordAuth_Builds() {
+  @Test
+  public void buildPassword_ValidPasswordAuth_Builds() {
 
-		final String[] loginNamesToTest = { "", "a", "loginName" };
+    final String[] loginNamesToTest = {"", "a", "loginName"};
 
-		for (String loginName : loginNamesToTest) {
+    for (String loginName : loginNamesToTest) {
 
-			final AuthBuilder builder = Auth.builder();
-			final PasswordAuth passwordAuth = PasswordAuth.builder().loginName(loginName).hashedPassword("passwordHash")
-					.build();
+      final AuthBuilder builder = Auth.builder();
+      final PasswordAuth passwordAuth =
+          PasswordAuth.builder().loginName(loginName).hashedPassword("passwordHash").build();
 
-			builder.password(passwordAuth);
+      builder.password(passwordAuth);
 
-			assertThat(builder.build(), instanceOf(Auth.class));
-			assertThat(builder.build().getPassword(), is(passwordAuth));
+      assertThat(builder.build(), instanceOf(Auth.class));
+      assertThat(builder.build().getPassword(), is(passwordAuth));
 
-		}
+    }
 
-		final AuthBuilder builder = Auth.builder().password(null);
+    final AuthBuilder builder = Auth.builder().password(null);
 
-		assertThat(builder.build(), instanceOf(Auth.class));
-		assertThat(builder.build().getPassword(), is(nullValue()));
+    assertThat(builder.build(), instanceOf(Auth.class));
+    assertThat(builder.build().getPassword(), is(nullValue()));
 
-	}
+  }
 
-	@Test
-	public void buildSaml_ValidSamlAuth_Builds() {
+  @Test
+  public void buildSaml_ValidSamlAuth_Builds() {
 
-		final String[] samlIdsToTest = { "", "a", "loginName", "me@example.com" };
+    final String[] samlIdsToTest = {"", "a", "loginName", "me@example.com"};
 
-		for (String samlId : samlIdsToTest) {
+    for (String samlId : samlIdsToTest) {
 
-			final AuthBuilder builder = Auth.builder();
-			final SAMLAuth samlAuth = SAMLAuth.builder().samlId(samlId).build();
+      final AuthBuilder builder = Auth.builder();
+      final SAMLAuth samlAuth = SAMLAuth.builder().samlId(samlId).build();
 
-			builder.saml(samlAuth);
+      builder.saml(samlAuth);
 
-			assertThat(builder.build(), instanceOf(Auth.class));
-			assertThat(builder.build().getSaml(), is(samlAuth));
+      assertThat(builder.build(), instanceOf(Auth.class));
+      assertThat(builder.build().getSaml(), is(samlAuth));
 
-		}
+    }
 
-		final AuthBuilder builder = Auth.builder().saml(null);
+    final AuthBuilder builder = Auth.builder().saml(null);
 
-		assertThat(builder.build(), instanceOf(Auth.class));
-		assertThat(builder.build().getSaml(), is(nullValue()));
+    assertThat(builder.build(), instanceOf(Auth.class));
+    assertThat(builder.build().getSaml(), is(nullValue()));
 
-	}
+  }
 
-	@Test
-	public void buildSuspendedUntil_ValidTime_Builds() {
+  @Test
+  public void buildSuspendedUntil_ValidTime_Builds() {
 
-		final int[] timesToTest = { 0, 1, 2, 1000, 4000, 1581806000, 42 };
+    final int[] timesToTest = {0, 1, 2, 1000, 4000, 1581806000, 42};
 
-		for (int suspendedUntil : timesToTest) {
+    for (int suspendedUntil : timesToTest) {
 
-			final AuthBuilder builder = Auth.builder();
+      final AuthBuilder builder = Auth.builder();
 
-			builder.suspendedUntil(new Timestamp(suspendedUntil));
+      builder.suspendedUntil(new Timestamp(suspendedUntil));
 
-			assertThat(builder.build(), instanceOf(Auth.class));
-			assertThat(builder.build().getSuspendedUntil(), is(new Timestamp(suspendedUntil)));
+      assertThat(builder.build(), instanceOf(Auth.class));
+      assertThat(builder.build().getSuspendedUntil(), is(new Timestamp(suspendedUntil)));
 
-		}
+    }
 
-	}
+  }
 
-	@Test
-	public void buildSuspensionMessage_ValidSuspensionMessage_Builds() {
+  @Test
+  public void buildSuspensionMessage_ValidSuspensionMessage_Builds() {
 
-		final String[] suspensionMessagesToTest = { "You are suspended!", null, "", "banned",
-				"Long  With     Whitespace", "12345", "You tried to hack the server, fool!" };
+    final String[] suspensionMessagesToTest = {"You are suspended!", null, "", "banned",
+        "Long  With     Whitespace", "12345", "You tried to hack the server, fool!"};
 
-		for (String suspensionMessage : suspensionMessagesToTest) {
+    for (String suspensionMessage : suspensionMessagesToTest) {
 
-			final AuthBuilder builder = Auth.builder();
+      final AuthBuilder builder = Auth.builder();
 
-			builder.suspensionMessage(suspensionMessage);
+      builder.suspensionMessage(suspensionMessage);
 
-			assertThat(builder.build(), instanceOf(Auth.class));
-			assertThat(builder.build().getSuspensionMessage(), is(suspensionMessage));
+      assertThat(builder.build(), instanceOf(Auth.class));
+      assertThat(builder.build().getSuspensionMessage(), is(suspensionMessage));
 
-		}
+    }
 
-	}
+  }
 
-	@Test
-	public void equals_AutomaticTesting() {
+  @Test
+  public void equals_AutomaticTesting() {
 
-		EqualsVerifier.forClass(Auth.class).verify();
+    EqualsVerifier.forClass(Auth.class).verify();
 
-	}
+  }
 
-	@Test
-	public void toString_ValidData_AsExpected() {
+  @Test
+  public void toString_ValidData_AsExpected() {
 
-		final Auth testAuth = Auth.builder().build();
+    final Auth testAuth = Auth.builder().build();
 
-		assertThat(testAuth.toString(), is(
-				"Auth(id=0, user=0, isEnabled=false, badLoginCount=0, isAdmin=false, suspendedUntil=null, suspensionMessage=null, accountCreated=null, lastLogin=null, lastLoginMethod=null, password=null, saml=null)"));
+    assertThat(testAuth.toString(), is(
+        "Auth(id=0, user=0, isEnabled=false, badLoginCount=0, isAdmin=false, suspendedUntil=null, suspensionMessage=null, accountCreated=null, lastLogin=null, lastLoginMethod=null, password=null, saml=null)"));
 
-	}
+  }
 
-	@Test
-	public void withAccountCreated_ValidTime_ChangesAccountCreationTime() {
+  @Test
+  public void withAccountCreated_ValidTime_ChangesAccountCreationTime() {
 
-		final Timestamp originalTime = new Timestamp(0);
+    final Timestamp originalTime = new Timestamp(0);
 
-		final Timestamp[] timesToTest = { originalTime, new Timestamp(1), new Timestamp(2), new Timestamp(1000),
-				new Timestamp(4000), new Timestamp(1581806000), new Timestamp(42) };
+    final Timestamp[] timesToTest = {originalTime, new Timestamp(1), new Timestamp(2),
+        new Timestamp(1000), new Timestamp(4000), new Timestamp(1581806000), new Timestamp(42)};
 
-		final Auth testAuth = Auth.builder().accountCreated(originalTime).build();
+    final Auth testAuth = Auth.builder().accountCreated(originalTime).build();
 
-		for (Timestamp time : timesToTest) {
+    for (Timestamp time : timesToTest) {
 
-			final Auth changedAuth = testAuth.withAccountCreated(time);
+      final Auth changedAuth = testAuth.withAccountCreated(time);
 
-			assertThat(changedAuth.getAccountCreated(), is(time));
+      assertThat(changedAuth.getAccountCreated(), is(time));
 
-		}
+    }
 
-	}
+  }
 
-	@Test
-	public void withAdmin_ValidBoolean_ChangesIsAdmin() {
+  @Test
+  public void withAdmin_ValidBoolean_ChangesIsAdmin() {
 
-		final Auth testAuth = Auth.builder().build();
+    final Auth testAuth = Auth.builder().build();
 
-		for (boolean isAdmin : BOOLEANS) {
+    for (boolean isAdmin : BOOLEANS) {
 
-			final Auth changedAuth = testAuth.withAdmin(isAdmin);
-			assertThat(changedAuth.isAdmin(), is(isAdmin));
+      final Auth changedAuth = testAuth.withAdmin(isAdmin);
+      assertThat(changedAuth.isAdmin(), is(isAdmin));
 
-		}
+    }
 
-	}
+  }
 
-	@Test
-	public void withBadLoginCount_ValidBadLoginCount_ChangesBadLoginCount() {
+  @Test
+  public void withBadLoginCount_ValidBadLoginCount_ChangesBadLoginCount() {
 
-		final int originalBadLoginCount = 0;
-		final int[] testedBadLoginCounts = { originalBadLoginCount, 1, -1, 1000, -1000, 123456789, -12346789 };
+    final int originalBadLoginCount = 0;
+    final int[] testedBadLoginCounts =
+        {originalBadLoginCount, 1, -1, 1000, -1000, 123456789, -12346789};
 
-		final Auth testAuth = Auth.builder().build();
+    final Auth testAuth = Auth.builder().build();
 
-		for (int badLoginCount : testedBadLoginCounts) {
+    for (int badLoginCount : testedBadLoginCounts) {
 
-			final Auth changedAuth = testAuth.withBadLoginCount(badLoginCount);
-			assertThat(changedAuth.getBadLoginCount(), is(badLoginCount));
+      final Auth changedAuth = testAuth.withBadLoginCount(badLoginCount);
+      assertThat(changedAuth.getBadLoginCount(), is(badLoginCount));
 
-		}
+    }
 
-	}
+  }
 
-	@Test
-	public void withEnabled_ValidBoolean_ChangesIsEnabled() {
+  @Test
+  public void withEnabled_ValidBoolean_ChangesIsEnabled() {
 
-		final Auth testAuth = Auth.builder().build();
+    final Auth testAuth = Auth.builder().build();
 
-		for (boolean isEnabled : BOOLEANS) {
+    for (boolean isEnabled : BOOLEANS) {
 
-			final Auth changedAuth = testAuth.withEnabled(isEnabled);
-			assertThat(changedAuth.isEnabled(), is(isEnabled));
+      final Auth changedAuth = testAuth.withEnabled(isEnabled);
+      assertThat(changedAuth.isEnabled(), is(isEnabled));
 
-		}
+    }
 
-	}
+  }
 
-	@Test
-	public void withId_ValidId_ChangesId() {
+  @Test
+  public void withId_ValidId_ChangesId() {
 
-		final int originalId = 1;
-		final int[] testedIds = { originalId, 0, -1, 1000, -1000, 123456789 };
+    final int originalId = 1;
+    final int[] testedIds = {originalId, 0, -1, 1000, -1000, 123456789};
 
-		final Auth newAuth = Auth.builder().id(originalId).build();
+    final Auth newAuth = Auth.builder().id(originalId).build();
 
-		assertThat(newAuth.getId(), is(originalId));
+    assertThat(newAuth.getId(), is(originalId));
 
-		for (int newId : testedIds) {
+    for (int newId : testedIds) {
 
-			final Auth changedAuth = newAuth.withId(newId);
-			assertThat(changedAuth.getId(), is(newId));
+      final Auth changedAuth = newAuth.withId(newId);
+      assertThat(changedAuth.getId(), is(newId));
 
-		}
+    }
 
-	
-	}
-	
-	@Test
-	public void withLastLogin_ValidTime_ChangesLastLoginTime() {
 
-		final Timestamp originalTime = new Timestamp(0);
+  }
 
-		final Timestamp[] timesToTest = { originalTime, new Timestamp(1), new Timestamp(2), new Timestamp(1000),
-				new Timestamp(4000), new Timestamp(1581806000), new Timestamp(42) };
+  @Test
+  public void withLastLogin_ValidTime_ChangesLastLoginTime() {
 
-		final Auth testAuth = Auth.builder().lastLogin(originalTime).build();
+    final Timestamp originalTime = new Timestamp(0);
 
-		for (Timestamp time : timesToTest) {
+    final Timestamp[] timesToTest = {originalTime, new Timestamp(1), new Timestamp(2),
+        new Timestamp(1000), new Timestamp(4000), new Timestamp(1581806000), new Timestamp(42)};
 
-			final Auth changedAuth = testAuth.withLastLogin(time);
+    final Auth testAuth = Auth.builder().lastLogin(originalTime).build();
 
-			assertThat(changedAuth.getLastLogin(), is(time));
+    for (Timestamp time : timesToTest) {
 
-		}
+      final Auth changedAuth = testAuth.withLastLogin(time);
 
-	}
+      assertThat(changedAuth.getLastLogin(), is(time));
 
-	@Test
-	public void withLastLoginMethod_ValidLastLoginMethod_ChangesLastLoginMethod() {
+    }
 
-		final Auth auth = Auth.builder().build();
+  }
 
-		assertThat(auth.getLastLoginMethod(), is(nullValue()));
+  @Test
+  public void withLastLoginMethod_ValidLastLoginMethod_ChangesLastLoginMethod() {
 
-		final String[] testedLastLoginMethods = { null, "", "password", "saml", "ldap", "Long  With     Whitespace",
-				"12345" };
+    final Auth auth = Auth.builder().build();
 
-		for (String newLastLoginMethod : testedLastLoginMethods) {
+    assertThat(auth.getLastLoginMethod(), is(nullValue()));
 
-			final Auth changedAuth = auth.withLastLoginMethod(newLastLoginMethod);
-			assertThat(changedAuth.getLastLoginMethod(), is(newLastLoginMethod));
+    final String[] testedLastLoginMethods =
+        {null, "", "password", "saml", "ldap", "Long  With     Whitespace", "12345"};
 
-		}
+    for (String newLastLoginMethod : testedLastLoginMethods) {
 
-	}
+      final Auth changedAuth = auth.withLastLoginMethod(newLastLoginMethod);
+      assertThat(changedAuth.getLastLoginMethod(), is(newLastLoginMethod));
 
-	@Test
-	public void withPassword_ValidPasswordAuth_ChangesPasswordAuth() {
+    }
 
-		final PasswordAuth passwordAuth1 = PasswordAuth.builder().loginName("TestPassword1")
-				.hashedPassword("passwordHash").build();
-		final PasswordAuth passwordAuth2 = PasswordAuth.builder().loginName("TestPassword2")
-				.hashedPassword("passwordHash").build();
+  }
 
-		final Auth testAuth = Auth.builder().password(passwordAuth1).build();
+  @Test
+  public void withPassword_ValidPasswordAuth_ChangesPasswordAuth() {
 
-		final Auth changedAuth1 = testAuth.withPassword(passwordAuth1);
-		final Auth changedAuth2 = testAuth.withPassword(passwordAuth2);
+    final PasswordAuth passwordAuth1 =
+        PasswordAuth.builder().loginName("TestPassword1").hashedPassword("passwordHash").build();
+    final PasswordAuth passwordAuth2 =
+        PasswordAuth.builder().loginName("TestPassword2").hashedPassword("passwordHash").build();
 
-		assertThat(changedAuth1.getPassword(), is(passwordAuth1));
-		assertThat(changedAuth2.getPassword(), is(passwordAuth2));
+    final Auth testAuth = Auth.builder().password(passwordAuth1).build();
 
-	}
+    final Auth changedAuth1 = testAuth.withPassword(passwordAuth1);
+    final Auth changedAuth2 = testAuth.withPassword(passwordAuth2);
 
-	@Test
-	public void withSaml_ValidSamlAuth_ChangesSamlAuth() {
+    assertThat(changedAuth1.getPassword(), is(passwordAuth1));
+    assertThat(changedAuth2.getPassword(), is(passwordAuth2));
 
-		final SAMLAuth samlAuth1 = SAMLAuth.builder().samlId("samlid1").build();
-		final SAMLAuth samlAuth2 = SAMLAuth.builder().samlId("samlid2").build();
+  }
 
-		final Auth testAuth = Auth.builder().saml(samlAuth1).build();
+  @Test
+  public void withSaml_ValidSamlAuth_ChangesSamlAuth() {
 
-		final Auth changedAuth1 = testAuth.withSaml(samlAuth1);
-		final Auth changedAuth2 = testAuth.withSaml(samlAuth2);
+    final SAMLAuth samlAuth1 = SAMLAuth.builder().samlId("samlid1").build();
+    final SAMLAuth samlAuth2 = SAMLAuth.builder().samlId("samlid2").build();
 
-		assertThat(changedAuth1.getSaml(), is(samlAuth1));
-		assertThat(changedAuth2.getSaml(), is(samlAuth2));
+    final Auth testAuth = Auth.builder().saml(samlAuth1).build();
 
-	}
+    final Auth changedAuth1 = testAuth.withSaml(samlAuth1);
+    final Auth changedAuth2 = testAuth.withSaml(samlAuth2);
 
-	@Test
-	public void withSuspendedUntil_ValidTime_ChangesSuspendedUntilTime() {
+    assertThat(changedAuth1.getSaml(), is(samlAuth1));
+    assertThat(changedAuth2.getSaml(), is(samlAuth2));
 
-		final Timestamp originalTime = new Timestamp(0);
+  }
 
-		final Timestamp[] timesToTest = { originalTime, new Timestamp(1), new Timestamp(2), new Timestamp(1000),
-				new Timestamp(4000), new Timestamp(1581806000), new Timestamp(42) };
+  @Test
+  public void withSuspendedUntil_ValidTime_ChangesSuspendedUntilTime() {
 
-		final Auth testAuth = Auth.builder().suspendedUntil(originalTime).build();
+    final Timestamp originalTime = new Timestamp(0);
 
-		for (Timestamp time : timesToTest) {
+    final Timestamp[] timesToTest = {originalTime, new Timestamp(1), new Timestamp(2),
+        new Timestamp(1000), new Timestamp(4000), new Timestamp(1581806000), new Timestamp(42)};
 
-			final Auth changedAuth = testAuth.withSuspendedUntil(time);
+    final Auth testAuth = Auth.builder().suspendedUntil(originalTime).build();
 
-			assertThat(changedAuth.getSuspendedUntil(), is(time));
+    for (Timestamp time : timesToTest) {
 
-		}
+      final Auth changedAuth = testAuth.withSuspendedUntil(time);
 
-	}
+      assertThat(changedAuth.getSuspendedUntil(), is(time));
 
-	@Test
-	public void withSuspensionMessage_ValidSuspensionMessage_ChangesSuspensionMessage() {
+    }
 
-		final Auth auth = Auth.builder().build();
+  }
 
-		assertThat(auth.getSuspensionMessage(), is(nullValue()));
+  @Test
+  public void withSuspensionMessage_ValidSuspensionMessage_ChangesSuspensionMessage() {
 
-		final String[] testedSuspensionMessages = { null, "", "banned", "Long  With     Whitespace", "12345",
-				"You tried to hack the server, fool!" };
+    final Auth auth = Auth.builder().build();
 
-		for (String newSuspensionMessage : testedSuspensionMessages) {
+    assertThat(auth.getSuspensionMessage(), is(nullValue()));
 
-			final Auth changedAuth = auth.withSuspensionMessage(newSuspensionMessage);
-			assertThat(changedAuth.getSuspensionMessage(), is(newSuspensionMessage));
+    final String[] testedSuspensionMessages = {null, "", "banned", "Long  With     Whitespace",
+        "12345", "You tried to hack the server, fool!"};
 
-		}
+    for (String newSuspensionMessage : testedSuspensionMessages) {
 
-	}
+      final Auth changedAuth = auth.withSuspensionMessage(newSuspensionMessage);
+      assertThat(changedAuth.getSuspensionMessage(), is(newSuspensionMessage));
 
-	@Test
-	public void withUser_ValidUser_ChangesUser() {
+    }
 
-		final int originalUser = 1;
-		final int[] testedUsers = { originalUser, 0, -1, 1000, -1000, 123456789 };
+  }
 
-		final Auth newAuth = Auth.builder().user(originalUser).build();
+  @Test
+  public void withUser_ValidUser_ChangesUser() {
 
-		assertThat(newAuth.getUser(), is(originalUser));
+    final int originalUser = 1;
+    final int[] testedUsers = {originalUser, 0, -1, 1000, -1000, 123456789};
 
-		for (int newUser : testedUsers) {
+    final Auth newAuth = Auth.builder().user(originalUser).build();
 
-			final Auth changedAuth = newAuth.withUser(newUser);
-			assertThat(changedAuth.getUser(), is(newUser));
+    assertThat(newAuth.getUser(), is(originalUser));
 
-		}
+    for (int newUser : testedUsers) {
 
-	}
+      final Auth changedAuth = newAuth.withUser(newUser);
+      assertThat(changedAuth.getUser(), is(newUser));
+
+    }
+
+  }
 
 }

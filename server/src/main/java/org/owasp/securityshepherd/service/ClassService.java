@@ -16,71 +16,72 @@ import reactor.core.publisher.Mono;
 @Service
 public final class ClassService {
 
-	private final ClassRepository classRepository;
+  private final ClassRepository classRepository;
 
-	public Mono<Long> count() {
+  public Mono<Long> count() {
 
-		return classRepository.count();
+    return classRepository.count();
 
-	}
+  }
 
-	public Mono<ClassEntity> create(final String name) {
+  public Mono<ClassEntity> create(final String name) {
 
-		if (name == null) {
-			throw new NullPointerException();
-		}
+    if (name == null) {
+      throw new NullPointerException();
+    }
 
-		if (name.isEmpty()) {
-			throw new IllegalArgumentException();
-		}
+    if (name.isEmpty()) {
+      throw new IllegalArgumentException();
+    }
 
-		log.debug("Creating class with name " + name);
+    log.debug("Creating class with name " + name);
 
-		return Mono.just(name).filterWhen(this::doesNotExistByName)
-				.switchIfEmpty(Mono.error(new DuplicateClassNameException("Class name already exists")))
-				.flatMap(className -> classRepository.save(ClassEntity.builder().name(className).build()));
+    return Mono.just(name).filterWhen(this::doesNotExistByName)
+        .switchIfEmpty(Mono.error(new DuplicateClassNameException("Class name already exists")))
+        .flatMap(className -> classRepository.save(ClassEntity.builder().name(className).build()));
 
-		// log.debug("Created user with ID " + savedClass.getId());
+    // log.debug("Created user with ID " + savedClass.getId());
 
-	}
+  }
 
-	private Mono<Boolean> doesNotExistByName(final String name) {
-		return classRepository.findByName(name).map(u -> false).defaultIfEmpty(true);
-	}
+  private Mono<Boolean> doesNotExistByName(final String name) {
+    return classRepository.findByName(name).map(u -> false).defaultIfEmpty(true);
+  }
 
-	public Mono<Boolean> existsById(final int id) {
+  public Mono<Boolean> existsById(final int id) {
 
-		return classRepository.existsById(id);
+    return classRepository.existsById(id);
 
-	}
+  }
 
-	public Mono<ClassEntity> getById(final int id) {
+  public Mono<ClassEntity> getById(final int id) {
 
-		if (id <= 0) {
-			return Mono.error(new InvalidClassIdException());
-		}
+    if (id <= 0) {
+      return Mono.error(new InvalidClassIdException());
+    }
 
-		return Mono.just(id).filterWhen(classRepository::existsById)
-				.switchIfEmpty(Mono.error(new ClassIdNotFoundException())).flatMap(classRepository::findById);
+    return Mono.just(id).filterWhen(classRepository::existsById)
+        .switchIfEmpty(Mono.error(new ClassIdNotFoundException()))
+        .flatMap(classRepository::findById);
 
-	}
+  }
 
-	public Mono<ClassEntity> setName(final int id, final String name) throws InvalidClassIdException {
+  public Mono<ClassEntity> setName(final int id, final String name) throws InvalidClassIdException {
 
-		if (name == null) {
-			throw new IllegalArgumentException("Class name can't be null");
-		}
+    if (name == null) {
+      throw new IllegalArgumentException("Class name can't be null");
+    }
 
-		if (id <= 0) {
-			throw new InvalidClassIdException();
-		}
+    if (id <= 0) {
+      throw new InvalidClassIdException();
+    }
 
-		Mono<String> nameMono = Mono.just(name).filterWhen(this::doesNotExistByName)
-				.switchIfEmpty(Mono.error(new DuplicateClassNameException("Class name already exists")));
+    Mono<String> nameMono = Mono.just(name).filterWhen(this::doesNotExistByName)
+        .switchIfEmpty(Mono.error(new DuplicateClassNameException("Class name already exists")));
 
-		return Mono.just(id).flatMap(this::getById).zipWith(nameMono)
-				.map(tuple -> tuple.getT1().withName(tuple.getT2())).flatMap(classRepository::save);
+    return Mono.just(id).flatMap(this::getById).zipWith(nameMono)
+        .map(tuple -> tuple.getT1().withName(tuple.getT2())).flatMap(classRepository::save);
 
-	}
+  }
 
 }

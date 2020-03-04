@@ -18,26 +18,26 @@ import reactor.core.publisher.Mono;
 @RestController
 public class UserController {
 
-	@Autowired
-	private UserRepository userRepository;
+  @Autowired
+  private UserRepository userRepository;
 
-	@Autowired
-	private UserService userService;
+  @Autowired
+  private UserService userService;
 
-	@GetMapping(path = "/api/v1/user/list")
-	public Flux<User> allUsers() {
+  @GetMapping(path = "/api/v1/user/add/{displayName}")
+  public ResponseEntity<Mono<String>> addUser(@PathVariable String displayName) {
 
-		return userRepository.findAll();
+    // TODO: Set correct status code on mono exception
+    return ResponseEntity.status(HttpStatus.CREATED)
+        .body(userService.create(displayName).map(user -> user.toString()));
 
-	}
+  }
 
-	@GetMapping(path = "/api/v1/user/add/{displayName}")
-	public ResponseEntity<Mono<String>> addUser(@PathVariable String displayName) {
+  @GetMapping(path = "/api/v1/user/list")
+  public Flux<User> allUsers() {
 
-		// TODO: Set correct status code on mono exception
-		return ResponseEntity.status(HttpStatus.CREATED)
-				.body(userService.create(displayName).map(user -> user.toString()));
+    return userRepository.findAll();
 
-	}
+  }
 
 }

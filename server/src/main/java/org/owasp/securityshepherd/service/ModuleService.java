@@ -22,169 +22,177 @@ import reactor.core.publisher.Mono;
 @Service
 public final class ModuleService {
 
-	private final ModuleRepository moduleRepository;
+  private final ModuleRepository moduleRepository;
 
-	private final UserService userService;
+  private final UserService userService;
 
-	private final ConfigurationService configurationService;
+  private final ConfigurationService configurationService;
 
-	private final KeyService keyService;
+  private final KeyService keyService;
 
-	private final CryptoService cryptoService;
+  private final CryptoService cryptoService;
 
-	private Mono<Boolean> doesNotExistByName(final String name) {
-		return moduleRepository.findByName(name).map(u -> false).defaultIfEmpty(true);
-	}
+  public Mono<Long> count() {
 
-	public Mono<Module> create(final String name) {
+    return moduleRepository.count();
 
-		if (name == null) {
-			throw new NullPointerException();
-		}
+  }
 
-		if (name.isEmpty()) {
-			throw new IllegalArgumentException();
-		}
+  public Mono<Module> create(final String name) {
 
-		return Mono.just(name).filterWhen(this::doesNotExistByName)
-				.switchIfEmpty(Mono.error(new DuplicateModuleNameException("Module name already exists")))
-				.map(moduleName -> Module.builder().name(moduleName).build()).flatMap(moduleRepository::save);
+    if (name == null) {
+      throw new NullPointerException();
+    }
 
-	}
+    if (name.isEmpty()) {
+      throw new IllegalArgumentException();
+    }
 
-	public Mono<Boolean> verifyFlag(final int userId, final int moduleId, final String submittedFlag) {
+    return Mono.just(name).filterWhen(this::doesNotExistByName)
+        .switchIfEmpty(Mono.error(new DuplicateModuleNameException("Module name already exists")))
+        .map(moduleName -> Module.builder().name(moduleName).build())
+        .flatMap(moduleRepository::save);
 
-		if (submittedFlag == null) {
-			return Mono.just(false);
-		}
+  }
 
-		return getById(moduleId).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
-				.filter(module -> module.isFlagEnabled())
-				.switchIfEmpty(Mono.error(new InvalidFlagStateException("Cannot verify flag if flag is not enabled")))
-				.flatMap(module -> {
-					if (module.isFlagExact()) {
-						return Mono.just(module.getFlag().equalsIgnoreCase(submittedFlag));
-					} else {
-						return getDynamicFlag(userId, moduleId).map(flag -> submittedFlag.equalsIgnoreCase(flag));
-					}
-				});
+  private Mono<Boolean> doesNotExistByName(final String name) {
+    return moduleRepository.findByName(name).map(u -> false).defaultIfEmpty(true);
+  }
 
-	}
+  public Mono<Module> getById(final int id) {
 
-	public Mono<Module> setExactFlag(final int id, final String exactFlag) throws EntityIdException, InvalidFlagException {
+    if (id <= 0) {
 
-		if (id <= 0) {
+      return Mono.error(new InvalidModuleIdException());
 
-			throw new InvalidModuleIdException();
+    }
 
-		}
+    return moduleRepository.findById(id).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()));
 
-		if (exactFlag == null) {
+  }
 
-			throw new InvalidFlagException("Flag can't be null");
+  public Mono<String> getDynamicFlag(final int userId, final int moduleId) {
 
-		} else if (exactFlag.isEmpty()) {
+    if (userId <= 0) {
 
-			throw new InvalidFlagException("Flag can't be empty");
+      return Mono.error(new InvalidUserIdException());
 
-		}
+    }
 
-		return getById(id).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
-				.map(module -> module.withFlagEnabled(true).withFlagExact(true).withFlag(exactFlag))
-				.flatMap(moduleRepository::save);
+    if (moduleId <= 0) {
 
-	}
+      return Mono.error(new InvalidModuleIdException());
 
-	public Mono<Module> setDynamicFlag(final int id) {
+    }
 
-		if (id <= 0) {
+    final Mono<byte[]> baseFlag = getById(moduleId)
+        .switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
+        .filter(module -> module.isFlagEnabled())
+        .switchIfEmpty(
+            Mono.error(new InvalidFlagStateException("Can't get dynamic flag if flag is disabled")))
+        .filter(module -> !module.isFlagExact())
+        .switchIfEmpty(
+            Mono.error(new InvalidFlagStateException("Can't get dynamic flag if flag is exact")))
+        .map(module -> module.getFlag().getBytes());
 
-			return Mono.error(new InvalidModuleIdException());
+    final Mono<byte[]> keyMono =
+        userService.getKeyById(userId).zipWith(configurationService.getServerKey())
+            .map(tuple -> Bytes.concat(tuple.getT1(), tuple.getT2()));
 
-		}
+    return keyMono.zipWith(baseFlag).flatMap(tuple -> {
+      return cryptoService.hmac(tuple.getT1(), tuple.getT2());
+    }).map(keyService::convertByteKeyToString);
 
-		return getById(id).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
-				.map(module -> module.withFlagEnabled(true).withFlagExact(false))
-				.flatMap(module -> {
-					if (module.getFlag() == null) {
-						return keyService.generateRandomString(16).map(module::withFlag);
-					}
-					return Mono.just(module);
-				}).flatMap(moduleRepository::save);
+  }
 
-	}
+  public Mono<Module> setDynamicFlag(final int id) {
 
-	public Mono<String> getDynamicFlag(final int userId, final int moduleId) {
+    if (id <= 0) {
 
-		if (userId <= 0) {
+      return Mono.error(new InvalidModuleIdException());
 
-			return Mono.error(new InvalidUserIdException());
+    }
 
-		}
+    return getById(id).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
+        .map(module -> module.withFlagEnabled(true).withFlagExact(false)).flatMap(module -> {
+          if (module.getFlag() == null) {
+            return keyService.generateRandomString(16).map(module::withFlag);
+          }
+          return Mono.just(module);
+        }).flatMap(moduleRepository::save);
 
-		if (moduleId <= 0) {
+  }
 
-			return Mono.error(new InvalidModuleIdException());
+  public Mono<Module> setExactFlag(final int id, final String exactFlag)
+      throws EntityIdException, InvalidFlagException {
 
-		}
+    if (id <= 0) {
 
-		final Mono<byte[]> baseFlag = getById(moduleId).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
-				.filter(module -> module.isFlagEnabled())
-				.switchIfEmpty(Mono.error(new InvalidFlagStateException("Can't get dynamic flag if flag is disabled")))
-				.filter(module -> !module.isFlagExact())
-				.switchIfEmpty(Mono.error(new InvalidFlagStateException("Can't get dynamic flag if flag is exact")))
-				.map(module -> module.getFlag().getBytes());
+      throw new InvalidModuleIdException();
 
-		final Mono<byte[]> keyMono = userService.getKeyById(userId).zipWith(configurationService.getServerKey())
-				.map(tuple -> Bytes.concat(tuple.getT1(), tuple.getT2()));
+    }
 
-		return keyMono.zipWith(baseFlag).flatMap(tuple -> {
-			return cryptoService.hmac(tuple.getT1(), tuple.getT2());
-		}).map(keyService::convertByteKeyToString);
+    if (exactFlag == null) {
 
-	}
+      throw new InvalidFlagException("Flag can't be null");
 
-	public Mono<Module> setName(final int id, final String name) {
+    } else if (exactFlag.isEmpty()) {
 
-		if (id <= 0) {
+      throw new InvalidFlagException("Flag can't be empty");
 
-			return Mono.error(new InvalidModuleIdException());
+    }
 
-		}
-		
-		if (name == null) {
+    return getById(id).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
+        .map(module -> module.withFlagEnabled(true).withFlagExact(true).withFlag(exactFlag))
+        .flatMap(moduleRepository::save);
 
-			return Mono.error(new NullPointerException());
+  }
 
-		}
-		
-		if (name.isEmpty()) {
+  public Mono<Module> setName(final int id, final String name) {
 
-			return Mono.error(new IllegalArgumentException());
+    if (id <= 0) {
 
-		}
+      return Mono.error(new InvalidModuleIdException());
 
-		return getById(id).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
-				.map(module -> module.withName(name)).flatMap(moduleRepository::save);
+    }
 
-	}
+    if (name == null) {
 
-	public Mono<Long> count() {
+      return Mono.error(new NullPointerException());
 
-		return moduleRepository.count();
+    }
 
-	}
+    if (name.isEmpty()) {
 
-	public Mono<Module> getById(final int id) {
+      return Mono.error(new IllegalArgumentException());
 
-		if (id <= 0) {
+    }
 
-			return Mono.error(new InvalidModuleIdException());
+    return getById(id).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
+        .map(module -> module.withName(name)).flatMap(moduleRepository::save);
 
-		}
+  }
 
-		return moduleRepository.findById(id).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()));
+  public Mono<Boolean> verifyFlag(final int userId, final int moduleId,
+      final String submittedFlag) {
 
-	}
+    if (submittedFlag == null) {
+      return Mono.just(false);
+    }
+
+    return getById(moduleId).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
+        .filter(module -> module.isFlagEnabled())
+        .switchIfEmpty(
+            Mono.error(new InvalidFlagStateException("Cannot verify flag if flag is not enabled")))
+        .flatMap(module -> {
+          if (module.isFlagExact()) {
+            return Mono.just(module.getFlag().equalsIgnoreCase(submittedFlag));
+          } else {
+            return getDynamicFlag(userId, moduleId)
+                .map(flag -> submittedFlag.equalsIgnoreCase(flag));
+          }
+        });
+
+  }
 
 }
