@@ -19,11 +19,12 @@ public final class KeyService {
 		byte[] randomBytes = new byte[numberOfBytes];
 		strongPRNG.nextBytes(randomBytes);
 		return Mono.just(randomBytes);
+		
 	}
 
 	public String convertByteKeyToString(final byte[] keyBytes) {
 
-		return new String(keyBytes, StandardCharsets.UTF_16);
+		return new String(keyBytes, StandardCharsets.US_ASCII);
 
 	}
 

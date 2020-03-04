@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.owasp.securityshepherd.persistence.model.Auth;
 import org.owasp.securityshepherd.persistence.model.PasswordAuth;
 import org.owasp.securityshepherd.persistence.model.PasswordAuth.PasswordAuthBuilder;
 import org.springframework.boot.test.context.SpringBootTest;
