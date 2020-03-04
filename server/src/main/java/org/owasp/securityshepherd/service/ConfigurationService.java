@@ -5,6 +5,7 @@ import java.util.Base64;
 import org.owasp.securityshepherd.exception.ConfigurationKeyNotFoundException;
 import org.owasp.securityshepherd.persistence.model.Configuration;
 import org.owasp.securityshepherd.repository.ConfigurationRepository;
+import org.slf4j.event.Level;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -24,17 +25,12 @@ public final class ConfigurationService {
 
 		log.debug("Creating configuration key " + key + " with value " + value);
 
-		return Mono.just(Configuration.builder().key(key).value(value).build()).flatMap(configurationRepository::save);
+		return configurationRepository.save(Configuration.builder().key(key).value(value).build());
 
 	}
 
-	private Mono<Configuration> setValue(final String key, final String value) {
-
-		return configurationRepository.findByKey(key)
-				.switchIfEmpty(
-						Mono.error(new ConfigurationKeyNotFoundException("Configuration key " + key + " not found")))
-				.map(configuration -> configuration.withValue(value)).flatMap(configurationRepository::save);
-
+	private Mono<Boolean> existsByKey(final String key) {
+		return configurationRepository.findByKey(key).map(u -> true).defaultIfEmpty(false);
 	}
 
 	private Mono<String> getByKey(final String key) {
@@ -59,17 +55,25 @@ public final class ConfigurationService {
 
 		return keyService.generateRandomBytes(16).zipWith(existsByKey(serverKeyConfigurationKey)).flatMap(tuple -> {
 			if (tuple.getT2()) {
-				setValue(serverKeyConfigurationKey, Base64.getEncoder().encodeToString(tuple.getT1()));
+				return setValue(serverKeyConfigurationKey, Base64.getEncoder().encodeToString(tuple.getT1()));
 			} else {
-				create(serverKeyConfigurationKey, Base64.getEncoder().encodeToString(tuple.getT1()));
+				return create(serverKeyConfigurationKey, Base64.getEncoder().encodeToString(tuple.getT1()));
 			}
-			return Mono.just(tuple.getT1());
-		});
+		}).map(configuration -> configuration.getValue())
+				.map(Base64.getDecoder()::decode);
 
 	}
 
-	private Mono<Boolean> existsByKey(final String key) {
-		return configurationRepository.findByKey(key).map(u -> true).defaultIfEmpty(false);
+	private Mono<Configuration> setValue(final String key, final String value) {
+
+		log.debug("Setting configuration key " + key + " to value " + value);
+
+		return Mono.just(key).filterWhen(this::existsByKey)
+				.switchIfEmpty(
+						Mono.error(new ConfigurationKeyNotFoundException("Configuration key " + key + " not found")))
+				.flatMap(configurationRepository::findByKey)
+				.flatMap(configuration -> configurationRepository.save(configuration.withValue(value)));
+
 	}
 
 }
