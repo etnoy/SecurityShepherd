@@ -53,6 +53,8 @@ public final class UserService {
       throw new IllegalArgumentException();
     }
 
+    log.info("Creating new user with display name " + displayName);
+
     return Mono.just(displayName).filterWhen(this::doesNotExistByDisplayName)
         .switchIfEmpty(Mono.error(new DuplicateUserDisplayNameException("Display name already exists")))
         .flatMap(name -> userRepository.save(User.builder().displayName(name).build()));
@@ -67,6 +69,8 @@ public final class UserService {
     if (displayName.isEmpty() || loginName.isEmpty() || hashedPassword.isEmpty()) {
       throw new IllegalArgumentException();
     }
+
+    log.info("Creating new password login user with display name " + displayName + " and login name " + loginName);
 
     final Mono<String> loginNameMono = Mono.just(loginName).filterWhen(this::doesNotExistByLoginName)
         .switchIfEmpty(Mono.error(new DuplicateClassNameException("Login name already exists")));
@@ -209,6 +213,8 @@ public final class UserService {
     if (displayName.isEmpty()) {
       throw new IllegalArgumentException();
     }
+
+    log.info("Setting display name of user id " + userId + " to " + displayName);
 
     final Mono<String> displayNameMono = Mono.just(displayName).filterWhen(name -> doesNotExistByDisplayName(name))
         .switchIfEmpty(Mono.error(new DuplicateUserDisplayNameException("Display name already exists")));

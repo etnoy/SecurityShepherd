@@ -25,7 +25,7 @@ public class UserController {
   private UserService userService;
 
   @GetMapping(path = "/api/v1/user/add/{displayName}")
-  public ResponseEntity<Mono<String>> addUser(@PathVariable String displayName) {
+  public ResponseEntity<Mono<String>> addUser(@PathVariable final String displayName) {
 
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(userService.create(displayName).map(user -> user.toString()));
