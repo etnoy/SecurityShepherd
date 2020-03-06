@@ -6,11 +6,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -22,7 +21,6 @@ import org.owasp.securityshepherd.repository.ClassRepository;
 import org.owasp.securityshepherd.service.ClassService;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -37,6 +35,7 @@ public class ClassServiceTest {
   private ClassRepository classRepository;
 
   @Test
+  @DisplayName("Return the correct number of class entities in the repository")
   public void count_FiniteNumberOfClasses_ReturnsCount() throws Exception {
 
     final long mockedClassCount = 156L;
@@ -53,6 +52,7 @@ public class ClassServiceTest {
   }
 
   @Test
+  @DisplayName("Throw DuplicateClassNameException when creating class entity with name that already exists")
   public void create_DuplicateName_ThrowsException() {
 
     final String mockClassName = "TestClass";
@@ -66,6 +66,7 @@ public class ClassServiceTest {
   }
 
   @Test
+  @DisplayName("Throw IllegalArgumentException when creating class entity with empty name")
   public void create_EmptyArgument_ThrowsException() throws Exception {
 
     assertThrows(IllegalArgumentException.class, () -> classService.create(""));
@@ -73,6 +74,7 @@ public class ClassServiceTest {
   }
 
   @Test
+  @DisplayName("Throw NullPointerException when creating class entity with null name")
   public void create_NullArgument_ThrowsException() throws Exception {
 
     assertThrows(NullPointerException.class, () -> classService.create(null));
@@ -80,6 +82,7 @@ public class ClassServiceTest {
   }
 
   @Test
+  @DisplayName("Return a valid class entity when creating")
   public void create_ValidData_CreatesClass() throws Exception {
 
     final String mockClassName = "TestClass";
@@ -103,10 +106,10 @@ public class ClassServiceTest {
   }
 
   @Test
+  @DisplayName("Return true when checking if an existing class id exists")
   public void existsById_ExistingClassId_ReturnsTrue() throws Exception {
 
     final int mockClassId = 440;
-    final ClassEntity mockClass = mock(ClassEntity.class);
 
     when(classRepository.existsById(mockClassId)).thenReturn(Mono.just(true));
 
@@ -120,10 +123,10 @@ public class ClassServiceTest {
   }
 
   @Test
+  @DisplayName("Return false when checking if a nonexistent class id exists")
   public void existsById_NonExistentClassId_ReturnsFalse() throws Exception {
 
     final int mockClassId = 920;
-    final ClassEntity mockClass = mock(ClassEntity.class);
 
     when(classRepository.existsById(mockClassId)).thenReturn(Mono.just(false));
 
@@ -137,6 +140,7 @@ public class ClassServiceTest {
   }
 
   @Test
+  @DisplayName("Throw InvalidClassIdException when trying to retrieve a class entity that does not exist")
   public void getById_InvalidClassId_ThrowsException() throws Exception {
 
     StepVerifier.create(classService.getById(-1)).expectError(InvalidClassIdException.class)
@@ -147,6 +151,7 @@ public class ClassServiceTest {
   }
 
   @Test
+  @DisplayName("Return the correct class entity when retrieving an class id")
   public void getById_ValidClassId_CallsRepository() throws Exception {
 
     final ClassEntity mockClass = mock(ClassEntity.class);
@@ -170,6 +175,7 @@ public class ClassServiceTest {
   }
 
   @Test
+  @DisplayName("Throw exception when setting a class entity name to a name that already exists")
   public void setName_DuplicateName_ThrowsException() throws Exception {
 
     final ClassEntity mockClass = mock(ClassEntity.class);
@@ -188,6 +194,7 @@ public class ClassServiceTest {
   }
 
   @Test
+  @DisplayName("Throw exception when setting name of an invalid class id")
   public void setName_InvalidClassId_ThrowsException() throws Exception {
 
     final String newName = "newName";
@@ -199,6 +206,7 @@ public class ClassServiceTest {
   }
 
   @Test
+  @DisplayName("Throw exception when setting name of a nonexistent class id")
   public void setName_NonExistentId_ThrowsException() throws Exception {
 
     final ClassEntity mockClass = mock(ClassEntity.class);
@@ -217,6 +225,7 @@ public class ClassServiceTest {
   }
 
   @Test
+  @DisplayName("Throw exception when setting the name of a class entity to null")
   public void setName_NullName_ThrowsException() throws Exception {
 
     assertThrows(IllegalArgumentException.class, () -> classService.setName(1, null));
@@ -224,6 +233,7 @@ public class ClassServiceTest {
   }
 
   @Test
+  @DisplayName("Can set name of class entity")
   public void setName_ValidName_SetsName() throws Exception {
 
     final ClassEntity mockClass = mock(ClassEntity.class);

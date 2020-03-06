@@ -54,14 +54,11 @@ public final class UserService {
     }
 
     return Mono.just(displayName).filterWhen(this::doesNotExistByDisplayName)
-        .switchIfEmpty(
-            Mono.error(new DuplicateUserDisplayNameException("Display name already exists")))
+        .switchIfEmpty(Mono.error(new DuplicateUserDisplayNameException("Display name already exists")))
         .flatMap(name -> userRepository.save(User.builder().displayName(name).build()));
-
   }
 
-  public Mono<User> createPasswordUser(final String displayName, final String loginName,
-      final String hashedPassword) {
+  public Mono<User> createPasswordUser(final String displayName, final String loginName, final String hashedPassword) {
 
     if (displayName == null || loginName == null || hashedPassword == null) {
       throw new NullPointerException();
@@ -71,13 +68,11 @@ public final class UserService {
       throw new IllegalArgumentException();
     }
 
-    final Mono<String> loginNameMono =
-        Mono.just(loginName).filterWhen(this::doesNotExistByLoginName).switchIfEmpty(
-            Mono.error(new DuplicateClassNameException("Login name already exists")));
+    final Mono<String> loginNameMono = Mono.just(loginName).filterWhen(this::doesNotExistByLoginName)
+        .switchIfEmpty(Mono.error(new DuplicateClassNameException("Login name already exists")));
 
-    final Mono<String> displayNameMono =
-        Mono.just(displayName).filterWhen(this::doesNotExistByDisplayName).switchIfEmpty(
-            Mono.error(new DuplicateUserDisplayNameException("Display name already exists")));
+    final Mono<String> displayNameMono = Mono.just(displayName).filterWhen(this::doesNotExistByDisplayName)
+        .switchIfEmpty(Mono.error(new DuplicateUserDisplayNameException("Display name already exists")));
 
     return Mono.zip(displayNameMono, loginNameMono).flatMap(tuple -> {
 
@@ -128,7 +123,7 @@ public final class UserService {
         .switchIfEmpty(Mono.error(new UserIdNotFoundException())).flatMap(userRepository::findById);
 
     final Mono<PasswordAuth> passwordAuth = Mono.just(id).flatMap(userId -> {
-      Mono<PasswordAuth> returnedAuth = passwordAuthRepository.findByUserId(userId);
+      final Mono<PasswordAuth> returnedAuth = passwordAuthRepository.findByUserId(userId);
       if (returnedAuth == null) {
         return Mono.empty();
       }
@@ -136,18 +131,16 @@ public final class UserService {
     });
 
     Mono<Auth> auth = Mono.just(id).flatMap(userId -> {
-      Mono<Auth> returnedAuth = authRepository.findByUserId(userId);
+      final Mono<Auth> returnedAuth = authRepository.findByUserId(userId);
       if (returnedAuth == null) {
         return Mono.empty();
       }
       return returnedAuth;
     });
 
-    auth = auth.zipWith(passwordAuth).map(tuple -> tuple.getT1().withPassword(tuple.getT2()))
-        .switchIfEmpty(auth);
+    auth = auth.zipWith(passwordAuth).map(tuple -> tuple.getT1().withPassword(tuple.getT2())).switchIfEmpty(auth);
 
-    return user.zipWith(auth).map(tuple -> tuple.getT1().withAuth(tuple.getT2()))
-        .switchIfEmpty(user);
+    return user.zipWith(auth).map(tuple -> tuple.getT1().withAuth(tuple.getT2())).switchIfEmpty(user);
 
   }
 
@@ -161,8 +154,7 @@ public final class UserService {
       throw new IllegalArgumentException();
     }
 
-    return passwordAuthRepository.findByLoginName(loginName)
-        .switchIfEmpty(Mono.error(new LoginNameNotFoundException()))
+    return passwordAuthRepository.findByLoginName(loginName).switchIfEmpty(Mono.error(new LoginNameNotFoundException()))
         .map(passwordAuth -> passwordAuth.getUser()).flatMap(this::getById);
 
   }
@@ -173,13 +165,12 @@ public final class UserService {
       return Mono.error(new InvalidUserIdException());
     }
 
-    return Mono.just(id).filterWhen(userRepository::existsById)
-        .switchIfEmpty(Mono.error(new UserIdNotFoundException())).flatMap(userRepository::findById)
-        .flatMap(user -> {
-          byte[] key = user.getKey();
+    return Mono.just(id).filterWhen(userRepository::existsById).switchIfEmpty(Mono.error(new UserIdNotFoundException()))
+        .flatMap(userRepository::findById).flatMap(user -> {
+          final byte[] key = user.getKey();
           if (key == null) {
-            return keyService.generateRandomBytes(16).map(newKey -> user.withKey(newKey))
-                .flatMap(userRepository::save).map(User::getKey);
+            return keyService.generateRandomBytes(16).map(newKey -> user.withKey(newKey)).flatMap(userRepository::save)
+                .map(User::getKey);
           }
           return Mono.just(key);
         });
@@ -205,8 +196,7 @@ public final class UserService {
 
   }
 
-  public Mono<User> setDisplayName(final int userId, final String displayName)
-      throws InvalidUserIdException {
+  public Mono<User> setDisplayName(final int userId, final String displayName) throws InvalidUserIdException {
 
     if (userId <= 0) {
       throw new InvalidUserIdException();
@@ -220,9 +210,8 @@ public final class UserService {
       throw new IllegalArgumentException();
     }
 
-    final Mono<String> displayNameMono =
-        Mono.just(displayName).filterWhen(name -> doesNotExistByDisplayName(name)).switchIfEmpty(
-            Mono.error(new DuplicateUserDisplayNameException("Display name already exists")));
+    final Mono<String> displayNameMono = Mono.just(displayName).filterWhen(name -> doesNotExistByDisplayName(name))
+        .switchIfEmpty(Mono.error(new DuplicateUserDisplayNameException("Display name already exists")));
 
     return Mono.just(userId).flatMap(this::getById).zipWith(displayNameMono)
         .map(tuple -> tuple.getT1().withDisplayName(tuple.getT2())).flatMap(userRepository::save);

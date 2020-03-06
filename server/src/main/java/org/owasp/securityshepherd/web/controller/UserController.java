@@ -27,7 +27,6 @@ public class UserController {
   @GetMapping(path = "/api/v1/user/add/{displayName}")
   public ResponseEntity<Mono<String>> addUser(@PathVariable String displayName) {
 
-    // TODO: Set correct status code on mono exception
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(userService.create(displayName).map(user -> user.toString()));
 
