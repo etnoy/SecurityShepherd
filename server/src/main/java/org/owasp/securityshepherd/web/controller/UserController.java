@@ -33,9 +33,9 @@ public class UserController {
   }
 
   @GetMapping(path = "/api/v1/user/list")
-  public Flux<User> allUsers() {
+  public Mono<User> allUsers() {
 
-    return userRepository.findAll();
+    return userRepository.findById(1);
 
   }
 
