@@ -1,2 +1,5 @@
 .angulardoc.json
 server/.factorypath
+.classpath
+.project
+.settings
