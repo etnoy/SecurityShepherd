@@ -5,20 +5,20 @@ jobs:
   - stage: build
     script: 
     - cd server
-    - mvn clean install -DskipTests
+    - mvn clean install -DskipTests -B -V
   - stage: unit-test
     services: mysql
     script: 
     - cd server
     - git fetch --unshallow
     - mysql -e 'CREATE DATABASE IF NOT EXISTS core;'  
-    - mvn clean verify -DskipITs=true sonar:sonar -Pcoverage -Dsonar.projectKey=etnoy_SecurityShepherd
+    - mvn clean verify -DskipITs=true sonar:sonar -Pcoverage -Dsonar.projectKey=etnoy_SecurityShepherd -B -V
   - stage: integration-test
     services: mysql
     script:
     - cd server
     - mysql -e 'CREATE DATABASE IF NOT EXISTS core;'  
-    - mvn verify -DskipUTs=true
+    - mvn verify -DskipUTs=true -B -V
     
 stages:
 - build
