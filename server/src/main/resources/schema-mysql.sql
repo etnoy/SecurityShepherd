@@ -9,8 +9,6 @@ CREATE TABLE user (
   class_id INT NULL,
   email VARCHAR(128) NULL,
   user_key BINARY(16) NULL,
-  auth INT NULL,
-
   PRIMARY KEY (id) ,
   INDEX class_id (class_id ASC) ,
   UNIQUE INDEX display_name_UNIQUE (display_name ASC))
