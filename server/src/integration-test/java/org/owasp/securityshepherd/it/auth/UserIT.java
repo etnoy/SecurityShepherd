@@ -4,6 +4,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.owasp.securityshepherd.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -17,13 +19,15 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UserIT {
 
+  @Autowired
+  UserService userService;
+  
   @LocalServerPort
   private int port;
   
   TestRestTemplate restTemplate = new TestRestTemplate();
   HttpHeaders headers = new HttpHeaders();
   
-
   private String createURLWithPort(String uri) {
       return "http://localhost:" + port + uri;
   }
@@ -31,11 +35,15 @@ public class UserIT {
   @Test
   public void initialTest() throws Exception {
     
+    userService.create("testUser").block();
+    userService.createPasswordUser("testUser2", "username", "hash").block();
+
+    
     HttpEntity<String> entity = new HttpEntity<String>(null, headers);
     ResponseEntity<String> response = restTemplate.exchange(
       createURLWithPort("/api/v1/user/list"), HttpMethod.GET, entity, String.class);
 
-    assertThat(response.getBody(), is("test"));
+    System.out.println(response.getBody());
 
   }
 

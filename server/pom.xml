@@ -130,11 +130,13 @@
 			<groupId>org.springframework.boot.experimental</groupId>
 			<artifactId>spring-boot-starter-r2dbc</artifactId>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/dev.miku/r2dbc-mysql -->
 		<dependency>
 			<groupId>dev.miku</groupId>
 			<artifactId>r2dbc-mysql</artifactId>
-			<scope>runtime</scope>
+			<version>0.8.1.RELEASE</version>
 		</dependency>
+
 		<dependency>
 			<groupId>io.projectreactor</groupId>
 			<artifactId>reactor-test</artifactId>

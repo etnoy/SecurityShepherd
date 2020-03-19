@@ -15,7 +15,7 @@ import lombok.With;
 @EqualsAndHashCode
 @Builder
 @With
-public final class Submission implements Serializable {
+public class Submission implements Serializable {
 
   private static final long serialVersionUID = -5485881248601955741L;
 

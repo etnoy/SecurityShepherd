@@ -16,11 +16,8 @@ import lombok.With;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder(builderClassName = "ClassBuilder")
 @With
-public final class ClassEntity implements Serializable {
+public class ClassEntity implements Serializable {
 
-  /**
-   * 
-   */
   private static final long serialVersionUID = 7375094814834027958L;
 
   @EqualsAndHashCode.Include

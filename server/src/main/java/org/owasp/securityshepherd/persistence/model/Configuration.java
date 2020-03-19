@@ -15,11 +15,8 @@ import lombok.With;
 @EqualsAndHashCode
 @Builder
 @With
-public final class Configuration implements Serializable {
+public class Configuration implements Serializable {
 
-  /**
-   * 
-   */
   private static final long serialVersionUID = -3877275355721047824L;
 
   @Id

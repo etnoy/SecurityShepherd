@@ -14,7 +14,7 @@ import lombok.With;
 @EqualsAndHashCode
 @Builder
 @With
-public final class SAMLAuth implements Serializable {
+public class SAMLAuth implements Serializable {
 
   private static final long serialVersionUID = 211951930649985921L;
 
