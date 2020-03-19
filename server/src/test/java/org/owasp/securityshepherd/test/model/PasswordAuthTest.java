@@ -27,7 +27,7 @@ public class PasswordAuthTest {
   public void builderToString_ValidData_AsExpected() {
 
     assertThat(PasswordAuth.builder().toString(), is(
-        "PasswordAuth.PasswordAuthBuilder(id=0, user=0, loginName=null, hashedPassword=null, isPasswordNonExpired=false)"));
+        "PasswordAuth.PasswordAuthBuilder(id=null, user=0, loginName=null, hashedPassword=null, isPasswordNonExpired=false)"));
 
   }
 
@@ -111,7 +111,7 @@ public class PasswordAuthTest {
     assertThat(
         PasswordAuth.builder().loginName("TestUser").hashedPassword("hashedPassword").build()
             .toString(),
-        is("PasswordAuth(id=0, user=0, loginName=TestUser, hashedPassword=hashedPassword, isPasswordNonExpired=false)"));
+        is("PasswordAuth(id=null, user=0, loginName=TestUser, hashedPassword=hashedPassword, isPasswordNonExpired=false)"));
 
   }
 

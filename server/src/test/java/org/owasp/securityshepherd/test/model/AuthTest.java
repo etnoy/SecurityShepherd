@@ -30,7 +30,7 @@ public class AuthTest {
     final AuthBuilder builder = Auth.builder();
 
     assertThat(builder.toString(), is(
-        "Auth.AuthBuilder(id=0, user=0, isEnabled=false, badLoginCount=0, isAdmin=false, suspendedUntil=null, suspensionMessage=null, accountCreated=null, lastLogin=null, lastLoginMethod=null, password=null, saml=null)"));
+        "Auth.AuthBuilder(id=null, user=0, isEnabled=false, badLoginCount=0, isAdmin=false, suspendedUntil=null, suspensionMessage=null, accountCreated=null, lastLogin=null, lastLoginMethod=null, password=null, saml=null)"));
 
   }
 
@@ -238,7 +238,7 @@ public class AuthTest {
     final Auth testAuth = Auth.builder().build();
 
     assertThat(testAuth.toString(), is(
-        "Auth(id=0, user=0, isEnabled=false, badLoginCount=0, isAdmin=false, suspendedUntil=null, suspensionMessage=null, accountCreated=null, lastLogin=null, lastLoginMethod=null, password=null, saml=null)"));
+        "Auth(id=null, user=0, isEnabled=false, badLoginCount=0, isAdmin=false, suspendedUntil=null, suspensionMessage=null, accountCreated=null, lastLogin=null, lastLoginMethod=null, password=null, saml=null)"));
 
   }
 

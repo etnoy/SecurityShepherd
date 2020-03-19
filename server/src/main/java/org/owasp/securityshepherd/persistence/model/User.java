@@ -18,12 +18,12 @@ import lombok.With;
 @AllArgsConstructor
 @Builder
 @With
-public class User implements Serializable {
+public final class User implements Serializable {
 
   private static final long serialVersionUID = 3097353498257801154L;
 
   @Id
-  private final int id;
+  private final Integer id;
 
   @NonNull
   private final String displayName;
@@ -39,7 +39,7 @@ public class User implements Serializable {
   private final Auth auth;
 
   @PersistenceConstructor
-  public User(final int id, @NonNull final String displayName, final Integer classId,
+  public User(final Integer id, @NonNull final String displayName, final Integer classId,
       final String email, final byte[] key) {
     this.id = id;
     this.displayName = displayName;
@@ -48,6 +48,5 @@ public class User implements Serializable {
     this.key = key;
     this.auth = null;
   }
-
 
 }

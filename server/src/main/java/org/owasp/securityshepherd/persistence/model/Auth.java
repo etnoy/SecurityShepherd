@@ -4,10 +4,12 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.annotation.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import lombok.Value;
 import lombok.With;
 
@@ -16,13 +18,12 @@ import lombok.With;
 @AllArgsConstructor
 @Builder
 @With
-public class Auth implements Serializable {
+public final class Auth implements Serializable {
 
   private static final long serialVersionUID = -1511082836956413928L;
 
-  @EqualsAndHashCode.Include
   @Id
-  private int id;
+  private Integer id;
 
   private int user;
 
@@ -40,16 +41,16 @@ public class Auth implements Serializable {
 
   private Timestamp lastLogin;
 
-  private final String lastLoginMethod;
+  private String lastLoginMethod;
 
   @Transient
-  private final PasswordAuth password;
+  private PasswordAuth password;
 
   @Transient
-  private final SAMLAuth saml;
+  private SAMLAuth saml;
 
-  @java.lang.SuppressWarnings("all")
-  Auth(final int id, final int user, final boolean isEnabled, final int badLoginCount,
+  @PersistenceConstructor
+  public Auth(final Integer id, final int user, final boolean isEnabled, final int badLoginCount,
       final boolean isAdmin, final Timestamp suspendedUntil, final String suspensionMessage,
       final Timestamp accountCreated, final Timestamp lastLogin, final String lastLoginMethod) {
     this.id = id;

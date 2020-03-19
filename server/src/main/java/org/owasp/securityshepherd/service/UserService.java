@@ -102,12 +102,13 @@ public final class UserService {
 
         final PasswordAuth passwordAuthWithUser = passwordAuth.withUser(savedUser.getId());
         final Auth authWithUser = auth.withUser(savedUser.getId());
-        
-        log.debug("User id to save is " + Integer.toString(savedUser.getId()));
 
         // Add password auth to database
         return passwordAuthRepository.save(passwordAuthWithUser)
-            .then(authRepository.save(authWithUser)).thenReturn(savedUser);
+            // Then add the auth entity to the database
+            .then(authRepository.save(authWithUser))
+            // And then return the saved user
+            .thenReturn(savedUser);
 
       });
 
@@ -133,14 +134,14 @@ public final class UserService {
         .switchIfEmpty(Mono.error(new UserIdNotFoundException())).flatMap(userRepository::findById);
 
     final Mono<PasswordAuth> passwordAuth = Mono.just(id).flatMap(userId -> {
-      final Mono<PasswordAuth> returnedAuth = passwordAuthRepository.findByUserId(userId);
-      if (returnedAuth == null) {
+      final Mono<PasswordAuth> returnedPasswordAuth = passwordAuthRepository.findByUserId(userId);
+      if (returnedPasswordAuth == null) {
         return Mono.empty();
       }
-      return returnedAuth;
+      return returnedPasswordAuth;
     });
 
-    Mono<Auth> auth = Mono.just(id).flatMap(userId -> {
+    final Mono<Auth> auth = Mono.just(id).flatMap(userId -> {
       final Mono<Auth> returnedAuth = authRepository.findByUserId(userId);
       if (returnedAuth == null) {
         return Mono.empty();
@@ -148,10 +149,10 @@ public final class UserService {
       return returnedAuth;
     });
 
-    auth = auth.zipWith(passwordAuth).map(tuple -> tuple.getT1().withPassword(tuple.getT2()))
-        .switchIfEmpty(auth);
+    final Mono<Auth> completeAuth = auth.zipWith(passwordAuth)
+        .map(tuple -> tuple.getT1().withPassword(tuple.getT2())).switchIfEmpty(auth);
 
-    return user.zipWith(auth).map(tuple -> tuple.getT1().withAuth(tuple.getT2()))
+    return user.zipWith(completeAuth).map(tuple -> tuple.getT1().withAuth(tuple.getT2()))
         .switchIfEmpty(user);
 
   }

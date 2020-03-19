@@ -1,19 +1,22 @@
 package org.owasp.securityshepherd.it.auth;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.owasp.securityshepherd.persistence.model.Auth;
+import org.owasp.securityshepherd.persistence.model.PasswordAuth;
+import org.owasp.securityshepherd.persistence.model.User;
 import org.owasp.securityshepherd.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -21,32 +24,26 @@ public class UserIT {
 
   @Autowired
   UserService userService;
-  
-  @LocalServerPort
-  private int port;
-  
-  TestRestTemplate restTemplate = new TestRestTemplate();
-  HttpHeaders headers = new HttpHeaders();
-  
-  private String createURLWithPort(String uri) {
-      return "http://localhost:" + port + uri;
-  }
-  
+
   @Test
-  public void initialTest() throws Exception {
-    
-    
+  public void createPasswordUser_ReturnsCorrectUser() throws Exception {
+
     userService.createPasswordUser("Hello1", "user", "hashedPassword").block();
 
-    userService.createPasswordUser("A Testing User", "administrator", "hashedPassword").block();
-    
-    
-    
-    HttpEntity<String> entity = new HttpEntity<String>(null, headers);
-    ResponseEntity<String> response = restTemplate.exchange(
-      createURLWithPort("/api/v1/user/list"), HttpMethod.GET, entity, String.class);
+    StepVerifier.create(userService.getById(1)).assertNext(user -> {
 
-    System.out.println(response.getBody());
+      assertThat(user, is(notNullValue()));
+      assertThat(user, is(instanceOf(User.class)));
+
+      assertThat(user.getAuth(), is(notNullValue()));
+      assertThat(user.getAuth(), is(instanceOf(Auth.class)));
+
+      assertThat(user.getAuth().getPassword(), is(notNullValue()));
+      assertThat(user.getAuth().getPassword(), is(instanceOf(PasswordAuth.class)));
+
+      assertThat(user.getAuth().getSaml(), is(nullValue()));
+
+    }).expectComplete().verify();
 
   }
 

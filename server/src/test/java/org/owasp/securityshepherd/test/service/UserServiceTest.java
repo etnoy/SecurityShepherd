@@ -1,6 +1,7 @@
 package org.owasp.securityshepherd.test.service;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -210,10 +211,23 @@ public class UserServiceTest {
     when(userRepository.save(any(User.class)))
         .thenAnswer(user -> Mono.just(user.getArgument(0, User.class).withId(mockId)));
 
+    when(authRepository.save(any(Auth.class)))
+        .thenAnswer(user -> Mono.just(user.getArgument(0, Auth.class).withId(mockId)));
+
+    when(passwordAuthRepository.save(any(PasswordAuth.class)))
+        .thenAnswer(user -> Mono.just(user.getArgument(0, PasswordAuth.class).withId(mockId)));
+
     StepVerifier.create(userService.createPasswordUser(displayName, loginName, hashedPassword))
         .assertNext(user -> {
 
+          assertThat(user, is(notNullValue()));
+          assertThat(user.getAuth(), is(notNullValue()));
+          assertThat(user.getAuth().getPassword(), is(notNullValue()));
+
+          assertThat(user.getAuth().getPassword().getLoginName(), is(notNullValue()));
           assertThat(user.getAuth().getPassword().getLoginName(), is(loginName));
+
+          assertThat(user.getAuth().getPassword().getHashedPassword(), is(notNullValue()));
           assertThat(user.getAuth().getPassword().getHashedPassword(), is(hashedPassword));
 
           verify(passwordAuthRepository, times(1)).findByLoginName(loginName);
