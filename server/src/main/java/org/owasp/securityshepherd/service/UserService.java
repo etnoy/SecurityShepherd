@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Slf4j
@@ -127,6 +128,10 @@ public final class UserService {
     return passwordAuthRepository.findByLoginName(loginName).map(u -> false).defaultIfEmpty(true);
   }
 
+  public Flux<User> findAll() {
+    return userRepository.findAll().flatMap(user -> getById(user.getId()));
+  }
+  
   public Mono<User> getById(final int id) {
 
     if (id <= 0) {

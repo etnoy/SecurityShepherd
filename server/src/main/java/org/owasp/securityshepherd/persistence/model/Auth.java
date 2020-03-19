@@ -2,14 +2,12 @@ package org.owasp.securityshepherd.persistence.model;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.annotation.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
-import lombok.NonNull;
 import lombok.Value;
 import lombok.With;
 
