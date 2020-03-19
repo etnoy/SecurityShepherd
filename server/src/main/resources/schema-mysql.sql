@@ -46,8 +46,8 @@ CREATE TABLE auth (
   account_created TIMESTAMP NULL DEFAULT NULL,
   last_login TIMESTAMP NULL DEFAULT NULL,
   last_login_method VARCHAR(10),
-    PRIMARY KEY (id) ,
-  FOREIGN KEY (`user`) REFERENCES user(id))
+ PRIMARY KEY (id) ,
+ FOREIGN KEY (`user`) REFERENCES user(id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
@@ -66,8 +66,8 @@ CREATE TABLE password_auth (
   login_name VARCHAR(191) NOT NULL UNIQUE,
   hashed_password VARCHAR(191),
   is_password_non_expired BOOLEAN DEFAULT FALSE,
-      PRIMARY KEY (id) ,
-    FOREIGN KEY (`user`) REFERENCES user(id))
+  PRIMARY KEY (id) ,
+ FOREIGN KEY (`user`) REFERENCES user(id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 

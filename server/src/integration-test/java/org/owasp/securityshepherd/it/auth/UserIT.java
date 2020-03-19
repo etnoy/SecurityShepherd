@@ -35,7 +35,12 @@ public class UserIT {
   @Test
   public void initialTest() throws Exception {
     
-    userService.createPasswordUser("testUser2", "username", "hash").block();
+    
+    userService.createPasswordUser("Hello1", "user", "hashedPassword").block();
+
+    userService.createPasswordUser("A Testing User", "administrator", "hashedPassword").block();
+    
+    
     
     HttpEntity<String> entity = new HttpEntity<String>(null, headers);
     ResponseEntity<String> response = restTemplate.exchange(

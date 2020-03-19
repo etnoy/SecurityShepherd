@@ -1,6 +1,8 @@
 package org.owasp.securityshepherd.web.controller;
 
+import org.owasp.securityshepherd.persistence.model.Auth;
 import org.owasp.securityshepherd.persistence.model.User;
+import org.owasp.securityshepherd.repository.AuthRepository;
 import org.owasp.securityshepherd.repository.UserRepository;
 import org.owasp.securityshepherd.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,10 @@ public class UserController {
 
   @Autowired
   private UserService userService;
+  
+  @Autowired
+  private AuthRepository authRepository;
+
 
   @GetMapping(path = "/api/v1/user/add/{displayName}")
   public ResponseEntity<Mono<String>> addUser(@PathVariable final String displayName) {
@@ -32,9 +38,9 @@ public class UserController {
   }
 
   @GetMapping(path = "/api/v1/user/list")
-  public Mono<User> allUsers() {
+  public Mono<Auth> allUsers() {
 
-    return userService.getById(1);
+    return authRepository.findByUserId(1);
 
   }
 
