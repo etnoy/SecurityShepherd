@@ -66,5 +66,4 @@ public class Auth implements Serializable {
     this.saml = null;
   }
 
-
 }

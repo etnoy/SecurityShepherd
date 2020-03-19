@@ -41,9 +41,6 @@ public class User implements Serializable {
   @PersistenceConstructor
   public User(final int id, @NonNull final String displayName, final Integer classId,
       final String email, final byte[] key) {
-    if (displayName == null) {
-      throw new java.lang.NullPointerException("displayName is marked non-null but is null");
-    }
     this.id = id;
     this.displayName = displayName;
     this.classId = classId;
