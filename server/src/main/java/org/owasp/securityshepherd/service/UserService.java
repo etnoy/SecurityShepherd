@@ -98,17 +98,20 @@ public final class UserService {
       userBuilder.displayName(tuple.getT1());
       userBuilder.auth(auth);
 
-      return userRepository.save(userBuilder.build()).flatMap(savedUser -> {
+      return userRepository.save(userBuilder.build()).flatMap(userWithId -> {
 
-        final PasswordAuth passwordAuthWithUser = passwordAuth.withUser(savedUser.getId());
-        final Auth authWithUser = auth.withUser(savedUser.getId());
+        final PasswordAuth passwordAuthWithUser = passwordAuth.withUser(userWithId.getId());
 
-        // Add password auth to database
-        return passwordAuthRepository.save(passwordAuthWithUser)
-            // Then add the auth entity to the database
-            .then(authRepository.save(authWithUser))
-            // And then return the saved user
-            .thenReturn(savedUser);
+        final Mono<PasswordAuth> passwordAuthMono =
+            passwordAuthRepository.save(passwordAuthWithUser);
+
+        final Auth authWithUser = auth.withUser(userWithId.getId());
+
+        final Mono<Auth> authMono = authRepository.save(authWithUser).zipWith(passwordAuthMono)
+            .map(authTuple -> authTuple.getT1().withPassword(authTuple.getT2()));
+
+        return Mono.just(userWithId).zipWith(authMono)
+            .map(userTuple -> userTuple.getT1().withAuth(userTuple.getT2()));
 
       });
 
