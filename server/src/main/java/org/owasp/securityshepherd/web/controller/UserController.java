@@ -29,13 +29,12 @@ public class UserController {
 
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(userService.create(displayName).map(user -> user.toString()));
-
   }
 
   @GetMapping(path = "/api/v1/user/list")
-  public Flux<User> allUsers() {
+  public Mono<User> allUsers() {
 
-    return userRepository.findAll();
+    return userService.getById(1);
 
   }
 

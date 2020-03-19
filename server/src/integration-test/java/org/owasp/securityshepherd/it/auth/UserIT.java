@@ -35,9 +35,7 @@ public class UserIT {
   @Test
   public void initialTest() throws Exception {
     
-    userService.create("testUser").block();
     userService.createPasswordUser("testUser2", "username", "hash").block();
-
     
     HttpEntity<String> entity = new HttpEntity<String>(null, headers);
     ResponseEntity<String> response = restTemplate.exchange(
