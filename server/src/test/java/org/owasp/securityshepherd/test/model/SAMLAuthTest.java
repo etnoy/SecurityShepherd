@@ -19,6 +19,8 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 @SpringBootTest
 public class SAMLAuthTest {
 
+  //TODO: test null arguments to constructor
+  
   @Test
   public void builderToString_ValidData_AsExpected() {
 
@@ -71,7 +73,7 @@ public class SAMLAuthTest {
     final int originalId = 1;
     final int[] testedIds = {originalId, 0, -1, 1000, -1000, 123456789};
 
-    final SAMLAuth newPasswordAuth = SAMLAuth.builder().id(originalId).build();
+    final SAMLAuth newPasswordAuth = SAMLAuth.builder().id(originalId).samlId("me@example.com").build();
 
     assertThat(newPasswordAuth.getId(), is(originalId));
 
@@ -114,7 +116,7 @@ public class SAMLAuthTest {
     final int originalUser = 1;
     final int[] testedUsers = {originalUser, 0, -1, 1000, -1000, 123456789};
 
-    final SAMLAuth newPasswordAuth = SAMLAuth.builder().user(originalUser).build();
+    final SAMLAuth newPasswordAuth = SAMLAuth.builder().user(originalUser).samlId("me@example.com").build();
 
     assertThat(newPasswordAuth.getUser(), is(originalUser));
 

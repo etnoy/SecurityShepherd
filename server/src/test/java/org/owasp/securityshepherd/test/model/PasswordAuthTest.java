@@ -21,6 +21,8 @@ public class PasswordAuthTest {
 
   private static final boolean[] BOOLEANS = {false, true};
 
+  //TODO: test null arguments to constructor
+  
   @Test
   public void builderToString_ValidData_AsExpected() {
 

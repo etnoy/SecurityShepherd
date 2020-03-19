@@ -26,8 +26,7 @@ public class SAMLAuth implements Serializable {
   @NonNull
   private String samlId;
 
-  SAMLAuth(final int id, final int user, final String samlId) {
-
+  SAMLAuth(final int id, final int user, @NonNull final String samlId) {
     this.id = id;
     this.user = user;
     this.samlId = samlId;
