@@ -65,8 +65,16 @@ public final class UserService {
   public Mono<User> createPasswordUser(final String displayName, final String loginName,
       final String hashedPassword) {
 
-    if (displayName == null || loginName == null || hashedPassword == null) {
-      throw new NullPointerException();
+    if (displayName == null) {
+      throw new NullPointerException("Display name cannot be null");
+    }
+
+    if (loginName == null) {
+      throw new NullPointerException("Login name cannot be null");
+    }
+
+    if (hashedPassword == null) {
+      throw new NullPointerException("Password hash cannot be null");
     }
 
     if (displayName.isEmpty() || loginName.isEmpty() || hashedPassword.isEmpty()) {
@@ -131,7 +139,7 @@ public final class UserService {
   public Flux<User> findAll() {
     return userRepository.findAll().flatMap(user -> getById(user.getId()));
   }
-  
+
   public Mono<User> getById(final int id) {
 
     if (id <= 0) {

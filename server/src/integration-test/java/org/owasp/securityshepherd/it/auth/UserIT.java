@@ -1,5 +1,6 @@
 package org.owasp.securityshepherd.it.auth;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -25,6 +26,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.reactive.server.FluxExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -54,14 +56,26 @@ public class UserIT {
     map.set("loginName", "loginName");
     map.set("passwordHash", "apasswordhash");
 
+    FluxExchangeResult<String> postResult = webClient.post().uri("/api/v1/user/register/password")
+        .contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromMultipartData(map))
+        .exchange().expectStatus().isCreated().returnResult(String.class);
 
-    webClient.post().uri("/api/v1/user/register/password").contentType(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromMultipartData(map)).exchange().expectStatus().isCreated();
+    StepVerifier.create(postResult.getResponseBody()).assertNext(postData -> {
 
-    webClient.get().uri("/api/v1/user/list").accept(MediaType.APPLICATION_JSON).exchange()
-        .expectStatus().isOk().expectHeader().contentType(MediaType.APPLICATION_JSON);
+      assertThat(postData, is("[]"));
+
+      FluxExchangeResult<String> getResult = webClient.get().uri("/api/v1/user/list")
+          .accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk().expectHeader()
+          .contentType(MediaType.APPLICATION_JSON).returnResult(String.class);
+
+      StepVerifier.create(getResult.getResponseBody()).assertNext(getData -> {
+
+        assertThat(getData, is("[]"));
+
+      }).expectComplete().verify();
 
 
+    }).expectComplete().verify();
   }
 
   @Test
