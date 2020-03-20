@@ -3,6 +3,8 @@ package org.owasp.securityshepherd.it.auth;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import java.util.HashSet;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -67,14 +69,13 @@ public class UserApiIT {
     }).expectComplete().verify();
 
   }
-  
+
   @Test
   public void apiListUsers_NoUsersExist_ReturnsNoUsers() throws Exception {
 
-    StepVerifier
-        .create(webTestClient.get().uri("/api/v1/user/list").accept(MediaType.APPLICATION_JSON)
-            .exchange().expectStatus().isOk().expectHeader().contentType(MediaType.APPLICATION_JSON)
-            .returnResult(User.class).getResponseBody())
+    StepVerifier.create(webTestClient.get().uri("/api/v1/user/list")
+        .accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk().expectHeader()
+        .contentType(MediaType.APPLICATION_JSON).returnResult(User.class).getResponseBody())
         .expectComplete().verify();
 
   }
@@ -82,32 +83,35 @@ public class UserApiIT {
   @Test
   public void apiListUsers_UsersExist_ReturnsUserList() throws Exception {
 
-    final User testUser1 = webTestClient.post().uri("/api/v1/user/register/password")
+    HashSet<User> userSet = new HashSet();
+
+    userSet.add(webTestClient.post().uri("/api/v1/user/register/password")
         .contentType(MediaType.APPLICATION_JSON)
         .body(BodyInserters.fromValue(new PasswordUserRegistrationDto("TestUserDisplayName",
             "loginName", "paLswOrdha17£@£sh")))
         .exchange().expectStatus().isCreated().expectBody(User.class).returnResult()
-        .getResponseBody();
+        .getResponseBody());
 
-    final User testUser2 = webTestClient.post().uri("/api/v1/user/register/password")
+    userSet.add(webTestClient.post().uri("/api/v1/user/register/password")
         .contentType(MediaType.APPLICATION_JSON)
         .body(BodyInserters.fromValue(
             new PasswordUserRegistrationDto("TestUser2", "loginName2", "paLswOrdha17£@£sh")))
         .exchange().expectStatus().isCreated().expectBody(User.class).returnResult()
-        .getResponseBody();
-    
-    final User testUser3 = webTestClient.post().uri("/api/v1/user/register/password")
+        .getResponseBody());
+
+    userSet.add(webTestClient.post().uri("/api/v1/user/register/password")
         .contentType(MediaType.APPLICATION_JSON)
         .body(BodyInserters.fromValue(
             new PasswordUserRegistrationDto("TestUser3", "loginName3", "paLswOrdha17£@£sh")))
         .exchange().expectStatus().isCreated().expectBody(User.class).returnResult()
-        .getResponseBody();
+        .getResponseBody());
 
     StepVerifier
         .create(webTestClient.get().uri("/api/v1/user/list").accept(MediaType.APPLICATION_JSON)
             .exchange().expectStatus().isOk().expectHeader().contentType(MediaType.APPLICATION_JSON)
             .returnResult(User.class).getResponseBody())
-        .expectNext(testUser1).expectNext(testUser2).expectNext(testUser3).expectComplete().verify();
+        .recordWith(HashSet::new).thenConsumeWhile(x -> true)
+        .expectRecordedMatches(x -> x.equals(userSet)).expectComplete().verify();
 
   }
 

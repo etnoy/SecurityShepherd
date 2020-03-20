@@ -58,8 +58,6 @@ public class UserController {
   @ResponseStatus(HttpStatus.CREATED)
   public Mono<User> register(@Valid @RequestBody final PasswordUserRegistrationDto registerDto) {
 
-    log.debug("Registering user account with information: {}", registerDto);
-
     return userService.createPasswordUser(registerDto.getDisplayName(), registerDto.getLoginName(),
         registerDto.getPassword());
 
