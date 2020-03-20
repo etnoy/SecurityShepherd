@@ -14,7 +14,6 @@ import lombok.Value;
 import lombok.With;
 
 @Value
-@EqualsAndHashCode
 @AllArgsConstructor
 @Builder
 @With
