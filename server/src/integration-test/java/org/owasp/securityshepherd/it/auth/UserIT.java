@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.persistence.model.Auth;
 import org.owasp.securityshepherd.persistence.model.PasswordAuth;
 import org.owasp.securityshepherd.persistence.model.User;
+import org.owasp.securityshepherd.service.ClassService;
 import org.owasp.securityshepherd.service.UserService;
 import org.owasp.securityshepherd.web.controller.UserController;
 import org.owasp.securityshepherd.web.dto.PasswordUserRegistrationDto;
@@ -50,21 +51,22 @@ public class UserIT {
 
   @Autowired
   private WebTestClient webTestClient;
-
+ 
+  
   @Test
-  public void apiUserCreate_ValidData_ReturnsValidUser() throws Exception {
+  public void userGet_ValidId_ReturnsUser() throws Exception {
 
     webTestClient.post().uri("/api/v1/user/register/password")
         .contentType(MediaType.APPLICATION_JSON)
         .body(BodyInserters.fromValue(new PasswordUserRegistrationDto("TestUserDisplayName",
             "loginName", "paLswOrdha17£@£sh")))
         .exchange().expectStatus().isCreated();
-    
+
     webTestClient.post().uri("/api/v1/user/register/password")
-    .contentType(MediaType.APPLICATION_JSON)
-    .body(BodyInserters.fromValue(new PasswordUserRegistrationDto("TestUser2",
-        "loginName3", "paLswOrdha17£@£sh")))
-    .exchange().expectStatus().isCreated();
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(BodyInserters.fromValue(
+            new PasswordUserRegistrationDto("TestUser2", "loginName3", "paLswOrdha17£@£sh")))
+        .exchange().expectStatus().isCreated();
 
     FluxExchangeResult<String> getResult = webTestClient.get().uri("/api/v1/user/list")
         .accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk().expectHeader()
@@ -76,7 +78,53 @@ public class UserIT {
 
     }).expectComplete().verify();
 
+  }
+  
+  @Test
+  public void userList_ValidData_ReturnsUserList() throws Exception {
 
+    webTestClient.post().uri("/api/v1/user/register/password")
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(BodyInserters.fromValue(new PasswordUserRegistrationDto("TestUserDisplayName",
+            "loginName", "paLswOrdha17£@£sh")))
+        .exchange().expectStatus().isCreated();
+
+    webTestClient.post().uri("/api/v1/user/register/password")
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(BodyInserters.fromValue(
+            new PasswordUserRegistrationDto("TestUser2", "loginName3", "paLswOrdha17£@£sh")))
+        .exchange().expectStatus().isCreated();
+
+    FluxExchangeResult<String> getResult = webTestClient.get().uri("/api/v1/user/list")
+        .accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk().expectHeader()
+        .contentType(MediaType.APPLICATION_JSON).returnResult(String.class);
+
+    StepVerifier.create(getResult.getResponseBody()).assertNext(getData -> {
+
+      assertThat(getData, is(notNullValue()));
+
+    }).expectComplete().verify();
+
+  }
+  
+  @Test
+  public void apiUserCreate_ValidData_ReturnsValidUser() throws Exception {
+
+    webTestClient.post().uri("/api/v1/user/register/password")
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(BodyInserters.fromValue(new PasswordUserRegistrationDto("TestUserDisplayName",
+            "loginName", "paLswOrdha17£@£sh")))
+        .exchange().expectStatus().isCreated();
+
+    FluxExchangeResult<String> getResult = webTestClient.get().uri("/api/v1/user/list")
+        .accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk().expectHeader()
+        .contentType(MediaType.APPLICATION_JSON).returnResult(String.class);
+
+    StepVerifier.create(getResult.getResponseBody()).assertNext(getData -> {
+
+      assertThat(getData, is(notNullValue()));
+
+    }).expectComplete().verify();
 
   }
 
@@ -120,6 +168,8 @@ public class UserIT {
   private void setUp() {
     // Print more verbose errors if something goes wrong with reactor
     Hooks.onOperatorDebug();
+    
+    userService.deleteAll().block();
   }
 
 }

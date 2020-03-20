@@ -173,6 +173,45 @@ public final class UserService {
 
   }
 
+  public Mono<Void> deleteAll() {
+    return passwordAuthRepository.deleteAll().then(authRepository.deleteAll()).then(userRepository.deleteAll());
+  }
+  
+  public Mono<Void> deleteById(final int id) {
+
+    if (id <= 0) {
+      return Mono.error(new InvalidUserIdException());
+    }
+
+    final Mono<User> user = Mono.just(id).filterWhen(userRepository::existsById)
+        .switchIfEmpty(Mono.error(new UserIdNotFoundException())).flatMap(userRepository::findById);
+
+    final Mono<PasswordAuth> passwordAuth = Mono.just(id).flatMap(userId -> {
+      final Mono<PasswordAuth> returnedPasswordAuth = passwordAuthRepository.findByUserId(userId);
+      if (returnedPasswordAuth == null) {
+        return Mono.empty();
+      }
+      return returnedPasswordAuth;
+    });
+
+    final Mono<Auth> auth = Mono.just(id).flatMap(userId -> {
+      final Mono<Auth> returnedAuth = authRepository.findByUserId(userId);
+      if (returnedAuth == null) {
+        return Mono.empty();
+      }
+      return returnedAuth;
+    });
+
+    final Mono<Auth> completeAuth = auth.zipWith(passwordAuth)
+        .map(tuple -> tuple.getT1().withPassword(tuple.getT2())).switchIfEmpty(auth);
+
+    return user.zipWith(completeAuth).flatMap(tuple -> {
+      return userRepository.delete(tuple.getT1());
+    });
+
+
+  }
+
   public Mono<User> getByLoginName(final String loginName) {
 
     if (loginName == null) {

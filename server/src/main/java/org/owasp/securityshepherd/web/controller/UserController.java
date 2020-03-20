@@ -26,12 +26,31 @@ public class UserController {
   @Autowired
   private UserService userService;
 
+  @PostMapping(path = "/deleteAll")
+  public Mono<Void> deleteAll() {
+
+    return userService.deleteAll();
+
+  }
+  
+  @PostMapping(path = "/delete/{id}")
+  public Mono<Void> deleteById(@PathVariable int id) {
+
+    return userService.deleteById(id);
+
+  }
+  
   @GetMapping(path = "/list")
   public Flux<User> findAll() {
 
-    log.debug("Listing all users");
-
     return userService.findAll();
+
+  }
+  
+  @GetMapping(path = "/get/{id}")
+  public Mono<User> getById(@PathVariable int id) {
+
+    return userService.getById(id);
 
   }
 
