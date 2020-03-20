@@ -5,13 +5,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.owasp.securityshepherd.validation.ValidPassword;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.Value;
 
-@Data
+@Value
 @AllArgsConstructor
-@NoArgsConstructor
 public class PasswordUserRegistrationDto implements Serializable {
 
   private static final long serialVersionUID = 8155074795022450359L;

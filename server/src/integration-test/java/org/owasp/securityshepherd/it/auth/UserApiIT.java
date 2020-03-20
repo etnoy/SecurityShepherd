@@ -82,7 +82,7 @@ public class UserApiIT {
   @Test
   public void apiListUsers_UsersExist_ReturnsUserList() throws Exception {
 
-    HashSet<User> userSet = new HashSet();
+    HashSet<User> userSet = new HashSet<User>();
 
     userSet.add(webTestClient.post().uri("/api/v1/user/register/password")
         .contentType(MediaType.APPLICATION_JSON)
