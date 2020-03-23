@@ -1,21 +1,33 @@
 package org.owasp.securityshepherd.persistence.model;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import org.owasp.securityshepherd.security.Role;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.Value;
 import lombok.With;
+import lombok.extern.slf4j.Slf4j;
 
 @Value
 @AllArgsConstructor
 @Builder
+@Slf4j
 @With
-public final class User implements Serializable {
+public final class User implements Serializable, UserDetails {
 
   private static final long serialVersionUID = 3097353498257801154L;
 
@@ -34,7 +46,7 @@ public final class User implements Serializable {
 
   @Transient
   private final Auth auth;
-
+  
   @PersistenceConstructor
   public User(final Integer id, @NonNull final String displayName, final Integer classId,
       final String email, final byte[] key) {
@@ -45,5 +57,66 @@ public final class User implements Serializable {
     this.key = key;
     this.auth = null;
   }
+
+  @Override
+  public String getPassword() {
+
+    log.trace("Found password hash ", this.getAuth().getPassword().getHashedPassword());
+
+    return this.getAuth().getPassword().getHashedPassword();
+
+  }
+
+  @Override
+  public String getUsername() {
+
+    return auth.getPassword().getLoginName();
+
+  }
+
+  @Override
+  public boolean isAccountNonExpired() {
+    return true;
+  }
+
+  @Override
+  public boolean isAccountNonLocked() {
+
+    final Timestamp suspendedUntil = auth.getSuspendedUntil();
+
+    if (suspendedUntil == null) {
+      return true;
+    }
+
+    return suspendedUntil.getTime() < System.currentTimeMillis();
+
+  }
+
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return auth.getPassword().isPasswordNonExpired();
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return auth.isEnabled();
+  }
+
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+
+    String role;
+
+    if (auth.isAdmin()) {
+      role = "admin";
+    } else {
+      role = "player";
+    }
+
+    return Collections.singletonList(new SimpleGrantedAuthority(role));
+
+  }
+  
+
 
 }

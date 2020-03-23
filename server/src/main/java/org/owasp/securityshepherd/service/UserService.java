@@ -174,9 +174,10 @@ public final class UserService {
   }
 
   public Mono<Void> deleteAll() {
-    return passwordAuthRepository.deleteAll().then(authRepository.deleteAll()).then(userRepository.deleteAll());
+    return passwordAuthRepository.deleteAll().then(authRepository.deleteAll())
+        .then(userRepository.deleteAll());
   }
-  
+
   public Mono<Void> deleteById(final int id) {
 
     if (id <= 0) {
@@ -209,7 +210,6 @@ public final class UserService {
       return userRepository.delete(tuple.getT1());
     });
 
-
   }
 
   public Mono<User> getByLoginName(final String loginName) {
@@ -223,7 +223,8 @@ public final class UserService {
     }
 
     return passwordAuthRepository.findByLoginName(loginName)
-        .switchIfEmpty(Mono.error(new LoginNameNotFoundException()))
+        .switchIfEmpty(
+            Mono.error(new LoginNameNotFoundException("Username " + loginName + " not found")))
         .map(passwordAuth -> passwordAuth.getUser()).flatMap(this::getById);
 
   }
