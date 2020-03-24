@@ -29,40 +29,35 @@ public class UserController {
   @Autowired
   private UserService userService;
 
-  @PostMapping(path = "/deleteAll")
+  @PostMapping(path = "users/deleteAll")
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
   public Mono<Void> deleteAll() {
 
     return userService.deleteAll();
 
   }
 
-  @PostMapping(path = "/delete/{id}")
+  @PostMapping(path = "user/delete/{id}")
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
   public Mono<Void> deleteById(@PathVariable int id) {
 
     return userService.deleteById(id);
 
   }
 
-  @GetMapping(path = "/list")
+  @GetMapping(path = "users")
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
   public Flux<User> findAll() {
 
     return userService.findAll();
 
   }
 
-  @GetMapping(path = "/{id}")
+  @GetMapping(path = "user/{id}")
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
   public Mono<User> getById(@PathVariable int id) {
 
     return userService.getById(id);
-
-  }
-
-  @PostMapping(path = "/register/password")
-  @ResponseStatus(HttpStatus.CREATED)
-  public Mono<User> register(@Valid @RequestBody final PasswordUserRegistrationDto registerDto) {
-
-    return userService.createPasswordUser(registerDto.getDisplayName(), registerDto.getLoginName(),
-        registerDto.getPassword());
 
   }
 
@@ -75,7 +70,7 @@ public class UserController {
   }
 
   @RequestMapping(value = "/resource/admin", method = RequestMethod.GET)
-  @PreAuthorize("hasRole('ADMIN')")
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
   public Mono<ResponseEntity<?>> admin() {
     log.debug("Admin Resource");
 
@@ -83,7 +78,7 @@ public class UserController {
   }
 
   @RequestMapping(value = "/resource/user-or-admin", method = RequestMethod.GET)
-  @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+  @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
   public Mono<ResponseEntity<?>> userOrAdmin() {
     return Mono.just(ResponseEntity.ok(new Message("Content for user or admin")));
   }

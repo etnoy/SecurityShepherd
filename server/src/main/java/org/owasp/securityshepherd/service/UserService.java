@@ -82,7 +82,7 @@ public final class UserService {
     }
 
     log.info("Creating new password login user with display name " + displayName
-        + " and login name " + loginName);
+        + " and login name " + loginName + " and password hash " + hashedPassword);
 
     final Mono<String> loginNameMono =
         Mono.just(loginName).filterWhen(this::doesNotExistByLoginName).switchIfEmpty(
@@ -125,6 +125,24 @@ public final class UserService {
       });
 
     });
+
+  }
+
+  public Mono<User> promote(final int userId) {
+
+    if (userId <= 0) {
+      return Mono.error(new InvalidUserIdException());
+    }
+
+    log.info("Promoting user with id " + userId + " to admin");
+
+    final Mono<User> userMono = Mono.just(userId).filterWhen(userRepository::existsById)
+        .switchIfEmpty(Mono.error(new UserIdNotFoundException())).flatMap(this::getById);
+
+    final Mono<Auth> authMono =
+        userMono.map(user -> user.getAuth().withAdmin(true)).flatMap(authRepository::save);
+
+    return userMono.zipWith(authMono).map(tuple -> tuple.getT1().withAuth(tuple.getT2()));
 
   }
 

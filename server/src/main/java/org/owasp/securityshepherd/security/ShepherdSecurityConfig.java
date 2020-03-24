@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
@@ -26,8 +28,7 @@ public class ShepherdSecurityConfig {
 
   @Bean
   public SecurityWebFilterChain securitygWebFilterChain(ServerHttpSecurity http) {
-    return http
-        .exceptionHandling().authenticationEntryPoint((swe, e) -> {
+    return http.exceptionHandling().authenticationEntryPoint((swe, e) -> {
       return Mono.fromRunnable(() -> {
         log.debug("Denied: " + swe + e);
         swe.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
@@ -37,13 +38,17 @@ public class ShepherdSecurityConfig {
       return Mono.fromRunnable(() -> {
         swe.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
       });
-    }).and()
-        .csrf().disable().formLogin().disable().httpBasic().disable()
+    }).and().csrf().disable().formLogin().disable().httpBasic().disable()
         .authenticationManager(authenticationManager)
         .securityContextRepository(securityContextRepository).authorizeExchange()
+        .pathMatchers(HttpMethod.OPTIONS).permitAll().pathMatchers("/api/v1/register").permitAll()
         .pathMatchers(HttpMethod.OPTIONS).permitAll().pathMatchers("/api/v1/login").permitAll()
-        .pathMatchers(HttpMethod.OPTIONS).permitAll().pathMatchers("/api/v1/create").permitAll()
         .anyExchange().authenticated().and().build();
+  }
+
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
   }
 
 }

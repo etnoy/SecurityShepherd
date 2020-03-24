@@ -1,38 +1,38 @@
 package org.owasp.securityshepherd.security;
 
+import java.util.Collection;
+import org.owasp.securityshepherd.persistence.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
-import io.jsonwebtoken.Claims;
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Component
-@Slf4j
 public class AuthenticationManager implements ReactiveAuthenticationManager {
 
   @Autowired
-  private JWTUtil jwtUtil;
+  private JwtUtil jwtUtil;
 
   @Override
   public Mono<Authentication> authenticate(Authentication authentication) {
     String authToken = authentication.getCredentials().toString();
 
-    String username = jwtUtil.getUsernameFromToken(authToken);
+    if (jwtUtil.validateToken(authToken)) {
 
-    if (username != null && jwtUtil.validateToken(authToken)) {
-      log.debug(authToken);
-      Claims claims = jwtUtil.getAllClaimsFromToken(authToken);
-      Role role = Role.valueOf(claims.get("role", String.class));
+      final Mono<User> userMono = jwtUtil.getUserFromToken(authToken);
 
-      log.debug("Role: " + role);
-      
-      UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(username,
-          new SimpleGrantedAuthority(role.name()));
-      return Mono.just(auth);
+      final Mono<String> loginNameMono =
+          userMono.map(user -> user.getAuth().getPassword().getLoginName());
+
+      final Mono<Collection<? extends GrantedAuthority>> authoritiesMono =
+          userMono.map(ShepherdUserDetails::new).map(user -> user.getAuthorities());
+
+      return loginNameMono.zipWith(authoritiesMono).map(
+          tuple -> new UsernamePasswordAuthenticationToken(tuple.getT1(), null, tuple.getT2()));
+
     } else {
       return Mono.empty();
     }

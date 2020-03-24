@@ -7,31 +7,39 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import org.owasp.securityshepherd.persistence.model.User;
+import org.owasp.securityshepherd.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
 
 @Component
 @Slf4j
-public class JWTUtil implements Serializable {
-
+public class JwtUtil implements Serializable {
 
   private static final long serialVersionUID = -231492824714677145L;
-  private long expirationTime = 28800;
+
+  private static final long EXPIRATION_TIME = 28800;
 
   public static final Key JWT_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+
+  @Autowired
+  UserService userService;
 
   public Claims getAllClaimsFromToken(String token) {
 
     return Jwts.parserBuilder().setSigningKey(JWT_KEY).build().parseClaimsJws(token).getBody();
   }
 
-  public String getUsernameFromToken(String token) {
-    return getAllClaimsFromToken(token).getSubject();
+  public Mono<User> getUserFromToken(String token) {
+    final int userId = Integer.parseInt(getAllClaimsFromToken(token).getSubject());
+    return userService.getById(userId);
   }
 
   public Date getExpirationDateFromToken(String token) {
@@ -45,21 +53,21 @@ public class JWTUtil implements Serializable {
 
   public String generateToken(User user) {
     Map<String, Object> claims = new HashMap<>();
-    Role role = user.getRole();
+    ShepherdUserDetails userDetails = new ShepherdUserDetails(user);
+    Role role = userDetails.getRole();
 
     claims.put("role", role);
 
-    return doGenerateToken(claims, user.getUsername());
+    return doGenerateToken(claims, user.getId());
   }
 
-  private String doGenerateToken(Map<String, Object> claims, String username) {
-    Long expirationTimeLong = expirationTime;
+  private String doGenerateToken(Map<String, Object> claims, int userId) {
 
     final Date createdDate = new Date();
-    final Date expirationDate = new Date(createdDate.getTime() + expirationTimeLong * 1000);
+    final Date expirationDate = new Date(createdDate.getTime() + EXPIRATION_TIME * 1000);
 
-    return Jwts.builder().setClaims(claims).setSubject(username).setIssuedAt(createdDate)
-        .setExpiration(expirationDate).signWith(JWT_KEY).compact();
+    return Jwts.builder().setClaims(claims).setSubject(Integer.toString(userId))
+        .setIssuedAt(createdDate).setExpiration(expirationDate).signWith(JWT_KEY).compact();
 
   }
 
