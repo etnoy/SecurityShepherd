@@ -7,10 +7,11 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.r2dbc.connectionfactory.init.CompositeDatabasePopulator;
 import org.springframework.data.r2dbc.connectionfactory.init.ConnectionFactoryInitializer;
 import org.springframework.data.r2dbc.connectionfactory.init.ResourceDatabasePopulator;
-
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import io.r2dbc.spi.ConnectionFactory;
 
 @SpringBootApplication
+@EnableWebFluxSecurity
 public class SecurityShepherdApplication {
 
   public static void main(String[] args) throws Throwable {

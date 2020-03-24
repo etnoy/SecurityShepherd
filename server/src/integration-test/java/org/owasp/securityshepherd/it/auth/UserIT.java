@@ -25,7 +25,7 @@ public class UserIT {
   public void createPasswordUser_ValidData_RepositoryFindsCorrectUser() throws Exception {
 
     final User testUser =
-        userService.createPasswordUser("Test User", "user_login_name", "hashedPassword").block();
+        userService.createPasswordUser("Test User", "user_login_name", "$2y$12$53B6QcsGwF3Os1GVFUFSQOhIPXnWFfuEkRJdbknFWnkXfUBMUKhaW").block();
 
     StepVerifier.create(userService.getById(testUser.getId())).expectNext(testUser).expectComplete()
         .verify();

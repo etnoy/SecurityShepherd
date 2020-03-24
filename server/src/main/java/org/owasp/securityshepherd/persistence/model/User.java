@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import org.owasp.securityshepherd.security.Role;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
@@ -15,9 +14,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 import lombok.Value;
 import lombok.With;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +43,7 @@ public final class User implements Serializable, UserDetails {
 
   @Transient
   private final Auth auth;
-  
+
   @PersistenceConstructor
   public User(final Integer id, @NonNull final String displayName, final Integer classId,
       final String email, final byte[] key) {
@@ -60,8 +57,6 @@ public final class User implements Serializable, UserDetails {
 
   @Override
   public String getPassword() {
-
-    log.trace("Found password hash ", this.getAuth().getPassword().getHashedPassword());
 
     return this.getAuth().getPassword().getHashedPassword();
 
@@ -102,21 +97,24 @@ public final class User implements Serializable, UserDetails {
     return auth.isEnabled();
   }
 
+
+  public Role getRole() {
+
+    if (auth.isAdmin()) {
+      return Role.ROLE_ADMIN;
+    } else {
+      return Role.ROLE_USER;
+    }
+
+  }
+
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
 
-    String role;
-
-    if (auth.isAdmin()) {
-      role = "admin";
-    } else {
-      role = "player";
-    }
-
-    return Collections.singletonList(new SimpleGrantedAuthority(role));
+    return Collections.singletonList(new SimpleGrantedAuthority(getRole().name()));
 
   }
-  
+
 
 
 }

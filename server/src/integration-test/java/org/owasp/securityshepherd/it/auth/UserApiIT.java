@@ -19,7 +19,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.FluxExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
+import com.jayway.jsonpath.JsonPath;
 import reactor.core.publisher.Hooks;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
@@ -32,6 +35,7 @@ public class UserApiIT {
 
   @Autowired
   private WebTestClient webTestClient;
+
 
   @Test
   public void apiGetUser_ValidId_ReturnsUser() throws Exception {
@@ -66,6 +70,27 @@ public class UserApiIT {
       assertThat(getData, is(testUser));
 
     }).expectComplete().verify();
+
+  }
+
+  @Test
+  public void apiGetUserResource_AuthenticatedUser_Success() throws Exception {
+
+    final String loginName = "test";
+    final String hashedPassword = "$2y$12$53B6QcsGwF3Os1GVFUFSQOhIPXnWFfuEkRJdbknFWnkXfUBMUKhaW";
+
+    userService.createPasswordUser("Test User", loginName, hashedPassword).block();
+
+    String token = JsonPath.parse(
+        new String(webTestClient.post().uri("/api/v1/login").contentType(MediaType.APPLICATION_JSON)
+            .body(BodyInserters.fromPublisher(
+                Mono.just("{\"username\": \"" + loginName + "\", \"password\": \"test\"}"),
+                String.class))
+            .exchange().expectStatus().isOk().expectBody().returnResult().getResponseBody()))
+        .read("$.token");
+
+    webTestClient.get().uri("/api/v1/resource/user").header("Authorization", "Bearer " + token)
+              .exchange().expectStatus().isOk();
 
   }
 

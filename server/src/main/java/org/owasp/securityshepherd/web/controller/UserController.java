@@ -2,9 +2,6 @@ package org.owasp.securityshepherd.web.controller;
 
 import javax.validation.Valid;
 import org.owasp.securityshepherd.persistence.model.User;
-import org.owasp.securityshepherd.security.AuthRequest;
-import org.owasp.securityshepherd.security.AuthResponse;
-import org.owasp.securityshepherd.security.JWTUtil;
 import org.owasp.securityshepherd.security.Message;
 import org.owasp.securityshepherd.service.UserService;
 import org.owasp.securityshepherd.web.dto.PasswordUserRegistrationDto;
@@ -12,9 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,13 +23,11 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @Slf4j
+@RequestMapping("/api/v1/")
 public class UserController {
 
   @Autowired
   private UserService userService;
-
-  @Autowired
-  private JWTUtil jwtUtil;
 
   @PostMapping(path = "/deleteAll")
   public Mono<Void> deleteAll() {
@@ -65,15 +57,6 @@ public class UserController {
 
   }
 
-  @PostMapping(path = "/create")
-  public Mono<User> create() {
-
-    return userService.createPasswordUser("test", "test",
-        "$2y$12$53B6QcsGwF3Os1GVFUFSQOhIPXnWFfuEkRJdbknFWnkXfUBMUKhaW");
-
-
-  }
-
   @PostMapping(path = "/register/password")
   @ResponseStatus(HttpStatus.CREATED)
   public Mono<User> register(@Valid @RequestBody final PasswordUserRegistrationDto registerDto) {
@@ -83,37 +66,19 @@ public class UserController {
 
   }
 
-  @RequestMapping(value = "/login", method = RequestMethod.POST)
-  public Mono<ResponseEntity<?>> login(@RequestBody AuthRequest authRequest) {
-    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
-    
-    log.debug("AR: " + authRequest);
-    log.debug("User: " + authRequest.getUsername());
-
-    return userService.getByLoginName(authRequest.getUsername()).map((userDetails) -> {
-      log.debug("Getpw: " + userDetails.getPassword());
-
-      if (encoder.matches(authRequest.getPassword(), userDetails.getPassword())) {
-        log.debug("Password validated.");
-
-        return ResponseEntity.ok(new AuthResponse(jwtUtil.generateToken(userDetails)));
-      } else {
-        log.debug("Password check failed.");
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-      }
-    }).defaultIfEmpty(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
-  }
-
   @RequestMapping(value = "/resource/user", method = RequestMethod.GET)
-  @PreAuthorize("hasRole('USER')")
+  @PreAuthorize("hasRole('ROLE_USER')")
   public Mono<ResponseEntity<?>> user() {
+    log.debug("User Resource");
+
     return Mono.just(ResponseEntity.ok(new Message("Content for user")));
   }
 
   @RequestMapping(value = "/resource/admin", method = RequestMethod.GET)
   @PreAuthorize("hasRole('ADMIN')")
   public Mono<ResponseEntity<?>> admin() {
+    log.debug("Admin Resource");
+
     return Mono.just(ResponseEntity.ok(new Message("Content for admin")));
   }
 
