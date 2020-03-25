@@ -2,23 +2,19 @@ language: java
 
 jobs:
   include:
-  - stage: build
-    script: 
-    - cd server
-    - mvn clean install -DskipTests -B -V
-  - stage: unit-test
+  - stage: backend-test
     services: mysql
     script: 
     - cd server
     - mysql -e 'CREATE DATABASE IF NOT EXISTS core;'  
     - mvn clean verify -DskipITs=true 
-  - stage: integration-test
+  - stage: backend-test
     services: mysql
     script:
     - cd server
     - mysql -e 'CREATE DATABASE IF NOT EXISTS core;'  
     - mvn verify -DskipUTs=true -B -V
-  - stage: coverage
+  - stage: backend-test
     services: mysql
     script:
     - cd server
