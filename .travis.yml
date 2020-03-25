@@ -10,20 +10,27 @@ jobs:
     services: mysql
     script: 
     - cd server
-    - git fetch --unshallow
     - mysql -e 'CREATE DATABASE IF NOT EXISTS core;'  
-    - mvn clean verify -DskipITs=true sonar:sonar -Pcoverage -Dsonar.projectKey=etnoy_SecurityShepherd -B -V
+    - mvn clean verify -DskipITs=true 
   - stage: integration-test
     services: mysql
     script:
     - cd server
     - mysql -e 'CREATE DATABASE IF NOT EXISTS core;'  
     - mvn verify -DskipUTs=true -B -V
+  - stage: coverage
+    services: mysql
+    script:
+    - cd server
+    - git fetch --unshallow
+    - mysql -e 'CREATE DATABASE IF NOT EXISTS core;'  
+    - mvn clean verify sonar:sonar -Pcoverage -Dsonar.projectKey=etnoy_SecurityShepherd -B -V
     
 stages:
 - build
 - unit-test
 - integration-test
+- coverage
 - name: deploy
   if: branch IN (master, dev) AND type = push
   
