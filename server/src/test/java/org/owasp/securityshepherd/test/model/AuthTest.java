@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.persistence.model.Auth;
 import org.owasp.securityshepherd.persistence.model.PasswordAuth;
-import org.owasp.securityshepherd.persistence.model.SAMLAuth;
+import org.owasp.securityshepherd.persistence.model.SamlAuth;
 import org.owasp.securityshepherd.persistence.model.Auth.AuthBuilder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -31,6 +31,26 @@ public class AuthTest {
 
     assertThat(builder.toString(), is(
         "Auth.AuthBuilder(id=null, user=0, isEnabled=false, badLoginCount=0, isAdmin=false, suspendedUntil=null, suspensionMessage=null, accountCreated=null, lastLogin=null, lastLoginMethod=null, password=null, saml=null)"));
+
+  }
+
+  @Test
+  public void persistenceConstructor_ValidData_ConstructsObject() {
+
+    final Auth testAuth = new Auth(1, 2, false, 3, false, null, null, null, null, null);
+
+    assertThat(testAuth.getId(), is(1));
+    assertThat(testAuth.getUser(), is(2));
+    assertThat(testAuth.isEnabled(), is(false));
+    assertThat(testAuth.getBadLoginCount(), is(3));
+    assertThat(testAuth.isAdmin(), is(false));
+    assertThat(testAuth.getSuspendedUntil(), is(nullValue()));
+    assertThat(testAuth.getSuspensionMessage(), is(nullValue()));
+    assertThat(testAuth.getAccountCreated(), is(nullValue()));
+    assertThat(testAuth.getLastLogin(), is(nullValue()));
+    assertThat(testAuth.getLastLoginMethod(), is(nullValue()));
+    assertThat(testAuth.getPassword(), is(nullValue()));
+    assertThat(testAuth.getSaml(), is(nullValue()));
 
   }
 
@@ -172,7 +192,7 @@ public class AuthTest {
     for (String samlId : samlIdsToTest) {
 
       final AuthBuilder builder = Auth.builder();
-      final SAMLAuth samlAuth = SAMLAuth.builder().samlId(samlId).build();
+      final SamlAuth samlAuth = SamlAuth.builder().samlId(samlId).build();
 
       builder.saml(samlAuth);
 
@@ -388,8 +408,8 @@ public class AuthTest {
   @Test
   public void withSaml_ValidSamlAuth_ChangesSamlAuth() {
 
-    final SAMLAuth samlAuth1 = SAMLAuth.builder().samlId("samlid1").build();
-    final SAMLAuth samlAuth2 = SAMLAuth.builder().samlId("samlid2").build();
+    final SamlAuth samlAuth1 = SamlAuth.builder().samlId("samlid1").build();
+    final SamlAuth samlAuth2 = SamlAuth.builder().samlId("samlid2").build();
 
     final Auth testAuth = Auth.builder().saml(samlAuth1).build();
 

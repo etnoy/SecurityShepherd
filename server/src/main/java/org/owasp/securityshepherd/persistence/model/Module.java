@@ -11,7 +11,6 @@ import lombok.Value;
 import lombok.With;
 
 @Value
-@EqualsAndHashCode
 @Builder
 @With
 public class Module implements Serializable {

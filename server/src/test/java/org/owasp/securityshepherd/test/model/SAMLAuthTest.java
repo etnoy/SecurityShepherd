@@ -7,8 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.owasp.securityshepherd.persistence.model.SAMLAuth;
-import org.owasp.securityshepherd.persistence.model.SAMLAuth.SAMLAuthBuilder;
+import org.owasp.securityshepherd.persistence.model.SamlAuth;
+import org.owasp.securityshepherd.persistence.model.SamlAuth.SamlAuthBuilder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -24,15 +24,22 @@ public class SAMLAuthTest {
   @Test
   public void builderToString_ValidData_AsExpected() {
 
-    assertThat(SAMLAuth.builder().toString(),
-        is("SAMLAuth.SAMLAuthBuilder(id=0, user=0, samlId=null)"));
+    assertThat(SamlAuth.builder().toString(),
+        is("SamlAuth.SamlAuthBuilder(id=0, user=0, samlId=null)"));
 
   }
 
   @Test
+  public void persistenceConstructor_NullSamlId_ThrowsNullPointerException() {
+
+    assertThrows(NullPointerException.class, () -> new SamlAuth(1, 2, null));
+
+  }
+  
+  @Test
   public void buildSamlid_NullSamlId_ThrowsException() {
 
-    assertThrows(NullPointerException.class, () -> SAMLAuth.builder().samlId(null));
+    assertThrows(NullPointerException.class, () -> SamlAuth.builder().samlId(null));
 
   }
 
@@ -43,11 +50,11 @@ public class SAMLAuthTest {
 
     for (String samlId : samlIdsToTest) {
 
-      final SAMLAuthBuilder builder = SAMLAuth.builder();
+      final SamlAuthBuilder builder = SamlAuth.builder();
 
       builder.samlId(samlId);
 
-      assertThat(builder.build(), instanceOf(SAMLAuth.class));
+      assertThat(builder.build(), instanceOf(SamlAuth.class));
       assertThat(builder.build().getSamlId(), is(samlId));
 
     }
@@ -56,14 +63,14 @@ public class SAMLAuthTest {
 
   @Test
   public void equals_AutomaticTesting() {
-    EqualsVerifier.forClass(SAMLAuth.class).withIgnoredAnnotations(NonNull.class).verify();
+    EqualsVerifier.forClass(SamlAuth.class).withIgnoredAnnotations(NonNull.class).verify();
   }
 
   @Test
   public void toString_ValidData_AsExpected() {
 
-    assertThat(SAMLAuth.builder().samlId("TestID").build().toString(),
-        is("SAMLAuth(id=0, user=0, samlId=TestID)"));
+    assertThat(SamlAuth.builder().samlId("TestID").build().toString(),
+        is("SamlAuth(id=0, user=0, samlId=TestID)"));
 
   }
 
@@ -73,7 +80,7 @@ public class SAMLAuthTest {
     final int originalId = 1;
     final int[] testedIds = {originalId, 0, -1, 1000, -1000, 123456789};
 
-    final SAMLAuth newPasswordAuth = SAMLAuth.builder().id(originalId).samlId("me@example.com").build();
+    final SamlAuth newPasswordAuth = SamlAuth.builder().id(originalId).samlId("me@example.com").build();
 
     assertThat(newPasswordAuth.getId(), is(originalId));
 
@@ -89,21 +96,21 @@ public class SAMLAuthTest {
   public void withSamlid_NullSamlId_ThrowsException() {
 
     assertThrows(NullPointerException.class,
-        () -> SAMLAuth.builder().samlId("Test").build().withSamlId(null));
+        () -> SamlAuth.builder().samlId("Test").build().withSamlId(null));
 
   }
 
   @Test
   public void withSamlId_ValidSamlId_ChangesSamlId() {
 
-    final SAMLAuth samlAuth = SAMLAuth.builder().samlId("me@example.com").build();
+    final SamlAuth samlAuth = SamlAuth.builder().samlId("me@example.com").build();
 
     final String[] testedSamlIds =
         {"me@example.com", "", "banned", "Long  With     Whitespace", "12345"};
 
     for (String newSamlId : testedSamlIds) {
 
-      final SAMLAuth changedAuth = samlAuth.withSamlId(newSamlId);
+      final SamlAuth changedAuth = samlAuth.withSamlId(newSamlId);
       assertThat(changedAuth.getSamlId(), is(newSamlId));
 
     }
@@ -116,7 +123,7 @@ public class SAMLAuthTest {
     final int originalUser = 1;
     final int[] testedUsers = {originalUser, 0, -1, 1000, -1000, 123456789};
 
-    final SAMLAuth newPasswordAuth = SAMLAuth.builder().user(originalUser).samlId("me@example.com").build();
+    final SamlAuth newPasswordAuth = SamlAuth.builder().user(originalUser).samlId("me@example.com").build();
 
     assertThat(newPasswordAuth.getUser(), is(originalUser));
 

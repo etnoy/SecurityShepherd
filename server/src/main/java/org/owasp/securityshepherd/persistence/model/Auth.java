@@ -8,12 +8,10 @@ import org.springframework.data.annotation.Transient;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Value;
 import lombok.With;
 
 @Value
-@EqualsAndHashCode
 @AllArgsConstructor
 @Builder
 @With
@@ -48,7 +46,7 @@ public final class Auth implements Serializable {
   private PasswordAuth password;
 
   @Transient
-  private SAMLAuth saml;
+  private SamlAuth saml;
 
   @PersistenceConstructor
   public Auth(final Integer id, final int user, final boolean isEnabled, final int badLoginCount,

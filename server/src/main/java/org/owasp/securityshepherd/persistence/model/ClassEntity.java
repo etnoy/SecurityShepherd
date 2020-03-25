@@ -13,14 +13,12 @@ import lombok.With;
 
 @Value
 @Table("class")
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder(builderClassName = "ClassBuilder")
 @With
 public class ClassEntity implements Serializable {
 
   private static final long serialVersionUID = 7375094814834027958L;
 
-  @EqualsAndHashCode.Include
   @Id
   private final int id;
 

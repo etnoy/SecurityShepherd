@@ -1,17 +1,14 @@
 package org.owasp.securityshepherd.persistence.model;
 
 import java.io.Serializable;
-
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.PersistenceConstructor;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
-import lombok.Value;
-import lombok.EqualsAndHashCode;
 import lombok.NonNull;
+import lombok.Value;
 import lombok.With;
 
 @Value
-@EqualsAndHashCode
 @Builder
 @With
 public final class PasswordAuth implements Serializable {
@@ -29,16 +26,17 @@ public final class PasswordAuth implements Serializable {
   @NonNull
   private String hashedPassword;
 
+  @JsonProperty("isPasswordNonExpired")
   private boolean isPasswordNonExpired;
-
-  @PersistenceConstructor
-  public PasswordAuth(final Integer id, final int user, @NonNull final String loginName,
-      @NonNull final String hashedPassword, final boolean isPasswordNonExpired) {
+  
+  @java.beans.ConstructorProperties({"id", "user", "loginName", "hashedPassword", "isPasswordNonExpired"})
+  public PasswordAuth(final Integer id, final int user, @NonNull final String loginName, @NonNull final String hashedPassword, @JsonProperty("isPasswordNonExpired") final boolean isPasswordNonExpired) {
     this.id = id;
     this.user = user;
     this.loginName = loginName;
     this.hashedPassword = hashedPassword;
     this.isPasswordNonExpired = isPasswordNonExpired;
   }
+
 
 }

@@ -20,20 +20,20 @@ public final class User implements Serializable {
   private static final long serialVersionUID = 3097353498257801154L;
 
   @Id
-  private final Integer id;
+  private Integer id;
 
   @NonNull
-  private final String displayName;
+  private String displayName;
 
-  private final Integer classId;
+  private Integer classId;
 
-  private final String email;
+  private String email;
 
   @Column("user_key")
-  private final byte[] key;
+  private byte[] key;
 
   @Transient
-  private final Auth auth;
+  private Auth auth;
 
   @PersistenceConstructor
   public User(final Integer id, @NonNull final String displayName, final Integer classId,

@@ -12,7 +12,6 @@ import lombok.NonNull;
 import lombok.With;
 
 @Value
-@EqualsAndHashCode
 @Builder
 @With
 public class Submission implements Serializable {

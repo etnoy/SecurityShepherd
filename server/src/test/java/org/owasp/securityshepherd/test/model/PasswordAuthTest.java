@@ -4,14 +4,12 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.persistence.model.PasswordAuth;
 import org.owasp.securityshepherd.persistence.model.PasswordAuth.PasswordAuthBuilder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
 import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
@@ -29,6 +27,20 @@ public class PasswordAuthTest {
     assertThat(PasswordAuth.builder().toString(), is(
         "PasswordAuth.PasswordAuthBuilder(id=null, user=0, loginName=null, hashedPassword=null, isPasswordNonExpired=false)"));
 
+  }
+  
+  @Test
+  public void PersistenceConstructor_NullLoginName_ThrowsNullPointerException() {
+
+    assertThrows(NullPointerException.class, () -> new PasswordAuth(1, 2, null, "hashedPassword", false));
+    
+  }
+  
+  @Test
+  public void PersistenceConstructor_NullHashedPasswordName_ThrowsNullPointerException() {
+
+    assertThrows(NullPointerException.class, () -> new PasswordAuth(1, 2, "loginName", null, false));
+    
   }
 
   @Test

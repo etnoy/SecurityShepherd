@@ -2,18 +2,17 @@ package org.owasp.securityshepherd.test.model;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.persistence.model.Auth;
-import org.owasp.securityshepherd.persistence.model.User;
 import org.owasp.securityshepherd.persistence.model.Auth.AuthBuilder;
+import org.owasp.securityshepherd.persistence.model.User;
 import org.owasp.securityshepherd.persistence.model.User.UserBuilder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
 import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
@@ -25,6 +24,26 @@ public class UserTest {
   public void build_NoArguments_ThrowsException() {
 
     assertThrows(NullPointerException.class, () -> User.builder().build());
+
+  }
+  
+  @Test
+  public void PersistenceConstructor_ValidData_ConstructsObject() {
+
+    final User testUser=new User(1,"displayName", 2, "me@example.com", null);
+    
+    assertThat(testUser.getId(), is(1));
+    assertThat(testUser.getDisplayName(), is("displayName"));
+    assertThat(testUser.getClassId(), is(2));
+    assertThat(testUser.getEmail(), is("me@example.com"));
+    assertThat(testUser.getKey(), is(nullValue()));
+    
+  }
+  
+  @Test
+  public void PersistenceConstructor_NullDisplayName_ThrowsNullPointerException() {
+
+    assertThrows(NullPointerException.class, () -> new User(1, null, 2, "me@example.com", null));
 
   }
 

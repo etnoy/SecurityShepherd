@@ -55,7 +55,7 @@ public class ClassTest {
 
   @Test
   public void equals_AutomaticTesting() {
-    EqualsVerifier.forClass(ClassEntity.class).withOnlyTheseFields("id").verify();
+    EqualsVerifier.forClass(ClassEntity.class).verify();
   }
 
   @Test
@@ -115,7 +115,6 @@ public class ClassTest {
 
       changedClass = testClass.withName(newName);
       assertThat(changedClass.getName(), is(newName));
-      assertThat(changedClass, is(testClass));
 
     }
 
