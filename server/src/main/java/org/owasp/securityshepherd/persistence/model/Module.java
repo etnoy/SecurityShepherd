@@ -5,7 +5,6 @@ import java.io.Serializable;
 import org.springframework.data.annotation.Id;
 
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.With;

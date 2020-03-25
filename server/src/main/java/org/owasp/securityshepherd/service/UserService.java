@@ -1,28 +1,26 @@
 package org.owasp.securityshepherd.service;
 
 import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
+import org.owasp.securityshepherd.exception.DuplicateClassNameException;
 import org.owasp.securityshepherd.exception.DuplicateUserDisplayNameException;
 import org.owasp.securityshepherd.exception.InvalidClassIdException;
-import org.owasp.securityshepherd.exception.DuplicateClassNameException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.LoginNameNotFoundException;
 import org.owasp.securityshepherd.exception.UserIdNotFoundException;
 import org.owasp.securityshepherd.persistence.model.Auth;
-import org.owasp.securityshepherd.persistence.model.PasswordAuth;
-import org.owasp.securityshepherd.persistence.model.User;
 import org.owasp.securityshepherd.persistence.model.Auth.AuthBuilder;
+import org.owasp.securityshepherd.persistence.model.PasswordAuth;
 import org.owasp.securityshepherd.persistence.model.PasswordAuth.PasswordAuthBuilder;
+import org.owasp.securityshepherd.persistence.model.User;
 import org.owasp.securityshepherd.persistence.model.User.UserBuilder;
 import org.owasp.securityshepherd.repository.AuthRepository;
 import org.owasp.securityshepherd.repository.PasswordAuthRepository;
 import org.owasp.securityshepherd.repository.UserRepository;
 import org.springframework.stereotype.Service;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.util.function.Tuple2;
 
 @Slf4j
 @RequiredArgsConstructor

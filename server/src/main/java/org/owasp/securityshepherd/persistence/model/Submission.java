@@ -7,7 +7,6 @@ import org.springframework.data.annotation.Id;
 
 import lombok.Builder;
 import lombok.Value;
-import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.With;
 
