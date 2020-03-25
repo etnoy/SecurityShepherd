@@ -183,6 +183,7 @@ public class UserApiIT {
     // Print more verbose errors if something goes wrong with reactor
     Hooks.onOperatorDebug();
 
+    // Clear all users from repository before every test
     userService.deleteAll().block();
   }
 
