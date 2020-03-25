@@ -18,6 +18,7 @@ jobs:
     - nvm install 12
     install:
     - npm install
+    - npm install -g @angular/cli
     script:
     - npm run lint
     - ng test
