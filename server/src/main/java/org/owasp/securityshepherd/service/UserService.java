@@ -162,8 +162,7 @@ public final class UserService {
     final Mono<Auth> authMono =
         userMono.map(user -> user.getAuth().withAdmin(isAdmin)).flatMap(authRepository::save);
 
-    return userMono.zipWith(authMono).map(tuple -> tuple.getT1().withAuth(tuple.getT2()))
-        .flatMap(userRepository::save);
+    return userMono.zipWith(authMono).map(tuple -> tuple.getT1().withAuth(tuple.getT2()));
 
   }
 

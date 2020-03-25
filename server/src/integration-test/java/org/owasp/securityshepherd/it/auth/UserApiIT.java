@@ -19,6 +19,7 @@ import org.springframework.test.web.reactive.server.FluxExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 import com.jayway.jsonpath.JsonPath;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -26,6 +27,7 @@ import reactor.test.StepVerifier;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
+@Slf4j
 public class UserApiIT {
 
   @Autowired
@@ -138,7 +140,7 @@ public class UserApiIT {
             String.class))
         .exchange().expectStatus().isCreated().expectBody(Integer.class).returnResult()
         .getResponseBody();
-
+    
     // Promote this user to admin
     userService.promote(userId).block();
 

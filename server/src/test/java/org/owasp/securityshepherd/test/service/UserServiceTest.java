@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -197,177 +198,6 @@ public class UserServiceTest {
   }
 
   @Test
-  public void promote_UserIsNotAdmin_PromotedToAdmin() throws Exception {
-
-    final String displayName = "createPasswordUser_ValidData";
-    final String loginName = "_createPasswordUser_ValidData_";
-
-    final String hashedPassword = "a_valid_password";
-
-    final int mockUserId = 933;
-    final int mockAuthId = 80;
-    final int mockPasswordAuthId = 710;
-
-    final User mockUser = mock(User.class);
-    final User mockAdminUser = mock(User.class);
-    final Auth mockAuth = mock(Auth.class);
-    final Auth mockAdminAuth = mock(Auth.class);
-
-    when(passwordAuthRepository.findByLoginName(loginName)).thenReturn(Mono.empty());
-    when(userRepository.findByDisplayName(displayName)).thenReturn(Mono.empty());
-
-    when(userRepository.save(any(User.class))).thenAnswer(user -> {
-      if (user.getArgument(0, User.class) == mockAdminUser) {
-        // We are saving the admin user to db
-        return Mono.just(user.getArgument(0, User.class));
-      } else {
-        // We are saving the newly created user to db
-        return Mono.just(user.getArgument(0, User.class).withId(mockUserId));
-      }
-    });
-
-    when(authRepository.save(any(Auth.class))).thenAnswer(auth -> {
-      if (auth.getArgument(0, Auth.class) == mockAdminAuth) {
-        // We are saving the admin auth to db
-        return Mono.just(auth.getArgument(0, Auth.class));
-      } else {
-        // We are saving the newly created auth to db
-        return Mono.just(auth.getArgument(0, Auth.class).withId(mockAuthId));
-      }
-    });
-
-    when(passwordAuthRepository.save(any(PasswordAuth.class))).thenAnswer(
-        user -> Mono.just(user.getArgument(0, PasswordAuth.class).withId(mockPasswordAuthId)));
-
-    when(userRepository.existsById(mockUserId)).thenReturn(Mono.just(true));
-    when(userRepository.findById(mockUserId)).thenReturn(Mono.just(mockUser));
-    
-    when(authRepository.findByUserId(mockUserId)).thenReturn(Mono.just(mockAuth));
-    when(passwordAuthRepository.findByUserId(mockUserId))
-        .thenReturn(Mono.empty());
-
-    when(mockAuth.withAdmin(true)).thenReturn(mockAdminAuth);
-    when(mockUser.getAuth()).thenReturn(mockAuth);
-    when(mockUser.withAuth(mockAuth)).thenReturn(mockUser);
-    when(mockUser.withAuth(mockAdminAuth)).thenReturn(mockAdminUser);
-    when(mockAdminUser.getAuth()).thenReturn(mockAdminAuth);
-    when(mockAdminAuth.isAdmin()).thenReturn(true);
-
-    StepVerifier.create(userService.createPasswordUser(displayName, loginName, hashedPassword)
-        .then(userService.promote(mockUserId))).assertNext(user -> {
-
-          verify(passwordAuthRepository, times(1)).findByLoginName(loginName);
-          verify(userRepository, times(1)).findByDisplayName(displayName);
-
-          verify(userRepository, times(2)).save(any(User.class));
-          verify(userRepository, times(1)).save(mockAdminUser);
-
-          verify(authRepository, times(1)).save(mockAdminAuth);
-
-          verify(userRepository, atLeast(1)).existsById(mockUserId);
-
-          verify(userRepository, times(2)).findById(mockUserId);
-          verify(authRepository, times(4)).findByUserId(mockUserId);
-          verify(passwordAuthRepository, times(2)).findByUserId(mockUserId);
-
-          verify(mockAuth, times(1)).withAdmin(true);
-          verify(mockUser, times(1)).getAuth();
-          verify(mockUser, times(1)).withAuth(mockAdminAuth);
-
-          // Assert that the returned user is admin
-          assertThat(user, is(mockAdminUser));
-          assertThat(user.getAuth(), is(mockAdminAuth));
-          assertThat(user.getAuth().isAdmin(), is(true));
-          
-        }).expectComplete().verify();
-
-  }
-
-  @Test
-  public void promote_UserIsAdmin_StaysAdmin() throws Exception {
-
-    final String displayName = "createPasswordUser_ValidData";
-    final String loginName = "_createPasswordUser_ValidData_";
-
-    final String hashedPassword = "a_valid_password";
-
-    final int mockUserId = 933;
-    final int mockAuthId = 80;
-    final int mockPasswordAuthId = 710;
-
-    final User mockUser = mock(User.class);
-    final Auth mockAuth = mock(Auth.class);
-
-    when(passwordAuthRepository.findByLoginName(loginName)).thenReturn(Mono.empty());
-    when(userRepository.findByDisplayName(displayName)).thenReturn(Mono.empty());
-
-    when(userRepository.save(any(User.class))).thenAnswer(user -> {
-      if (user.getArgument(0, User.class) == mockUser) {
-        // We are saving the admin user to db
-        return Mono.just(user.getArgument(0, User.class));
-      } else {
-        // We are saving the newly created user to db
-        return Mono.just(user.getArgument(0, User.class).withId(mockUserId));
-      }
-    });
-
-    when(authRepository.save(any(Auth.class))).thenAnswer(auth -> {
-      if (auth.getArgument(0, Auth.class) == mockAuth) {
-        // We are saving the admin auth to db
-        return Mono.just(auth.getArgument(0, Auth.class));
-      } else {
-        // We are saving the newly created auth to db
-        return Mono.just(auth.getArgument(0, Auth.class).withId(mockAuthId));
-      }
-    });
-
-    when(passwordAuthRepository.save(any(PasswordAuth.class))).thenAnswer(
-        user -> Mono.just(user.getArgument(0, PasswordAuth.class).withId(mockPasswordAuthId)));
-
-    when(userRepository.existsById(mockUserId)).thenReturn(Mono.just(true));
-    when(userRepository.findById(mockUserId)).thenReturn(Mono.just(mockUser));
-    
-    when(authRepository.findByUserId(mockUserId)).thenReturn(Mono.just(mockAuth));
-    when(passwordAuthRepository.findByUserId(mockUserId))
-        .thenReturn(Mono.empty());
-
-    when(mockAuth.withAdmin(true)).thenReturn(mockAuth);
-    when(mockUser.getAuth()).thenReturn(mockAuth);
-    when(mockUser.withAuth(mockAuth)).thenReturn(mockUser);
-    when(mockAuth.isAdmin()).thenReturn(true);
-
-    StepVerifier.create(userService.createPasswordUser(displayName, loginName, hashedPassword)
-        .then(userService.promote(mockUserId))).assertNext(user -> {
-
-          verify(passwordAuthRepository, times(1)).findByLoginName(loginName);
-          verify(userRepository, times(1)).findByDisplayName(displayName);
-
-          verify(userRepository, times(2)).save(any(User.class));
-          verify(userRepository, times(1)).save(mockUser);
-
-          verify(authRepository, times(1)).save(mockAuth);
-
-          verify(userRepository, atLeast(1)).existsById(mockUserId);
-
-          verify(userRepository, times(2)).findById(mockUserId);
-          verify(authRepository, times(4)).findByUserId(mockUserId);
-          verify(passwordAuthRepository, times(2)).findByUserId(mockUserId);
-
-          verify(mockAuth, times(1)).withAdmin(true);
-          verify(mockUser, times(1)).getAuth();
-          verify(mockUser, times(3)).withAuth(mockAuth);
-
-          // Assert that the returned user is admin
-          assertThat(user, is(mockUser));
-          assertThat(user.getAuth(), is(mockAuth));
-          assertThat(user.getAuth().isAdmin(), is(true));
-          
-        }).expectComplete().verify();
-
-  }
-
-  
-  @Test
   public void createPasswordUser_ValidData_Succeeds() throws Exception {
 
     final String displayName = "createPasswordUser_ValidData";
@@ -448,6 +278,7 @@ public class UserServiceTest {
     }).expectComplete().verify();
 
   }
+
 
   @Test
   public void getById_ExistingUserIdButNoAuthEntity_ReturnsUserEntity()
@@ -701,6 +532,160 @@ public class UserServiceTest {
       assertThat(argument.getValue().getKey(), is(testRandomBytes));
 
     }).expectComplete().verify();
+
+  }
+
+  @Test
+  public void promote_UserIsAdmin_StaysAdmin() throws Exception {
+
+    final String displayName = "createPasswordUser_ValidData";
+    final String loginName = "_createPasswordUser_ValidData_";
+
+    final String hashedPassword = "a_valid_password";
+
+    final int mockUserId = 933;
+    final int mockAuthId = 80;
+    final int mockPasswordAuthId = 710;
+
+    final User mockUser = mock(User.class);
+    final Auth mockAuth = mock(Auth.class);
+
+    when(passwordAuthRepository.findByLoginName(loginName)).thenReturn(Mono.empty());
+    when(userRepository.findByDisplayName(displayName)).thenReturn(Mono.empty());
+
+    when(userRepository.save(any(User.class)))
+        .thenAnswer(user -> Mono.just(user.getArgument(0, User.class).withId(mockUserId)));
+
+    when(authRepository.save(any(Auth.class))).thenAnswer(auth -> {
+      if (auth.getArgument(0, Auth.class) == mockAuth) {
+        // We are saving the admin auth to db
+        return Mono.just(auth.getArgument(0, Auth.class));
+      } else {
+        // We are saving the newly created auth to db
+        return Mono.just(auth.getArgument(0, Auth.class).withId(mockAuthId));
+      }
+    });
+
+    when(passwordAuthRepository.save(any(PasswordAuth.class))).thenAnswer(
+        user -> Mono.just(user.getArgument(0, PasswordAuth.class).withId(mockPasswordAuthId)));
+
+    when(userRepository.existsById(mockUserId)).thenReturn(Mono.just(true));
+    when(userRepository.findById(mockUserId)).thenReturn(Mono.just(mockUser));
+
+    when(authRepository.findByUserId(mockUserId)).thenReturn(Mono.just(mockAuth));
+    when(passwordAuthRepository.findByUserId(mockUserId)).thenReturn(Mono.empty());
+
+    when(mockAuth.withAdmin(true)).thenReturn(mockAuth);
+    when(mockUser.getAuth()).thenReturn(mockAuth);
+    when(mockUser.withAuth(mockAuth)).thenReturn(mockUser);
+    when(mockAuth.isAdmin()).thenReturn(true);
+
+    StepVerifier.create(userService.createPasswordUser(displayName, loginName, hashedPassword)
+        .then(userService.promote(mockUserId))).assertNext(user -> {
+
+          verify(passwordAuthRepository, times(1)).findByLoginName(loginName);
+          verify(userRepository, times(1)).findByDisplayName(displayName);
+
+          verify(userRepository, times(1)).save(any(User.class));
+          verify(userRepository, never()).save(mockUser);
+
+          verify(authRepository, times(1)).save(mockAuth);
+
+          verify(userRepository, atLeast(1)).existsById(mockUserId);
+
+          verify(userRepository, times(2)).findById(mockUserId);
+          verify(authRepository, times(4)).findByUserId(mockUserId);
+          verify(passwordAuthRepository, times(2)).findByUserId(mockUserId);
+
+          verify(mockAuth, times(1)).withAdmin(true);
+          verify(mockUser, times(1)).getAuth();
+          verify(mockUser, times(3)).withAuth(mockAuth);
+
+          // Assert that the returned user is admin
+          assertThat(user, is(mockUser));
+          assertThat(user.getAuth(), is(mockAuth));
+          assertThat(user.getAuth().isAdmin(), is(true));
+
+        }).expectComplete().verify();
+
+  }
+
+  @Test
+  public void promote_UserIsNotAdmin_PromotedToAdmin() throws Exception {
+
+    final String displayName = "createPasswordUser_ValidData";
+    final String loginName = "_createPasswordUser_ValidData_";
+
+    final String hashedPassword = "a_valid_password";
+
+    final int mockUserId = 933;
+    final int mockAuthId = 80;
+    final int mockPasswordAuthId = 710;
+
+    final User mockUser = mock(User.class);
+    final User mockAdminUser = mock(User.class);
+    final Auth mockAuth = mock(Auth.class);
+    final Auth mockAdminAuth = mock(Auth.class);
+
+    when(passwordAuthRepository.findByLoginName(loginName)).thenReturn(Mono.empty());
+    when(userRepository.findByDisplayName(displayName)).thenReturn(Mono.empty());
+
+    when(userRepository.save(any(User.class)))
+        .thenAnswer(user -> Mono.just(user.getArgument(0, User.class).withId(mockUserId)));
+
+    when(authRepository.save(any(Auth.class))).thenAnswer(auth -> {
+      if (auth.getArgument(0, Auth.class) == mockAdminAuth) {
+        // We are saving the admin auth to db
+        return Mono.just(auth.getArgument(0, Auth.class));
+      } else {
+        // We are saving the newly created auth to db
+        return Mono.just(auth.getArgument(0, Auth.class).withId(mockAuthId));
+      }
+    });
+
+    when(passwordAuthRepository.save(any(PasswordAuth.class))).thenAnswer(
+        user -> Mono.just(user.getArgument(0, PasswordAuth.class).withId(mockPasswordAuthId)));
+
+    when(userRepository.existsById(mockUserId)).thenReturn(Mono.just(true));
+    when(userRepository.findById(mockUserId)).thenReturn(Mono.just(mockUser));
+
+    when(authRepository.findByUserId(mockUserId)).thenReturn(Mono.just(mockAuth));
+    when(passwordAuthRepository.findByUserId(mockUserId)).thenReturn(Mono.empty());
+
+    when(mockAuth.withAdmin(true)).thenReturn(mockAdminAuth);
+    when(mockUser.getAuth()).thenReturn(mockAuth);
+    when(mockUser.withAuth(mockAuth)).thenReturn(mockUser);
+    when(mockUser.withAuth(mockAdminAuth)).thenReturn(mockAdminUser);
+    when(mockAdminUser.getAuth()).thenReturn(mockAdminAuth);
+    when(mockAdminAuth.isAdmin()).thenReturn(true);
+
+    StepVerifier.create(userService.createPasswordUser(displayName, loginName, hashedPassword)
+        .then(userService.promote(mockUserId))).assertNext(user -> {
+
+          verify(passwordAuthRepository, times(1)).findByLoginName(loginName);
+          verify(userRepository, times(1)).findByDisplayName(displayName);
+
+          verify(userRepository, times(1)).save(any(User.class));
+          verify(userRepository, never()).save(mockAdminUser);
+
+          verify(authRepository, times(1)).save(mockAdminAuth);
+
+          verify(userRepository, atLeast(1)).existsById(mockUserId);
+
+          verify(userRepository, times(2)).findById(mockUserId);
+          verify(authRepository, times(4)).findByUserId(mockUserId);
+          verify(passwordAuthRepository, times(2)).findByUserId(mockUserId);
+
+          verify(mockAuth, times(1)).withAdmin(true);
+          verify(mockUser, times(1)).getAuth();
+          verify(mockUser, times(1)).withAuth(mockAdminAuth);
+
+          // Assert that the returned user is admin
+          assertThat(user, is(mockAdminUser));
+          assertThat(user.getAuth(), is(mockAdminAuth));
+          assertThat(user.getAuth().isAdmin(), is(true));
+
+        }).expectComplete().verify();
 
   }
 
