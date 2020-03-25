@@ -157,13 +157,13 @@ public final class UserService {
       return Mono.error(new InvalidUserIdException());
     }
 
-    final Mono<User> userMono = Mono.just(userId).filterWhen(userRepository::existsById)
-        .switchIfEmpty(Mono.error(new UserIdNotFoundException())).flatMap(this::getById);
+    final Mono<User> userMono = getById(userId);
 
     final Mono<Auth> authMono =
         userMono.map(user -> user.getAuth().withAdmin(isAdmin)).flatMap(authRepository::save);
 
-    return userMono.zipWith(authMono).map(tuple -> tuple.getT1().withAuth(tuple.getT2()));
+    return userMono.zipWith(authMono).map(tuple -> tuple.getT1().withAuth(tuple.getT2()))
+        .flatMap(userRepository::save);
 
   }
 
@@ -194,6 +194,7 @@ public final class UserService {
       return Mono.error(new InvalidUserIdException());
     }
 
+    
     final Mono<PasswordAuth> passwordAuth = Mono.just(id).flatMap(userId -> {
       final Mono<PasswordAuth> returnedPasswordAuth = passwordAuthRepository.findByUserId(userId);
       if (returnedPasswordAuth == null) {
@@ -219,8 +220,8 @@ public final class UserService {
 
     final Mono<User> userMono = getUserOnly(userId);
 
-    return getUserOnly(userId).zipWith(getAuth(userId)).map(tuple -> tuple.getT1().withAuth(tuple.getT2()))
-        .switchIfEmpty(userMono);
+    return getUserOnly(userId).zipWith(getAuth(userId))
+        .map(tuple -> tuple.getT1().withAuth(tuple.getT2())).switchIfEmpty(userMono);
 
   }
 

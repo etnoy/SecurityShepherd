@@ -50,12 +50,6 @@ public class UserApiIT {
             .exchange().expectStatus().isOk().expectBody().returnResult().getResponseBody()))
         .read("$.token");
 
-    webTestClient.get().uri("/api/v1/resource/user").header("Authorization", "Bearer " + token)
-        .exchange().expectStatus().isOk();
-
-    webTestClient.get().uri("/api/v1/resource/admin").header("Authorization", "Bearer " + token)
-        .exchange().expectStatus().isForbidden();
-
   }
 
   @Test
@@ -76,15 +70,6 @@ public class UserApiIT {
                 String.class))
             .exchange().expectStatus().isOk().expectBody().returnResult().getResponseBody()))
         .read("$.token");
-
-    webTestClient.get().uri("/api/v1/resource/user").header("Authorization", "Bearer " + token)
-        .exchange().expectStatus().isOk();
-
-    webTestClient.get().uri("/api/v1/resource/admin").header("Authorization", "Bearer " + token)
-        .exchange().expectStatus().isOk();
-
-    webTestClient.get().uri("/api/v1/resource/user-or-admin")
-        .header("Authorization", "Bearer " + token).exchange().expectStatus().isOk();
 
   }
 
