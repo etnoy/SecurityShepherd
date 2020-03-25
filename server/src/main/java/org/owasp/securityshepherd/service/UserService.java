@@ -128,6 +128,18 @@ public final class UserService {
 
   }
 
+  public Mono<User> demote(final int userId) {
+
+    if (userId <= 0) {
+      return Mono.error(new InvalidUserIdException());
+    }
+
+    log.info("Demoting user with id " + userId + " to user");
+
+    return setAdminStatus(userId, false);
+
+  }
+
   public Mono<User> promote(final int userId) {
 
     if (userId <= 0) {
@@ -136,11 +148,21 @@ public final class UserService {
 
     log.info("Promoting user with id " + userId + " to admin");
 
+    return setAdminStatus(userId, true);
+
+  }
+
+  private Mono<User> setAdminStatus(final int userId, final boolean isAdmin) {
+
+    if (userId <= 0) {
+      return Mono.error(new InvalidUserIdException());
+    }
+
     final Mono<User> userMono = Mono.just(userId).filterWhen(userRepository::existsById)
         .switchIfEmpty(Mono.error(new UserIdNotFoundException())).flatMap(this::getById);
 
     final Mono<Auth> authMono =
-        userMono.map(user -> user.getAuth().withAdmin(true)).flatMap(authRepository::save);
+        userMono.map(user -> user.getAuth().withAdmin(isAdmin)).flatMap(authRepository::save);
 
     return userMono.zipWith(authMono).map(tuple -> tuple.getT1().withAuth(tuple.getT2()));
 

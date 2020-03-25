@@ -1,6 +1,5 @@
 package org.owasp.securityshepherd.web.controller;
 
-import java.io.UnsupportedEncodingException;
 import javax.validation.Valid;
 import org.owasp.securityshepherd.persistence.model.User;
 import org.owasp.securityshepherd.security.AuthRequest;
@@ -21,11 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @RestController
-@Slf4j
 @RequestMapping("/api/v1/")
 public class LoginController {
 
@@ -56,10 +53,10 @@ public class LoginController {
 
   @PostMapping(path = "/register")
   @ResponseStatus(HttpStatus.CREATED)
-  public Mono<User> register(@Valid @RequestBody final PasswordUserRegistrationDto registerDto) {
+  public Mono<Integer> register(@Valid @RequestBody final PasswordUserRegistrationDto registerDto) {
 
     return userService.createPasswordUser(registerDto.getDisplayName(), registerDto.getLoginName(),
-        passwordEncoder.encode(registerDto.getPassword()));
+        passwordEncoder.encode(registerDto.getPassword())).map(User::getId);
 
   }
 

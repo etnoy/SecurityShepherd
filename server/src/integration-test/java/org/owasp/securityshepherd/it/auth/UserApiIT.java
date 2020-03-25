@@ -1,7 +1,6 @@
 package org.owasp.securityshepherd.it.auth;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import java.util.HashSet;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,9 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.FluxExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.WebClient;
 import com.jayway.jsonpath.JsonPath;
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -29,7 +26,6 @@ import reactor.test.StepVerifier;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
-@Slf4j
 public class UserApiIT {
 
   @Autowired
@@ -37,40 +33,6 @@ public class UserApiIT {
 
   @Autowired
   private WebTestClient webTestClient;
-
-  @Test
-  public void apiGetUser_ValidId_ReturnsUser() throws Exception {
-
-    webTestClient.post().uri("/api/v1/register").contentType(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromValue(
-            new PasswordUserRegistrationDto("TestUser1", "loginName1", "paLswOrdha17£@£sh")))
-        .exchange().expectStatus().isCreated().expectBody(User.class).returnResult()
-        .getResponseBody();
-
-    final User testUser =
-        webTestClient.post().uri("/api/v1/register").contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(new PasswordUserRegistrationDto("TestUserDisplayName",
-                "loginName", "paLswOrdha17£@£sh")))
-            .exchange().expectStatus().isCreated().expectBody(User.class).returnResult()
-            .getResponseBody();
-
-    webTestClient.post().uri("/api/v1/register").contentType(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromValue(
-            new PasswordUserRegistrationDto("TestUser3", "loginName3", "paLswOrdha17£@£sh")))
-        .exchange().expectStatus().isCreated().expectBody(User.class).returnResult()
-        .getResponseBody();
-
-    FluxExchangeResult<User> getResult = webTestClient.get().uri("/api/v1/user/" + testUser.getId())
-        .accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk().expectHeader()
-        .contentType(MediaType.APPLICATION_JSON).returnResult(User.class);
-
-    StepVerifier.create(getResult.getResponseBody()).assertNext(getData -> {
-
-      assertThat(getData, is(testUser));
-
-    }).expectComplete().verify();
-
-  }
 
   @Test
   public void apiGetUserResource_AuthenticatedUser_Success() throws Exception {
@@ -127,81 +89,90 @@ public class UserApiIT {
   }
 
   @Test
-  public void apiListUsers_NoUsersExist_ReturnsNoUsers() throws Exception {
-
-    StepVerifier.create(webTestClient.get().uri("/api/v1/user/list")
-        .accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk().expectHeader()
-        .contentType(MediaType.APPLICATION_JSON).returnResult(User.class).getResponseBody())
-        .expectComplete().verify();
-
-  }
-
-  @Test
   public void apiListUsers_UsersExist_ReturnsUserList() throws Exception {
 
     final String loginName = "test";
     final String password = "paLswOrdha17£@£sh";
 
-    HashSet<User> userSet = new HashSet<User>();
+    HashSet<Integer> userIdSet = new HashSet<Integer>();
 
-    final User createdUser =
-        webTestClient.post().uri("/api/v1/register").contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(
-                new PasswordUserRegistrationDto("TestUserDisplayName", loginName, password)))
-            .exchange().expectStatus().isCreated().expectBody(User.class).returnResult()
-            .getResponseBody();
+    final int userId = webTestClient.post().uri("/api/v1/register")
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(BodyInserters
+            .fromValue(new PasswordUserRegistrationDto("TestUserDisplayName", loginName, password)))
+        .exchange().expectStatus().isCreated().expectBody(Integer.class).returnResult()
+        .getResponseBody();
 
-    final int userId = createdUser.getId();
-
+    // Promote this user to admin
     userService.promote(userId).block();
-    
-    userSet.add(createdUser);
 
-    String token = JsonPath.parse(
-        new String(webTestClient.post().uri("/api/v1/login").contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromPublisher(
-                Mono.just("{\"username\": \"" + loginName + "\", \"password\": \"" + password + "\"}"),
-                String.class))
-            .exchange().expectStatus().isOk().expectBody().returnResult().getResponseBody()))
+    userIdSet.add(userId);
+
+    String token = JsonPath.parse(new String(webTestClient.post().uri("/api/v1/login")
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(BodyInserters.fromPublisher(
+            Mono.just("{\"username\": \"" + loginName + "\", \"password\": \"" + password + "\"}"),
+            String.class))
+        .exchange().expectStatus().isOk().expectBody().returnResult().getResponseBody()))
         .read("$.token");
 
-    userSet.add(webTestClient.post().uri("/api/v1/register").contentType(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromValue(
-            new PasswordUserRegistrationDto("TestUser2", "loginName2", "paLswOrdha17£@£sh")))
-        .exchange().expectStatus().isCreated().expectBody(User.class).returnResult()
-        .getResponseBody());
+    userIdSet
+        .add(webTestClient.post().uri("/api/v1/register").contentType(MediaType.APPLICATION_JSON)
+            .body(BodyInserters.fromValue(
+                new PasswordUserRegistrationDto("TestUser2", "loginName2", "paLswOrdha17£@£sh")))
+            .exchange().expectStatus().isCreated().expectBody(Integer.class).returnResult()
+            .getResponseBody());
 
-    userSet.add(webTestClient.post().uri("/api/v1/register").contentType(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromValue(
-            new PasswordUserRegistrationDto("TestUser3", "loginName3", "paLswOrdha17£@£sh")))
-        .exchange().expectStatus().isCreated().expectBody(User.class).returnResult()
-        .getResponseBody());
+    userIdSet
+        .add(webTestClient.post().uri("/api/v1/register").contentType(MediaType.APPLICATION_JSON)
+            .body(BodyInserters.fromValue(
+                new PasswordUserRegistrationDto("TestUser3", "loginName3", "paLswOrdha17£@£sh")))
+            .exchange().expectStatus().isCreated().expectBody(Integer.class).returnResult()
+            .getResponseBody());
 
     StepVerifier
-        .create(
-            webTestClient.get().uri("/api/v1/users").header("Authorization", "Bearer " + token)
-                .accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk().expectHeader()
-                .contentType(MediaType.APPLICATION_JSON).returnResult(User.class).getResponseBody())
+        .create(webTestClient.get().uri("/api/v1/users").header("Authorization", "Bearer " + token)
+            .accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk().expectHeader()
+            .contentType(MediaType.APPLICATION_JSON).returnResult(User.class).getResponseBody()
+            .map(User::getId))
         .recordWith(HashSet::new).thenConsumeWhile(x -> true)
-        .expectRecordedMatches(x -> x.equals(userSet)).expectComplete().verify();
+        .expectRecordedMatches(x -> x.equals(userIdSet)).expectComplete().verify();
 
   }
 
   @Test
   public void apiUserCreate_ValidData_ReturnsValidUser() throws Exception {
 
-    webTestClient.post().uri("/api/v1/register").contentType(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromValue(new PasswordUserRegistrationDto("TestUserDisplayName",
-            "loginName", "paLswOrdha17£@£sh")))
-        .exchange().expectStatus().isCreated();
+    final String loginName = "test";
+    final String password = "paLswOrdha17£@£sh";
 
-    FluxExchangeResult<String> getResult = webTestClient.get().uri("/api/v1/users")
+    final int userId = webTestClient.post().uri("/api/v1/register")
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(BodyInserters.fromPublisher(Mono.just("{\"displayName\": \"" + loginName
+            + "\", \"loginName\": \"" + loginName + "\",  \"password\": \"" + password + "\"}"),
+            String.class))
+        .exchange().expectStatus().isCreated().expectBody(Integer.class).returnResult()
+        .getResponseBody();
+
+    // Promote this user to admin
+    userService.promote(userId).block();
+
+    String token = JsonPath.parse(new String(webTestClient.post().uri("/api/v1/login")
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(BodyInserters.fromPublisher(
+            Mono.just("{\"username\": \"" + loginName + "\", \"password\": \"" + password + "\"}"),
+            String.class))
+        .exchange().expectStatus().isOk().expectBody().returnResult().getResponseBody()))
+        .read("$.token");
+
+    FluxExchangeResult<User> getResult = webTestClient.get()
+        .uri("/api/v1/user/" + Integer.toString(userId)).header("Authorization", "Bearer " + token)
         .accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk().expectHeader()
-        .contentType(MediaType.APPLICATION_JSON).returnResult(String.class);
+        .contentType(MediaType.APPLICATION_JSON).returnResult(User.class);
 
     StepVerifier.create(getResult.getResponseBody()).assertNext(getData -> {
 
-      assertThat(getData, is(notNullValue()));
+      assertThat(getData, is(userService.getById(userId).block()));
 
     }).expectComplete().verify();
 

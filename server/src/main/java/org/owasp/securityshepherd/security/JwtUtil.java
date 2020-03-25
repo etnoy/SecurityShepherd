@@ -2,25 +2,20 @@ package org.owasp.securityshepherd.security;
 
 import java.io.Serializable;
 import java.security.Key;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import org.owasp.securityshepherd.persistence.model.User;
 import org.owasp.securityshepherd.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Component
-@Slf4j
 public class JwtUtil implements Serializable {
 
   private static final long serialVersionUID = -231492824714677145L;
