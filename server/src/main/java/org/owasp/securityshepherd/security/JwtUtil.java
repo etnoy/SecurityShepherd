@@ -1,6 +1,5 @@
 package org.owasp.securityshepherd.security;
 
-import java.io.Serializable;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -16,9 +15,7 @@ import io.jsonwebtoken.security.Keys;
 import reactor.core.publisher.Mono;
 
 @Component
-public class JwtUtil implements Serializable {
-
-  private static final long serialVersionUID = -231492824714677145L;
+public class JwtUtil  {
 
   private static final long EXPIRATION_TIME = 28800;
 

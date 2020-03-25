@@ -27,18 +27,14 @@ public class ShepherdSecurityConfig {
   private SecurityContextRepository securityContextRepository;
 
   @Bean
-  public SecurityWebFilterChain securitygWebFilterChain(ServerHttpSecurity http) {
-    return http.exceptionHandling().authenticationEntryPoint((swe, e) -> {
-      return Mono.fromRunnable(() -> {
-        log.debug("Denied: " + swe + e);
-        swe.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-        Mono.error(e);
-      });
-    }).accessDeniedHandler((swe, e) -> {
-      return Mono.fromRunnable(() -> {
-        swe.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
-      });
-    }).and().csrf().disable().formLogin().disable().httpBasic().disable()
+  public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+    return http.exceptionHandling().authenticationEntryPoint((swe, e) -> Mono.fromRunnable(() -> {
+      log.debug("Denied: " + swe + e);
+      swe.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+      Mono.error(e);
+    })).accessDeniedHandler(
+        (swe, e) -> Mono.fromRunnable(() -> swe.getResponse().setStatusCode(HttpStatus.FORBIDDEN)))
+        .and().csrf().disable().formLogin().disable().httpBasic().disable()
         .authenticationManager(authenticationManager)
         .securityContextRepository(securityContextRepository).authorizeExchange()
         .pathMatchers(HttpMethod.OPTIONS).permitAll().pathMatchers("/api/v1/register").permitAll()
