@@ -14,8 +14,9 @@ jobs:
     name: Frontend tests
     before_install:
     - cd client
-    - nvm install 12.16
+    - nvm install 12
     install:
+    - npm install
     - npm install -g @angular/cli
     script:
     - npm run lint
