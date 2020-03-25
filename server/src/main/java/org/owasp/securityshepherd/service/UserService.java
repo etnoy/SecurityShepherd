@@ -246,9 +246,7 @@ public final class UserService {
     final Mono<Auth> completeAuth = auth.zipWith(passwordAuth)
         .map(tuple -> tuple.getT1().withPassword(tuple.getT2())).switchIfEmpty(auth);
 
-    return user.zipWith(completeAuth).flatMap(tuple -> {
-      return userRepository.delete(tuple.getT1());
-    });
+    return user.zipWith(completeAuth).flatMap(tuple -> userRepository.delete(tuple.getT1()));
 
   }
 
@@ -265,7 +263,7 @@ public final class UserService {
     return passwordAuthRepository.findByLoginName(loginName)
         .switchIfEmpty(
             Mono.error(new LoginNameNotFoundException("Username " + loginName + " not found")))
-        .map(passwordAuth -> passwordAuth.getUser()).flatMap(this::getById);
+        .map(PasswordAuth::getUser).flatMap(this::getById);
 
   }
 
@@ -280,7 +278,7 @@ public final class UserService {
         .flatMap(user -> {
           final byte[] key = user.getKey();
           if (key == null) {
-            return keyService.generateRandomBytes(16).map(newKey -> user.withKey(newKey))
+            return keyService.generateRandomBytes(16).map(user::withKey)
                 .flatMap(userRepository::save).map(User::getKey);
           }
           return Mono.just(key);
@@ -325,7 +323,7 @@ public final class UserService {
     log.info("Setting display name of user id " + userId + " to " + displayName);
 
     final Mono<String> displayNameMono =
-        Mono.just(displayName).filterWhen(name -> doesNotExistByDisplayName(name)).switchIfEmpty(
+        Mono.just(displayName).filterWhen(this::doesNotExistByDisplayName).switchIfEmpty(
             Mono.error(new DuplicateUserDisplayNameException("Display name already exists")));
 
     return Mono.just(userId).flatMap(this::getById).zipWith(displayNameMono)

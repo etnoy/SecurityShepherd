@@ -193,9 +193,9 @@
 					<artifactId>jacoco-maven-plugin</artifactId>
 					<version>0.8.4</version>
 				</plugin>
-
 			</plugins>
 		</pluginManagement>
+		
 		<plugins>
 			<plugin>
 				<artifactId>maven-war-plugin</artifactId>

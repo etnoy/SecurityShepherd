@@ -52,7 +52,8 @@ public final class ModuleService {
 
     return Mono.just(name).filterWhen(this::doesNotExistByName)
         .switchIfEmpty(Mono.error(new DuplicateModuleNameException("Module name already exists")))
-        .map(moduleName -> Module.builder().name(moduleName).build()).flatMap(moduleRepository::save);
+        .map(moduleName -> Module.builder().name(moduleName).build())
+        .flatMap(moduleRepository::save);
 
   }
 
@@ -86,19 +87,22 @@ public final class ModuleService {
 
     }
 
-    final Mono<byte[]> baseFlag = getById(moduleId).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
-        .filter(module -> module.isFlagEnabled())
-        .switchIfEmpty(Mono.error(new InvalidFlagStateException("Can't get dynamic flag if flag is disabled")))
+    final Mono<byte[]> baseFlag = getById(moduleId)
+        .switchIfEmpty(Mono.error(new ModuleIdNotFoundException())).filter(Module::isFlagEnabled)
+        .switchIfEmpty(
+            Mono.error(new InvalidFlagStateException("Can't get dynamic flag if flag is disabled")))
         .filter(module -> !module.isFlagExact())
-        .switchIfEmpty(Mono.error(new InvalidFlagStateException("Can't get dynamic flag if flag is exact")))
+        .switchIfEmpty(
+            Mono.error(new InvalidFlagStateException("Can't get dynamic flag if flag is exact")))
         .map(module -> module.getFlag().getBytes());
 
-    final Mono<byte[]> keyMono = userService.getKeyById(userId).zipWith(configurationService.getServerKey())
-        .map(tuple -> Bytes.concat(tuple.getT1(), tuple.getT2()));
+    final Mono<byte[]> keyMono =
+        userService.getKeyById(userId).zipWith(configurationService.getServerKey())
+            .map(tuple -> Bytes.concat(tuple.getT1(), tuple.getT2()));
 
-    return keyMono.zipWith(baseFlag).flatMap(tuple -> {
-      return cryptoService.hmac(tuple.getT1(), tuple.getT2());
-    }).map(keyService::convertByteKeyToString);
+    return keyMono.zipWith(baseFlag)
+        .flatMap(tuple -> cryptoService.hmac(tuple.getT1(), tuple.getT2()))
+        .map(keyService::convertByteKeyToString);
 
   }
 
@@ -167,28 +171,30 @@ public final class ModuleService {
 
     log.info("Setting name of class with id " + id + " to " + name);
 
-    return getById(id).switchIfEmpty(Mono.error(new ModuleIdNotFoundException())).map(module -> module.withName(name))
-        .flatMap(moduleRepository::save);
+    return getById(id).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
+        .map(module -> module.withName(name)).flatMap(moduleRepository::save);
 
   }
 
-  public Mono<Boolean> verifyFlag(final int userId, final int moduleId, final String submittedFlag) {
+  public Mono<Boolean> verifyFlag(final int userId, final int moduleId,
+      final String submittedFlag) {
 
     if (submittedFlag == null) {
       return Mono.just(false);
     }
 
-    log.info("Verifying submitted flag from user id " + userId + " with module id " + moduleId + " with flag contents "
-        + submittedFlag);
+    log.info("Verifying submitted flag from user id " + userId + " with module id " + moduleId
+        + " with flag contents " + submittedFlag);
 
     return getById(moduleId).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
-        .filter(module -> module.isFlagEnabled())
-        .switchIfEmpty(Mono.error(new InvalidFlagStateException("Cannot verify flag if flag is not enabled")))
+        .filter(Module::isFlagEnabled)
+        .switchIfEmpty(
+            Mono.error(new InvalidFlagStateException("Cannot verify flag if flag is not enabled")))
         .flatMap(module -> {
           if (module.isFlagExact()) {
             return Mono.just(module.getFlag().equalsIgnoreCase(submittedFlag));
           } else {
-            return getDynamicFlag(userId, moduleId).map(flag -> submittedFlag.equalsIgnoreCase(flag));
+            return getDynamicFlag(userId, moduleId).map(submittedFlag::equalsIgnoreCase);
           }
         });
 

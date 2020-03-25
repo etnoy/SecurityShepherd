@@ -28,7 +28,7 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
           userMono.map(user -> user.getAuth().getPassword().getLoginName());
 
       final Mono<Collection<? extends GrantedAuthority>> authoritiesMono =
-          userMono.map(ShepherdUserDetails::new).map(user -> user.getAuthorities());
+          userMono.map(ShepherdUserDetails::new).map(ShepherdUserDetails::getAuthorities);
 
       return loginNameMono.zipWith(authoritiesMono).map(
           tuple -> new UsernamePasswordAuthenticationToken(tuple.getT1(), null, tuple.getT2()));

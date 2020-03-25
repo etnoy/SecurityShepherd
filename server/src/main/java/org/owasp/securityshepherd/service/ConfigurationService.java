@@ -37,7 +37,7 @@ public final class ConfigurationService {
     return configurationRepository.findByKey(key)
         .switchIfEmpty(Mono.error(
             new ConfigurationKeyNotFoundException("Configuration key " + key + " not found")))
-        .map(configuration -> configuration.getValue());
+        .map(Configuration::getValue);
 
   }
 
@@ -54,14 +54,14 @@ public final class ConfigurationService {
 
     return keyService.generateRandomBytes(16).zipWith(existsByKey(serverKeyConfigurationKey))
         .flatMap(tuple -> {
-          if (tuple.getT2()) {
+          if (Boolean.TRUE.equals(tuple.getT2())) {
             return setValue(serverKeyConfigurationKey,
                 Base64.getEncoder().encodeToString(tuple.getT1()));
           } else {
             return create(serverKeyConfigurationKey,
                 Base64.getEncoder().encodeToString(tuple.getT1()));
           }
-        }).map(configuration -> configuration.getValue()).map(Base64.getDecoder()::decode);
+        }).map(Configuration::getValue).map(Base64.getDecoder()::decode);
 
   }
 

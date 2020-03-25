@@ -56,7 +56,7 @@ public class UserController {
 
   }
 
-  @RequestMapping(value = "/resource/user", method = RequestMethod.GET)
+  @GetMapping(path = "/resource/user")
   @PreAuthorize("hasRole('ROLE_USER')")
   public Mono<ResponseEntity<?>> user() {
     log.debug("User Resource");
@@ -64,7 +64,7 @@ public class UserController {
     return Mono.just(ResponseEntity.ok(new Message("Content for user")));
   }
 
-  @RequestMapping(value = "/resource/admin", method = RequestMethod.GET)
+  @GetMapping(path = "/resource/admin")
   @PreAuthorize("hasRole('ROLE_ADMIN')")
   public Mono<ResponseEntity<?>> admin() {
     log.debug("Admin Resource");
@@ -72,7 +72,7 @@ public class UserController {
     return Mono.just(ResponseEntity.ok(new Message("Content for admin")));
   }
 
-  @RequestMapping(value = "/resource/user-or-admin", method = RequestMethod.GET)
+  @GetMapping(path = "/resource/user-or-admin")
   @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
   public Mono<ResponseEntity<?>> userOrAdmin() {
     return Mono.just(ResponseEntity.ok(new Message("Content for user or admin")));

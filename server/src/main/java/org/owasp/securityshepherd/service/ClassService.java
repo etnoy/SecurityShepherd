@@ -40,8 +40,6 @@ public final class ClassService {
         .switchIfEmpty(Mono.error(new DuplicateClassNameException("Class name already exists")))
         .flatMap(className -> classRepository.save(ClassEntity.builder().name(className).build()));
 
-    // log.debug("Created user with ID " + savedClass.getId());
-
   }
 
   private Mono<Boolean> doesNotExistByName(final String name) {

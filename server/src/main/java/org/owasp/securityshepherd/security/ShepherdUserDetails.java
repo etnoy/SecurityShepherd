@@ -79,7 +79,7 @@ public final class ShepherdUserDetails implements UserDetails {
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
 
-    List<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>();
+    List<SimpleGrantedAuthority> authorities = new ArrayList<>();
 
     authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 

@@ -22,11 +22,6 @@ import com.google.common.base.Joiner;
 public class PasswordConstraintValidator implements ConstraintValidator<ValidPassword, String> {
 
   @Override
-  public void initialize(final ValidPassword arg0) {
-
-  }
-
-  @Override
   public boolean isValid(final String password, final ConstraintValidatorContext context) {
 
     final PasswordValidator validator = new PasswordValidator(Arrays.asList(new LengthRule(8, 30),

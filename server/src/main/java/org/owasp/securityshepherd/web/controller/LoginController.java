@@ -17,7 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
@@ -35,12 +34,11 @@ public class LoginController {
   @Autowired
   private PasswordEncoder passwordEncoder;
 
-  @RequestMapping(value = "/login", method = RequestMethod.POST)
+  @PostMapping(value = "/login")
   public Mono<ResponseEntity<?>> login(@RequestBody AuthRequest authRequest) {
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
 
-    return userService.getByLoginName(authRequest.getUsername()).map((user) -> {
-
+    return userService.getByLoginName(authRequest.getUsername()).map(user -> {
       UserDetails userDetails = new ShepherdUserDetails(user);
       if (encoder.matches(authRequest.getPassword(), userDetails.getPassword())) {
         return ResponseEntity.ok(new AuthResponse(jwtUtil.generateToken(user)));

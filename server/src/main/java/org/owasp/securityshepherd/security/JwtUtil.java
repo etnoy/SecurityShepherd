@@ -41,7 +41,7 @@ public class JwtUtil implements Serializable {
     return getAllClaimsFromToken(token).getExpiration();
   }
 
-  private Boolean isTokenExpired(String token) {
+  private boolean isTokenExpired(String token) {
     final Date expiration = getExpirationDateFromToken(token);
     return expiration.before(new Date());
   }
@@ -66,7 +66,8 @@ public class JwtUtil implements Serializable {
 
   }
 
-  public Boolean validateToken(String token) {
+  public boolean validateToken(String token) {
+    // FIXME: Must check signature
     return !isTokenExpired(token);
   }
 
