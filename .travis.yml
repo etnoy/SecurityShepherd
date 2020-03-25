@@ -9,7 +9,7 @@ jobs:
     - git fetch --unshallow
     - mysql -e 'CREATE DATABASE IF NOT EXISTS core;'
     script:
-    - mvn clean verify -DskipITs=true 
+    - mvn clean verify -DskipITs=true
   - stage: test
     name: Backend integration tests
     services: mysql
@@ -18,7 +18,7 @@ jobs:
     - git fetch --unshallow
     - mysql -e 'CREATE DATABASE IF NOT EXISTS core;'
     script:
-    - mvn verify -DskipUTs=true 
+    - mvn verify -DskipUTs=true
   - stage: test
     name: Backend test coverage report
     services: mysql
@@ -36,6 +36,7 @@ jobs:
     install:
     - npm install
     - npm install @angular/cli
+    - npm install ng-common
     script:
     - ng lint
   - stage: test
@@ -47,6 +48,7 @@ jobs:
     install:
     - npm install
     - npm install @angular/cli
+    - npm install ng-common
     script:
     - ng test
   - stage: test
@@ -58,6 +60,7 @@ jobs:
     install:
     - npm install
     - npm install @angular/cli
+    - npm install ng-common
     script:
     - ng lint
     - ng e2e
