@@ -1,15 +1,25 @@
 language: java
 jobs:
   include:
-  - stage: "[backend] tests"
+  - stage: '[backend] tests'
     services: mysql
-    script:
+    before_install:
     - cd server
     - git fetch --unshallow
     - mysql -e 'CREATE DATABASE IF NOT EXISTS core;'
+    script:
     - mvn clean verify sonar:sonar -Pcoverage -Dsonar.projectKey=etnoy_SecurityShepherd -B -V
+  - stage: '[frontend] tests'
+    before_install:
+    - cd client
+    install:
+    - npm install -g @angular/cli
+    script:
+    - npm run lint
+    - ng test
+    - ng e2e
 stages:
-- name: "[backend] tests"
+- name: '[backend] tests'
 addons:
   sonarcloud:
     organization: etnoy
