@@ -14,7 +14,7 @@ jobs:
     name: Frontend tests
     before_install:
     - cd client
-    - nvm install '0.12'
+    - nvm install 12.16
     install:
     - npm install -g @angular/cli
     script:
