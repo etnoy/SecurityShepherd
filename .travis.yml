@@ -37,8 +37,7 @@ jobs:
     - nvm install 12
     install:
     - npm install
-    - npm install @angular/cli
-    - npm install ng-common
+    - npm install -g @angular/cli
     script:
     - ng test
   - stage: test
@@ -49,8 +48,7 @@ jobs:
     - nvm install 12
     install:
     - npm install
-    - npm install @angular/cli
-    - npm install ng-common
+    - npm install -g @angular/cli
     script:
     - ng lint
     - ng e2e
