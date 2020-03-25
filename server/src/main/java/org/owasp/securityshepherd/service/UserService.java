@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -180,14 +181,20 @@ public final class UserService {
     return userRepository.findAll().flatMap(user -> getById(user.getId()));
   }
 
-  public Mono<User> getById(final int id) {
-
+  private Mono<User> getUserOnly(final int id) {
     if (id <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
 
-    final Mono<User> user = Mono.just(id).filterWhen(userRepository::existsById)
+    return Mono.just(id).filterWhen(userRepository::existsById)
         .switchIfEmpty(Mono.error(new UserIdNotFoundException())).flatMap(userRepository::findById);
+
+  }
+
+  private Mono<Auth> getAuth(final int id) {
+    if (id <= 0) {
+      return Mono.error(new InvalidUserIdException());
+    }
 
     final Mono<PasswordAuth> passwordAuth = Mono.just(id).flatMap(userId -> {
       final Mono<PasswordAuth> returnedPasswordAuth = passwordAuthRepository.findByUserId(userId);
@@ -205,11 +212,17 @@ public final class UserService {
       return returnedAuth;
     });
 
-    final Mono<Auth> completeAuth = auth.zipWith(passwordAuth)
-        .map(tuple -> tuple.getT1().withPassword(tuple.getT2())).switchIfEmpty(auth);
+    return auth.zipWith(passwordAuth).map(tuple -> tuple.getT1().withPassword(tuple.getT2()))
+        .switchIfEmpty(auth);
 
-    return user.zipWith(completeAuth).map(tuple -> tuple.getT1().withAuth(tuple.getT2()))
-        .switchIfEmpty(user);
+  }
+
+  public Mono<User> getById(final int userId) {
+
+    final Mono<User> userMono = getUserOnly(userId);
+
+    return getUserOnly(userId).zipWith(getAuth(userId)).map(tuple -> tuple.getT1().withAuth(tuple.getT2()))
+        .switchIfEmpty(userMono);
 
   }
 
@@ -220,33 +233,8 @@ public final class UserService {
 
   public Mono<Void> deleteById(final int id) {
 
-    if (id <= 0) {
-      return Mono.error(new InvalidUserIdException());
-    }
-
-    final Mono<User> user = Mono.just(id).filterWhen(userRepository::existsById)
-        .switchIfEmpty(Mono.error(new UserIdNotFoundException())).flatMap(userRepository::findById);
-
-    final Mono<PasswordAuth> passwordAuth = Mono.just(id).flatMap(userId -> {
-      final Mono<PasswordAuth> returnedPasswordAuth = passwordAuthRepository.findByUserId(userId);
-      if (returnedPasswordAuth == null) {
-        return Mono.empty();
-      }
-      return returnedPasswordAuth;
-    });
-
-    final Mono<Auth> auth = Mono.just(id).flatMap(userId -> {
-      final Mono<Auth> returnedAuth = authRepository.findByUserId(userId);
-      if (returnedAuth == null) {
-        return Mono.empty();
-      }
-      return returnedAuth;
-    });
-
-    final Mono<Auth> completeAuth = auth.zipWith(passwordAuth)
-        .map(tuple -> tuple.getT1().withPassword(tuple.getT2())).switchIfEmpty(auth);
-
-    return user.zipWith(completeAuth).flatMap(tuple -> userRepository.delete(tuple.getT1()));
+    return getUserOnly(id).zipWith(getAuth(id))
+        .flatMap(tuple -> userRepository.delete(tuple.getT1()));
 
   }
 
