@@ -20,15 +20,6 @@ jobs:
     script:
     - mvn verify -DskipUTs=true
   - stage: test
-    name: Backend test coverage report
-    services: mysql
-    before_install:
-    - cd server
-    - git fetch --unshallow
-    - mysql -e 'CREATE DATABASE IF NOT EXISTS core;'
-    script:
-    - mvn clean verify sonar:sonar -Pcoverage -Dsonar.projectKey=etnoy_SecurityShepherd -B -V
-  - stage: test
     name: Frontend lint
     before_install:
     - cd client
@@ -63,6 +54,15 @@ jobs:
     script:
     - ng lint
     - ng e2e
+  - stage: coverage
+    name: Backend test coverage report
+    services: mysql
+    before_install:
+    - cd server
+    - git fetch --unshallow
+    - mysql -e 'CREATE DATABASE IF NOT EXISTS core;'
+    script:
+    - mvn clean verify sonar:sonar -Pcoverage -Dsonar.projectKey=etnoy_SecurityShepherd -B -V
 stages:
 - name: '[backend] tests'
 addons:
