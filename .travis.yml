@@ -11,13 +11,13 @@ jobs:
     script:
     - mvn clean verify sonar:sonar -Pcoverage -Dsonar.projectKey=etnoy_SecurityShepherd -B -V
   - stage: test
+    services: xvfb
     name: Frontend tests
     before_install:
     - cd client
     - nvm install 12
     install:
     - npm install
-    - npm install -g @angular/cli
     script:
     - npm run lint
     - ng test
