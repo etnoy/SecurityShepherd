@@ -1,7 +1,6 @@
 package org.owasp.securityshepherd.web.controller;
 
 import javax.validation.Valid;
-import org.owasp.securityshepherd.exception.LoginNameNotFoundException;
 import org.owasp.securityshepherd.persistence.model.User;
 import org.owasp.securityshepherd.security.AuthRequest;
 import org.owasp.securityshepherd.security.AuthResponse;
