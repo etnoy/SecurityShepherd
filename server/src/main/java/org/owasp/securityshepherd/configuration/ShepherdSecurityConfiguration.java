@@ -2,7 +2,6 @@ package org.owasp.securityshepherd.configuration;
 
 import org.owasp.securityshepherd.repository.SecurityContextRepository;
 import org.owasp.securityshepherd.security.AuthenticationManager;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -18,17 +17,13 @@ import reactor.core.publisher.Mono;
 @Configuration
 @EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
-public class ShepherdSecurityConfig {
-
-  @Autowired
-  private AuthenticationManager authenticationManager;
-
-  @Autowired
-  private SecurityContextRepository securityContextRepository;
+public class ShepherdSecurityConfiguration {
 
   @Bean
-  public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
-    return http.exceptionHandling().authenticationEntryPoint(
+  public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity serverHttpSecurity,
+      AuthenticationManager authenticationManager,
+      SecurityContextRepository securityContextRepository) {
+    return serverHttpSecurity.exceptionHandling().authenticationEntryPoint(
         (serverWebExchange, authenticationException) -> Mono.fromRunnable(() -> {
           serverWebExchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
           Mono.error(authenticationException);

@@ -1,7 +1,6 @@
 package org.owasp.securityshepherd.service;
 
-import org.owasp.securityshepherd.model.ShepherdUserDetails;
-import org.owasp.securityshepherd.service.UserService;
+import org.owasp.securityshepherd.model.PasswordUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,13 +10,13 @@ import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
 @Service
-public class ShepherdUserDetailsService implements ReactiveUserDetailsService {
+public class PasswordUserDetailsService implements ReactiveUserDetailsService {
 
   @Autowired
   UserService userService;
 
   @Override
   public Mono<UserDetails> findByUsername(final String username) {
-    return userService.findByLoginName(username).map(ShepherdUserDetails::new);
+    return userService.findByLoginName(username).map(PasswordUserDetails::new);
   }
 }

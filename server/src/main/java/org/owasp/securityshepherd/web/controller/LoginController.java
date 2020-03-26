@@ -4,7 +4,7 @@ import javax.validation.Valid;
 import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.model.AuthResponse;
 import org.owasp.securityshepherd.service.WebTokenService;
-import org.owasp.securityshepherd.model.ShepherdUserDetails;
+import org.owasp.securityshepherd.model.PasswordUserDetails;
 import org.owasp.securityshepherd.service.UserService;
 import org.owasp.securityshepherd.web.dto.PasswordLoginDto;
 import org.owasp.securityshepherd.web.dto.PasswordRegistrationDto;
@@ -40,7 +40,7 @@ public class LoginController {
 
     final Mono<User> userMono = userService.findByLoginName(loginDto.getUserName());
 
-    return userMono.map(ShepherdUserDetails::new)
+    return userMono.map(PasswordUserDetails::new)
         .filter(userDetails -> encoder.matches(loginDto.getPassword(), userDetails.getPassword()))
         .zipWith(userMono).map(Tuple2::getT2).map(jwtService::generateToken).map(AuthResponse::new)
         .map(authResponse -> new ResponseEntity<>(authResponse, HttpStatus.OK))
