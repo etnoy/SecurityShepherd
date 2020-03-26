@@ -3,7 +3,7 @@ package org.owasp.securityshepherd.web.controller;
 import javax.validation.Valid;
 import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.model.AuthResponse;
-import org.owasp.securityshepherd.service.webTokenService;
+import org.owasp.securityshepherd.service.WebTokenService;
 import org.owasp.securityshepherd.model.ShepherdUserDetails;
 import org.owasp.securityshepherd.service.UserService;
 import org.owasp.securityshepherd.web.dto.PasswordLoginDto;
@@ -29,7 +29,7 @@ public class LoginController {
   private UserService userService;
 
   @Autowired
-  private webTokenService jwtService;
+  private WebTokenService jwtService;
 
   @Autowired
   private PasswordEncoder passwordEncoder;

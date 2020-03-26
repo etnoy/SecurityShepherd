@@ -17,7 +17,7 @@ import io.jsonwebtoken.security.Keys;
 import reactor.core.publisher.Mono;
 
 @Service
-public class webTokenService {
+public class WebTokenService {
 
   private static final long EXPIRATION_TIME = 28800;
 

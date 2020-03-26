@@ -3,7 +3,7 @@ package org.owasp.securityshepherd.security;
 import java.util.Collection;
 import org.owasp.securityshepherd.model.ShepherdUserDetails;
 import org.owasp.securityshepherd.model.User;
-import org.owasp.securityshepherd.service.webTokenService;
+import org.owasp.securityshepherd.service.WebTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
 public class AuthenticationManager implements ReactiveAuthenticationManager {
 
   @Autowired
-  private webTokenService jwtService;
+  private WebTokenService jwtService;
 
   @Override
   public Mono<Authentication> authenticate(Authentication authentication) {

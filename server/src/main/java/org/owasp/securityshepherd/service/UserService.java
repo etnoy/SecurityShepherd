@@ -55,8 +55,8 @@ public final class UserService {
     log.info("Creating new user with display name " + displayName);
 
     return Mono.just(displayName).filterWhen(this::doesNotExistByDisplayName)
-        .switchIfEmpty(
-            Mono.error(new DuplicateUserDisplayNameException("Display name already exists")))
+        .switchIfEmpty(Mono.error(new DuplicateUserDisplayNameException(
+            "Display name " + displayName + " already exists")))
         .flatMap(name -> userRepository.save(User.builder().displayName(name).build()));
   }
 
@@ -83,12 +83,13 @@ public final class UserService {
         + " and login name " + loginName + " and password hash " + hashedPassword);
 
     final Mono<String> loginNameMono =
-        Mono.just(loginName).filterWhen(this::doesNotExistByLoginName).switchIfEmpty(
-            Mono.error(new DuplicateClassNameException("Login name already exists")));
+        Mono.just(loginName).filterWhen(this::doesNotExistByLoginName).switchIfEmpty(Mono
+            .error(new DuplicateClassNameException("Login name " + loginName + " already exists")));
 
     final Mono<String> displayNameMono =
-        Mono.just(displayName).filterWhen(this::doesNotExistByDisplayName).switchIfEmpty(
-            Mono.error(new DuplicateUserDisplayNameException("Display name already exists")));
+        Mono.just(displayName).filterWhen(this::doesNotExistByDisplayName)
+            .switchIfEmpty(Mono.error(new DuplicateUserDisplayNameException(
+                "Display name " + displayName + " already exists")));
 
     return Mono.zip(displayNameMono, loginNameMono).flatMap(tuple -> {
 
@@ -296,8 +297,9 @@ public final class UserService {
     log.info("Setting display name of user id " + userId + " to " + displayName);
 
     final Mono<String> displayNameMono =
-        Mono.just(displayName).filterWhen(this::doesNotExistByDisplayName).switchIfEmpty(
-            Mono.error(new DuplicateUserDisplayNameException("Display name already exists")));
+        Mono.just(displayName).filterWhen(this::doesNotExistByDisplayName)
+            .switchIfEmpty(Mono.error(new DuplicateUserDisplayNameException(
+                "Display name " + displayName + " already exists")));
 
     return Mono.just(userId).filterWhen(userRepository::existsById)
         .switchIfEmpty(Mono.error(new UserIdNotFoundException())).flatMap(this::findById)
