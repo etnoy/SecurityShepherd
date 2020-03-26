@@ -1,4 +1,4 @@
-package org.owasp.securityshepherd.web.controller;
+package org.owasp.securityshepherd.controller;
 
 import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.service.UserService;

@@ -1,13 +1,13 @@
-package org.owasp.securityshepherd.web.controller;
+package org.owasp.securityshepherd.controller;
 
 import javax.validation.Valid;
 import org.owasp.securityshepherd.model.User;
+import org.owasp.securityshepherd.dto.PasswordLoginDto;
+import org.owasp.securityshepherd.dto.PasswordRegistrationDto;
 import org.owasp.securityshepherd.model.AuthResponse;
 import org.owasp.securityshepherd.service.WebTokenService;
 import org.owasp.securityshepherd.model.PasswordUserDetails;
 import org.owasp.securityshepherd.service.UserService;
-import org.owasp.securityshepherd.web.dto.PasswordLoginDto;
-import org.owasp.securityshepherd.web.dto.PasswordRegistrationDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
