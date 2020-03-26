@@ -9,7 +9,7 @@ import lombok.Value;
 
 @Value
 @AllArgsConstructor
-public class PasswordUserRegistrationDto implements Serializable {
+public class PasswordRegistrationDto implements Serializable {
 
   private static final long serialVersionUID = 8155074795022450359L;
 
@@ -18,8 +18,8 @@ public class PasswordUserRegistrationDto implements Serializable {
   private String displayName;
 
   @NotNull
-  @Size(min = 1, message = "{Size.userDto.loginName}")
-  private String loginName;
+  @Size(min = 1, message = "{Size.userDto.userName}")
+  private String userName;
 
   @ValidPassword
   @NotNull

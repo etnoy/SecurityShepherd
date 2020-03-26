@@ -1,13 +1,12 @@
 package org.owasp.securityshepherd.security;
 
+import java.io.Serializable;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Value;
 
-
-@Data
-@NoArgsConstructor
+@Value
 @AllArgsConstructor
-public class AuthResponse {
+public class AuthResponse implements Serializable {
+  private static final long serialVersionUID = 5631647781132001719L;
   private String token;
 }

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.persistence.model.User;
 import org.owasp.securityshepherd.service.UserService;
-import org.owasp.securityshepherd.web.dto.PasswordUserRegistrationDto;
+import org.owasp.securityshepherd.web.dto.PasswordRegistrationDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -45,7 +45,7 @@ public class UserControllerIT {
     String token = JsonPath.parse(
         new String(webTestClient.post().uri("/api/v1/login").contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromPublisher(
-                Mono.just("{\"username\": \"" + loginName + "\", \"password\": \"test\"}"),
+                Mono.just("{\"userName\": \"" + loginName + "\", \"password\": \"test\"}"),
                 String.class))
             .exchange().expectStatus().isOk().expectBody().returnResult().getResponseBody()))
         .read("$.token");
@@ -67,7 +67,7 @@ public class UserControllerIT {
     String token = JsonPath.parse(
         new String(webTestClient.post().uri("/api/v1/login").contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromPublisher(
-                Mono.just("{\"username\": \"" + loginName + "\", \"password\": \"test\"}"),
+                Mono.just("{\"userName\": \"" + loginName + "\", \"password\": \"test\"}"),
                 String.class))
             .exchange().expectStatus().isOk().expectBody().returnResult().getResponseBody()))
         .read("$.token");
@@ -95,7 +95,7 @@ public class UserControllerIT {
     final int userId = webTestClient.post().uri("/api/v1/register")
         .contentType(MediaType.APPLICATION_JSON)
         .body(BodyInserters
-            .fromValue(new PasswordUserRegistrationDto("TestUserDisplayName", loginName, password)))
+            .fromValue(new PasswordRegistrationDto("TestUserDisplayName", loginName, password)))
         .exchange().expectStatus().isCreated().expectBody(Integer.class).returnResult()
         .getResponseBody();
 
@@ -107,7 +107,7 @@ public class UserControllerIT {
     String token = JsonPath.parse(new String(webTestClient.post().uri("/api/v1/login")
         .contentType(MediaType.APPLICATION_JSON)
         .body(BodyInserters.fromPublisher(
-            Mono.just("{\"username\": \"" + loginName + "\", \"password\": \"" + password + "\"}"),
+            Mono.just("{\"userName\": \"" + loginName + "\", \"password\": \"" + password + "\"}"),
             String.class))
         .exchange().expectStatus().isOk().expectBody().returnResult().getResponseBody()))
         .read("$.token");
@@ -115,14 +115,14 @@ public class UserControllerIT {
     userIdSet
         .add(webTestClient.post().uri("/api/v1/register").contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(
-                new PasswordUserRegistrationDto("TestUser2", "loginName2", "paLswOrdha17£@£sh")))
+                new PasswordRegistrationDto("TestUser2", "loginName2", "paLswOrdha17£@£sh")))
             .exchange().expectStatus().isCreated().expectBody(Integer.class).returnResult()
             .getResponseBody());
 
     userIdSet
         .add(webTestClient.post().uri("/api/v1/register").contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(
-                new PasswordUserRegistrationDto("TestUser3", "loginName3", "paLswOrdha17£@£sh")))
+                new PasswordRegistrationDto("TestUser3", "loginName3", "paLswOrdha17£@£sh")))
             .exchange().expectStatus().isCreated().expectBody(Integer.class).returnResult()
             .getResponseBody());
 
@@ -145,7 +145,7 @@ public class UserControllerIT {
     final int userId = webTestClient.post().uri("/api/v1/register")
         .contentType(MediaType.APPLICATION_JSON)
         .body(BodyInserters.fromPublisher(Mono.just("{\"displayName\": \"" + loginName
-            + "\", \"loginName\": \"" + loginName + "\",  \"password\": \"" + password + "\"}"),
+            + "\", \"userName\": \"" + loginName + "\",  \"password\": \"" + password + "\"}"),
             String.class))
         .exchange().expectStatus().isCreated().expectBody(Integer.class).returnResult()
         .getResponseBody();
@@ -156,7 +156,7 @@ public class UserControllerIT {
     String token = JsonPath.parse(new String(webTestClient.post().uri("/api/v1/login")
         .contentType(MediaType.APPLICATION_JSON)
         .body(BodyInserters.fromPublisher(
-            Mono.just("{\"username\": \"" + loginName + "\", \"password\": \"" + password + "\"}"),
+            Mono.just("{\"userName\": \"" + loginName + "\", \"password\": \"" + password + "\"}"),
             String.class))
         .exchange().expectStatus().isOk().expectBody().returnResult().getResponseBody()))
         .read("$.token");
@@ -168,7 +168,7 @@ public class UserControllerIT {
 
     StepVerifier.create(getResult.getResponseBody()).assertNext(getData -> {
 
-      assertThat(getData, is(userService.getById(userId).block()));
+      assertThat(getData, is(userService.findById(userId).block()));
 
     }).expectComplete().verify();
 

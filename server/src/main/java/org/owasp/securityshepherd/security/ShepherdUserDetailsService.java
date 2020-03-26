@@ -17,6 +17,6 @@ public class ShepherdUserDetailsService implements ReactiveUserDetailsService {
 
   @Override
   public Mono<UserDetails> findByUsername(final String username) {
-    return userService.getByLoginName(username).map(ShepherdUserDetails::new);
+    return userService.findByLoginName(username).map(ShepherdUserDetails::new);
   }
 }

@@ -258,27 +258,27 @@ public class UserServiceTest {
 
   @Test
   public void demote_UserIsAdmin_Demoted() throws Exception {
-  
+
     final String displayName = "createPasswordUser_ValidData";
     final String loginName = "_createPasswordUser_ValidData_";
-  
+
     final String hashedPassword = "a_valid_password";
-  
+
     final int mockUserId = 933;
     final int mockAuthId = 80;
     final int mockPasswordAuthId = 710;
-  
+
     final User mockUser = mock(User.class);
     final User mockDemotedUser = mock(User.class);
     final Auth mockAuth = mock(Auth.class);
     final Auth mockDemotedAuth = mock(Auth.class);
-  
+
     when(passwordAuthRepository.findByLoginName(loginName)).thenReturn(Mono.empty());
     when(userRepository.findByDisplayName(displayName)).thenReturn(Mono.empty());
-  
+
     when(userRepository.save(any(User.class)))
         .thenAnswer(user -> Mono.just(user.getArgument(0, User.class).withId(mockUserId)));
-  
+
     when(authRepository.save(any(Auth.class))).thenAnswer(auth -> {
       if (auth.getArgument(0, Auth.class) == mockDemotedAuth) {
         // We are saving the admin auth to db
@@ -288,74 +288,72 @@ public class UserServiceTest {
         return Mono.just(auth.getArgument(0, Auth.class).withId(mockAuthId));
       }
     });
-  
+
     when(passwordAuthRepository.save(any(PasswordAuth.class))).thenAnswer(
         user -> Mono.just(user.getArgument(0, PasswordAuth.class).withId(mockPasswordAuthId)));
-  
+
     when(userRepository.existsById(mockUserId)).thenReturn(Mono.just(true));
     when(userRepository.findById(mockUserId)).thenReturn(Mono.just(mockUser));
-  
+
     when(authRepository.findByUserId(mockUserId)).thenReturn(Mono.just(mockAuth));
     when(passwordAuthRepository.findByUserId(mockUserId)).thenReturn(Mono.empty());
-  
+
     when(mockAuth.withAdmin(false)).thenReturn(mockDemotedAuth);
     when(mockUser.getAuth()).thenReturn(mockAuth);
     when(mockUser.withAuth(mockAuth)).thenReturn(mockUser);
     when(mockUser.withAuth(mockDemotedAuth)).thenReturn(mockDemotedUser);
     when(mockDemotedUser.getAuth()).thenReturn(mockDemotedAuth);
     when(mockDemotedAuth.isAdmin()).thenReturn(false);
-  
+
     StepVerifier.create(userService.createPasswordUser(displayName, loginName, hashedPassword)
         .then(userService.demote(mockUserId))).assertNext(user -> {
-  
+
           verify(passwordAuthRepository, times(1)).findByLoginName(loginName);
           verify(userRepository, times(1)).findByDisplayName(displayName);
-  
+
           verify(userRepository, times(1)).save(any(User.class));
           verify(userRepository, never()).save(mockDemotedUser);
-  
+
           verify(authRepository, times(1)).save(mockDemotedAuth);
-  
-          verify(userRepository, atLeast(1)).existsById(mockUserId);
-  
-          verify(userRepository, times(2)).findById(mockUserId);
+
+          verify(userRepository, times(1)).findById(mockUserId);
           verify(authRepository, times(4)).findByUserId(mockUserId);
           verify(passwordAuthRepository, times(2)).findByUserId(mockUserId);
-  
+
           verify(mockAuth, times(1)).withAdmin(false);
           verify(mockUser, times(1)).getAuth();
           verify(mockUser, times(1)).withAuth(mockDemotedAuth);
-  
+
           // Assert that the returned user is admin
           assertThat(user, is(mockDemotedUser));
           assertThat(user.getAuth(), is(mockDemotedAuth));
           assertThat(user.getAuth().isAdmin(), is(false));
-  
+
         }).expectComplete().verify();
-  
+
   }
 
   @Test
   public void demote_UserIsNotAdmin_StaysNotAdmin() throws Exception {
-  
+
     final String displayName = "createPasswordUser_ValidData";
     final String loginName = "_createPasswordUser_ValidData_";
-  
+
     final String hashedPassword = "a_valid_password";
-  
+
     final int mockUserId = 933;
     final int mockAuthId = 80;
     final int mockPasswordAuthId = 710;
-  
+
     final User mockUser = mock(User.class);
     final Auth mockAuth = mock(Auth.class);
-  
+
     when(passwordAuthRepository.findByLoginName(loginName)).thenReturn(Mono.empty());
     when(userRepository.findByDisplayName(displayName)).thenReturn(Mono.empty());
-  
+
     when(userRepository.save(any(User.class)))
         .thenAnswer(user -> Mono.just(user.getArgument(0, User.class).withId(mockUserId)));
-  
+
     when(authRepository.save(any(Auth.class))).thenAnswer(auth -> {
       if (auth.getArgument(0, Auth.class) == mockAuth) {
         // We are saving the admin auth to db
@@ -365,53 +363,51 @@ public class UserServiceTest {
         return Mono.just(auth.getArgument(0, Auth.class).withId(mockAuthId));
       }
     });
-  
+
     when(passwordAuthRepository.save(any(PasswordAuth.class))).thenAnswer(
         user -> Mono.just(user.getArgument(0, PasswordAuth.class).withId(mockPasswordAuthId)));
-  
+
     when(userRepository.existsById(mockUserId)).thenReturn(Mono.just(true));
     when(userRepository.findById(mockUserId)).thenReturn(Mono.just(mockUser));
-  
+
     when(authRepository.findByUserId(mockUserId)).thenReturn(Mono.just(mockAuth));
     when(passwordAuthRepository.findByUserId(mockUserId)).thenReturn(Mono.empty());
-  
+
     when(mockAuth.withAdmin(false)).thenReturn(mockAuth);
     when(mockUser.getAuth()).thenReturn(mockAuth);
     when(mockUser.withAuth(mockAuth)).thenReturn(mockUser);
     when(mockAuth.isAdmin()).thenReturn(false);
-  
+
     StepVerifier.create(userService.createPasswordUser(displayName, loginName, hashedPassword)
         .then(userService.demote(mockUserId))).assertNext(user -> {
-  
+
           verify(passwordAuthRepository, times(1)).findByLoginName(loginName);
           verify(userRepository, times(1)).findByDisplayName(displayName);
-  
+
           verify(userRepository, times(1)).save(any(User.class));
           verify(userRepository, never()).save(mockUser);
-  
+
           verify(authRepository, times(1)).save(mockAuth);
-  
-          verify(userRepository, atLeast(1)).existsById(mockUserId);
-  
-          verify(userRepository, times(2)).findById(mockUserId);
+
+          verify(userRepository, times(1)).findById(mockUserId);
           verify(authRepository, times(4)).findByUserId(mockUserId);
           verify(passwordAuthRepository, times(2)).findByUserId(mockUserId);
-  
+
           verify(mockAuth, times(1)).withAdmin(false);
           verify(mockUser, times(1)).getAuth();
           verify(mockUser, times(3)).withAuth(mockAuth);
-  
+
           // Assert that the returned user is admin
           assertThat(user, is(mockUser));
           assertThat(user.getAuth(), is(mockAuth));
           assertThat(user.getAuth().isAdmin(), is(false));
-  
+
         }).expectComplete().verify();
-  
+
   }
 
   @Test
-  public void getById_ExistingUserId_ReturnsUserEntity() throws InvalidUserIdException {
+  public void findById_ExistingUserId_ReturnsUserEntity() {
 
     final PasswordAuth mockPasswordAuth = mock(PasswordAuth.class);
     final Auth mockAuth = mock(Auth.class);
@@ -433,7 +429,7 @@ public class UserServiceTest {
     when(mockAuth.withPassword(any(PasswordAuth.class))).thenReturn(mockAuthWithPassword);
     when(mockUser.withAuth(any(Auth.class))).thenReturn(mockUserWithAuth);
 
-    StepVerifier.create(userService.getById(mockId)).assertNext(user -> {
+    StepVerifier.create(userService.findById(mockId)).assertNext(user -> {
       assertThat(user, is(mockUserWithAuth));
       assertThat(user.getAuth(), is(mockAuthWithPassword));
       assertThat(user.getAuth().getPassword(), is(mockPasswordAuth));
@@ -447,8 +443,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void getById_ExistingUserIdButNoAuthEntity_ReturnsUserEntity()
-      throws InvalidUserIdException {
+  public void findById_ExistingUserIdButNoAuthEntity_ReturnsUserEntity() {
 
     final User mockUser = mock(User.class);
 
@@ -459,19 +454,18 @@ public class UserServiceTest {
 
     when(mockUser.withAuth(any(Auth.class))).thenReturn(null);
 
-    StepVerifier.create(userService.getById(mockId)).assertNext(user -> {
+    StepVerifier.create(userService.findById(mockId)).assertNext(user -> {
       assertThat(user, is(mockUser));
       assertThat(user.getAuth(), is(nullValue()));
 
-      verify(userRepository, times(2)).findById(mockId);
+      verify(userRepository, times(1)).findById(mockId);
       verify(authRepository, times(2)).findByUserId(mockId);
     }).expectComplete().verify();
 
   }
 
   @Test
-  public void getById_ExistingUserIdButNoPasswordAuthEntity_ReturnsUserEntity()
-      throws InvalidUserIdException {
+  public void findById_ExistingUserIdButNoPasswordAuthEntity_ReturnsUserEntity() {
 
     final Auth mockAuth = mock(Auth.class);
     final User mockUser = mock(User.class);
@@ -488,7 +482,7 @@ public class UserServiceTest {
 
     when(mockUser.withAuth(any(Auth.class))).thenReturn(mockUserWithAuth);
 
-    StepVerifier.create(userService.getById(mockId)).assertNext(user -> {
+    StepVerifier.create(userService.findById(mockId)).assertNext(user -> {
       assertThat(user, is(mockUserWithAuth));
       assertThat(user.getAuth(), is(mockAuth));
       assertThat(user.getAuth().getPassword(), is(nullValue()));
@@ -499,44 +493,42 @@ public class UserServiceTest {
     }).expectComplete().verify();
 
   }
-  
-  @Test
-  public void getById_InvalidUserId_ThrowsException() throws InvalidUserIdException {
 
-    StepVerifier.create(Flux.just(-1, -1000, 0, -99999).next().flatMap(userService::getById))
+  @Test
+  public void findById_InvalidUserId_ThrowsException() {
+
+    StepVerifier.create(Flux.just(-1, -1000, 0, -99999).next().flatMap(userService::findById))
         .expectError(InvalidUserIdException.class).verify();
 
   }
-  
+
   @Test
-  public void getById_NonExistentUserId_ThrowsException() throws InvalidUserIdException {
+  public void findById_NonExistentUserId_ReturnsEmpty() {
 
     final int mockId = 123;
 
-    when(userRepository.existsById(mockId)).thenReturn(Mono.just(false));
+    when(userRepository.findById(mockId)).thenReturn(Mono.empty());
 
-    StepVerifier.create(userService.getById(mockId)).expectError(UserIdNotFoundException.class)
-        .verify();
-
-  }
-
-  @Test
-  public void getByLoginName_EmptyLoginName_ThrowsException() throws InvalidUserIdException {
-
-    assertThrows(IllegalArgumentException.class, () -> userService.getByLoginName(""));
+    StepVerifier.create(userService.findById(mockId)).expectComplete().verify();
 
   }
 
   @Test
-  public void getByLoginName_NullLoginName_ThrowsException() throws InvalidUserIdException {
+  public void findByLoginName_EmptyLoginName_ThrowsException() {
 
-    assertThrows(NullPointerException.class, () -> userService.getByLoginName(null));
+    assertThrows(IllegalArgumentException.class, () -> userService.findByLoginName(""));
 
   }
 
   @Test
-  public void getByLoginName_PasswordAuthExistButNotUser_ThrowsException()
-      throws InvalidUserIdException {
+  public void findByLoginName_NullLoginName_ThrowsException() {
+
+    assertThrows(NullPointerException.class, () -> userService.findByLoginName(null));
+
+  }
+
+  @Test
+  public void findByLoginName_PasswordAuthExistButNotUser_ThrowsException() {
 
     final PasswordAuth mockPasswordAuth = mock(PasswordAuth.class);
 
@@ -549,13 +541,12 @@ public class UserServiceTest {
     when(userRepository.findById(mockId)).thenReturn(Mono.empty());
     when(userRepository.existsById(mockId)).thenReturn(Mono.just(false));
 
-    StepVerifier.create(userService.getByLoginName(loginName))
-        .expectError(UserIdNotFoundException.class).verify();
+    StepVerifier.create(userService.findByLoginName(loginName)).expectComplete().verify();
 
   }
 
   @Test
-  public void getByLoginName_UserExists_ReturnsUser() throws InvalidUserIdException {
+  public void findByLoginName_UserExists_ReturnsUser() {
 
     final PasswordAuth mockPasswordAuth = mock(PasswordAuth.class);
     final Auth mockAuth = mock(Auth.class);
@@ -581,7 +572,7 @@ public class UserServiceTest {
     when(passwordAuthRepository.findByLoginName(loginName)).thenReturn(Mono.just(mockPasswordAuth));
     when(mockPasswordAuth.getUser()).thenReturn(mockId);
 
-    StepVerifier.create(userService.getByLoginName(loginName)).assertNext(user -> {
+    StepVerifier.create(userService.findByLoginName(loginName)).assertNext(user -> {
       assertThat(user, is(mockUserWithAuth));
       assertThat(user.getAuth(), is(mockAuthWithPassword));
       assertThat(user.getAuth().getPassword(), is(mockPasswordAuth));
@@ -595,7 +586,25 @@ public class UserServiceTest {
   }
 
   @Test
-  public void getByLoginName_UserIdDoesNotExist_ThrowsException() throws InvalidUserIdException {
+  public void findByLoginName_LoginNameDoesNotExist_ReturnsEmptyMono() {
+
+    final PasswordAuth mockPasswordAuth = mock(PasswordAuth.class);
+
+    final String loginName = "MockUser";
+    final int mockId = 137;
+
+    when(mockPasswordAuth.getUser()).thenReturn(mockId);
+    when(passwordAuthRepository.findByLoginName(loginName)).thenReturn(Mono.empty());
+
+    when(userRepository.findById(mockId)).thenReturn(Mono.empty());
+    when(userRepository.existsById(mockId)).thenReturn(Mono.just(false));
+
+    StepVerifier.create(userService.findByLoginName(loginName)).expectComplete().verify();
+
+  }
+
+  @Test
+  public void findByLoginName_PasswordAuthReturnedUserIdDoesNotExist_ThrowsException() {
 
     final PasswordAuth mockPasswordAuth = mock(PasswordAuth.class);
 
@@ -608,8 +617,7 @@ public class UserServiceTest {
     when(userRepository.findById(mockId)).thenReturn(Mono.empty());
     when(userRepository.existsById(mockId)).thenReturn(Mono.just(false));
 
-    StepVerifier.create(userService.getByLoginName(loginName))
-        .expectError(UserIdNotFoundException.class).verify();
+    StepVerifier.create(userService.findByLoginName(loginName)).expectComplete().verify();
 
   }
 
@@ -765,9 +773,7 @@ public class UserServiceTest {
 
           verify(authRepository, times(1)).save(mockAuth);
 
-          verify(userRepository, atLeast(1)).existsById(mockUserId);
-
-          verify(userRepository, times(2)).findById(mockUserId);
+          verify(userRepository, times(1)).findById(mockUserId);
           verify(authRepository, times(4)).findByUserId(mockUserId);
           verify(passwordAuthRepository, times(2)).findByUserId(mockUserId);
 
@@ -844,9 +850,7 @@ public class UserServiceTest {
 
           verify(authRepository, times(1)).save(mockAdminAuth);
 
-          verify(userRepository, atLeast(1)).existsById(mockUserId);
-
-          verify(userRepository, times(2)).findById(mockUserId);
+          verify(userRepository, times(1)).findById(mockUserId);
           verify(authRepository, times(4)).findByUserId(mockUserId);
           verify(passwordAuthRepository, times(2)).findByUserId(mockUserId);
 
@@ -920,14 +924,14 @@ public class UserServiceTest {
   }
 
   @Test
-  public void setDisplayName_EmptyDisplayName_ThrowsException() throws InvalidUserIdException {
+  public void setDisplayName_EmptyDisplayName_ThrowsException() {
 
     assertThrows(IllegalArgumentException.class, () -> userService.setDisplayName(1, ""));
 
   }
 
   @Test
-  public void setDisplayName_InvalidUserId_ThrowsException() throws InvalidUserIdException {
+  public void setDisplayName_InvalidUserId_ThrowsException() {
 
     assertThrows(InvalidUserIdException.class, () -> userService.setDisplayName(-1, "displayName"));
     assertThrows(InvalidUserIdException.class, () -> userService.setDisplayName(0, "displayName"));
@@ -937,7 +941,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void setDisplayName_NullDisplayName_ThrowsException() throws InvalidUserIdException {
+  public void setDisplayName_NullDisplayName_ThrowsException() {
 
     assertThrows(NullPointerException.class, () -> userService.setDisplayName(1, null));
 

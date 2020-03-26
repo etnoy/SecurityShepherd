@@ -31,7 +31,7 @@ public class JwtUtil  {
 
   public Mono<User> getUserFromToken(String token) {
     final int userId = Integer.parseInt(getAllClaimsFromToken(token).getSubject());
-    return userService.getById(userId);
+    return userService.findById(userId);
   }
 
   public Date getExpirationDateFromToken(String token) {

@@ -41,7 +41,7 @@ public class LoginControllerIT {
     String token = JsonPath.parse(
         new String(webTestClient.post().uri("/api/v1/login").contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromPublisher(
-                Mono.just("{\"username\": \"" + loginName + "\", \"password\": \"test\"}"),
+                Mono.just("{\"userName\": \"" + loginName + "\", \"password\": \"test\"}"),
                 String.class))
             .exchange().expectStatus().isOk().expectBody().returnResult().getResponseBody()))
         .read("$.token");
@@ -60,7 +60,7 @@ public class LoginControllerIT {
 
     webTestClient.post().uri("/api/v1/login").contentType(MediaType.APPLICATION_JSON)
         .body(BodyInserters.fromPublisher(
-            Mono.just("{\"username\": \"" + loginName + "\", \"password\": \"wrong\"}"),
+            Mono.just("{\"userName\": \"" + loginName + "\", \"password\": \"wrong\"}"),
             String.class))
         .exchange().expectStatus().isUnauthorized();
 
@@ -76,7 +76,7 @@ public class LoginControllerIT {
 
     webTestClient.post().uri("/api/v1/login").contentType(MediaType.APPLICATION_JSON)
         .body(BodyInserters.fromPublisher(
-            Mono.just("{\"username\": \"doesnotexist\", \"password\": \"wrong\"}"),
+            Mono.just("{\"userName\": \"doesnotexist\", \"password\": \"wrong\"}"),
             String.class))
         .exchange().expectStatus().isUnauthorized();
 

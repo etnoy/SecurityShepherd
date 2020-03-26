@@ -25,8 +25,8 @@ public class UserIT {
     final User testUser = userService.createPasswordUser("Test User", "user_login_name",
         "$2y$12$53B6QcsGwF3Os1GVFUFSQOhIPXnWFfuEkRJdbknFWnkXfUBMUKhaW").block();
 
-    StepVerifier.create(userService.getById(testUser.getId())).expectNext(testUser).expectComplete()
-        .verify();
+    StepVerifier.create(userService.findById(testUser.getId())).expectNext(testUser)
+        .expectComplete().verify();
   }
 
   @BeforeEach
