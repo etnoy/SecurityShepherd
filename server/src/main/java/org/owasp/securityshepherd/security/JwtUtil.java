@@ -15,7 +15,7 @@ import io.jsonwebtoken.security.Keys;
 import reactor.core.publisher.Mono;
 
 @Component
-public class JwtUtil  {
+public class JwtUtil {
 
   private static final long EXPIRATION_TIME = 28800;
 
@@ -25,7 +25,6 @@ public class JwtUtil  {
   UserService userService;
 
   public Claims getAllClaimsFromToken(String token) {
-
     return Jwts.parserBuilder().setSigningKey(JWT_KEY).build().parseClaimsJws(token).getBody();
   }
 
