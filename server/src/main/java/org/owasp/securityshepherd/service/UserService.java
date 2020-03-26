@@ -5,7 +5,6 @@ import org.owasp.securityshepherd.exception.DuplicateClassNameException;
 import org.owasp.securityshepherd.exception.DuplicateUserDisplayNameException;
 import org.owasp.securityshepherd.exception.InvalidClassIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
-import org.owasp.securityshepherd.exception.LoginNameNotFoundException;
 import org.owasp.securityshepherd.exception.UserIdNotFoundException;
 import org.owasp.securityshepherd.persistence.model.Auth;
 import org.owasp.securityshepherd.persistence.model.Auth.AuthBuilder;
