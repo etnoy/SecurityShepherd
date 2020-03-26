@@ -63,7 +63,6 @@ public class JwtUtil {
   }
 
   public boolean validateToken(String token) {
-    // FIXME: Must check signature
     return !isTokenExpired(token);
   }
 
