@@ -1,6 +1,7 @@
 package org.owasp.securityshepherd.web.controller;
 
 import javax.validation.Valid;
+import org.owasp.securityshepherd.exception.LoginNameNotFoundException;
 import org.owasp.securityshepherd.persistence.model.User;
 import org.owasp.securityshepherd.security.AuthRequest;
 import org.owasp.securityshepherd.security.AuthResponse;
@@ -35,18 +36,21 @@ public class LoginController {
   private PasswordEncoder passwordEncoder;
 
   @PostMapping(value = "/login")
-  public Mono<ResponseEntity<?>> login(@RequestBody AuthRequest authRequest) {
+  public Mono<ResponseEntity> login(@RequestBody AuthRequest authRequest) {
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
 
-    return userService.getByLoginName(authRequest.getUsername()).map(user -> {
-      UserDetails userDetails = new ShepherdUserDetails(user);
-      if (encoder.matches(authRequest.getPassword(), userDetails.getPassword())) {
-        return ResponseEntity.ok(new AuthResponse(jwtUtil.generateToken(user)));
-      } else {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-      }
-
-    }).defaultIfEmpty(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+    return userService.getByLoginName(authRequest.getUsername())
+        .map(user -> {
+          UserDetails userDetails = new ShepherdUserDetails(user);
+          if (encoder.matches(authRequest.getPassword(), userDetails.getPassword())) {
+            return ResponseEntity.ok(new AuthResponse(jwtUtil.generateToken(user)));
+          } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+          }
+        })
+        .onErrorReturn(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build())
+        .cast(ResponseEntity.class)
+        .defaultIfEmpty(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
   }
 
   @PostMapping(path = "/register")

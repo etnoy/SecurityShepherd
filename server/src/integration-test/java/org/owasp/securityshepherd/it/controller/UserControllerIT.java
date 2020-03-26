@@ -1,4 +1,4 @@
-package org.owasp.securityshepherd.it.auth;
+package org.owasp.securityshepherd.it.controller;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -26,7 +26,7 @@ import reactor.test.StepVerifier;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
-public class UserApiIT {
+public class UserControllerIT {
 
   @Autowired
   UserService userService;

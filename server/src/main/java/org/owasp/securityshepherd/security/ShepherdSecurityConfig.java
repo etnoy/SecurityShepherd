@@ -28,12 +28,13 @@ public class ShepherdSecurityConfig {
 
   @Bean
   public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
-    return http.exceptionHandling().authenticationEntryPoint((swe, e) -> Mono.fromRunnable(() -> {
-      log.debug("Denied: " + swe + e);
-      swe.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-      Mono.error(e);
-    })).accessDeniedHandler(
-        (swe, e) -> Mono.fromRunnable(() -> swe.getResponse().setStatusCode(HttpStatus.FORBIDDEN)))
+    return http.exceptionHandling().authenticationEntryPoint(
+        (serverWebExchange, authenticationException) -> Mono.fromRunnable(() -> {
+          serverWebExchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+          Mono.error(authenticationException);
+        }))
+        .accessDeniedHandler((serverWebExchange, authenticationException) -> Mono.fromRunnable(
+            () -> serverWebExchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN)))
         .and().csrf().disable().formLogin().disable().httpBasic().disable()
         .authenticationManager(authenticationManager)
         .securityContextRepository(securityContextRepository).authorizeExchange()
