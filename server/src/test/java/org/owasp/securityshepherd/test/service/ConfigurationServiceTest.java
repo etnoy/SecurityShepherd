@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.owasp.securityshepherd.persistence.model.Configuration;
+import org.owasp.securityshepherd.model.Configuration;
 import org.owasp.securityshepherd.repository.ConfigurationRepository;
 import org.owasp.securityshepherd.service.ConfigurationService;
 import org.owasp.securityshepherd.service.KeyService;

@@ -1,6 +1,6 @@
 package org.owasp.securityshepherd.repository;
 
-import org.owasp.securityshepherd.persistence.model.Module;
+import org.owasp.securityshepherd.model.Module;
 import org.springframework.data.r2dbc.repository.Modifying;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -1,21 +1,23 @@
-package org.owasp.securityshepherd.security;
+package org.owasp.securityshepherd.service;
 
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import org.owasp.securityshepherd.persistence.model.User;
+import org.owasp.securityshepherd.model.User;
+import org.owasp.securityshepherd.model.Role;
+import org.owasp.securityshepherd.model.ShepherdUserDetails;
 import org.owasp.securityshepherd.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import reactor.core.publisher.Mono;
 
-@Component
-public class JwtUtil {
+@Service
+public class webTokenService {
 
   private static final long EXPIRATION_TIME = 28800;
 

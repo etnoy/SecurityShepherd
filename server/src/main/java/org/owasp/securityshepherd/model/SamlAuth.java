@@ -1,4 +1,4 @@
-package org.owasp.securityshepherd.persistence.model;
+package org.owasp.securityshepherd.model;
 
 import java.io.Serializable;
 

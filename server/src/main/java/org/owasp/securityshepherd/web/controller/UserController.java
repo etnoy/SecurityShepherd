@@ -1,6 +1,6 @@
 package org.owasp.securityshepherd.web.controller;
 
-import org.owasp.securityshepherd.persistence.model.User;
+import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;

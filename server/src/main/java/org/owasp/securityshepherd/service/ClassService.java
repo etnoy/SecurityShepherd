@@ -3,7 +3,7 @@ package org.owasp.securityshepherd.service;
 import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
 import org.owasp.securityshepherd.exception.DuplicateClassNameException;
 import org.owasp.securityshepherd.exception.InvalidClassIdException;
-import org.owasp.securityshepherd.persistence.model.ClassEntity;
+import org.owasp.securityshepherd.model.ClassEntity;
 import org.owasp.securityshepherd.repository.ClassRepository;
 import org.springframework.stereotype.Service;
 

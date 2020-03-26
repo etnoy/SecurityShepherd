@@ -1,5 +1,6 @@
-package org.owasp.securityshepherd.security;
+package org.owasp.securityshepherd.repository;
 
+import org.owasp.securityshepherd.security.AuthenticationManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;

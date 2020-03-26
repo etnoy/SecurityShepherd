@@ -1,10 +1,11 @@
-package org.owasp.securityshepherd.security;
+package org.owasp.securityshepherd.model;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import org.owasp.securityshepherd.persistence.model.User;
+import org.owasp.securityshepherd.model.Role;
+import org.owasp.securityshepherd.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,9 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class ShepherdUserDetails implements UserDetails {
 
-  /**
-   * 
-   */
   private static final long serialVersionUID = 9011116395514302667L;
   private final User user;
 

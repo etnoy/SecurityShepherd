@@ -1,5 +1,7 @@
-package org.owasp.securityshepherd.security;
+package org.owasp.securityshepherd.configuration;
 
+import org.owasp.securityshepherd.repository.SecurityContextRepository;
+import org.owasp.securityshepherd.security.AuthenticationManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

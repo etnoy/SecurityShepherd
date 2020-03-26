@@ -1,10 +1,10 @@
 package org.owasp.securityshepherd.web.controller;
 
 import javax.validation.Valid;
-import org.owasp.securityshepherd.persistence.model.User;
-import org.owasp.securityshepherd.security.AuthResponse;
-import org.owasp.securityshepherd.security.JwtUtil;
-import org.owasp.securityshepherd.security.ShepherdUserDetails;
+import org.owasp.securityshepherd.model.User;
+import org.owasp.securityshepherd.model.AuthResponse;
+import org.owasp.securityshepherd.service.webTokenService;
+import org.owasp.securityshepherd.model.ShepherdUserDetails;
 import org.owasp.securityshepherd.service.UserService;
 import org.owasp.securityshepherd.web.dto.PasswordLoginDto;
 import org.owasp.securityshepherd.web.dto.PasswordRegistrationDto;
@@ -29,7 +29,7 @@ public class LoginController {
   private UserService userService;
 
   @Autowired
-  private JwtUtil jwtUtil;
+  private webTokenService jwtService;
 
   @Autowired
   private PasswordEncoder passwordEncoder;
@@ -42,7 +42,7 @@ public class LoginController {
 
     return userMono.map(ShepherdUserDetails::new)
         .filter(userDetails -> encoder.matches(loginDto.getPassword(), userDetails.getPassword()))
-        .zipWith(userMono).map(Tuple2::getT2).map(jwtUtil::generateToken).map(AuthResponse::new)
+        .zipWith(userMono).map(Tuple2::getT2).map(jwtService::generateToken).map(AuthResponse::new)
         .map(authResponse -> new ResponseEntity<>(authResponse, HttpStatus.OK))
         .defaultIfEmpty(new ResponseEntity<>(HttpStatus.UNAUTHORIZED));
 
