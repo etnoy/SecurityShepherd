@@ -19,6 +19,7 @@ import reactor.core.publisher.Mono;
 @EnableReactiveMethodSecurity
 public class ShepherdSecurityConfiguration {
 
+  
   @Bean
   public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity serverHttpSecurity,
       AuthenticationManager authenticationManager,

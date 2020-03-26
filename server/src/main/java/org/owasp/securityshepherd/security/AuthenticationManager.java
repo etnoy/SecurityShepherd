@@ -9,6 +9,7 @@ import org.springframework.security.authentication.ReactiveAuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
@@ -26,13 +27,13 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
 
       final Mono<User> userMono = jwtService.getUserFromToken(authToken);
 
-      final Mono<String> loginNameMono =
-          userMono.map(user -> user.getAuth().getPassword().getLoginName());
+      final Mono<UserDetails> userDetailsMono =
+          userMono.map(PasswordUserDetails::new);
 
       final Mono<Collection<? extends GrantedAuthority>> authoritiesMono =
           userMono.map(PasswordUserDetails::new).map(PasswordUserDetails::getAuthorities);
 
-      return loginNameMono.zipWith(authoritiesMono).map(
+      return userDetailsMono.zipWith(authoritiesMono).map(
           tuple -> new UsernamePasswordAuthenticationToken(tuple.getT1(), null, tuple.getT2()));
 
     } else {

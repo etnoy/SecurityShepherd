@@ -143,7 +143,7 @@ public class ModuleTest {
     final ModuleBuilder builder = Module.builder();
 
     assertThat(builder.toString(), is(
-        "Module.ModuleBuilder(id=0, name=null, description=null, isFlagEnabled=false, isFlagExact=false, flag=null, isOpen=false)"));
+        "Module.ModuleBuilder(id=null, name=null, description=null, isFlagEnabled=false, isFlagExact=false, flag=null, isOpen=false)"));
 
   }
 
@@ -153,7 +153,7 @@ public class ModuleTest {
     final Module testModule = Module.builder().name("TestModule").build();
 
     assertThat(testModule.toString(), is(
-        "Module(id=0, name=TestModule, description=null, isFlagEnabled=false, isFlagExact=false, flag=null, isOpen=false)"));
+        "Module(id=null, name=TestModule, description=null, isFlagEnabled=false, isFlagExact=false, flag=null, isOpen=false)"));
 
   }
 

@@ -8,16 +8,18 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import lombok.Value;
-import lombok.extern.slf4j.Slf4j;
 
 @Value
-@Slf4j
 public final class PasswordUserDetails implements UserDetails {
 
   private static final long serialVersionUID = 9011116395514302667L;
-  
+
   private final User user;
 
+  public User getUser() {
+    return user;
+  }
+  
   @Override
   public String getPassword() {
     return user.getAuth().getPassword().getHashedPassword();
@@ -60,10 +62,8 @@ public final class PasswordUserDetails implements UserDetails {
   public Role getRole() {
 
     if (user.getAuth().isAdmin()) {
-      log.trace("User is admin");
       return Role.ROLE_ADMIN;
     } else {
-      log.trace("User is regular user");
       return Role.ROLE_USER;
     }
 

@@ -131,22 +131,22 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void getById_NegativeModuleId_ThrowsException() {
+  public void findById_NegativeModuleId_ThrowsException() {
 
-    StepVerifier.create(Flux.just(-1, -1000, 0, -99).next().flatMap(moduleService::getById))
+    StepVerifier.create(Flux.just(-1, -1000, 0, -99).next().flatMap(moduleService::findById))
         .expectError(InvalidModuleIdException.class).verify();
 
   }
 
   @Test
-  public void getById_NonExistentModuleId_ThrowsException() throws Exception {
+  public void findById_NonExistentModuleId_ThrowsException() throws Exception {
 
     final int mockModuleId = 286;
 
     when(moduleRepository.existsById(mockModuleId)).thenReturn(Mono.just(false));
     when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.empty());
 
-    StepVerifier.create(moduleService.getById(mockModuleId))
+    StepVerifier.create(moduleService.findById(mockModuleId))
         .expectError(ModuleIdNotFoundException.class).verify();
 
   }

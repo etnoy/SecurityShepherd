@@ -1,14 +1,13 @@
 package org.owasp.securityshepherd.controller;
 
 import javax.validation.Valid;
-import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.dto.PasswordLoginDto;
 import org.owasp.securityshepherd.dto.PasswordRegistrationDto;
 import org.owasp.securityshepherd.model.AuthResponse;
-import org.owasp.securityshepherd.service.WebTokenService;
 import org.owasp.securityshepherd.model.PasswordUserDetails;
+import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.owasp.securityshepherd.service.WebTokenService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,21 +17,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/")
 public class LoginController {
 
-  @Autowired
-  private UserService userService;
+  private final UserService userService;
 
-  @Autowired
-  private WebTokenService jwtService;
+  private final WebTokenService jwtService;
 
-  @Autowired
-  private PasswordEncoder passwordEncoder;
+  private final PasswordEncoder passwordEncoder;
 
   @PostMapping(value = "/login")
   public Mono<ResponseEntity<AuthResponse>> login(@RequestBody @Valid PasswordLoginDto loginDto) {

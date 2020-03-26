@@ -15,6 +15,7 @@ import com.google.common.primitives.Bytes;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Slf4j
@@ -48,7 +49,7 @@ public final class ModuleService {
       throw new IllegalArgumentException();
     }
 
-    log.info("Creating new class with name " + name);
+    log.info("Creating new module with name " + name);
 
     return Mono.just(name).filterWhen(this::doesNotExistByName)
         .switchIfEmpty(Mono.error(new DuplicateModuleNameException("Module name already exists")))
@@ -61,7 +62,13 @@ public final class ModuleService {
     return moduleRepository.findByName(name).map(u -> false).defaultIfEmpty(true);
   }
 
-  public Mono<Module> getById(final int id) {
+  public Flux<Module> findAll() {
+
+    return moduleRepository.findAll();
+
+  }
+  
+  public Mono<Module> findById(final int id) {
 
     if (id <= 0) {
 
@@ -87,7 +94,7 @@ public final class ModuleService {
 
     }
 
-    final Mono<byte[]> baseFlag = getById(moduleId)
+    final Mono<byte[]> baseFlag = findById(moduleId)
         .switchIfEmpty(Mono.error(new ModuleIdNotFoundException())).filter(Module::isFlagEnabled)
         .switchIfEmpty(
             Mono.error(new InvalidFlagStateException("Can't get dynamic flag if flag is disabled")))
@@ -114,7 +121,7 @@ public final class ModuleService {
 
     }
 
-    return getById(id).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
+    return findById(id).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
         .map(module -> module.withFlagEnabled(true).withFlagExact(false)).flatMap(module -> {
           if (module.getFlag() == null) {
             return keyService.generateRandomString(16).map(module::withFlag);
@@ -143,7 +150,7 @@ public final class ModuleService {
 
     }
 
-    return getById(id).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
+    return findById(id).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
         .map(module -> module.withFlagEnabled(true).withFlagExact(true).withFlag(exactFlag))
         .flatMap(moduleRepository::save);
 
@@ -169,9 +176,9 @@ public final class ModuleService {
 
     }
 
-    log.info("Setting name of class with id " + id + " to " + name);
+    log.info("Setting name of module with id " + id + " to " + name);
 
-    return getById(id).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
+    return findById(id).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
         .map(module -> module.withName(name)).flatMap(moduleRepository::save);
 
   }
@@ -186,7 +193,7 @@ public final class ModuleService {
     log.info("Verifying submitted flag from user id " + userId + " with module id " + moduleId
         + " with flag contents " + submittedFlag);
 
-    return getById(moduleId).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
+    return findById(moduleId).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
         .filter(Module::isFlagEnabled)
         .switchIfEmpty(
             Mono.error(new InvalidFlagStateException("Cannot verify flag if flag is not enabled")))

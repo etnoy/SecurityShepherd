@@ -2,24 +2,24 @@ package org.owasp.securityshepherd.controller;
 
 import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
+@RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/v1/")
 public class UserController {
 
-  @Autowired
-  private UserService userService;
+  private final UserService userService;
 
   @PostMapping(path = "user/delete/{id}")
   @PreAuthorize("hasRole('ROLE_ADMIN')")
