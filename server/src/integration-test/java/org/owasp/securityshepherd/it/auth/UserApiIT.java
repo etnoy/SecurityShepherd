@@ -19,7 +19,6 @@ import org.springframework.test.web.reactive.server.FluxExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 import com.jayway.jsonpath.JsonPath;
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -27,7 +26,6 @@ import reactor.test.StepVerifier;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
-@Slf4j
 public class UserApiIT {
 
   @Autowired
@@ -37,7 +35,7 @@ public class UserApiIT {
   private WebTestClient webTestClient;
 
   @Test
-  public void apiGetUserResource_AuthenticatedUser_Success() throws Exception {
+  public void getUserList_AuthenticatedUser_Forbidden() {
 
     final String loginName = "test";
     final String hashedPassword = "$2y$12$53B6QcsGwF3Os1GVFUFSQOhIPXnWFfuEkRJdbknFWnkXfUBMUKhaW";
@@ -52,18 +50,19 @@ public class UserApiIT {
             .exchange().expectStatus().isOk().expectBody().returnResult().getResponseBody()))
         .read("$.token");
 
+    webTestClient.get().uri("/api/v1/users").header("Authorization", "Bearer " + token)
+        .accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isForbidden();
+
   }
 
   @Test
-  public void apiGetUserResource_AuthenticatedAdmin_Success() throws Exception {
+  public void getUserList_UserPromotedToAdmin_Success() {
 
     final String loginName = "test";
     final String hashedPassword = "$2y$12$53B6QcsGwF3Os1GVFUFSQOhIPXnWFfuEkRJdbknFWnkXfUBMUKhaW";
 
     final int userId =
         userService.createPasswordUser("Test User", loginName, hashedPassword).block().getId();
-
-    userService.promote(userId).block();
 
     String token = JsonPath.parse(
         new String(webTestClient.post().uri("/api/v1/login").contentType(MediaType.APPLICATION_JSON)
@@ -73,10 +72,20 @@ public class UserApiIT {
             .exchange().expectStatus().isOk().expectBody().returnResult().getResponseBody()))
         .read("$.token");
 
+    webTestClient.get().uri("/api/v1/users").header("Authorization", "Bearer " + token)
+        .accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isForbidden();
+
+    // Promote user to admin
+    userService.promote(userId).block();
+
+    // Now the user should be able to see user list
+    webTestClient.get().uri("/api/v1/users").header("Authorization", "Bearer " + token)
+    .accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk();
+    
   }
 
   @Test
-  public void apiListUsers_UsersExist_ReturnsUserList() throws Exception {
+  public void listUsers_UsersExist_ReturnsUserList() throws Exception {
 
     final String loginName = "test";
     final String password = "paLswOrdha17£@£sh";
@@ -128,7 +137,7 @@ public class UserApiIT {
   }
 
   @Test
-  public void apiUserCreate_ValidData_ReturnsValidUser() throws Exception {
+  public void register_ValidData_ReturnsValidUser() throws Exception {
 
     final String loginName = "test";
     final String password = "paLswOrdha17£@£sh";
@@ -140,7 +149,7 @@ public class UserApiIT {
             String.class))
         .exchange().expectStatus().isCreated().expectBody(Integer.class).returnResult()
         .getResponseBody();
-    
+
     // Promote this user to admin
     userService.promote(userId).block();
 

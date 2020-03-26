@@ -153,10 +153,6 @@ public final class UserService {
 
   private Mono<User> setAdminStatus(final int userId, final boolean isAdmin) {
 
-    if (userId <= 0) {
-      return Mono.error(new InvalidUserIdException());
-    }
-
     final Mono<User> userMono = getById(userId);
 
     final Mono<Auth> authMono =
