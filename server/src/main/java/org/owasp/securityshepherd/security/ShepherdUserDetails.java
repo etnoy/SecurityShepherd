@@ -1,16 +1,18 @@
-package org.owasp.securityshepherd.model;
+package org.owasp.securityshepherd.security;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import org.owasp.securityshepherd.model.Role;
+import org.owasp.securityshepherd.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import lombok.Value;
 
 @Value
-public final class PasswordUserDetails implements UserDetails {
+public final class ShepherdUserDetails implements UserDetails {
 
   private static final long serialVersionUID = 9011116395514302667L;
 
@@ -57,7 +59,6 @@ public final class PasswordUserDetails implements UserDetails {
   public boolean isEnabled() {
     return user.getAuth().isEnabled();
   }
-
 
   public Role getRole() {
 

@@ -5,8 +5,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import org.owasp.securityshepherd.model.User;
+import org.owasp.securityshepherd.security.ShepherdUserDetails;
 import org.owasp.securityshepherd.model.Role;
-import org.owasp.securityshepherd.model.PasswordUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import io.jsonwebtoken.Claims;
@@ -45,7 +45,7 @@ public class WebTokenService {
 
   public String generateToken(User user) {
     Map<String, Object> claims = new HashMap<>();
-    PasswordUserDetails userDetails = new PasswordUserDetails(user);
+    ShepherdUserDetails userDetails = new ShepherdUserDetails(user);
     Role role = userDetails.getRole();
 
     claims.put("role", role);

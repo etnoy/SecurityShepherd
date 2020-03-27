@@ -4,8 +4,8 @@ import javax.validation.Valid;
 import org.owasp.securityshepherd.dto.PasswordLoginDto;
 import org.owasp.securityshepherd.dto.PasswordRegistrationDto;
 import org.owasp.securityshepherd.model.AuthResponse;
-import org.owasp.securityshepherd.model.PasswordUserDetails;
 import org.owasp.securityshepherd.model.User;
+import org.owasp.securityshepherd.security.ShepherdUserDetails;
 import org.owasp.securityshepherd.service.UserService;
 import org.owasp.securityshepherd.service.WebTokenService;
 import org.springframework.http.HttpStatus;
@@ -38,7 +38,7 @@ public class LoginController {
 
     final Mono<User> userMono = userService.findByLoginName(loginDto.getUserName());
 
-    return userMono.map(PasswordUserDetails::new)
+    return userMono.map(ShepherdUserDetails::new)
         .filter(userDetails -> encoder.matches(loginDto.getPassword(), userDetails.getPassword()))
         .zipWith(userMono).map(Tuple2::getT2).map(jwtService::generateToken).map(AuthResponse::new)
         .map(authResponse -> new ResponseEntity<>(authResponse, HttpStatus.OK))

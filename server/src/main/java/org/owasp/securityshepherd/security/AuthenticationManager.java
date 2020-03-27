@@ -1,7 +1,6 @@
 package org.owasp.securityshepherd.security;
 
 import java.util.Collection;
-import org.owasp.securityshepherd.model.PasswordUserDetails;
 import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.service.WebTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +27,10 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
       final Mono<User> userMono = jwtService.getUserFromToken(authToken);
 
       final Mono<UserDetails> userDetailsMono =
-          userMono.map(PasswordUserDetails::new);
+          userMono.map(ShepherdUserDetails::new);
 
       final Mono<Collection<? extends GrantedAuthority>> authoritiesMono =
-          userMono.map(PasswordUserDetails::new).map(PasswordUserDetails::getAuthorities);
+          userMono.map(ShepherdUserDetails::new).map(ShepherdUserDetails::getAuthorities);
 
       return userDetailsMono.zipWith(authoritiesMono).map(
           tuple -> new UsernamePasswordAuthenticationToken(tuple.getT1(), null, tuple.getT2()));
