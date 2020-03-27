@@ -45,7 +45,7 @@ public class ModuleController {
 
     final Mono<Integer> userId = ReactiveSecurityContextHolder.getContext()
         .map(SecurityContext::getAuthentication).map(Authentication::getPrincipal)
-        .cast(PasswordUserDetails.class).map(details -> details.getUser()).map(User::getId);
+        .cast(PasswordUserDetails.class).map(PasswordUserDetails::getUser).map(User::getId);
 
     return userId.flatMap(
         id -> moduleService.verifyFlag(id, submissionDto.getModuleId(), submissionDto.getFlag()));
