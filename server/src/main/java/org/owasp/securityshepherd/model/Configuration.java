@@ -18,16 +18,16 @@ public class Configuration implements Serializable {
   private static final long serialVersionUID = -3877275355721047824L;
 
   @Id
-  private final int id;
+  private Integer id;
 
   @NonNull
   @Column("config_key")
-  private final String key;
+  private String key;
 
   @NonNull
-  private final String value;
+  private String value;
 
-  Configuration(final int id, final String key, final String value) {
+  Configuration(final Integer id, @NonNull final String key, final String value) {
     this.id = id;
     this.key = key;
     this.value = value;

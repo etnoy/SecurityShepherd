@@ -18,7 +18,7 @@ public class Submission implements Serializable {
   private static final long serialVersionUID = -5485881248601955741L;
 
   @Id
-  private int id;
+  private Integer id;
 
   private int userId;
 

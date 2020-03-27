@@ -25,7 +25,7 @@ public class SAMLAuthTest {
   public void builderToString_ValidData_AsExpected() {
 
     assertThat(SamlAuth.builder().toString(),
-        is("SamlAuth.SamlAuthBuilder(id=0, user=0, samlId=null)"));
+        is("SamlAuth.SamlAuthBuilder(id=null, user=0, samlId=null)"));
 
   }
 
@@ -70,7 +70,7 @@ public class SAMLAuthTest {
   public void toString_ValidData_AsExpected() {
 
     assertThat(SamlAuth.builder().samlId("TestID").build().toString(),
-        is("SamlAuth(id=0, user=0, samlId=TestID)"));
+        is("SamlAuth(id=null, user=0, samlId=TestID)"));
 
   }
 

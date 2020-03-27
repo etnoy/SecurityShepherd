@@ -23,7 +23,7 @@ public class ConfigurationTest {
   public void builderToString_ValidData_AsExpected() {
 
     assertThat(Configuration.builder().toString(),
-        is("Configuration.ConfigurationBuilder(id=0, key=null, value=null)"));
+        is("Configuration.ConfigurationBuilder(id=null, key=null, value=null)"));
 
   }
 
@@ -107,7 +107,7 @@ public class ConfigurationTest {
   public void toString_ValidData_AsExpected() {
 
     assertThat(Configuration.builder().key("serverKey").value("abc123secret").build().toString(),
-        is("Configuration(id=0, key=serverKey, value=abc123secret)"));
+        is("Configuration(id=null, key=serverKey, value=abc123secret)"));
 
   }
 

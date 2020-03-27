@@ -158,7 +158,7 @@ public class SubmissionTest {
     final SubmissionBuilder builder = Submission.builder();
 
     assertThat(builder.toString(), is(
-        "Submission.SubmissionBuilder(id=0, userId=0, moduleId=0, time=null, isValid=false, flag=null)"));
+        "Submission.SubmissionBuilder(id=null, userId=0, moduleId=0, time=null, isValid=false, flag=null)"));
 
   }
 
@@ -167,7 +167,7 @@ public class SubmissionTest {
     final Submission testSubmission =
         Submission.builder().moduleId(123).userId(6789).time(new Timestamp(0)).build();
 
-    assertThat(testSubmission.toString(), is("Submission(id=0, userId=6789, moduleId=123, time="
+    assertThat(testSubmission.toString(), is("Submission(id=null, userId=6789, moduleId=123, time="
         + new Timestamp(0) + ", isValid=false, flag=null)"));
 
   }

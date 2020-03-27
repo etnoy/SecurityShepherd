@@ -11,7 +11,6 @@ import lombok.NonNull;
 import lombok.With;
 
 @Value
-@EqualsAndHashCode
 @Builder
 @With
 public class SamlAuth implements Serializable {
@@ -19,14 +18,14 @@ public class SamlAuth implements Serializable {
   private static final long serialVersionUID = 211951930649985921L;
 
   @Id
-  private int id;
+  private Integer id;
 
   private int user;
 
   @NonNull
   private String samlId;
 
-  public SamlAuth(final int id, final int user, @NonNull final String samlId) {
+  public SamlAuth(final Integer id, final int user, @NonNull final String samlId) {
     this.id = id;
     this.user = user;
     this.samlId = samlId;

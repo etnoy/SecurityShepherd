@@ -6,6 +6,7 @@ import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.security.ShepherdUserDetails;
 import org.owasp.securityshepherd.service.ModuleService;
+import org.owasp.securityshepherd.service.SubmissionService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
@@ -24,6 +25,8 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/")
 public class ModuleController {
+
+  private final SubmissionService submissionService;
 
   private final ModuleService moduleService;
 
@@ -45,8 +48,8 @@ public class ModuleController {
 
     return ReactiveSecurityContextHolder.getContext().map(SecurityContext::getAuthentication)
         .map(Authentication::getPrincipal).cast(ShepherdUserDetails.class)
-        .map(ShepherdUserDetails::getUser).map(User::getId).flatMap(id -> moduleService
-            .verifyFlag(id, submissionDto.getModuleId(), submissionDto.getFlag()));
+        .map(ShepherdUserDetails::getUser).map(User::getId).flatMap(id -> submissionService
+            .submit(id, submissionDto.getModuleId(), submissionDto.getFlag()));
   }
 
 }
