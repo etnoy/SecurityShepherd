@@ -13,7 +13,7 @@ import lombok.With;
 @Value
 @Builder
 @With
-public class Submission implements Serializable {
+public class Submission implements Serializable, Comparable<Submission> {
 
   private static final long serialVersionUID = -5485881248601955741L;
 
@@ -30,5 +30,10 @@ public class Submission implements Serializable {
   private boolean isValid;
 
   private String flag;
+
+  @Override
+  public int compareTo(Submission s) {
+    return getTime().compareTo(s.getTime());
+  }
 
 }

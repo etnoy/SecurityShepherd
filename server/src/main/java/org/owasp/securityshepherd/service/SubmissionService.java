@@ -9,6 +9,7 @@ import org.owasp.securityshepherd.repository.SubmissionRepository;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Slf4j
@@ -54,6 +55,18 @@ public final class SubmissionService {
         .flatMap(submissionRepository::save);
 
     return isValid;
+
+  }
+
+  public Flux<Submission> findAllByModuleId(final int moduleId) {
+
+    if (moduleId <= 0) {
+
+      return Flux.error(new InvalidModuleIdException());
+
+    }
+
+    return submissionRepository.findAllByModuleId(moduleId);
 
   }
 
