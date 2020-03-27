@@ -50,7 +50,7 @@ public final class SubmissionService {
 
     Mono<Boolean> isValid = moduleService.verifyFlag(userId, moduleId, flag);
 
-    isValid.map(valid -> submissionBuilder.isValid(valid)).map(SubmissionBuilder::build)
+    isValid.map(submissionBuilder::isValid).map(SubmissionBuilder::build)
         .flatMap(submissionRepository::save);
 
     return isValid;
