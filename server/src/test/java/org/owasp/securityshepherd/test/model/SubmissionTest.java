@@ -4,9 +4,9 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.sql.Timestamp;
-
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.TimeZone;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.model.Submission;
@@ -38,7 +38,7 @@ public class SubmissionTest {
     for (String flag : flagsToTest) {
 
       final SubmissionBuilder builder =
-          Submission.builder().userId(123).moduleId(456).time(new Timestamp(0));
+          Submission.builder().userId(123).moduleId(456).time(LocalDateTime.MIN);
 
       builder.flag(flag);
 
@@ -57,7 +57,7 @@ public class SubmissionTest {
     for (int id : idsToTest) {
 
       final SubmissionBuilder builder =
-          Submission.builder().userId(123).moduleId(456).time(new Timestamp(0));
+          Submission.builder().userId(123).moduleId(456).time(LocalDateTime.MIN);
 
       builder.id(id);
 
@@ -74,7 +74,7 @@ public class SubmissionTest {
     for (boolean isValid : BOOLEANS) {
 
       final SubmissionBuilder builder =
-          Submission.builder().userId(123).moduleId(456).time(new Timestamp(0));
+          Submission.builder().userId(123).moduleId(456).time(LocalDateTime.MIN);
 
       builder.isValid(isValid);
 
@@ -92,7 +92,7 @@ public class SubmissionTest {
 
     for (int moduleId : moduleIdsToTest) {
 
-      final SubmissionBuilder builder = Submission.builder().userId(456).time(new Timestamp(0));
+      final SubmissionBuilder builder = Submission.builder().userId(456).time(LocalDateTime.MIN);
 
       builder.moduleId(moduleId);
 
@@ -120,10 +120,13 @@ public class SubmissionTest {
 
       final SubmissionBuilder builder = Submission.builder().userId(123).moduleId(456);
 
-      builder.time(new Timestamp(time));
+      final LocalDateTime localTime =
+          LocalDateTime.ofInstant(Instant.ofEpochMilli(time), TimeZone.getDefault().toZoneId());
+
+      builder.time(localTime);
 
       assertThat(builder.build(), instanceOf(Submission.class));
-      assertThat(builder.build().getTime(), is(new Timestamp(time)));
+      assertThat(builder.build().getTime(), is(localTime));
 
     }
 
@@ -136,7 +139,7 @@ public class SubmissionTest {
 
     for (int userId : userIdsToTest) {
 
-      final SubmissionBuilder builder = Submission.builder().moduleId(456).time(new Timestamp(0));
+      final SubmissionBuilder builder = Submission.builder().moduleId(456).time(LocalDateTime.MIN);
 
       builder.userId(userId);
 
@@ -165,10 +168,10 @@ public class SubmissionTest {
   @Test
   public void toString_ValidData_AsExpected() {
     final Submission testSubmission =
-        Submission.builder().moduleId(123).userId(6789).time(new Timestamp(0)).build();
+        Submission.builder().moduleId(123).userId(6789).time(LocalDateTime.MIN).build();
 
     assertThat(testSubmission.toString(), is("Submission(id=null, userId=6789, moduleId=123, time="
-        + new Timestamp(0) + ", isValid=false, flag=null)"));
+        + LocalDateTime.MIN + ", isValid=false, flag=null)"));
 
   }
 
@@ -178,7 +181,7 @@ public class SubmissionTest {
     final String[] testedFlags = {"abc123xyz789", null, "", "a", "Long Flag With Spaces", "12345"};
 
     final Submission testSubmission = Submission.builder().userId(123).moduleId(6789)
-        .time(new Timestamp(0)).flag("abc123xyz789").build();
+        .time(LocalDateTime.MIN).flag("abc123xyz789").build();
 
     for (String newFlag : testedFlags) {
 
@@ -196,7 +199,7 @@ public class SubmissionTest {
     final int[] testedIds = {originalId, 0, -1, 1000, -1000, 123456789, -12346789};
 
     final Submission testSubmission =
-        Submission.builder().userId(123).moduleId(6789).time(new Timestamp(0)).build();
+        Submission.builder().userId(123).moduleId(6789).time(LocalDateTime.MIN).build();
 
     for (int newId : testedIds) {
 
@@ -213,8 +216,8 @@ public class SubmissionTest {
     final int originalId = 1;
     final int[] testedIds = {originalId, 0, -1, 1000, -1000, 123456789, -12346789};
 
-    final Submission testSubmission =
-        Submission.builder().moduleId(originalId).userId(6789).time(new Timestamp(0)).build();
+    final Submission testSubmission = Submission.builder().moduleId(originalId).userId(6789)
+        .time(LocalDateTime.MIN.plusDays(77)).build();
 
     for (int newId : testedIds) {
 
@@ -229,22 +232,23 @@ public class SubmissionTest {
   public void withTime_NullTime_ThrowsException() {
 
     assertThrows(NullPointerException.class, () -> Submission.builder().userId(123).moduleId(6789)
-        .time(new Timestamp(0)).build().withTime(null));
+        .time(LocalDateTime.MIN).build().withTime(null));
 
   }
 
   @Test
   public void withTime_ValidTime_ChangesTime() {
 
-    final Timestamp originalTime = new Timestamp(0);
+    final LocalDateTime originalTime = LocalDateTime.MIN;
 
-    final Timestamp[] timesToTest = {originalTime, new Timestamp(1), new Timestamp(2),
-        new Timestamp(1000), new Timestamp(4000), new Timestamp(1581806000), new Timestamp(42)};
+    final LocalDateTime[] timesToTest = {originalTime, originalTime.plusHours(1),
+        originalTime.plusHours(2), originalTime.plusHours(100), originalTime.plusHours(1000),
+        originalTime.plusHours(5), originalTime.plusYears(70), originalTime.plusHours(9)};
 
     final Submission testSubmission =
         Submission.builder().userId(123).moduleId(6789).time(originalTime).build();
 
-    for (Timestamp time : timesToTest) {
+    for (LocalDateTime time : timesToTest) {
 
       final Submission changedSubmission = testSubmission.withTime(time);
 
@@ -261,7 +265,7 @@ public class SubmissionTest {
     final int[] testedIds = {originalId, 0, -1, 1000, -1000, 123456789, -12346789};
 
     final Submission testSubmission =
-        Submission.builder().userId(originalId).moduleId(6789).time(new Timestamp(0)).build();
+        Submission.builder().userId(originalId).moduleId(6789).time(LocalDateTime.MIN).build();
 
     for (int newId : testedIds) {
 
@@ -276,7 +280,7 @@ public class SubmissionTest {
   public void withValid_ValidBoolean_ChangesIsValid() {
 
     final Submission testSubmission =
-        Submission.builder().userId(123).moduleId(6789).time(new Timestamp(0)).build();
+        Submission.builder().userId(123).moduleId(6789).time(LocalDateTime.MIN).build();
 
     for (boolean isValid : BOOLEANS) {
 

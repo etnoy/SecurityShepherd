@@ -1,8 +1,7 @@
 package org.owasp.securityshepherd.model;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
-
+import java.time.LocalDateTime;
 import org.springframework.data.annotation.Id;
 
 import lombok.Builder;
@@ -13,7 +12,7 @@ import lombok.With;
 @Value
 @Builder
 @With
-public class Submission implements Serializable, Comparable<Submission> {
+public class Submission implements Serializable {
 
   private static final long serialVersionUID = -5485881248601955741L;
 
@@ -25,15 +24,10 @@ public class Submission implements Serializable, Comparable<Submission> {
   private int moduleId;
 
   @NonNull
-  private Timestamp time;
+  private LocalDateTime time;
 
   private boolean isValid;
 
   private String flag;
-
-  @Override
-  public int compareTo(Submission s) {
-    return getTime().compareTo(s.getTime());
-  }
 
 }

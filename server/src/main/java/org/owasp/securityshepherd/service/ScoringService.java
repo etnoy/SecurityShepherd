@@ -1,16 +1,10 @@
 package org.owasp.securityshepherd.service;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.ListIterator;
-import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.model.Submission;
-import org.owasp.securityshepherd.model.Submission.SubmissionBuilder;
-import org.owasp.securityshepherd.repository.SubmissionRepository;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,8 +17,6 @@ import reactor.core.publisher.Mono;
 public final class ScoringService {
 
   private final ModuleService moduleService;
-
-  private final UserService userService;
 
   private final SubmissionService submissionService;
 
@@ -49,22 +41,7 @@ public final class ScoringService {
       return submissionList;
     });
 
-    // Sort each submission list in time order
-    listOfSubmissions.map(listPerModule -> {
-
-      ListIterator<Mono<List<Submission>>> iterator = listPerModule.listIterator();
-      while (iterator.hasNext()) {
-        
-        iterator.next().map(list -> {
-          List<Submission> listToSort = list;
-          Collections.sort(listToSort);
-          //List is now sorted!
-          return listToSort;
-        });
-        
-      }
-      return listPerModule;
-    });
+ 
 
     return Mono.just(3);
 
