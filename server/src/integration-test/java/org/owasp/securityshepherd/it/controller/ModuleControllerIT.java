@@ -72,14 +72,53 @@ public class ModuleControllerIT {
         }).expectComplete().verify();
 
   }
+  
+  @Test
+  public void submitModule_InvalidExactFlag_Success() throws Exception {
+
+    final String loginName = "testUser";
+    final String password = "paLswOrdha17£@£sh";
+
+    final String flag = "thisisaflag";
+
+    final int moduleId = moduleService.create("Test Module").block().getId();
+
+    moduleService.setExactFlag(moduleId, flag).block();
+
+    webTestClient.post().uri("/api/v1/register").contentType(MediaType.APPLICATION_JSON)
+        .body(BodyInserters
+            .fromValue(new PasswordRegistrationDto("TestUserDisplayName", loginName, password)))
+        .exchange().expectStatus().isCreated();
+
+    String token = JsonPath.parse(new String(webTestClient.post().uri("/api/v1/login")
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(BodyInserters.fromPublisher(
+            Mono.just("{\"userName\": \"" + loginName + "\", \"password\": \"" + password + "\"}"),
+            String.class))
+        .exchange().expectStatus().isOk().expectBody().returnResult().getResponseBody()))
+        .read("$.token");
+
+    StepVerifier
+        .create(webTestClient.post().uri("/api/v1/module/submit")
+            .header("Authorization", "Bearer " + token).accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(BodyInserters.fromValue(new SubmissionDto(moduleId, flag + "invalid"))).exchange()
+            .expectStatus().isOk().returnResult(Boolean.class).getResponseBody())
+        .assertNext(correctFlag -> {
+          assertThat(correctFlag, is(false));
+        }).expectComplete().verify();
+
+  }
 
   @BeforeEach
   private void setUp() {
     // Print more verbose errors if something goes wrong with reactor
     Hooks.onOperatorDebug();
 
-    // Clear all users from repository before every test
+    // Clear all users and modules from repository before every test
     userService.deleteAll().block();
+    moduleService.deleteAll().block();
+
   }
 
 }

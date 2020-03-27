@@ -1,7 +1,6 @@
 package org.owasp.securityshepherd.service;
 
 import org.owasp.securityshepherd.exception.DuplicateModuleNameException;
-import org.owasp.securityshepherd.exception.EntityIdException;
 import org.owasp.securityshepherd.exception.InvalidFlagException;
 import org.owasp.securityshepherd.exception.InvalidFlagStateException;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
@@ -39,6 +38,10 @@ public final class ModuleService {
 
   }
 
+  public Mono<Void> deleteAll() {
+    return moduleRepository.deleteAll();
+  }
+
   public Mono<Module> create(final String name) {
 
     if (name == null) {
@@ -67,7 +70,7 @@ public final class ModuleService {
     return moduleRepository.findAll();
 
   }
-  
+
   public Mono<Module> findById(final int id) {
 
     if (id <= 0) {
@@ -132,7 +135,7 @@ public final class ModuleService {
   }
 
   public Mono<Module> setExactFlag(final int id, final String exactFlag)
-      throws EntityIdException, InvalidFlagException {
+      throws InvalidFlagException, InvalidModuleIdException {
 
     if (id <= 0) {
 
