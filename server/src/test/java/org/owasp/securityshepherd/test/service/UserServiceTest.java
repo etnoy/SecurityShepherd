@@ -989,7 +989,7 @@ public class UserServiceTest {
 
   }
 
-  @BeforeAll
+  @BeforeEach
   private void setUp() {
     // Print more verbose errors if something goes wrong
     Hooks.onOperatorDebug();
