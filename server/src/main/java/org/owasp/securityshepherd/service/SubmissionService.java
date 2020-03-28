@@ -68,8 +68,7 @@ public final class SubmissionService {
     submissionBuilder.time(LocalDateTime.now(clock));
 
     return moduleService.verifyFlag(userId, moduleId, flag).map(submissionBuilder::isValid)
-        .map(builder -> builder.build()).flatMap(submissionRepository::save);
-
+        .map(SubmissionBuilder::build).flatMap(submissionRepository::save);
 
   }
 
@@ -84,7 +83,7 @@ public final class SubmissionService {
     return submissionRepository.findAllValidByModuleId(moduleId);
 
   }
-  
+
   public Flux<Submission> findAllByModuleId(final int moduleId) {
 
     if (moduleId <= 0) {
