@@ -90,27 +90,25 @@ public class SubmissionServiceIT {
         .map(User::getId);
 
     final Flux<LocalDateTime> LocalDateTimes =
-        Flux.just(1000, 5000, 2000, 4000, 3000).map(Timestamp::new).map(Timestamp::toLocalDateTime);
+        Flux.just(100000000000L, 500000000000L, 200000000000L, 400000000000L, 300000000000L).map(Timestamp::new).map(Timestamp::toLocalDateTime);
 
-    final Mono<Integer> moduleId = 
-        moduleRepository.save(Module.builder().name("TestModule").build()).map(Module::getId);
+    final Integer moduleId = moduleRepository.save(Module.builder().name("TestModule").build())
+        .map(Module::getId).block();
 
     final Flux<Tuple2<Integer, LocalDateTime>> submissionData = Flux.zip(userIds, LocalDateTimes);
 
-    final Flux<Submission> submissions = submissionData.flatMap(tuple -> moduleId.map(id -> {
-      return Submission.builder().moduleId(id).userId(tuple.getT1()).time(tuple.getT2()).build();
-    })).flatMap(submissionRepository::save);
+    final Flux<Submission> submissions =
+        submissionData.map(tuple -> Submission.builder().moduleId(moduleId).userId(tuple.getT1())
+            .time(tuple.getT2()).build()).flatMap(submissionRepository::save);
 
-    // final Flux<Submission> submissions = submissionData.flatMap(tuple -> moduleId.map(id -> {
-    // return Submission.builder().moduleId(id).userId(tuple.getT1()).time(tuple.getT2()).build();
-    // })).flatMap(submissionRepository::save);
+    Flux<Submission> orderedDisplayNames =
+        submissions.thenMany(submissionService.findSortedByModuleId(moduleId));
+//            .map(Submission::getUserId).flatMap(userService::findById).map(User::getDisplayName);
 
-    Flux<String> orderedDisplayNames =
-        submissions.thenMany(moduleId.flatMapMany(submissionService::findSortedByModuleId))
-            .map(Submission::getUserId).flatMap(userService::findById).map(User::getDisplayName);
-
-    StepVerifier.create(orderedDisplayNames).expectNext("1").expectNext("3").expectNext("5")
-        .expectNext("4").expectNext("2").expectComplete().verify();
+    assertThat(orderedDisplayNames.collectList().block(),is(""));
+//    
+//    StepVerifier.create(orderedDisplayNames).expectNext("1").expectNext("3").expectNext("5")
+//        .expectNext("4").expectNext("2").expectComplete().verify();
 
   }
 
