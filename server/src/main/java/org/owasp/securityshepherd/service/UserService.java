@@ -148,6 +148,10 @@ public final class UserService {
 
   }
 
+  public Mono<String> findDisplayNameById(final int userId) {
+    return userRepository.findById(userId).map(User::getDisplayName);
+  }
+
   private Mono<String> displayNameAlreadyExists(final String displayName) {
     return Mono.error(
         new DuplicateUserDisplayNameException("Display name " + displayName + " already exists"));

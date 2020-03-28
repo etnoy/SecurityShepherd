@@ -41,8 +41,6 @@ public final class ScoringService {
       return submissionList;
     });
 
- 
-
     return Mono.just(3);
 
   }

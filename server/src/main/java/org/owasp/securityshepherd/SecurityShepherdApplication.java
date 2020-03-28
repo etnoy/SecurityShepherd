@@ -1,5 +1,6 @@
 package org.owasp.securityshepherd;
 
+import java.time.Clock;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -33,4 +34,9 @@ public class SecurityShepherdApplication {
     return initializer;
   }
 
+  @Bean
+  public Clock clock() {
+      return Clock.systemDefaultZone();
+  }
+  
 }
