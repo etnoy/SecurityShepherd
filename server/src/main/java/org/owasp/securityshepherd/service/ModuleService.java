@@ -7,6 +7,7 @@ import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
 import org.owasp.securityshepherd.model.Module;
+import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.repository.ModuleRepository;
 import org.springframework.stereotype.Service;
 
@@ -33,9 +34,11 @@ public final class ModuleService {
   private final CryptoService cryptoService;
 
   public Mono<Long> count() {
-
     return moduleRepository.count();
+  }
 
+  public Mono<String> findNameById(final int moduleId) {
+    return moduleRepository.findById(moduleId).map(Module::getName);
   }
 
   public Mono<Void> deleteAll() {

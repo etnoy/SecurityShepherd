@@ -3,6 +3,7 @@ package org.owasp.securityshepherd.controller;
 import javax.validation.Valid;
 import org.owasp.securityshepherd.dto.SubmissionDto;
 import org.owasp.securityshepherd.model.Module;
+import org.owasp.securityshepherd.model.Submission;
 import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.security.ShepherdUserDetails;
 import org.owasp.securityshepherd.service.ModuleService;
@@ -48,8 +49,9 @@ public class ModuleController {
 
     return ReactiveSecurityContextHolder.getContext().map(SecurityContext::getAuthentication)
         .map(Authentication::getPrincipal).cast(ShepherdUserDetails.class)
-        .map(ShepherdUserDetails::getUser).map(User::getId).flatMap(id -> submissionService
-            .submit(id, submissionDto.getModuleId(), submissionDto.getFlag()));
+        .map(ShepherdUserDetails::getUser).map(User::getId).flatMap(
+            id -> submissionService.submit(id, submissionDto.getModuleId(), submissionDto.getFlag())
+                .map(Submission::isValid));
   }
 
 }
