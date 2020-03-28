@@ -1,8 +1,7 @@
 package org.owasp.securityshepherd.model;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
-
+import java.time.LocalDateTime;
 import org.springframework.data.annotation.Id;
 
 import lombok.Builder;
@@ -25,7 +24,7 @@ public class Submission implements Serializable {
   private int moduleId;
 
   @NonNull
-  private Timestamp time;
+  private LocalDateTime time;
 
   private boolean isValid;
 

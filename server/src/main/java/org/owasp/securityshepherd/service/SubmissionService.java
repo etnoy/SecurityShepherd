@@ -1,6 +1,7 @@
 package org.owasp.securityshepherd.service;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.model.Submission;
@@ -9,7 +10,10 @@ import org.owasp.securityshepherd.repository.SubmissionRepository;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import static java.util.Comparator.comparing;
+
 
 @Slf4j
 @RequiredArgsConstructor
@@ -20,8 +24,16 @@ public final class SubmissionService {
 
   private final SubmissionRepository submissionRepository;
 
+  private static final Comparator<Submission> byTimestamp = comparing(Submission::getTime);
+    
   public Mono<Void> deleteAll() {
     return submissionRepository.deleteAll();
+  }
+
+  public Flux<Submission> findSortedByModuleId(final int moduleId) {
+    final Flux<Submission> allSubmissionsWithModule = findAllByModuleId(moduleId);
+    
+    return allSubmissionsWithModule.sort(byTimestamp);
   }
 
   public Mono<Boolean> submit(final int userId, final int moduleId, final String flag) {
@@ -46,7 +58,7 @@ public final class SubmissionService {
     submissionBuilder.userId(userId);
     submissionBuilder.moduleId(moduleId);
     submissionBuilder.flag(flag);
-    submissionBuilder.time(new Timestamp(System.currentTimeMillis()));
+    submissionBuilder.time(LocalDateTime.now());
 
     Mono<Boolean> isValid = moduleService.verifyFlag(userId, moduleId, flag);
 
@@ -54,6 +66,18 @@ public final class SubmissionService {
         .flatMap(submissionRepository::save);
 
     return isValid;
+
+  }
+
+  public Flux<Submission> findAllByModuleId(final int moduleId) {
+
+    if (moduleId <= 0) {
+
+      return Flux.error(new InvalidModuleIdException());
+
+    }
+
+    return submissionRepository.findAllByModuleId(moduleId);
 
   }
 
