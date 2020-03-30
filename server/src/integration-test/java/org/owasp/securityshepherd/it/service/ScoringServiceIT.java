@@ -14,17 +14,10 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.owasp.securityshepherd.exception.InvalidFlagException;
-import org.owasp.securityshepherd.exception.InvalidModuleIdException;
-import org.owasp.securityshepherd.model.Module;
-import org.owasp.securityshepherd.model.Submission;
-import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.repository.ModuleRepository;
 import org.owasp.securityshepherd.repository.ModuleScoreRepository;
 import org.owasp.securityshepherd.repository.SubmissionDatabaseClient;
 import org.owasp.securityshepherd.repository.SubmissionRepository;
-import org.owasp.securityshepherd.repository.UserRepository;
 import org.owasp.securityshepherd.service.ModuleService;
 import org.owasp.securityshepherd.service.ScoringService;
 import org.owasp.securityshepherd.service.SubmissionService;
@@ -33,15 +26,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Hooks;
-import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureWebTestClient
-@Slf4j
 public class ScoringServiceIT {
 
   @Autowired
@@ -162,7 +152,7 @@ public class ScoringServiceIT {
   }
 
   private void initializeService(Clock injectedClock) {
-    submissionService = new SubmissionService(userService, moduleService, submissionRepository,
+    submissionService = new SubmissionService(moduleService, submissionRepository,
         injectedClock, submissionDatabaseClient);
 
     scoringService = new ScoringService(submissionService, moduleScoreRepository);

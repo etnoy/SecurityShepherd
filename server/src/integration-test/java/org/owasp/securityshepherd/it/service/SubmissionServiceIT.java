@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.owasp.securityshepherd.exception.InvalidFlagException;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.model.Module;
@@ -166,7 +165,7 @@ public class SubmissionServiceIT {
   }
 
   private void initializeService(Clock injectedClock) {
-    submissionService = new SubmissionService(userService, moduleService, submissionRepository,
+    submissionService = new SubmissionService(moduleService, submissionRepository,
         injectedClock, submissionDatabaseClient);
   }
 

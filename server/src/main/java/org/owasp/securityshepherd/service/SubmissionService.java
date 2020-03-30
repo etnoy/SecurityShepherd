@@ -11,16 +11,12 @@ import org.owasp.securityshepherd.repository.SubmissionDatabaseClient;
 import org.owasp.securityshepherd.repository.SubmissionRepository;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-@Slf4j
 @RequiredArgsConstructor
 @Service
 public final class SubmissionService {
-
-  private final UserService userService;
 
   private final ModuleService moduleService;
 
@@ -36,20 +32,15 @@ public final class SubmissionService {
 
   public Flux<Map<String, Integer>> findAllValidByModuleIdSortedBySubmissionTime(
       final int moduleId) {
-
     return submissionDatabaseClient.findAllValidByModuleIdSortedBySubmissionTime(moduleId);
-
   }
   
   public Flux<Map<String, Integer>> findValidUserIdsByModuleIdRankedBySubmissionTime(
       final int moduleId) {
-
     return submissionDatabaseClient.findAllValidByModuleIdSortedBySubmissionTime(moduleId);
-
   }
 
   public Mono<Submission> submit(final int userId, final int moduleId, final String flag) {
-
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
@@ -67,19 +58,13 @@ public final class SubmissionService {
 
     return moduleService.verifyFlag(userId, moduleId, flag).map(submissionBuilder::isValid)
         .map(SubmissionBuilder::build).flatMap(submissionRepository::save);
-
   }
 
   public Flux<Submission> findAllByModuleId(final int moduleId) {
-
     if (moduleId <= 0) {
-
       return Flux.error(new InvalidModuleIdException());
-
     }
 
     return submissionRepository.findAllByModuleId(moduleId);
-
   }
-
 }
