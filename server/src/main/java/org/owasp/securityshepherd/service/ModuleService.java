@@ -121,10 +121,13 @@ public final class ModuleService {
         .map(keyService::convertByteKeyToString);
   }
 
+  private Exception moduleIdMustBePositive() {
+    return new InvalidModuleIdException("Module id must be a strictly positive integer");
+  }
+
   public Mono<Module> setDynamicFlag(final int moduleId) {
     if (moduleId <= 0) {
-      return Mono
-          .error(new InvalidModuleIdException("Module id must be a strictly positive integer"));
+      return Mono.error(moduleIdMustBePositive());
     }
 
     return findById(moduleId).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
@@ -138,8 +141,7 @@ public final class ModuleService {
 
   public Mono<Module> setExactFlag(final int moduleId, final String exactFlag) {
     if (moduleId <= 0) {
-      return Mono
-          .error(new InvalidModuleIdException("Module id must be a strictly positive integer"));
+      return Mono.error(moduleIdMustBePositive());
     }
 
     if (exactFlag == null) {
@@ -155,8 +157,7 @@ public final class ModuleService {
 
   public Mono<Module> setName(final int moduleId, final String moduleName) {
     if (moduleId <= 0) {
-      return Mono
-          .error(new InvalidModuleIdException("Module id must be a strictly positive integer"));
+      return Mono.error(moduleIdMustBePositive());
     }
 
     if (moduleName == null) {
@@ -202,8 +203,8 @@ public final class ModuleService {
         });
 
     // Do some logging. First, check if error occurred and then print logs
-    final Mono<String> validText =
-        isValid.onErrorReturn(false).map(valid -> valid ? "valid" : "invalid");
+    final Mono<String> validText = isValid.onErrorReturn(false).map(Boolean.TRUE::equals)
+        .map(valid -> valid ? "valid" : "invalid");
 
     Mono.zip(userService.findDisplayNameById(userId), validText, currentModule.map(Module::getName))
         .map(tuple -> "User " + tuple.getT1() + " submitted " + tuple.getT2() + " flag "
