@@ -201,6 +201,7 @@ public final class ModuleService {
           }
         });
 
+    // Do some logging. First, check if error occurred and then print logs
     final Mono<String> validText =
         isValid.onErrorReturn(false).map(valid -> valid ? "valid" : "invalid");
 
