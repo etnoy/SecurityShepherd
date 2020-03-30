@@ -13,8 +13,6 @@ jobs:
   - stage: test
     name: Backend integration tests
     services: mysql
-    before_script:
-
     before_install:
     - cd server
     - git fetch --unshallow
