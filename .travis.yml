@@ -68,7 +68,7 @@ jobs:
     - ng lint
     - ng e2e
   - stage: coverage
-    name: Backend test coverage report
+    name: SonarCloud
     services: mysql
     before_install:
     - cd server
@@ -82,9 +82,7 @@ jobs:
     - mysql --version
     - mysql -e 'CREATE DATABASE IF NOT EXISTS core;'
     script:
-    - mvn clean verify sonar:sonar -Pcoverage -Dsonar.projectKey=etnoy_SecurityShepherd -B -V
-stages:
-- name: '[backend] tests'
+    - mvn clean verify sonar:sonar -DskipITs=true -Pcoverage -Dsonar.projectKey=etnoy_SecurityShepherd -B -V
 addons:
   sonarcloud:
     organization: etnoy
