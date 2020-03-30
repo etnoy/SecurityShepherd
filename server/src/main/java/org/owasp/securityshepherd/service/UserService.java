@@ -117,6 +117,10 @@ public final class UserService {
     });
   }
 
+  public Mono<String> findDisplayNameById(final int userId) {
+    return userRepository.findById(userId).map(User::getDisplayName);
+  }
+
   public Mono<Void> deleteAll() {
     return passwordAuthRepository.deleteAll().then(authRepository.deleteAll())
         .then(userRepository.deleteAll());
@@ -135,10 +139,6 @@ public final class UserService {
     log.info("Demoting user with id " + userId + " to user");
 
     return setAdminStatus(userId, false);
-  }
-
-  public Mono<String> findDisplayNameById(final int userId) {
-    return userRepository.findById(userId).map(User::getDisplayName);
   }
 
   private Mono<String> displayNameAlreadyExists(final String displayName) {

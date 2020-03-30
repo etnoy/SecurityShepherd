@@ -24,7 +24,7 @@ import reactor.core.publisher.Mono;
 public final class ModuleService {
 
   private final ModuleRepository moduleRepository;
-  
+
   private final ModuleScoreRepository moduleScoreRepository;
 
   private final UserService userService;
@@ -39,29 +39,24 @@ public final class ModuleService {
     return moduleRepository.count();
   }
 
-  public Mono<String> findNameById(final int moduleId) {
-    return moduleRepository.findById(moduleId).map(Module::getName);
-  }
-
-  public Mono<Void> deleteAll() {
-    return moduleScoreRepository.deleteAll().then(moduleRepository.deleteAll());
-  }
-
   public Mono<Module> create(final String moduleName) {
     if (moduleName == null) {
-      throw new NullPointerException();
+      return Mono.error(new NullPointerException("Module name cannot be null"));
     }
 
     if (moduleName.isEmpty()) {
-      throw new IllegalArgumentException();
+      return Mono.error(new IllegalArgumentException("Module name cannot be empty"));
     }
 
     log.info("Creating new module with name " + moduleName);
 
     return Mono.just(moduleName).filterWhen(this::doesNotExistByName)
         .switchIfEmpty(Mono.error(new DuplicateModuleNameException("Module name already exists")))
-        .map(name -> Module.builder().name(name).build())
-        .flatMap(moduleRepository::save);
+        .map(name -> Module.builder().name(name).build()).flatMap(moduleRepository::save);
+  }
+
+  public Mono<Void> deleteAll() {
+    return moduleScoreRepository.deleteAll().then(moduleRepository.deleteAll());
   }
 
   private Mono<Boolean> doesNotExistByName(final String moduleName) {
@@ -80,6 +75,14 @@ public final class ModuleService {
     return moduleRepository.findById(id).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()));
   }
 
+  public Mono<String> findNameById(final int id) {
+    if (id <= 0) {
+      return Mono.error(new InvalidModuleIdException());
+    }
+
+    return moduleRepository.findById(id).map(Module::getName);
+  }
+
   public Mono<String> getDynamicFlag(final int userId, final int moduleId) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
@@ -89,14 +92,25 @@ public final class ModuleService {
       return Mono.error(new InvalidModuleIdException());
     }
 
-    final Mono<byte[]> baseFlag = findById(moduleId)
-        .switchIfEmpty(Mono.error(new ModuleIdNotFoundException())).filter(Module::isFlagEnabled)
-        .switchIfEmpty(
-            Mono.error(new InvalidFlagStateException("Can't get dynamic flag if flag is disabled")))
-        .filter(module -> !module.isFlagExact())
-        .switchIfEmpty(
-            Mono.error(new InvalidFlagStateException("Can't get dynamic flag if flag is exact")))
-        .map(module -> module.getFlag().getBytes());
+    final Mono<byte[]> baseFlag =
+        // Find the module in the repo
+        findById(moduleId)
+            // Return error if module wasn't found
+            .switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
+            // Check to see if flag is enable
+            .filter(Module::isFlagEnabled)
+            // Return error if flag isn't enabled
+            .switchIfEmpty(Mono.error(
+                new InvalidFlagStateException("Cannot get dynamic flag if flag is disabled")))
+            // Check to see if flag is dynamic
+            .filter(module -> !module.isFlagExact())
+            // Return error if flag isn't dynamic
+            .switchIfEmpty(Mono
+                .error(new InvalidFlagStateException("Cannot get dynamic flag if flag is exact")))
+            // Get flag from module
+            .map(Module::getFlag)
+            // Get bytes from flag string
+            .map(String::getBytes);
 
     final Mono<byte[]> keyMono =
         userService.getKeyById(userId).zipWith(configurationService.getServerKey())
@@ -109,7 +123,8 @@ public final class ModuleService {
 
   public Mono<Module> setDynamicFlag(final int moduleId) {
     if (moduleId <= 0) {
-      return Mono.error(new InvalidModuleIdException());
+      return Mono
+          .error(new InvalidModuleIdException("Module id must be a strictly positive integer"));
     }
 
     return findById(moduleId).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
@@ -121,16 +136,16 @@ public final class ModuleService {
         }).flatMap(moduleRepository::save);
   }
 
-  public Mono<Module> setExactFlag(final int moduleId, final String exactFlag)
-      throws InvalidFlagException, InvalidModuleIdException {
+  public Mono<Module> setExactFlag(final int moduleId, final String exactFlag) {
     if (moduleId <= 0) {
-      throw new InvalidModuleIdException();
+      return Mono
+          .error(new InvalidModuleIdException("Module id must be a strictly positive integer"));
     }
 
     if (exactFlag == null) {
-      throw new InvalidFlagException("Flag can't be null");
+      return Mono.error(new InvalidFlagException("Flag cannot be null"));
     } else if (exactFlag.isEmpty()) {
-      throw new InvalidFlagException("Flag can't be empty");
+      return Mono.error(new InvalidFlagException("Flag cannot be empty"));
     }
 
     return findById(moduleId).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
@@ -140,15 +155,16 @@ public final class ModuleService {
 
   public Mono<Module> setName(final int moduleId, final String moduleName) {
     if (moduleId <= 0) {
-      return Mono.error(new InvalidModuleIdException());
+      return Mono
+          .error(new InvalidModuleIdException("Module id must be a strictly positive integer"));
     }
 
     if (moduleName == null) {
-      return Mono.error(new NullPointerException());
+      return Mono.error(new NullPointerException("Module name cannot be null"));
     }
 
     if (moduleName.isEmpty()) {
-      return Mono.error(new IllegalArgumentException());
+      return Mono.error(new IllegalArgumentException("Module name cannot be empty"));
     }
 
     log.info("Setting name of module with id " + moduleId + " to " + moduleName);
@@ -160,21 +176,39 @@ public final class ModuleService {
   public Mono<Boolean> verifyFlag(final int userId, final int moduleId,
       final String submittedFlag) {
     if (submittedFlag == null) {
-      return Mono.just(false);
+      return Mono.error(new NullPointerException("Submitted flag cannot be null"));
     }
 
-    log.info("User " + userId + " submitted flag " + submittedFlag + " to module " + moduleId);
+    // Get the module from the repository
+    final Mono<Module> currentModule = findById(moduleId);
 
-    return findById(moduleId).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
+    final Mono<Boolean> isValid = currentModule
+        // If the module wasn't found, return error
+        .switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
+        // Check to see if flags are enabled
         .filter(Module::isFlagEnabled)
+        // If flag wasn't enabled, return error
         .switchIfEmpty(
             Mono.error(new InvalidFlagStateException("Cannot verify flag if flag is not enabled")))
+        // Now check if the flag is valid
         .flatMap(module -> {
           if (module.isFlagExact()) {
+            // Verifying an exact flag
             return Mono.just(module.getFlag().equalsIgnoreCase(submittedFlag));
           } else {
+            // Verifying a dynamic flag
             return getDynamicFlag(userId, moduleId).map(submittedFlag::equalsIgnoreCase);
           }
         });
+
+    final Mono<String> validText =
+        isValid.onErrorReturn(false).map(valid -> valid ? "valid" : "invalid");
+
+    Mono.zip(userService.findDisplayNameById(userId), validText, currentModule.map(Module::getName))
+        .map(tuple -> "User " + tuple.getT1() + " submitted " + tuple.getT2() + " flag "
+            + submittedFlag + " to module " + tuple.getT3())
+        .subscribe(log::debug);
+
+    return isValid;
   }
 }

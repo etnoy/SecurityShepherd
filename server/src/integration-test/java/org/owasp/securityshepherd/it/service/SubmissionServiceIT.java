@@ -14,8 +14,6 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.owasp.securityshepherd.exception.InvalidFlagException;
-import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.model.Submission;
 import org.owasp.securityshepherd.model.User;
@@ -66,19 +64,12 @@ public class SubmissionServiceIT {
 
   @Test
   public void submitFlag_ValidExactFlag_Success() throws Exception {
-
     final String flag = "thisisaflag";
 
     final Mono<Integer> userIdMono = userService.create("TestUser").map(User::getId);
 
-    final Mono<Integer> moduleIdMono =
-        moduleService.create("Test Module").map(Module::getId).flatMap(moduleId -> {
-          try {
-            return moduleService.setExactFlag(moduleId, flag);
-          } catch (InvalidFlagException | InvalidModuleIdException e) {
-            return Mono.error(e);
-          }
-        }).map(Module::getId);
+    final Mono<Integer> moduleIdMono = moduleService.create("Test Module").map(Module::getId)
+        .flatMap(moduleId -> moduleService.setExactFlag(moduleId, flag)).map(Module::getId);
 
     StepVerifier
         .create(Mono.zip(userIdMono, moduleIdMono).flatMap(tuple -> submissionService
@@ -86,13 +77,10 @@ public class SubmissionServiceIT {
         .assertNext(correctFlag -> {
           assertThat(correctFlag, is(true));
         }).expectComplete().verify();
-
   }
 
   @Test
-  public void sortSubmissionsPerModule_NoTies_ReturnsChronologicalListOfSubmissions()
-      throws Exception {
-
+  public void sortSubmissionsPerModule_NoTies_ReturnsChronologicalListOfSubmissions() {
     // We'll use this exact flag
     final String flag = "itsaflag";
 
@@ -161,12 +149,11 @@ public class SubmissionServiceIT {
           assertThat(result.get("userId"), is(userIds.get(0))); // userId 1 ranks 5
           assertThat(result.get("rank"), is(5));
         }).expectComplete().verify();
-
   }
 
   private void initializeService(Clock injectedClock) {
-    submissionService = new SubmissionService(moduleService, submissionRepository,
-        injectedClock, submissionDatabaseClient);
+    submissionService = new SubmissionService(moduleService, submissionRepository, injectedClock,
+        submissionDatabaseClient);
   }
 
   @BeforeEach
@@ -174,9 +161,10 @@ public class SubmissionServiceIT {
     // Print more verbose errors if something goes wrong with reactor
     Hooks.onOperatorDebug();
 
+    // Initialize services with the real clock
     initializeService(clock);
 
-    // Clear all users and modules from repository before every test
+    // Clear all repositories before every test
     userService.deleteAll().block();
     moduleService.deleteAll().block();
     submissionService.deleteAll().block();
