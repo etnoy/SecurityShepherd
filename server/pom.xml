@@ -120,7 +120,8 @@
 		<dependency>
 			<groupId>dev.miku</groupId>
 			<artifactId>r2dbc-mysql</artifactId>
-			<version>0.8.1.RELEASE</version>
+			<!--We need at least 0.8.1 for working mysql8 support-->
+			<version>0.8.1.RELEASE</version><!--$NO-MVN-MAN-VER$-->
 		</dependency>
 		<dependency>
 			<groupId>io.projectreactor</groupId>

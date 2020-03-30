@@ -1,6 +1,5 @@
 package org.owasp.securityshepherd.repository;
 
-import java.util.Map;
 import org.owasp.securityshepherd.model.Submission;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.query.Param;
