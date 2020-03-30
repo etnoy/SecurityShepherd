@@ -1,5 +1,6 @@
 package org.owasp.securityshepherd.repository;
 
+import java.util.Map;
 import org.owasp.securityshepherd.model.Submission;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,8 +13,5 @@ public interface SubmissionRepository extends ReactiveCrudRepository<Submission,
 
   @Query("SELECT * from submission WHERE module_id = :module")
   public Flux<Submission> findAllByModuleId(@Param("module") final int moduleId);
-  
-  @Query("SELECT * from submission WHERE module_id = :module AND is_valid = true")
-  public Flux<Submission> findAllValidByModuleId(@Param("module") final int moduleId);
 
 }

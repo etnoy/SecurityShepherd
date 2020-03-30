@@ -8,8 +8,10 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,6 +31,7 @@ import org.owasp.securityshepherd.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.r2dbc.core.DatabaseClient;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Hooks;
@@ -63,6 +66,10 @@ public class SubmissionServiceIT {
 
   @Autowired
   UserRepository userRepository;
+
+  @Autowired
+  DatabaseClient databaseClient;
+
 
   @Test
   public void submitFlag_ValidExactFlag_Success() throws Exception {
@@ -118,7 +125,7 @@ public class SubmissionServiceIT {
     final Clock startTime = Clock.fixed(Instant.parse("2000-01-01T10:00:00.00Z"), ZoneId.of("Z"));
 
     // Create a list of times at which the above six users will submit their solutions
-    List<Integer> timeOffsets = Arrays.asList(5, 1, 4, 2, 3, 0);
+    List<Integer> timeOffsets = Arrays.asList(4, 1, 3, 2, 1, 0);
 
     // The duration between times should be 1 day
     final List<Clock> clocks = timeOffsets.stream().map(Duration::ofDays)
@@ -130,41 +137,43 @@ public class SubmissionServiceIT {
     Iterator<Integer> userIdIterator = userIds.iterator();
     Iterator<Clock> clockIterator = clocks.iterator();
     Iterator<String> flagIterator = flags.iterator();
-
+    
     while (userIdIterator.hasNext() && clockIterator.hasNext() && flagIterator.hasNext()) {
 
       // Recreate the submission service every time with a new clock
       initializeService(clockIterator.next());
 
       // Submit a new flag
-      boolean isValid = submissionService
-          .submit(userIdIterator.next(), moduleId, flagIterator.next()).block().isValid();
-      log.debug("Was flag valid? Reponse: " + isValid);
+      submissionService.submit(userIdIterator.next(), moduleId, flagIterator.next()).block();
     }
-
-    submissionService.findAllValidByModuleIdSortedBySubmissionTime(moduleId)
-        .map(Submission::getUserId).collectList().map(List::toString).doOnSuccess(log::debug)
-        .subscribe();
 
     // Now verify that the submission service finds all valid submissions and lists them
     // chronologically
 
-    StepVerifier
-        .create(submissionService.findAllValidByModuleIdSortedBySubmissionTime(moduleId)
-            .map(Submission::getUserId))
-        .expectNext(userIds.get(5)) // First submitted
-        .expectNext(userIds.get(1)) // Second submitted
-        // Third submitted is an invalid flag and shouldn't be here!
-        .expectNext(userIds.get(4)) // Fourth submitted
-        .expectNext(userIds.get(2)) // Fifth submitted
-        .expectNext(userIds.get(0)) // Sixth submitted
-        .expectComplete().verify();
+    StepVerifier.create(submissionService.findAllValidByModuleIdSortedBySubmissionTime(moduleId))
+        .assertNext(result -> {
+          log.debug(result.toString());
+          assertThat(result.get("userId"), is(userIds.get(5))); // userId 6 ranks 1
+          assertThat(result.get("rank"), is(1));
+        }).assertNext(result -> {
+          assertThat(result.get("userId"), is(userIds.get(1))); // userId 2 ranks 2
+          assertThat(result.get("rank"), is(2));
+        }).assertNext(result -> {
+          assertThat(result.get("userId"), is(userIds.get(4))); // userId 5 ranks 2
+          assertThat(result.get("rank"), is(2));
+        }).assertNext(result -> {
+          assertThat(result.get("userId"), is(userIds.get(2))); // userId 3 ranks 4
+          assertThat(result.get("rank"), is(4));
+        }).assertNext(result -> {
+          assertThat(result.get("userId"), is(userIds.get(0))); // userId 1 ranks 5
+          assertThat(result.get("rank"), is(5));
+        }).expectComplete().verify();
 
   }
 
   private void initializeService(Clock injectedClock) {
-    submissionService =
-        new SubmissionService(userService, moduleService, submissionRepository, injectedClock);
+    submissionService = new SubmissionService(userService, moduleService, submissionRepository,
+        injectedClock, databaseClient);
   }
 
   @BeforeEach
