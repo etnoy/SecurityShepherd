@@ -47,27 +47,25 @@ public final class ModuleService {
     return moduleScoreRepository.deleteAll().then(moduleRepository.deleteAll());
   }
 
-  public Mono<Module> create(final String name) {
-
-    if (name == null) {
+  public Mono<Module> create(final String moduleName) {
+    if (moduleName == null) {
       throw new NullPointerException();
     }
 
-    if (name.isEmpty()) {
+    if (moduleName.isEmpty()) {
       throw new IllegalArgumentException();
     }
 
-    log.info("Creating new module with name " + name);
+    log.info("Creating new module with name " + moduleName);
 
-    return Mono.just(name).filterWhen(this::doesNotExistByName)
+    return Mono.just(moduleName).filterWhen(this::doesNotExistByName)
         .switchIfEmpty(Mono.error(new DuplicateModuleNameException("Module name already exists")))
-        .map(moduleName -> Module.builder().name(moduleName).build())
+        .map(name -> Module.builder().name(name).build())
         .flatMap(moduleRepository::save);
-
   }
 
-  private Mono<Boolean> doesNotExistByName(final String name) {
-    return moduleRepository.findByName(name).map(u -> false).defaultIfEmpty(true);
+  private Mono<Boolean> doesNotExistByName(final String moduleName) {
+    return moduleRepository.findByName(moduleName).map(u -> false).defaultIfEmpty(true);
   }
 
   public Flux<Module> findAll() {
@@ -75,17 +73,14 @@ public final class ModuleService {
   }
 
   public Mono<Module> findById(final int id) {
-
     if (id <= 0) {
       return Mono.error(new InvalidModuleIdException());
     }
 
     return moduleRepository.findById(id).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()));
-
   }
 
   public Mono<String> getDynamicFlag(final int userId, final int moduleId) {
-
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
@@ -110,29 +105,25 @@ public final class ModuleService {
     return keyMono.zipWith(baseFlag)
         .flatMap(tuple -> cryptoService.hmac(tuple.getT1(), tuple.getT2()))
         .map(keyService::convertByteKeyToString);
-
   }
 
-  public Mono<Module> setDynamicFlag(final int id) {
-
-    if (id <= 0) {
+  public Mono<Module> setDynamicFlag(final int moduleId) {
+    if (moduleId <= 0) {
       return Mono.error(new InvalidModuleIdException());
     }
 
-    return findById(id).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
+    return findById(moduleId).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
         .map(module -> module.withFlagEnabled(true).withFlagExact(false)).flatMap(module -> {
           if (module.getFlag() == null) {
             return keyService.generateRandomString(16).map(module::withFlag);
           }
           return Mono.just(module);
         }).flatMap(moduleRepository::save);
-
   }
 
-  public Mono<Module> setExactFlag(final int id, final String exactFlag)
+  public Mono<Module> setExactFlag(final int moduleId, final String exactFlag)
       throws InvalidFlagException, InvalidModuleIdException {
-
-    if (id <= 0) {
+    if (moduleId <= 0) {
       throw new InvalidModuleIdException();
     }
 
@@ -142,36 +133,32 @@ public final class ModuleService {
       throw new InvalidFlagException("Flag can't be empty");
     }
 
-    return findById(id).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
+    return findById(moduleId).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
         .map(module -> module.withFlagEnabled(true).withFlagExact(true).withFlag(exactFlag))
         .flatMap(moduleRepository::save);
-
   }
 
-  public Mono<Module> setName(final int id, final String name) {
-
-    if (id <= 0) {
+  public Mono<Module> setName(final int moduleId, final String moduleName) {
+    if (moduleId <= 0) {
       return Mono.error(new InvalidModuleIdException());
     }
 
-    if (name == null) {
+    if (moduleName == null) {
       return Mono.error(new NullPointerException());
     }
 
-    if (name.isEmpty()) {
+    if (moduleName.isEmpty()) {
       return Mono.error(new IllegalArgumentException());
     }
 
-    log.info("Setting name of module with id " + id + " to " + name);
+    log.info("Setting name of module with id " + moduleId + " to " + moduleName);
 
-    return findById(id).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
-        .map(module -> module.withName(name)).flatMap(moduleRepository::save);
-
+    return findById(moduleId).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
+        .map(module -> module.withName(moduleName)).flatMap(moduleRepository::save);
   }
 
   public Mono<Boolean> verifyFlag(final int userId, final int moduleId,
       final String submittedFlag) {
-
     if (submittedFlag == null) {
       return Mono.just(false);
     }
@@ -189,7 +176,5 @@ public final class ModuleService {
             return getDynamicFlag(userId, moduleId).map(submittedFlag::equalsIgnoreCase);
           }
         });
-
   }
-
 }
