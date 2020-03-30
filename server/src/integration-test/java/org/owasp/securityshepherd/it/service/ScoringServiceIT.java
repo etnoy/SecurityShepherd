@@ -141,16 +141,15 @@ public class ScoringServiceIT {
     StepVerifier.create(scoringService.computeScoreForModule(moduleId)).assertNext(scores -> {
       // This user submitted first and got the max bonus!
       assertThat(scores.get(userIds.get(6)), is(150));
-
-      // This user submitted an invalid flag, no score!
-      assertThat(scores.containsKey(userIds.get(3)), is(false));
+      
       assertThat(scores.get(userIds.get(0)), is(120));
       assertThat(scores.get(userIds.get(1)), is(100));
       assertThat(scores.get(userIds.get(2)), is(140));
       assertThat(scores.get(userIds.get(4)), is(120));
       assertThat(scores.get(userIds.get(5)), is(140));
 
-      // This user submitted an invalid flag, no score!
+      // These users submitted invalid flags, no score!
+      assertThat(scores.containsKey(userIds.get(3)), is(false));
       assertThat(scores.containsKey(userIds.get(7)), is(false));
     }).expectComplete().verify();
   }

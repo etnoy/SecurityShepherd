@@ -8,6 +8,7 @@ import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.repository.ModuleRepository;
+import org.owasp.securityshepherd.repository.ModuleScoreRepository;
 import org.springframework.stereotype.Service;
 
 import com.google.common.primitives.Bytes;
@@ -23,6 +24,8 @@ import reactor.core.publisher.Mono;
 public final class ModuleService {
 
   private final ModuleRepository moduleRepository;
+  
+  private final ModuleScoreRepository moduleScoreRepository;
 
   private final UserService userService;
 
@@ -41,7 +44,7 @@ public final class ModuleService {
   }
 
   public Mono<Void> deleteAll() {
-    return moduleRepository.deleteAll();
+    return moduleScoreRepository.deleteAll().then(moduleRepository.deleteAll());
   }
 
   public Mono<Module> create(final String name) {

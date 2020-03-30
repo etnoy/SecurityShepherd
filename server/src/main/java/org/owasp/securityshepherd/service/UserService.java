@@ -37,13 +37,10 @@ public final class UserService {
   private final KeyService keyService;
 
   public Mono<Long> count() {
-
     return userRepository.count();
-
   }
 
   public Mono<User> create(final String displayName) {
-
     if (displayName == null) {
       throw new NullPointerException();
     }
@@ -89,7 +86,6 @@ public final class UserService {
             .switchIfEmpty(displayNameAlreadyExists(displayName));
 
     return Mono.zip(displayNameMono, loginNameMono).flatMap(tuple -> {
-
       final PasswordAuthBuilder passwordAuthBuilder = PasswordAuth.builder();
       passwordAuthBuilder.loginName(tuple.getT2());
       passwordAuthBuilder.hashedPassword(hashedPassword);
@@ -117,11 +113,8 @@ public final class UserService {
 
         return Mono.just(userWithId).zipWith(authMono)
             .map(userTuple -> userTuple.getT1().withAuth(userTuple.getT2()));
-
       });
-
     });
-
   }
 
   public Mono<Void> deleteAll() {
@@ -130,14 +123,11 @@ public final class UserService {
   }
 
   public Mono<Void> deleteById(final int userId) {
-
     return userRepository.findById(userId).zipWith(getAuth(userId))
         .flatMap(tuple -> userRepository.delete(tuple.getT1()));
-
   }
 
   public Mono<User> demote(final int userId) {
-
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
@@ -145,7 +135,6 @@ public final class UserService {
     log.info("Demoting user with id " + userId + " to user");
 
     return setAdminStatus(userId, false);
-
   }
 
   public Mono<String> findDisplayNameById(final int userId) {
@@ -170,7 +159,6 @@ public final class UserService {
   }
 
   public Mono<User> findById(final int userId) {
-
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
@@ -179,11 +167,9 @@ public final class UserService {
 
     return userMono.zipWith(getAuth(userId)).map(tuple -> tuple.getT1().withAuth(tuple.getT2()))
         .switchIfEmpty(userMono);
-
   }
 
   public Mono<User> findByLoginName(final String loginName) {
-
     if (loginName == null) {
       throw new NullPointerException();
     }
@@ -194,14 +180,12 @@ public final class UserService {
 
     return passwordAuthRepository.findByLoginName(loginName).map(PasswordAuth::getUser)
         .flatMap(this::findById);
-
   }
 
   private Mono<Auth> getAuth(final int id) {
     if (id <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
-
 
     final Mono<PasswordAuth> passwordAuth = Mono.just(id).flatMap(userId -> {
       final Mono<PasswordAuth> returnedPasswordAuth = passwordAuthRepository.findByUserId(userId);
@@ -221,11 +205,9 @@ public final class UserService {
 
     return auth.zipWith(passwordAuth).map(tuple -> tuple.getT1().withPassword(tuple.getT2()))
         .switchIfEmpty(auth);
-
   }
 
   public Mono<byte[]> getKeyById(final int id) {
-
     if (id <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
@@ -240,7 +222,6 @@ public final class UserService {
           }
           return Mono.just(key);
         });
-
   }
 
   private Mono<String> loginNameAlreadyExists(final String loginName) {
@@ -249,7 +230,6 @@ public final class UserService {
   }
 
   public Mono<User> promote(final int userId) {
-
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
@@ -257,18 +237,15 @@ public final class UserService {
     log.info("Promoting user with id " + userId + " to admin");
 
     return setAdminStatus(userId, true);
-
   }
 
   private Mono<User> setAdminStatus(final int userId, final boolean isAdmin) {
-
     final Mono<User> userMono = findById(userId);
 
     final Mono<Auth> authMono =
         userMono.map(user -> user.getAuth().withAdmin(isAdmin)).flatMap(authRepository::save);
 
     return userMono.zipWith(authMono).map(tuple -> tuple.getT1().withAuth(tuple.getT2()));
-
   }
 
   public Mono<User> setClassId(final int userId, final int classId)
@@ -287,7 +264,6 @@ public final class UserService {
 
     return Mono.just(userId).flatMap(this::findById).zipWith(classIdMono)
         .map(tuple -> tuple.getT1().withClassId(tuple.getT2())).flatMap(userRepository::save);
-
   }
 
   public Mono<User> setDisplayName(final int userId, final String displayName)
@@ -315,7 +291,5 @@ public final class UserService {
         .switchIfEmpty(Mono.error(new UserIdNotFoundException())).flatMap(this::findById)
         .zipWith(displayNameMono).map(tuple -> tuple.getT1().withDisplayName(tuple.getT2()))
         .flatMap(userRepository::save);
-
   }
-
 }
