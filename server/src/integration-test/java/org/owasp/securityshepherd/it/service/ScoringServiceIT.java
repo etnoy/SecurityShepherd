@@ -60,8 +60,8 @@ public class ScoringServiceIT {
   Clock clock;
 
   @Test
-  public void computeScoreForModule_SubmittedScores_ReturnsCorrectScoresForUsers() throws Exception {
-
+  public void computeScoreForModule_SubmittedScores_ReturnsCorrectScoresForUsers()
+      throws Exception {
     // We'll use this exact flag
     final String flag = "itsaflag";
 
@@ -84,7 +84,7 @@ public class ScoringServiceIT {
 
     // Set that module to have an exact flag
     moduleService.setExactFlag(moduleId, flag).block();
-    
+
     // Set scoring levels for module
     scoringService.setScore(moduleId, 0, 100).block();
 
@@ -92,15 +92,15 @@ public class ScoringServiceIT {
     scoringService.setScore(moduleId, 2, 40).block();
     scoringService.setScore(moduleId, 3, 30).block();
     scoringService.setScore(moduleId, 4, 20).block();
-    
+
     // Create some other modules we aren't interested in
     final int moduleId2 = moduleService.create("AnotherModule").block().getId();
     moduleService.setExactFlag(moduleId2, flag).block();
-    
+
     // Set scoring levels for module
     scoringService.setScore(moduleId2, 0, 9999).block();
     scoringService.setScore(moduleId2, 1, 10).block();
-    
+
     final int moduleId3 = moduleService.create("IrrelevantModule").block().getId();
     moduleService.setExactFlag(moduleId3, flag).block();
 
@@ -117,7 +117,8 @@ public class ScoringServiceIT {
     final List<Clock> clocks = timeOffsets.stream().map(Duration::ofDays)
         .map(duration -> Clock.offset(startTime, duration)).collect(Collectors.toList());
 
-    final List<String> flags = Arrays.asList(flag, flag, flag, wrongFlag, flag, flag, flag, wrongFlag);
+    final List<String> flags =
+        Arrays.asList(flag, flag, flag, wrongFlag, flag, flag, flag, wrongFlag);
 
     // Iterate over the user ids and clocks at the same time
     Iterator<Integer> userIdIterator = userIds.iterator();
@@ -125,39 +126,41 @@ public class ScoringServiceIT {
     Iterator<String> flagIterator = flags.iterator();
 
     while (userIdIterator.hasNext() && clockIterator.hasNext() && flagIterator.hasNext()) {
-
       // Recreate the submission service every time with a new clock
       initializeService(clockIterator.next());
 
       final int currentUserId = userIdIterator.next();
       final String currentFlag = flagIterator.next();
-      
+
       // Submit a new flag
       submissionService.submit(currentUserId, moduleId, currentFlag).block();
       submissionService.submit(currentUserId, moduleId2, currentFlag).block();
       submissionService.submit(currentUserId, moduleId3, currentFlag).block();
-
     }
 
     StepVerifier.create(scoringService.computeScoreForModule(moduleId)).assertNext(scores -> {
+      // This user submitted first and got the max bonus!
+      assertThat(scores.get(userIds.get(6)), is(150));
+
+      // This user submitted an invalid flag, no score!
+      assertThat(scores.containsKey(userIds.get(3)), is(false));
       assertThat(scores.get(userIds.get(0)), is(120));
       assertThat(scores.get(userIds.get(1)), is(100));
       assertThat(scores.get(userIds.get(2)), is(140));
-      assertThat(scores.containsKey(userIds.get(3)), is(false)); // This user submitted an invalid flag, no score!
       assertThat(scores.get(userIds.get(4)), is(120));
       assertThat(scores.get(userIds.get(5)), is(140));
-      assertThat(scores.get(userIds.get(6)), is(150)); // This user submitted first and got the max bonus!
-      assertThat(scores.containsKey(userIds.get(7)), is(false)); // This user submitted an invalid flag, no score!
+
+      // This user submitted an invalid flag, no score!
+      assertThat(scores.containsKey(userIds.get(7)), is(false));
     }).expectComplete().verify();
   }
 
   private void initializeService(Clock injectedClock) {
-    submissionService = new SubmissionService(moduleService, submissionRepository,
-        injectedClock, submissionDatabaseClient);
+    submissionService = new SubmissionService(moduleService, submissionRepository, injectedClock,
+        submissionDatabaseClient);
 
     scoringService = new ScoringService(submissionService, moduleScoreRepository);
   }
-
 
   @BeforeEach
   private void clear() {
@@ -170,7 +173,5 @@ public class ScoringServiceIT {
     userService.deleteAll().block();
     moduleService.deleteAll().block();
     submissionService.deleteAll().block();
-
-
   }
 }

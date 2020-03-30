@@ -33,9 +33,8 @@ public final class ScoringService {
 
     return moduleRankScoreMap.flatMap(scoreMap -> {
       final int baseScore = scoreMap.get(0);
-      return submissions.collectMap(submission -> submission.get("userId"), submission -> {
-        return baseScore + scoreMap.getOrDefault(submission.get("rank"), 0);
-      });
+      return submissions.collectMap(submission -> submission.get("userId"),
+          submission -> baseScore + scoreMap.getOrDefault(submission.get("rank"), 0));
     });
   }
 }
