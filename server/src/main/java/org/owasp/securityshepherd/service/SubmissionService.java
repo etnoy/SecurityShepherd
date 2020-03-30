@@ -40,25 +40,23 @@ public final class SubmissionService {
     return submissionDatabaseClient.findAllValidByModuleIdSortedBySubmissionTime(moduleId);
 
   }
+  
+  public Flux<Map<String, Integer>> findValidUserIdsByModuleIdRankedBySubmissionTime(
+      final int moduleId) {
+
+    return submissionDatabaseClient.findAllValidByModuleIdSortedBySubmissionTime(moduleId);
+
+  }
 
   public Mono<Submission> submit(final int userId, final int moduleId, final String flag) {
 
     if (userId <= 0) {
-
       return Mono.error(new InvalidUserIdException());
-
     }
 
     if (moduleId <= 0) {
-
       return Mono.error(new InvalidModuleIdException());
-
     }
-
-    Mono.zip(userService.findDisplayNameById(userId), moduleService.findNameById(moduleId),
-        (userDisplayName, moduleName) -> "User " + userDisplayName + " submitted to module "
-            + moduleName + " with flag " + flag)
-        .doOnSuccess(log::debug).subscribe();
 
     SubmissionBuilder submissionBuilder = Submission.builder();
 

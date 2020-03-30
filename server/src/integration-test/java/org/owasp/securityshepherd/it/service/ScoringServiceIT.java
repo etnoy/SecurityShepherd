@@ -21,10 +21,12 @@ import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.model.Submission;
 import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.repository.ModuleRepository;
+import org.owasp.securityshepherd.repository.ModuleScoreRepository;
 import org.owasp.securityshepherd.repository.SubmissionDatabaseClient;
 import org.owasp.securityshepherd.repository.SubmissionRepository;
 import org.owasp.securityshepherd.repository.UserRepository;
 import org.owasp.securityshepherd.service.ModuleService;
+import org.owasp.securityshepherd.service.ScoringService;
 import org.owasp.securityshepherd.service.SubmissionService;
 import org.owasp.securityshepherd.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +42,7 @@ import reactor.test.StepVerifier;
 @SpringBootTest
 @AutoConfigureWebTestClient
 @Slf4j
-public class SubmissionServiceIT {
+public class ScoringServiceIT {
 
   @Autowired
   UserService userService;
@@ -50,8 +52,10 @@ public class SubmissionServiceIT {
 
   SubmissionService submissionService;
 
+  ScoringService scoringService;
+
   @Autowired
-  Clock clock;
+  SubmissionDatabaseClient submissionDatabaseClient;
 
   @Autowired
   ModuleRepository moduleRepository;
@@ -60,39 +64,13 @@ public class SubmissionServiceIT {
   SubmissionRepository submissionRepository;
 
   @Autowired
-  UserRepository userRepository;
+  ModuleScoreRepository moduleScoreRepository;
 
   @Autowired
-  SubmissionDatabaseClient submissionDatabaseClient;
+  Clock clock;
 
   @Test
-  public void submitFlag_ValidExactFlag_Success() throws Exception {
-
-    final String flag = "thisisaflag";
-
-    final Mono<Integer> userIdMono = userService.create("TestUser").map(User::getId);
-
-    final Mono<Integer> moduleIdMono =
-        moduleService.create("Test Module").map(Module::getId).flatMap(moduleId -> {
-          try {
-            return moduleService.setExactFlag(moduleId, flag);
-          } catch (InvalidFlagException | InvalidModuleIdException e) {
-            return Mono.error(e);
-          }
-        }).map(Module::getId);
-
-    StepVerifier
-        .create(Mono.zip(userIdMono, moduleIdMono).flatMap(tuple -> submissionService
-            .submit(tuple.getT1(), tuple.getT2(), flag).map(Submission::isValid)))
-        .assertNext(correctFlag -> {
-          assertThat(correctFlag, is(true));
-        }).expectComplete().verify();
-
-  }
-
-  @Test
-  public void sortSubmissionsPerModule_NoTies_ReturnsChronologicalListOfSubmissions()
-      throws Exception {
+  public void computeScoreForModule_SubmittedScores_ReturnsCorrectScoresForUsers() throws Exception {
 
     // We'll use this exact flag
     final String flag = "itsaflag";
@@ -108,24 +86,48 @@ public class SubmissionServiceIT {
     userIds.add(userService.create("TestUser4").block().getId());
     userIds.add(userService.create("TestUser5").block().getId());
     userIds.add(userService.create("TestUser6").block().getId());
+    userIds.add(userService.create("TestUser7").block().getId());
+    userIds.add(userService.create("TestUser8").block().getId());
 
     // Create a module to submit to
-    final int moduleId = moduleService.create("TestModule").block().getId();
+    final int moduleId = moduleService.create("ScoreTestModule").block().getId();
 
     // Set that module to have an exact flag
     moduleService.setExactFlag(moduleId, flag).block();
+    
+    // Set scoring levels for module
+    scoringService.setScore(moduleId, 0, 100).block();
+
+    scoringService.setScore(moduleId, 1, 50).block();
+    scoringService.setScore(moduleId, 2, 40).block();
+    scoringService.setScore(moduleId, 3, 30).block();
+    scoringService.setScore(moduleId, 4, 20).block();
+    
+    // Create some other modules we aren't interested in
+    final int moduleId2 = moduleService.create("AnotherModule").block().getId();
+    moduleService.setExactFlag(moduleId2, flag).block();
+    
+    // Set scoring levels for module
+    scoringService.setScore(moduleId2, 0, 9999).block();
+    scoringService.setScore(moduleId2, 1, 10).block();
+    
+    final int moduleId3 = moduleService.create("IrrelevantModule").block().getId();
+    moduleService.setExactFlag(moduleId3, flag).block();
+
+    // You only get 1 point for this module
+    scoringService.setScore(moduleId3, 0, 1).block();
 
     // Create a fixed clock from which we will base our offset submission times
     final Clock startTime = Clock.fixed(Instant.parse("2000-01-01T10:00:00.00Z"), ZoneId.of("Z"));
 
     // Create a list of times at which the above six users will submit their solutions
-    List<Integer> timeOffsets = Arrays.asList(4, 1, 3, 2, 1, 0);
+    List<Integer> timeOffsets = Arrays.asList(3, 4, 1, 2, 3, 1, 0, 5);
 
     // The duration between times should be 1 day
     final List<Clock> clocks = timeOffsets.stream().map(Duration::ofDays)
         .map(duration -> Clock.offset(startTime, duration)).collect(Collectors.toList());
 
-    final List<String> flags = Arrays.asList(flag, flag, flag, wrongFlag, flag, flag);
+    final List<String> flags = Arrays.asList(flag, flag, flag, wrongFlag, flag, flag, flag, wrongFlag);
 
     // Iterate over the user ids and clocks at the same time
     Iterator<Integer> userIdIterator = userIds.iterator();
@@ -137,38 +139,35 @@ public class SubmissionServiceIT {
       // Recreate the submission service every time with a new clock
       initializeService(clockIterator.next());
 
+      final int currentUserId = userIdIterator.next();
+      final String currentFlag = flagIterator.next();
+      
       // Submit a new flag
-      submissionService.submit(userIdIterator.next(), moduleId, flagIterator.next()).block();
+      submissionService.submit(currentUserId, moduleId, currentFlag).block();
+      submissionService.submit(currentUserId, moduleId2, currentFlag).block();
+      submissionService.submit(currentUserId, moduleId3, currentFlag).block();
+
     }
 
-    // Now verify that the submission service finds all valid submissions and lists them
-    // chronologically
-
-    StepVerifier.create(submissionService.findAllValidByModuleIdSortedBySubmissionTime(moduleId))
-        .assertNext(result -> {
-          log.debug(result.toString());
-          assertThat(result.get("userId"), is(userIds.get(5))); // userId 6 ranks 1
-          assertThat(result.get("rank"), is(1));
-        }).assertNext(result -> {
-          assertThat(result.get("userId"), is(userIds.get(1))); // userId 2 ranks 2
-          assertThat(result.get("rank"), is(2));
-        }).assertNext(result -> {
-          assertThat(result.get("userId"), is(userIds.get(4))); // userId 5 ranks 2
-          assertThat(result.get("rank"), is(2));
-        }).assertNext(result -> {
-          assertThat(result.get("userId"), is(userIds.get(2))); // userId 3 ranks 4
-          assertThat(result.get("rank"), is(4));
-        }).assertNext(result -> {
-          assertThat(result.get("userId"), is(userIds.get(0))); // userId 1 ranks 5
-          assertThat(result.get("rank"), is(5));
-        }).expectComplete().verify();
-
+    StepVerifier.create(scoringService.computeScoreForModule(moduleId)).assertNext(scores -> {
+      assertThat(scores.get(userIds.get(0)), is(120));
+      assertThat(scores.get(userIds.get(1)), is(100));
+      assertThat(scores.get(userIds.get(2)), is(140));
+      assertThat(scores.containsKey(userIds.get(3)), is(false)); // This user submitted an invalid flag, no score!
+      assertThat(scores.get(userIds.get(4)), is(120));
+      assertThat(scores.get(userIds.get(5)), is(140));
+      assertThat(scores.get(userIds.get(6)), is(150)); // This user submitted first and got the max bonus!
+      assertThat(scores.containsKey(userIds.get(7)), is(false)); // This user submitted an invalid flag, no score!
+    }).expectComplete().verify();
   }
 
   private void initializeService(Clock injectedClock) {
     submissionService = new SubmissionService(userService, moduleService, submissionRepository,
         injectedClock, submissionDatabaseClient);
+
+    scoringService = new ScoringService(submissionService, moduleScoreRepository);
   }
+
 
   @BeforeEach
   private void clear() {
@@ -181,5 +180,7 @@ public class SubmissionServiceIT {
     userService.deleteAll().block();
     moduleService.deleteAll().block();
     submissionService.deleteAll().block();
+
+
   }
 }

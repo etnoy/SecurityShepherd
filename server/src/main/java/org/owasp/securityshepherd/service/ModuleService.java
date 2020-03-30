@@ -68,17 +68,13 @@ public final class ModuleService {
   }
 
   public Flux<Module> findAll() {
-
     return moduleRepository.findAll();
-
   }
 
   public Mono<Module> findById(final int id) {
 
     if (id <= 0) {
-
       return Mono.error(new InvalidModuleIdException());
-
     }
 
     return moduleRepository.findById(id).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()));
@@ -88,15 +84,11 @@ public final class ModuleService {
   public Mono<String> getDynamicFlag(final int userId, final int moduleId) {
 
     if (userId <= 0) {
-
       return Mono.error(new InvalidUserIdException());
-
     }
 
     if (moduleId <= 0) {
-
       return Mono.error(new InvalidModuleIdException());
-
     }
 
     final Mono<byte[]> baseFlag = findById(moduleId)
@@ -121,9 +113,7 @@ public final class ModuleService {
   public Mono<Module> setDynamicFlag(final int id) {
 
     if (id <= 0) {
-
       return Mono.error(new InvalidModuleIdException());
-
     }
 
     return findById(id).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
@@ -140,19 +130,13 @@ public final class ModuleService {
       throws InvalidFlagException, InvalidModuleIdException {
 
     if (id <= 0) {
-
       throw new InvalidModuleIdException();
-
     }
 
     if (exactFlag == null) {
-
       throw new InvalidFlagException("Flag can't be null");
-
     } else if (exactFlag.isEmpty()) {
-
       throw new InvalidFlagException("Flag can't be empty");
-
     }
 
     return findById(id).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
@@ -164,21 +148,15 @@ public final class ModuleService {
   public Mono<Module> setName(final int id, final String name) {
 
     if (id <= 0) {
-
       return Mono.error(new InvalidModuleIdException());
-
     }
 
     if (name == null) {
-
       return Mono.error(new NullPointerException());
-
     }
 
     if (name.isEmpty()) {
-
       return Mono.error(new IllegalArgumentException());
-
     }
 
     log.info("Setting name of module with id " + id + " to " + name);
@@ -195,8 +173,7 @@ public final class ModuleService {
       return Mono.just(false);
     }
 
-    log.info("Verifying submitted flag from user id " + userId + " with module id " + moduleId
-        + " with flag contents " + submittedFlag);
+    log.info("User " + userId + " submitted flag " + submittedFlag + " to module " + moduleId);
 
     return findById(moduleId).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
         .filter(Module::isFlagEnabled)

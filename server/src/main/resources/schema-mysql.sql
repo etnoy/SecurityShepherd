@@ -35,6 +35,16 @@ CREATE TABLE module (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
+CREATE TABLE module_score (
+	id INT AUTO_INCREMENT,
+	module_id INT,
+	submission_rank INT,
+	score INT,
+  PRIMARY KEY (id),
+  UNIQUE KEY (module_id, submission_rank))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4;
+
 CREATE TABLE auth (
   id INT AUTO_INCREMENT,
   user INT NOT NULL,
