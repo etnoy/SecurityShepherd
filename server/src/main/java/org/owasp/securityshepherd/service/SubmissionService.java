@@ -2,21 +2,18 @@ package org.owasp.securityshepherd.service;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.model.Submission;
 import org.owasp.securityshepherd.model.Submission.SubmissionBuilder;
+import org.owasp.securityshepherd.repository.SubmissionDatabaseClient;
 import org.owasp.securityshepherd.repository.SubmissionRepository;
-import org.springframework.data.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-
 
 @Slf4j
 @RequiredArgsConstructor
@@ -31,10 +28,8 @@ public final class SubmissionService {
 
   private final Clock clock;
 
-  private final DatabaseClient databaseClient;
-
-  // private static final Comparator<Submission> byTimestamp = comparing(Submission::getTime);
-
+  private final SubmissionDatabaseClient submissionDatabaseClient;
+  
   public Mono<Void> deleteAll() {
     return submissionRepository.deleteAll();
   }
@@ -42,15 +37,7 @@ public final class SubmissionService {
   public Flux<Map<String, Integer>> findAllValidByModuleIdSortedBySubmissionTime(
       final int moduleId) {
 
-    return databaseClient.execute(
-        "SELECT user_id, RANK() over(ORDER BY time) user_rank from submission WHERE is_valid = true AND module_id = "
-            + moduleId)
-        .map((row, rowMetadata) -> {
-          Map<String, Integer> resultMap = new HashMap<>();
-          resultMap.put("userId", row.get("user_id", Integer.class));
-          resultMap.put("rank", Math.toIntExact(row.get("user_rank", Long.class)));
-          return resultMap;
-        }).all();
+    return submissionDatabaseClient.findAllValidByModuleIdSortedBySubmissionTime(moduleId);
 
   }
 

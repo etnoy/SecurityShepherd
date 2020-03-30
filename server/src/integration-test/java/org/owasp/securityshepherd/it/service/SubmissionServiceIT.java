@@ -21,6 +21,7 @@ import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.model.Submission;
 import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.repository.ModuleRepository;
+import org.owasp.securityshepherd.repository.SubmissionDatabaseClient;
 import org.owasp.securityshepherd.repository.SubmissionRepository;
 import org.owasp.securityshepherd.repository.UserRepository;
 import org.owasp.securityshepherd.service.ModuleService;
@@ -29,7 +30,6 @@ import org.owasp.securityshepherd.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.r2dbc.core.DatabaseClient;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Hooks;
@@ -66,8 +66,7 @@ public class SubmissionServiceIT {
   UserRepository userRepository;
 
   @Autowired
-  DatabaseClient databaseClient;
-
+  SubmissionDatabaseClient submissionDatabaseClient;
 
   @Test
   public void submitFlag_ValidExactFlag_Success() throws Exception {
@@ -135,7 +134,7 @@ public class SubmissionServiceIT {
     Iterator<Integer> userIdIterator = userIds.iterator();
     Iterator<Clock> clockIterator = clocks.iterator();
     Iterator<String> flagIterator = flags.iterator();
-    
+
     while (userIdIterator.hasNext() && clockIterator.hasNext() && flagIterator.hasNext()) {
 
       // Recreate the submission service every time with a new clock
@@ -171,7 +170,7 @@ public class SubmissionServiceIT {
 
   private void initializeService(Clock injectedClock) {
     submissionService = new SubmissionService(userService, moduleService, submissionRepository,
-        injectedClock, databaseClient);
+        injectedClock, submissionDatabaseClient);
   }
 
   @BeforeEach
