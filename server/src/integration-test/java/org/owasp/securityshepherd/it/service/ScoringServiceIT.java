@@ -86,26 +86,26 @@ public class ScoringServiceIT {
     moduleService.setExactFlag(moduleId, flag).block();
 
     // Set scoring levels for module
-    scoringService.setScore(moduleId, 0, 100).block();
+    scoringService.setModuleScore(moduleId, 0, 100).block();
 
-    scoringService.setScore(moduleId, 1, 50).block();
-    scoringService.setScore(moduleId, 2, 40).block();
-    scoringService.setScore(moduleId, 3, 30).block();
-    scoringService.setScore(moduleId, 4, 20).block();
+    scoringService.setModuleScore(moduleId, 1, 50).block();
+    scoringService.setModuleScore(moduleId, 2, 40).block();
+    scoringService.setModuleScore(moduleId, 3, 30).block();
+    scoringService.setModuleScore(moduleId, 4, 20).block();
 
     // Create some other modules we aren't interested in
     final int moduleId2 = moduleService.create("AnotherModule").block().getId();
     moduleService.setExactFlag(moduleId2, flag).block();
 
     // Set scoring levels for module
-    scoringService.setScore(moduleId2, 0, 9999).block();
-    scoringService.setScore(moduleId2, 1, 10).block();
+    scoringService.setModuleScore(moduleId2, 0, 9999).block();
+    scoringService.setModuleScore(moduleId2, 1, 10).block();
 
     final int moduleId3 = moduleService.create("IrrelevantModule").block().getId();
     moduleService.setExactFlag(moduleId3, flag).block();
 
     // You only get 1 point for this module
-    scoringService.setScore(moduleId3, 0, 1).block();
+    scoringService.setModuleScore(moduleId3, 0, 1).block();
 
     // Create a fixed clock from which we will base our offset submission times
     final Clock startTime = Clock.fixed(Instant.parse("2000-01-01T10:00:00.00Z"), ZoneId.of("Z"));
