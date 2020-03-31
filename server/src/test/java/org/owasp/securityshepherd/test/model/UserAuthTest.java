@@ -24,8 +24,8 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@DisplayName("Auth unit test")
-public class AuthTest {
+@DisplayName("UserAuth unit test")
+public class UserAuthTest {
 
   private static final boolean[] BOOLEANS = {false, true};
 

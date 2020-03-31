@@ -17,8 +17,6 @@ import org.passay.SpecialCharacterRule;
 import org.passay.UppercaseCharacterRule;
 import org.passay.WhitespaceRule;
 
-import com.google.common.base.Joiner;
-
 public class PasswordConstraintValidator implements ConstraintValidator<ValidPassword, String> {
 
   @Override
@@ -33,7 +31,7 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
       return true;
     }
     context.disableDefaultConstraintViolation();
-    context.buildConstraintViolationWithTemplate(Joiner.on(",").join(validator.getMessages(result)))
+    context.buildConstraintViolationWithTemplate(String.join(",", validator.getMessages(result)))
         .addConstraintViolation();
     return false;
   }
