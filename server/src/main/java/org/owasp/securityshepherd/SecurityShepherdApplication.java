@@ -28,7 +28,6 @@ public class SecurityShepherdApplication {
     CompositeDatabasePopulator populator = new CompositeDatabasePopulator();
     populator
         .addPopulators(new ResourceDatabasePopulator(new ClassPathResource("schema-mysql.sql")));
-    populator.addPopulators(new ResourceDatabasePopulator(new ClassPathResource("data-mysql.sql")));
     initializer.setDatabasePopulator(populator);
 
     return initializer;
