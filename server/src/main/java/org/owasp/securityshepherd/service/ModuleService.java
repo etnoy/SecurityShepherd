@@ -200,8 +200,8 @@ public final class ModuleService {
         });
 
     // Do some logging. First, check if error occurred and then print logs
-    final Mono<String> validText = isValid.onErrorReturn(false).map(Boolean.TRUE::equals)
-        .map(valid -> valid ? "valid" : "invalid");
+    final Mono<String> validText = isValid.onErrorReturn(false)
+        .map(validFlag -> Boolean.TRUE.equals(validFlag) ? "valid" : "invalid");
 
     Mono.zip(userService.findDisplayNameById(userId), validText, currentModule.map(Module::getName))
         .map(tuple -> "User " + tuple.getT1() + " submitted " + tuple.getT2() + " flag "
