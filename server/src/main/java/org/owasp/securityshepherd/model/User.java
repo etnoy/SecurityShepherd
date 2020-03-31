@@ -45,5 +45,4 @@ public final class User implements Serializable {
     this.key = key;
     this.auth = null;
   }
-
 }

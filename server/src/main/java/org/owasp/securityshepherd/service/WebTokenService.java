@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.security.ShepherdUserDetails;
-import org.owasp.securityshepherd.model.Role;
+import org.owasp.securityshepherd.security.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import io.jsonwebtoken.Claims;

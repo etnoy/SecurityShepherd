@@ -27,7 +27,7 @@ import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@DisplayName("ClassService")
+@DisplayName("ClassService unit test")
 public class ClassServiceTest {
 
   private ClassService classService;

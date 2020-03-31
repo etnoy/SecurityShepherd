@@ -3,6 +3,7 @@ package org.owasp.securityshepherd.it.controller;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.dto.PasswordRegistrationDto;
@@ -26,6 +27,7 @@ import reactor.test.StepVerifier;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
+@DisplayName("ModuleController integration test")
 public class ModuleControllerIT {
 
   @Autowired

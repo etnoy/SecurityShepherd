@@ -15,7 +15,6 @@ import lombok.With;
 @Builder(builderClassName = "ClassBuilder")
 @With
 public class ClassEntity implements Serializable {
-
   private static final long serialVersionUID = 7375094814834027958L;
 
   @Id
@@ -23,10 +22,4 @@ public class ClassEntity implements Serializable {
 
   @NonNull
   private final String name;
-
-  ClassEntity(final int id, final String name) {
-    this.id = id;
-    this.name = name;
-  }
-
 }

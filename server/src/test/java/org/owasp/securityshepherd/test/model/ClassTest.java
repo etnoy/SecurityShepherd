@@ -1,50 +1,55 @@
 package org.owasp.securityshepherd.test.model;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.model.ClassEntity;
+import org.owasp.securityshepherd.model.ClassEntity.ClassBuilder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@DisplayName("Class")
+@DisplayName("Class unit test")
 public class ClassTest {
-
-  @Test
-  public void build_AllArguments_SuppliedValuesPresent() {
-    assertEquals("builder_AllArguments_classname",
-        ClassEntity.builder().name("builder_AllArguments_classname").build().getName());
-  }
-
   @Test
   public void build_NullName_ThrowsNullPointerException() {
-    assertThrows(NullPointerException.class, () -> ClassEntity.builder().name(null).build());
+    assertThrows(NullPointerException.class, () -> ClassEntity.builder().name(null));
   }
 
   @Test
-  public void build_ValidNameLength_ReturnsClass() {
-    String validLengthName =
-        "Build_Name_exactly_70_chars_long_which_should_be_accepted_as_valid_123";
+  public void build_NameNotGiven_ThrowsNullPointerException() {
+    final ClassBuilder classBuilder = ClassEntity.builder().id(4);
+    assertThrows(NullPointerException.class, () -> classBuilder.build());
+  }
 
-    assertEquals(70, validLengthName.length());
+  @Test
+  public void build_ValidId_Builds() {
+    final ClassEntity classEntity = ClassEntity.builder().id(3).name("TestClass").build();
 
-    ClassEntity build_ValidNameLengthClass = ClassEntity.builder().name(validLengthName).build();
+    assertThat(classEntity, is(instanceOf(ClassEntity.class)));
+    assertThat(classEntity.getId(), is(3));
+  }
 
-    assertTrue(build_ValidNameLengthClass instanceof ClassEntity);
+  @Test
+  public void build_ValidName_Builds() {
+    final String name = "className";
+    final ClassEntity classEntity = ClassEntity.builder().name(name).build();
 
-    assertEquals(validLengthName, build_ValidNameLengthClass.getName());
+    assertThat(classEntity, is(instanceOf(ClassEntity.class)));
+    assertThat(classEntity.getName(), is(name));
   }
 
   @Test
   public void classBuildertoString_ValidData_NotNull() {
-    assertNotNull(ClassEntity.builder().toString());
+    assertThat(ClassEntity.builder().id(3).name("TestClass").toString(),
+        is("ClassEntity.ClassBuilder(id=3, name=TestClass)"));
   }
 
   @Test
@@ -53,8 +58,9 @@ public class ClassTest {
   }
 
   @Test
-  public void toString_ValidData_NotNull() {
-    assertNotNull(ClassEntity.builder().name("TestClass").build().toString());
+  public void toString_ValidData_AsExpected() {
+    assertThat(ClassEntity.builder().name("TestClass").build().toString(),
+        is("ClassEntity(id=0, name=TestClass)"));
   }
 
   @Test
@@ -62,15 +68,12 @@ public class ClassTest {
     final int originalId = 1;
     final int[] testedIds = {originalId, 0, -1, 1000, -1000, 123456789};
 
-    final ClassEntity testClass = ClassEntity.builder().id(originalId).name("Test Class").build();
+    final ClassEntity classEntity = ClassEntity.builder().id(originalId).name("Test Class").build();
 
-    assertThat(testClass.getId(), is(originalId));
+    assertThat(classEntity.getId(), is(originalId));
 
-    ClassEntity changedClass;
-
-    for (int newId : testedIds) {
-      changedClass = testClass.withId(newId);
-      assertThat(changedClass.getId(), is(newId));
+    for (int id : testedIds) {
+      assertThat(classEntity.withId(id).getId(), is(id));
     }
   }
 
@@ -95,10 +98,8 @@ public class ClassTest {
 
     final String[] testedNames = {name, "", "newClass", "Long  With     Whitespace", "12345"};
 
-    ClassEntity changedClass;
-    for (String newName : testedNames) {
-      changedClass = testClass.withName(newName);
-      assertThat(changedClass.getName(), is(newName));
+    for (final String newName : testedNames) {
+      assertThat(testClass.withName(newName).getName(), is(newName));
     }
   }
 }

@@ -16,13 +16,12 @@ import lombok.With;
 @Builder
 @With
 public final class Auth implements Serializable {
-
   private static final long serialVersionUID = -1511082836956413928L;
 
   @Id
   private Integer id;
 
-  private int user;
+  private Integer userId;
 
   @JsonProperty("isEnabled")
   private boolean isEnabled;
@@ -49,11 +48,11 @@ public final class Auth implements Serializable {
   private SamlAuth saml;
 
   @PersistenceConstructor
-  public Auth(final Integer id, final int user, final boolean isEnabled, final int badLoginCount,
+  public Auth(final Integer id, final int userId, final boolean isEnabled, final int badLoginCount,
       final boolean isAdmin, final Timestamp suspendedUntil, final String suspensionMessage,
       final Timestamp accountCreated, final Timestamp lastLogin, final String lastLoginMethod) {
     this.id = id;
-    this.user = user;
+    this.userId = userId;
     this.isEnabled = isEnabled;
     this.badLoginCount = badLoginCount;
     this.isAdmin = isAdmin;
@@ -65,5 +64,4 @@ public final class Auth implements Serializable {
     this.password = null;
     this.saml = null;
   }
-
 }

@@ -8,7 +8,6 @@ import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.repository.ModuleRepository;
-import org.owasp.securityshepherd.repository.ModuleScoreRepository;
 import org.springframework.stereotype.Service;
 
 import com.google.common.primitives.Bytes;

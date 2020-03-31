@@ -18,7 +18,7 @@ import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@DisplayName("KeyService")
+@DisplayName("KeyService unit test")
 public class KeyServiceTest {
 
   @Autowired

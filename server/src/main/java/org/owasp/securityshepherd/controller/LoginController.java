@@ -3,7 +3,7 @@ package org.owasp.securityshepherd.controller;
 import javax.validation.Valid;
 import org.owasp.securityshepherd.dto.PasswordLoginDto;
 import org.owasp.securityshepherd.dto.PasswordRegistrationDto;
-import org.owasp.securityshepherd.model.AuthResponse;
+import org.owasp.securityshepherd.security.AuthResponse;
 import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.security.ShepherdUserDetails;
 import org.owasp.securityshepherd.service.UserService;

@@ -44,7 +44,7 @@ import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@DisplayName("UserService")
+@DisplayName("UserService unit test")
 public class UserServiceTest {
 
   private UserService userService;
@@ -533,7 +533,7 @@ public class UserServiceTest {
     final String loginName = "MockUser";
     final int mockId = 117;
 
-    when(mockPasswordAuth.getUser()).thenReturn(mockId);
+    when(mockPasswordAuth.getUserId()).thenReturn(mockId);
     when(passwordAuthRepository.findByLoginName(loginName)).thenReturn(Mono.just(mockPasswordAuth));
 
     when(userRepository.findById(mockId)).thenReturn(Mono.empty());
@@ -568,7 +568,7 @@ public class UserServiceTest {
     when(mockUser.withAuth(any(Auth.class))).thenReturn(mockUserWithAuth);
 
     when(passwordAuthRepository.findByLoginName(loginName)).thenReturn(Mono.just(mockPasswordAuth));
-    when(mockPasswordAuth.getUser()).thenReturn(mockId);
+    when(mockPasswordAuth.getUserId()).thenReturn(mockId);
 
     StepVerifier.create(userService.findByLoginName(loginName)).assertNext(user -> {
       assertThat(user, is(mockUserWithAuth));
@@ -591,7 +591,7 @@ public class UserServiceTest {
     final String loginName = "MockUser";
     final int mockId = 137;
 
-    when(mockPasswordAuth.getUser()).thenReturn(mockId);
+    when(mockPasswordAuth.getUserId()).thenReturn(mockId);
     when(passwordAuthRepository.findByLoginName(loginName)).thenReturn(Mono.empty());
 
     when(userRepository.findById(mockId)).thenReturn(Mono.empty());
@@ -609,7 +609,7 @@ public class UserServiceTest {
     final String loginName = "MockUser";
     final int mockId = 117;
 
-    when(mockPasswordAuth.getUser()).thenReturn(mockId);
+    when(mockPasswordAuth.getUserId()).thenReturn(mockId);
     when(passwordAuthRepository.findByLoginName(loginName)).thenReturn(Mono.just(mockPasswordAuth));
 
     when(userRepository.findById(mockId)).thenReturn(Mono.empty());

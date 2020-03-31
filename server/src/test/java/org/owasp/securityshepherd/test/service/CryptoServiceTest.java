@@ -18,7 +18,7 @@ import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@DisplayName("CryptoService")
+@DisplayName("CryptoService unit test")
 public class CryptoServiceTest {
 
   @Autowired

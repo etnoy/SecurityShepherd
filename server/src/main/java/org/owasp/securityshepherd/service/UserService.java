@@ -101,12 +101,12 @@ public final class UserService {
 
       return userRepository.save(userBuilder.build()).flatMap(userWithId -> {
 
-        final PasswordAuth passwordAuthWithUser = passwordAuth.withUser(userWithId.getId());
+        final PasswordAuth passwordAuthWithUser = passwordAuth.withUserId(userWithId.getId());
 
         final Mono<PasswordAuth> passwordAuthMono =
             passwordAuthRepository.save(passwordAuthWithUser);
 
-        final Auth authWithUser = auth.withUser(userWithId.getId());
+        final Auth authWithUser = auth.withUserId(userWithId.getId());
 
         final Mono<Auth> authMono = authRepository.save(authWithUser).zipWith(passwordAuthMono)
             .map(authTuple -> authTuple.getT1().withPassword(authTuple.getT2()));
@@ -178,7 +178,7 @@ public final class UserService {
       throw new IllegalArgumentException();
     }
 
-    return passwordAuthRepository.findByLoginName(loginName).map(PasswordAuth::getUser)
+    return passwordAuthRepository.findByLoginName(loginName).map(PasswordAuth::getUserId)
         .flatMap(this::findById);
   }
 

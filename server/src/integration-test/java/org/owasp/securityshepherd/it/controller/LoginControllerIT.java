@@ -4,10 +4,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import java.util.Base64;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.model.User;
-import org.owasp.securityshepherd.model.Role;
+import org.owasp.securityshepherd.security.Role;
 import org.owasp.securityshepherd.service.DatabaseService;
 import org.owasp.securityshepherd.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import reactor.core.publisher.Mono;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
+@DisplayName("LoginController integration test")
 public class LoginControllerIT {
 
   @Autowired

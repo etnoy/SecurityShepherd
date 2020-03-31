@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.repository.ModuleRepository;
@@ -33,6 +34,7 @@ import reactor.test.StepVerifier;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureWebTestClient
+@DisplayName("ScoringService integration test")
 public class ScoringServiceIT {
 
   @Autowired

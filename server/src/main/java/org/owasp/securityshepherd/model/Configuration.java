@@ -14,7 +14,6 @@ import lombok.With;
 @Builder
 @With
 public class Configuration implements Serializable {
-
   private static final long serialVersionUID = -3877275355721047824L;
 
   @Id
@@ -26,11 +25,4 @@ public class Configuration implements Serializable {
 
   @NonNull
   private String value;
-
-  Configuration(final Integer id, @NonNull final String key, final String value) {
-    this.id = id;
-    this.key = key;
-    this.value = value;
-  }
-
 }

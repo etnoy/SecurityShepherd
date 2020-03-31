@@ -12,13 +12,12 @@ import lombok.With;
 @Builder
 @With
 public final class PasswordAuth implements Serializable {
-
   private static final long serialVersionUID = 32553442956391684L;
 
   @Id
   private Integer id;
 
-  private int user;
+  private Integer userId;
 
   @NonNull
   private String loginName;
@@ -28,15 +27,4 @@ public final class PasswordAuth implements Serializable {
 
   @JsonProperty("isPasswordNonExpired")
   private boolean isPasswordNonExpired;
-  
-  @java.beans.ConstructorProperties({"id", "user", "loginName", "hashedPassword", "isPasswordNonExpired"})
-  public PasswordAuth(final Integer id, final int user, @NonNull final String loginName, @NonNull final String hashedPassword, @JsonProperty("isPasswordNonExpired") final boolean isPasswordNonExpired) {
-    this.id = id;
-    this.user = user;
-    this.loginName = loginName;
-    this.hashedPassword = hashedPassword;
-    this.isPasswordNonExpired = isPasswordNonExpired;
-  }
-
-
 }
