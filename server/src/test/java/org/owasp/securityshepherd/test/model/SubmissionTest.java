@@ -20,7 +20,7 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@DisplayName("Submission")
+@DisplayName("Submission unit test")
 public class SubmissionTest {
 
   private static final boolean[] BOOLEANS = {false, true};

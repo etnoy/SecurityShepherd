@@ -39,7 +39,7 @@ import reactor.test.StepVerifier;
 @SpringBootTest
 @AutoConfigureWebTestClient
 @Slf4j
-@DisplayName("SubmissionService")
+@DisplayName("SubmissionService integration test")
 public class SubmissionServiceIT {
 
   @Autowired

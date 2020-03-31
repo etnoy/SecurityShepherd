@@ -16,7 +16,7 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@DisplayName("SamlAuth")
+@DisplayName("SamlAuth unit test")
 public class SamlAuthTest {
   @Test
   public void build_SamlIdNotGiven_ThrowsException() {

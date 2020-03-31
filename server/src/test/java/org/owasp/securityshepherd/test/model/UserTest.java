@@ -19,7 +19,7 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@DisplayName("User")
+@DisplayName("User unit test")
 public class UserTest {
 
   @Test
