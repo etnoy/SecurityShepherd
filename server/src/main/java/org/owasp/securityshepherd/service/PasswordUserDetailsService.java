@@ -1,6 +1,5 @@
 package org.owasp.securityshepherd.service;
 
-import org.owasp.securityshepherd.security.ShepherdUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;

@@ -4,8 +4,6 @@ import javax.validation.Valid;
 import org.owasp.securityshepherd.dto.PasswordLoginDto;
 import org.owasp.securityshepherd.dto.PasswordRegistrationDto;
 import org.owasp.securityshepherd.security.AuthResponse;
-import org.owasp.securityshepherd.model.User;
-import org.owasp.securityshepherd.security.ShepherdUserDetails;
 import org.owasp.securityshepherd.service.UserService;
 import org.owasp.securityshepherd.service.WebTokenService;
 import org.springframework.http.HttpStatus;
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
-import reactor.util.function.Tuple2;
 
 @RestController
 @RequiredArgsConstructor

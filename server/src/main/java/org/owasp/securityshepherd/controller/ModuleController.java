@@ -4,7 +4,6 @@ import javax.validation.Valid;
 import org.owasp.securityshepherd.dto.SubmissionDto;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.model.Submission;
-import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.security.ShepherdUserDetails;
 import org.owasp.securityshepherd.service.ModuleService;
 import org.owasp.securityshepherd.service.SubmissionService;

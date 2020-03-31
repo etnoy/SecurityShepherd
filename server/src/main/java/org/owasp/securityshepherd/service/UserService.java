@@ -16,7 +16,6 @@ import org.owasp.securityshepherd.repository.PasswordAuthRepository;
 import org.owasp.securityshepherd.repository.UserDatabaseClient;
 import org.owasp.securityshepherd.repository.UserRepository;
 import org.owasp.securityshepherd.security.ShepherdUserDetails;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

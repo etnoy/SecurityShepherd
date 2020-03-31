@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.model.Submission;
-import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.repository.ModuleRepository;
 import org.owasp.securityshepherd.repository.SubmissionDatabaseClient;
 import org.owasp.securityshepherd.repository.SubmissionRepository;

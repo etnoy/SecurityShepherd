@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.owasp.securityshepherd.model.PasswordAuth;
-import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.model.UserAuth;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

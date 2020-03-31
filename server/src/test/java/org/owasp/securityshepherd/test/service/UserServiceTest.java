@@ -1,7 +1,6 @@
 package org.owasp.securityshepherd.test.service;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -30,7 +29,6 @@ import org.owasp.securityshepherd.model.PasswordAuth;
 import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.repository.AuthRepository;
 import org.owasp.securityshepherd.repository.PasswordAuthRepository;
-import org.owasp.securityshepherd.repository.SubmissionDatabaseClient;
 import org.owasp.securityshepherd.repository.UserDatabaseClient;
 import org.owasp.securityshepherd.repository.UserRepository;
 import org.owasp.securityshepherd.service.ClassService;
@@ -404,16 +402,13 @@ public class UserServiceTest {
 
   @Test
   public void findByLoginName_LoginNameDoesNotExist_ReturnsEmptyMono() {
-    final PasswordAuth mockPasswordAuth = mock(PasswordAuth.class);
+    final String nonExistentLoginName = "MockUser";
 
-    final String loginName = "MockUser";
-    final int mockId = 137;
+    when(userDatabaseClient.findUserIdByLoginName(nonExistentLoginName)).thenReturn(Mono.empty());
 
-    when(userDatabaseClient.findUserIdByLoginName(loginName)).thenReturn(Mono.empty());
+    StepVerifier.create(userService.findUserIdByLoginName(nonExistentLoginName)).expectComplete().verify();
 
-    StepVerifier.create(userService.findUserIdByLoginName(loginName)).expectComplete().verify();
-
-    verify(userDatabaseClient, times(1)).findUserIdByLoginName(loginName);
+    verify(userDatabaseClient, times(1)).findUserIdByLoginName(nonExistentLoginName);
   }
 
   @Test
