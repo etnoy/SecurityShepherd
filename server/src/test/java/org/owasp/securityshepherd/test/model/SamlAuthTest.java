@@ -4,7 +4,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.model.SamlAuth;
@@ -17,7 +17,8 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-public class SAMLAuthTest {
+@DisplayName("SamlAuth")
+public class SamlAuthTest {
 
   //TODO: test null arguments to constructor
   

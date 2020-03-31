@@ -41,7 +41,8 @@ CREATE TABLE module_score (
 	submission_rank INT,
 	score INT,
   PRIMARY KEY (id),
-  UNIQUE KEY (module_id, submission_rank))
+  UNIQUE KEY (module_id, submission_rank),
+  FOREIGN KEY (`module_id`) REFERENCES module(id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
@@ -77,18 +78,20 @@ CREATE TABLE password_auth (
   hashed_password VARCHAR(191),
   is_password_non_expired BOOLEAN DEFAULT FALSE,
   PRIMARY KEY (id) ,
- FOREIGN KEY (`user`) REFERENCES user(id))
+  FOREIGN KEY (`user`) REFERENCES user(id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
 CREATE TABLE submission (
 	id INT AUTO_INCREMENT,
     user_id INT NOT NULL,
-    module_id INT NOT NULL,
+    module_id INT NOT NULL, 
     time TIMESTAMP NULL DEFAULT NULL,
     is_valid BOOLEAN,
     flag VARCHAR(191),
-      PRIMARY KEY (id))
+    PRIMARY KEY (id),
+    FOREIGN KEY (`user_id`) REFERENCES user(id),
+    FOREIGN KEY (`module_id`) REFERENCES module(id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 

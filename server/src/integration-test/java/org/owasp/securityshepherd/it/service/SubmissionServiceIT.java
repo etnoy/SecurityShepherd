@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.model.Module;
@@ -21,6 +22,7 @@ import org.owasp.securityshepherd.repository.ModuleRepository;
 import org.owasp.securityshepherd.repository.SubmissionDatabaseClient;
 import org.owasp.securityshepherd.repository.SubmissionRepository;
 import org.owasp.securityshepherd.repository.UserRepository;
+import org.owasp.securityshepherd.service.DatabaseService;
 import org.owasp.securityshepherd.service.ModuleService;
 import org.owasp.securityshepherd.service.SubmissionService;
 import org.owasp.securityshepherd.service.UserService;
@@ -37,6 +39,7 @@ import reactor.test.StepVerifier;
 @SpringBootTest
 @AutoConfigureWebTestClient
 @Slf4j
+@DisplayName("SubmissionService")
 public class SubmissionServiceIT {
 
   @Autowired
@@ -61,6 +64,9 @@ public class SubmissionServiceIT {
 
   @Autowired
   SubmissionDatabaseClient submissionDatabaseClient;
+  
+  @Autowired
+  DatabaseService databaseService;
 
   @Test
   public void submitFlag_ValidExactFlag_Success() throws Exception {
@@ -96,6 +102,8 @@ public class SubmissionServiceIT {
     userIds.add(userService.create("TestUser5").block().getId());
     userIds.add(userService.create("TestUser6").block().getId());
 
+    log.debug("Users: " + userIds);
+    
     // Create a module to submit to
     final int moduleId = moduleService.create("TestModule").block().getId();
 
@@ -124,8 +132,11 @@ public class SubmissionServiceIT {
       // Recreate the submission service every time with a new clock
       initializeService(clockIterator.next());
 
+      final int currentUserId = userIdIterator.next();
+      final String currentFlag = flagIterator.next();
+      
       // Submit a new flag
-      submissionService.submit(userIdIterator.next(), moduleId, flagIterator.next()).block();
+      submissionService.submit(currentUserId, moduleId, currentFlag).block();
     }
 
     // Now verify that the submission service finds all valid submissions and lists them
@@ -164,9 +175,6 @@ public class SubmissionServiceIT {
     // Initialize services with the real clock
     initializeService(clock);
 
-    // Clear all repositories before every test
-    userService.deleteAll().block();
-    moduleService.deleteAll().block();
-    submissionService.deleteAll().block();
+    databaseService.clearAll().block();
   }
 }

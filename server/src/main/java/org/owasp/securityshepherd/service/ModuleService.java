@@ -25,8 +25,6 @@ public final class ModuleService {
 
   private final ModuleRepository moduleRepository;
 
-  private final ModuleScoreRepository moduleScoreRepository;
-
   private final UserService userService;
 
   private final ConfigurationService configurationService;
@@ -56,7 +54,7 @@ public final class ModuleService {
   }
 
   public Mono<Void> deleteAll() {
-    return moduleScoreRepository.deleteAll().then(moduleRepository.deleteAll());
+    return moduleRepository.deleteAll();
   }
 
   private Mono<Boolean> doesNotExistByName(final String moduleName) {

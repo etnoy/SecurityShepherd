@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.dto.PasswordRegistrationDto;
 import org.owasp.securityshepherd.model.User;
+import org.owasp.securityshepherd.service.DatabaseService;
 import org.owasp.securityshepherd.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -33,6 +34,9 @@ public class UserControllerIT {
 
   @Autowired
   private WebTestClient webTestClient;
+  
+  @Autowired
+  DatabaseService databaseService;
 
   @Test
   public void getUserList_AuthenticatedUser_Forbidden() {
@@ -179,8 +183,7 @@ public class UserControllerIT {
     // Print more verbose errors if something goes wrong with reactor
     Hooks.onOperatorDebug();
 
-    // Clear all users from repository before every test
-    userService.deleteAll().block();
+    databaseService.clearAll().block();
   }
 
 }

@@ -6,7 +6,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.sql.Timestamp;
-
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.model.Auth;
@@ -20,6 +20,7 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
+@DisplayName("Auth")
 public class AuthTest {
 
   private static final boolean[] BOOLEANS = {false, true};

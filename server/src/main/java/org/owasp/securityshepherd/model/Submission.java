@@ -13,7 +13,6 @@ import lombok.With;
 @Builder
 @With
 public class Submission implements Serializable {
-
   private static final long serialVersionUID = -5485881248601955741L;
 
   @Id
@@ -29,5 +28,4 @@ public class Submission implements Serializable {
   private boolean isValid;
 
   private String flag;
-
 }

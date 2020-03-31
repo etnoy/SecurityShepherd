@@ -11,17 +11,15 @@ import lombok.With;
 @Builder
 @With
 public class ModuleScore implements Serializable {
-
   private static final long serialVersionUID = 4548877736126023113L;
 
   @Id
-  private Integer id;
-
+  private int id;
+  
   private int moduleId;
 
   @Column("submission_rank")
   private int rank;
 
   private int score;
-
 }

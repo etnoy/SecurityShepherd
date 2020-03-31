@@ -25,7 +25,6 @@ public final class ClassService {
   }
 
   public Mono<ClassEntity> create(final String name) {
-
     if (name == null) {
       throw new NullPointerException();
     }
@@ -39,7 +38,10 @@ public final class ClassService {
     return Mono.just(name).filterWhen(this::doesNotExistByName)
         .switchIfEmpty(Mono.error(new DuplicateClassNameException("Class name already exists")))
         .flatMap(className -> classRepository.save(ClassEntity.builder().name(className).build()));
+  }
 
+  public Mono<Void> deleteAll() {
+    return classRepository.deleteAll();
   }
 
   private Mono<Boolean> doesNotExistByName(final String name) {
@@ -47,13 +49,10 @@ public final class ClassService {
   }
 
   public Mono<Boolean> existsById(final int id) {
-
     return classRepository.existsById(id);
-
   }
 
   public Mono<ClassEntity> getById(final int id) {
-
     if (id <= 0) {
       return Mono.error(new InvalidClassIdException());
     }
@@ -61,7 +60,6 @@ public final class ClassService {
     return Mono.just(id).filterWhen(classRepository::existsById)
         .switchIfEmpty(Mono.error(new ClassIdNotFoundException()))
         .flatMap(classRepository::findById);
-
   }
 
   public Mono<ClassEntity> setName(final int id, final String name) throws InvalidClassIdException {

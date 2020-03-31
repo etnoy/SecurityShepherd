@@ -12,6 +12,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -39,6 +40,7 @@ import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
+@DisplayName("ModuleService")
 public class ModuleServiceTest {
 
   private ModuleService moduleService;
@@ -507,13 +509,12 @@ public class ModuleServiceTest {
     // Print more verbose errors if something goes wrong
     Hooks.onOperatorDebug();
 
-    moduleService = new ModuleService(moduleRepository, moduleScoreRepository, userService,
-        configurationService, keyService, cryptoService);
+    moduleService = new ModuleService(moduleRepository, userService, configurationService,
+        keyService, cryptoService);
   }
 
   @Test
   public void verifyFlag_EmptyDynamicFlag_ReturnsFalse() {
-
     final Module mockModule = mock(Module.class);
 
     final int mockUserId = 193;
@@ -798,7 +799,6 @@ public class ModuleServiceTest {
 
   @Test
   public void verifyFlag_ValidExactLowerCaseFlag_ReturnsTrue() {
-
     final int mockUserId = 594;
     final int mockModuleId = 769;
     final String validExactFlag = "validFlagWithUPPERCASEandlowercase";

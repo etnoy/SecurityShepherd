@@ -11,10 +11,12 @@ import org.owasp.securityshepherd.repository.SubmissionDatabaseClient;
 import org.owasp.securityshepherd.repository.SubmissionRepository;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
+@Slf4j
 @Service
 public final class SubmissionService {
 
@@ -32,6 +34,7 @@ public final class SubmissionService {
 
   public Flux<Map<String, Integer>> findAllValidByModuleIdSortedBySubmissionTime(
       final int moduleId) {
+    log.debug("Requesting all module ids");
     return submissionDatabaseClient.findAllValidByModuleIdSortedBySubmissionTime(moduleId);
   }
   
@@ -49,6 +52,8 @@ public final class SubmissionService {
       return Mono.error(new InvalidModuleIdException());
     }
 
+    log.debug("Submitted");
+    
     SubmissionBuilder submissionBuilder = Submission.builder();
 
     submissionBuilder.userId(userId);

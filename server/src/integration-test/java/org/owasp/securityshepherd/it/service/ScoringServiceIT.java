@@ -18,6 +18,7 @@ import org.owasp.securityshepherd.repository.ModuleRepository;
 import org.owasp.securityshepherd.repository.ModuleScoreRepository;
 import org.owasp.securityshepherd.repository.SubmissionDatabaseClient;
 import org.owasp.securityshepherd.repository.SubmissionRepository;
+import org.owasp.securityshepherd.service.DatabaseService;
 import org.owasp.securityshepherd.service.ModuleService;
 import org.owasp.securityshepherd.service.ScoringService;
 import org.owasp.securityshepherd.service.SubmissionService;
@@ -58,6 +59,9 @@ public class ScoringServiceIT {
 
   @Autowired
   Clock clock;
+  
+  @Autowired
+  DatabaseService databaseService;
 
   @Test
   public void computeScoreForModule_SubmittedScores_ReturnsCorrectScoresForUsers()
@@ -168,9 +172,6 @@ public class ScoringServiceIT {
 
     initializeService(clock);
 
-    // Clear all users and modules from repository before every test
-    userService.deleteAll().block();
-    moduleService.deleteAll().block();
-    submissionService.deleteAll().block();
+    databaseService.clearAll().block();
   }
 }

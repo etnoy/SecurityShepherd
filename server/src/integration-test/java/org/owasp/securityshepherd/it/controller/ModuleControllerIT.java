@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.dto.PasswordRegistrationDto;
 import org.owasp.securityshepherd.dto.SubmissionDto;
+import org.owasp.securityshepherd.service.DatabaseService;
 import org.owasp.securityshepherd.service.ModuleService;
 import org.owasp.securityshepherd.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,9 @@ public class ModuleControllerIT {
 
   @Autowired
   ModuleService moduleService;
+
+  @Autowired
+  DatabaseService databaseService;
 
   @Autowired
   private WebTestClient webTestClient;
@@ -72,7 +76,7 @@ public class ModuleControllerIT {
         }).expectComplete().verify();
 
   }
-  
+
   @Test
   public void submitModule_InvalidExactFlag_Success() throws Exception {
 
@@ -115,10 +119,6 @@ public class ModuleControllerIT {
     // Print more verbose errors if something goes wrong with reactor
     Hooks.onOperatorDebug();
 
-    // Clear all users and modules from repository before every test
-    userService.deleteAll().block();
-    moduleService.deleteAll().block();
-
+    databaseService.clearAll().block();
   }
-
 }
