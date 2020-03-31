@@ -18,8 +18,6 @@ import reactor.core.publisher.Mono;
 @EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
 public class ShepherdSecurityConfiguration {
-
-  
   @Bean
   public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity serverHttpSecurity,
       AuthenticationManager authenticationManager,
@@ -43,5 +41,4 @@ public class ShepherdSecurityConfiguration {
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
-
 }
