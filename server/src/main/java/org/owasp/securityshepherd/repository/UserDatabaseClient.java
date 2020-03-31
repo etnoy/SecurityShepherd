@@ -13,8 +13,7 @@ public class UserDatabaseClient {
   public Mono<Integer> findUserIdByLoginName(final String loginName) {
     return databaseClient
         .execute("SELECT user_id from password_auth WHERE login_name = :login_name LIMIT 1")
-        .bind("login_name", loginName).map((row, rowMetadata) -> {
-          return row.get("user_id", Integer.class);
-        }).one();
+        .bind("login_name", loginName).map((row, rowMetadata) -> row.get("user_id", Integer.class))
+        .one();
   }
 }

@@ -49,8 +49,7 @@ public final class UserService {
     final Mono<PasswordAuth> passwordAuthMono =
         Mono.just(userId).flatMap(this::findPasswordAuthByUserId);
 
-    return Mono.zip(userAuthMono, passwordAuthMono,
-        (userAuth, passwordAuth) -> new ShepherdUserDetails(userAuth, passwordAuth));
+    return Mono.zip(userAuthMono, passwordAuthMono, ShepherdUserDetails::new);
   }
 
   public Mono<ShepherdUserDetails> findUserDetailsByLoginName(final String loginName) {
@@ -76,7 +75,6 @@ public final class UserService {
 
   public Mono<Integer> createPasswordUser(final String displayName, final String loginName,
       final String hashedPassword) {
-
     if (displayName == null) {
       throw new NullPointerException("Display name cannot be null");
     }
@@ -115,7 +113,6 @@ public final class UserService {
       passwordAuthBuilder.hashedPassword(hashedPassword);
 
       return userIdMono.delayUntil(userId -> {
-
         Mono<UserAuth> userAuthMono =
             authRepository.save(UserAuth.builder().userId(userId).build());
 
@@ -123,11 +120,7 @@ public final class UserService {
             passwordAuthRepository.save(passwordAuthBuilder.userId(userId).build());
 
         return Mono.when(userAuthMono, passwordAuthMono);
-
       });
-
-
-
     });
   }
 
