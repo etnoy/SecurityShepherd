@@ -238,7 +238,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void demote_InvalidUserId_ThrowsException() {
+  public void demote_InvalidUserId_ThrowsInvalidUserIdException() {
     StepVerifier.create(userService.demote(-1)).expectError(InvalidUserIdException.class).verify();
     StepVerifier.create(userService.demote(-1000)).expectError(InvalidUserIdException.class)
         .verify();
@@ -246,7 +246,6 @@ public class UserServiceTest {
     StepVerifier.create(userService.demote(-999999)).expectError(InvalidUserIdException.class)
         .verify();
   }
-
 
   @Test
   public void demote_UserIsAdmin_Demoted() throws Exception {
@@ -358,6 +357,18 @@ public class UserServiceTest {
   }
 
   @Test
+  public void findByLoginName_LoginNameDoesNotExist_ReturnsEmptyMono() {
+    final String nonExistentLoginName = "NonExistentUser";
+
+    when(userDatabaseClient.findUserIdByLoginName(nonExistentLoginName)).thenReturn(Mono.empty());
+
+    StepVerifier.create(userService.findUserIdByLoginName(nonExistentLoginName)).expectComplete()
+        .verify();
+
+    verify(userDatabaseClient, times(1)).findUserIdByLoginName(nonExistentLoginName);
+  }
+
+  @Test
   public void findByLoginName_NullLoginName_ThrowsException() {
     assertThrows(NullPointerException.class, () -> userService.findUserIdByLoginName(null));
   }
@@ -371,18 +382,6 @@ public class UserServiceTest {
     StepVerifier.create(userService.findUserIdByLoginName(loginName)).expectNext(mockUserId)
         .expectComplete().verify();
     verify(userDatabaseClient, times(1)).findUserIdByLoginName(loginName);
-  }
-
-  @Test
-  public void findByLoginName_LoginNameDoesNotExist_ReturnsEmptyMono() {
-    final String nonExistentLoginName = "NonExistentUser";
-
-    when(userDatabaseClient.findUserIdByLoginName(nonExistentLoginName)).thenReturn(Mono.empty());
-
-    StepVerifier.create(userService.findUserIdByLoginName(nonExistentLoginName)).expectComplete()
-        .verify();
-
-    verify(userDatabaseClient, times(1)).findUserIdByLoginName(nonExistentLoginName);
   }
 
   @Test
@@ -409,8 +408,8 @@ public class UserServiceTest {
     when(userRepository.existsById(mockId)).thenReturn(Mono.just(true));
     when(userRepository.findById(mockId)).thenReturn(Mono.just(mockUserWithKey));
 
-    StepVerifier.create(userService.findKeyById(mockId)).expectNext(testRandomBytes).expectComplete()
-        .verify();
+    StepVerifier.create(userService.findKeyById(mockId)).expectNext(testRandomBytes)
+        .expectComplete().verify();
 
     final InOrder order = inOrder(mockUserWithKey, userRepository);
     // userService should query the repository
@@ -446,8 +445,8 @@ public class UserServiceTest {
 
     when(mockUserWithKey.getKey()).thenReturn(testRandomBytes);
 
-    StepVerifier.create(userService.findKeyById(mockId)).expectNext(testRandomBytes).expectComplete()
-        .verify();
+    StepVerifier.create(userService.findKeyById(mockId)).expectNext(testRandomBytes)
+        .expectComplete().verify();
 
     verify(userRepository, times(1)).findById(mockId);
     verify(mockUserWithoutKey, times(1)).getKey();
@@ -461,6 +460,59 @@ public class UserServiceTest {
 
     assertThat(argument.getValue(), is(mockUserWithKey));
     assertThat(argument.getValue().getKey(), is(testRandomBytes));
+  }
+
+  @Test
+  public void promote_InvalidUserId_ThrowsInvalidUserIdException() {
+    StepVerifier.create(userService.promote(-1)).expectError(InvalidUserIdException.class).verify();
+    StepVerifier.create(userService.promote(-1000)).expectError(InvalidUserIdException.class)
+        .verify();
+    StepVerifier.create(userService.promote(0)).expectError(InvalidUserIdException.class).verify();
+    StepVerifier.create(userService.promote(-999999)).expectError(InvalidUserIdException.class)
+        .verify();
+  }
+
+  @Test
+  public void promote_UserIsAdmin_StaysAdmin() throws Exception {
+    final int mockUserId = 899;
+    final int mockAuthId = 551;
+
+    final UserAuth mockAuth = mock(UserAuth.class);
+
+    when(authRepository.save(any(UserAuth.class))).thenAnswer(auth -> {
+      if (auth.getArgument(0, UserAuth.class).equals(mockAuth)) {
+        // We are saving the admin auth to db
+        return Mono.just(auth.getArgument(0, UserAuth.class));
+      } else {
+        // We are saving the newly created auth to db
+        return Mono.just(auth.getArgument(0, UserAuth.class).withId(mockAuthId));
+      }
+    });
+
+    when(authRepository.findByUserId(mockUserId)).thenReturn(Mono.just(mockAuth));
+
+    when(mockAuth.withAdmin(true)).thenReturn(mockAuth);
+
+    StepVerifier.create(userService.promote(mockUserId)).expectComplete().verify();
+
+    verify(userRepository, never()).findById(any(Integer.class));
+    verify(userRepository, never()).save(any(User.class));
+    verify(passwordAuthRepository, never()).findByUserId(any(Integer.class));
+
+    verify(authRepository, times(1)).findByUserId(mockUserId);
+
+    verify(mockAuth, times(1)).withAdmin(true);
+    verify(authRepository, times(1)).save(mockAuth);
+  }
+
+  @Test
+  public void setClassId_InvalidClassId_ThrowsException() throws Exception {
+    assertThrows(InvalidClassIdException.class, () -> userService.setClassId(10, -3));
+  }
+
+  @Test
+  public void setClassId_InvalidUserId_ThrowsException() throws Exception {
+    assertThrows(InvalidUserIdException.class, () -> userService.setClassId(-5, 61));
   }
 
   @Test
@@ -478,16 +530,6 @@ public class UserServiceTest {
 
     verify(userRepository, times(1)).findById(mockUserId);
     verify(classService, times(1)).existsById(mockClassId);
-  }
-
-  @Test
-  public void setClassId_InvalidClassId_ThrowsException() throws Exception {
-    assertThrows(InvalidClassIdException.class, () -> userService.setClassId(10, -3));
-  }
-
-  @Test
-  public void setClassId_InvalidUserId_ThrowsException() throws Exception {
-    assertThrows(InvalidUserIdException.class, () -> userService.setClassId(-5, 61));
   }
 
   @Test
