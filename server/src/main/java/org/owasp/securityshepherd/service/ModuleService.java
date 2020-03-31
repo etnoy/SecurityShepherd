@@ -110,7 +110,7 @@ public final class ModuleService {
             .map(String::getBytes);
 
     final Mono<byte[]> keyMono =
-        userService.getKeyById(userId).zipWith(configurationService.getServerKey())
+        userService.findKeyById(userId).zipWith(configurationService.getServerKey())
             .map(tuple -> Bytes.concat(tuple.getT1(), tuple.getT2()));
 
     return keyMono.zipWith(baseFlag)

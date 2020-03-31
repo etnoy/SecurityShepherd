@@ -43,19 +43,6 @@ public final class UserService {
     return userRepository.count();
   }
 
-  public Mono<ShepherdUserDetails> findUserDetailsByUserId(final int userId) {
-
-    final Mono<UserAuth> userAuthMono = Mono.just(userId).flatMap(this::findAuthByUserId);
-    final Mono<PasswordAuth> passwordAuthMono =
-        Mono.just(userId).flatMap(this::findPasswordAuthByUserId);
-
-    return Mono.zip(userAuthMono, passwordAuthMono, ShepherdUserDetails::new);
-  }
-
-  public Mono<ShepherdUserDetails> findUserDetailsByLoginName(final String loginName) {
-    return findUserIdByLoginName(loginName).flatMap(this::findUserDetailsByUserId);
-  }
-
   public Mono<Integer> create(final String displayName) {
     if (displayName == null) {
       throw new NullPointerException();
@@ -124,10 +111,6 @@ public final class UserService {
     });
   }
 
-  public Mono<String> findDisplayNameById(final int userId) {
-    return userRepository.findById(userId).map(User::getDisplayName);
-  }
-
   public Mono<Void> deleteAll() {
     return passwordAuthRepository.deleteAll().then(authRepository.deleteAll())
         .then(userRepository.deleteAll());
@@ -166,12 +149,45 @@ public final class UserService {
     return userRepository.findAll().flatMap(user -> findById(user.getId()));
   }
 
+  public Mono<UserAuth> findAuthByUserId(final int userId) {
+    if (userId <= 0) {
+      return Mono.error(new InvalidUserIdException());
+    }
+
+    return authRepository.findByUserId(userId);
+  }
+
   public Mono<User> findById(final int userId) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
 
     return userRepository.findById(userId);
+  }
+
+  public Mono<String> findDisplayNameById(final int userId) {
+    return userRepository.findById(userId).map(User::getDisplayName);
+  }
+
+  public Mono<PasswordAuth> findPasswordAuthByUserId(final int userId) {
+    if (userId <= 0) {
+      return Mono.error(new InvalidUserIdException());
+    }
+
+    return passwordAuthRepository.findByUserId(userId);
+  }
+
+  public Mono<ShepherdUserDetails> findUserDetailsByLoginName(final String loginName) {
+    return findUserIdByLoginName(loginName).flatMap(this::findUserDetailsByUserId);
+  }
+
+  public Mono<ShepherdUserDetails> findUserDetailsByUserId(final int userId) {
+
+    final Mono<UserAuth> userAuthMono = Mono.just(userId).flatMap(this::findAuthByUserId);
+    final Mono<PasswordAuth> passwordAuthMono =
+        Mono.just(userId).flatMap(this::findPasswordAuthByUserId);
+
+    return Mono.zip(userAuthMono, passwordAuthMono, ShepherdUserDetails::new);
   }
 
   public Mono<Integer> findUserIdByLoginName(final String loginName) {
@@ -186,23 +202,7 @@ public final class UserService {
     return userDatabaseClient.findUserIdByLoginName(loginName);
   }
 
-  public Mono<UserAuth> findAuthByUserId(final int userId) {
-    if (userId <= 0) {
-      return Mono.error(new InvalidUserIdException());
-    }
-
-    return authRepository.findByUserId(userId);
-  }
-
-  public Mono<PasswordAuth> findPasswordAuthByUserId(final int userId) {
-    if (userId <= 0) {
-      return Mono.error(new InvalidUserIdException());
-    }
-
-    return passwordAuthRepository.findByUserId(userId);
-  }
-
-  public Mono<byte[]> getKeyById(final int id) {
+  public Mono<byte[]> findKeyById(final int id) {
     if (id <= 0) {
       return Mono.error(new InvalidUserIdException());
     }

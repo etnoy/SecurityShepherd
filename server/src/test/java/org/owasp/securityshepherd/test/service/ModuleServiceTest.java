@@ -171,7 +171,7 @@ public class ModuleServiceTest {
 
     when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
 
-    when(userService.getKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
+    when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
     when(configurationService.getServerKey()).thenReturn(Mono.just(mockedServerKey));
     when(mockModule.getFlag()).thenReturn(mockedBaseFlag);
     when(mockModule.isFlagExact()).thenReturn(true);
@@ -207,7 +207,7 @@ public class ModuleServiceTest {
 
     when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
 
-    when(userService.getKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
+    when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
     when(configurationService.getServerKey()).thenReturn(Mono.just(mockedServerKey));
     when(mockModule.getFlag()).thenReturn(mockedBaseFlag);
     when(mockModule.isFlagEnabled()).thenReturn(true);
@@ -222,7 +222,7 @@ public class ModuleServiceTest {
       assertThat(flag, is(flag));
       verify(moduleRepository, times(1)).findById(mockModuleId);
 
-      verify(userService, times(1)).getKeyById(mockUserId);
+      verify(userService, times(1)).findKeyById(mockUserId);
       verify(configurationService, times(1)).getServerKey();
       verify(mockModule, times(1)).getFlag();
       verify(mockModule, times(1)).isFlagEnabled();
@@ -253,7 +253,7 @@ public class ModuleServiceTest {
 
     when(moduleRepository.findById(mockUserId)).thenReturn(Mono.just(mockModule));
 
-    when(userService.getKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
+    when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
     when(configurationService.getServerKey()).thenReturn(Mono.just(mockedServerKey));
 
     when(mockModule.isFlagEnabled()).thenReturn(false);
@@ -546,7 +546,7 @@ public class ModuleServiceTest {
         .thenReturn(Mono.just(mockedHmacOutput));
     when(keyService.convertByteKeyToString(mockedHmacOutput)).thenReturn("thisistheoutputtedflag");
 
-    when(userService.getKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
+    when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
 
     StepVerifier.create(moduleService.verifyFlag(mockUserId, mockModuleId, ""))
         .assertNext(isValid -> {
@@ -560,7 +560,7 @@ public class ModuleServiceTest {
           verify(configurationService, atLeast(1)).getServerKey();
           verify(cryptoService, atLeast(1)).hmac(mockedTotalKey, validFlag.getBytes());
           verify(keyService, atLeast(1)).convertByteKeyToString(mockedHmacOutput);
-          verify(userService, atLeast(1)).getKeyById(mockUserId);
+          verify(userService, atLeast(1)).findKeyById(mockUserId);
 
         }).expectComplete().verify();
   }
@@ -647,7 +647,7 @@ public class ModuleServiceTest {
         .thenReturn(Mono.just(mockedHmacOutput));
     when(keyService.convertByteKeyToString(mockedHmacOutput)).thenReturn("thisistheoutputtedflag");
 
-    when(userService.getKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
+    when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
 
     StepVerifier.create(moduleService.verifyFlag(mockUserId, mockModuleId, "invalidFlag"))
         .assertNext(isValid -> {
@@ -660,7 +660,7 @@ public class ModuleServiceTest {
           verify(configurationService, atLeast(1)).getServerKey();
           verify(cryptoService, atLeast(1)).hmac(mockedTotalKey, validFlag.getBytes());
           verify(keyService, atLeast(1)).convertByteKeyToString(mockedHmacOutput);
-          verify(userService, atLeast(1)).getKeyById(mockUserId);
+          verify(userService, atLeast(1)).findKeyById(mockUserId);
         }).expectComplete().verify();
   }
 
@@ -748,7 +748,7 @@ public class ModuleServiceTest {
         .thenReturn(Mono.just(mockedHmacOutput));
     when(keyService.convertByteKeyToString(mockedHmacOutput)).thenReturn(validFlag);
 
-    when(userService.getKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
+    when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
 
     StepVerifier.create(moduleService.verifyFlag(mockUserId, mockModuleId, validFlag))
         .assertNext(isValid -> {
@@ -763,7 +763,7 @@ public class ModuleServiceTest {
           verify(configurationService, atLeast(1)).getServerKey();
           verify(cryptoService, atLeast(1)).hmac(mockedTotalKey, baseFlag.getBytes());
           verify(keyService, atLeast(1)).convertByteKeyToString(mockedHmacOutput);
-          verify(userService, atLeast(1)).getKeyById(mockUserId);
+          verify(userService, atLeast(1)).findKeyById(mockUserId);
 
         }).expectComplete().verify();
   }

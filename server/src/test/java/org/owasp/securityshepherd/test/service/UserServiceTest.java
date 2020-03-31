@@ -387,11 +387,11 @@ public class UserServiceTest {
 
   @Test
   public void getKeyById_InvalidUserId_ThrowsException() {
-    StepVerifier.create(userService.getKeyById(-1)).expectError(InvalidUserIdException.class)
+    StepVerifier.create(userService.findKeyById(-1)).expectError(InvalidUserIdException.class)
         .verify();
-    StepVerifier.create(userService.getKeyById(-1000)).expectError(InvalidUserIdException.class)
+    StepVerifier.create(userService.findKeyById(-1000)).expectError(InvalidUserIdException.class)
         .verify();
-    StepVerifier.create(userService.getKeyById(0)).expectError(InvalidUserIdException.class)
+    StepVerifier.create(userService.findKeyById(0)).expectError(InvalidUserIdException.class)
         .verify();
   }
 
@@ -409,7 +409,7 @@ public class UserServiceTest {
     when(userRepository.existsById(mockId)).thenReturn(Mono.just(true));
     when(userRepository.findById(mockId)).thenReturn(Mono.just(mockUserWithKey));
 
-    StepVerifier.create(userService.getKeyById(mockId)).expectNext(testRandomBytes).expectComplete()
+    StepVerifier.create(userService.findKeyById(mockId)).expectNext(testRandomBytes).expectComplete()
         .verify();
 
     final InOrder order = inOrder(mockUserWithKey, userRepository);
@@ -446,7 +446,7 @@ public class UserServiceTest {
 
     when(mockUserWithKey.getKey()).thenReturn(testRandomBytes);
 
-    StepVerifier.create(userService.getKeyById(mockId)).expectNext(testRandomBytes).expectComplete()
+    StepVerifier.create(userService.findKeyById(mockId)).expectNext(testRandomBytes).expectComplete()
         .verify();
 
     verify(userRepository, times(1)).findById(mockId);
