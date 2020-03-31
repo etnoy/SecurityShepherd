@@ -37,8 +37,6 @@ public class UserAuthTest {
         "UserAuth.UserAuthBuilder(id=null, userId=null, isEnabled=false, badLoginCount=0, isAdmin=false, suspendedUntil=null, suspensionMessage=null, accountCreated=null, lastLogin=null, lastLoginMethod=null)"));
   }
 
-
-
   @Test
   public void buildAccountCreated_ValidTime_Builds() {
     final int[] timesToTest = {0, 1, 2, 1000, 4000, 1581806000, 42};
@@ -294,6 +292,10 @@ public class UserAuthTest {
 
       assertThat(changedAuth.getSuspendedUntil(), is(time));
     }
+    
+    final UserAuth changedAuth = testAuth.withSuspendedUntil(null);
+
+    assertThat(changedAuth.getSuspendedUntil(), is(nullValue()));
   }
 
   @Test
