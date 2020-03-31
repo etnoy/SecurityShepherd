@@ -346,13 +346,10 @@ public class UserServiceTest {
 
   @Test
   public void findById_NonExistentUserId_ReturnsEmpty() {
-    final int mockUserId = 123;
-
-    when(userRepository.findById(mockUserId)).thenReturn(Mono.empty());
-
-    StepVerifier.create(userService.findById(mockUserId)).expectComplete().verify();
-
-    verify(userRepository, times(1)).findById(mockUserId);
+    final int nonExistentUserId = 123;
+    when(userRepository.findById(nonExistentUserId)).thenReturn(Mono.empty());
+    StepVerifier.create(userService.findById(nonExistentUserId)).expectComplete().verify();
+    verify(userRepository, times(1)).findById(nonExistentUserId);
   }
 
   @Test
@@ -371,17 +368,14 @@ public class UserServiceTest {
     final int mockUserId = 117;
 
     when(userDatabaseClient.findUserIdByLoginName(loginName)).thenReturn(Mono.just(mockUserId));
-
-    StepVerifier.create(userService.findUserIdByLoginName(loginName)).assertNext(userId -> {
-      assertThat(userId, is(mockUserId));
-    }).expectComplete().verify();
-
+    StepVerifier.create(userService.findUserIdByLoginName(loginName)).expectNext(mockUserId)
+        .expectComplete().verify();
     verify(userDatabaseClient, times(1)).findUserIdByLoginName(loginName);
   }
 
   @Test
   public void findByLoginName_LoginNameDoesNotExist_ReturnsEmptyMono() {
-    final String nonExistentLoginName = "MockUser";
+    final String nonExistentLoginName = "NonExistentUser";
 
     when(userDatabaseClient.findUserIdByLoginName(nonExistentLoginName)).thenReturn(Mono.empty());
 
@@ -417,11 +411,10 @@ public class UserServiceTest {
 
     StepVerifier.create(userService.getKeyById(mockId)).expectNext(testRandomBytes).expectComplete()
         .verify();
-    final InOrder order = inOrder(mockUserWithKey, userRepository);
 
+    final InOrder order = inOrder(mockUserWithKey, userRepository);
     // userService should query the repository
     order.verify(userRepository, times(1)).findById(mockId);
-
     // and then extract the key
     order.verify(mockUserWithKey, times(1)).getKey();
   }
@@ -471,9 +464,9 @@ public class UserServiceTest {
   }
 
   @Test
-  public void setClassId_ClassIdDoesNotExist_ThrowsException() throws Exception {
-    int mockUserId = 12;
-    int mockClassId = 84;
+  public void setClassId_NonExistentClassId_ReturnsClassIdNotFoundException() throws Exception {
+    final int mockUserId = 16;
+    final int mockClassId = 638;
 
     User mockUser = mock(User.class);
 
@@ -502,10 +495,9 @@ public class UserServiceTest {
     final int mockUserId = 875;
     final int mockClassId = 213;
 
-    User mockUser = mock(User.class);
-    User mockUserWithClass = mock(User.class);
+    final User mockUser = mock(User.class);
+    final User mockUserWithClass = mock(User.class);
 
-    when(userRepository.existsById(mockUserId)).thenReturn(Mono.just(true));
     when(userRepository.findById(mockUserId)).thenReturn(Mono.just(mockUser));
     when(classService.existsById(mockClassId)).thenReturn(Mono.just(true));
 
@@ -513,21 +505,24 @@ public class UserServiceTest {
     when(userRepository.save(mockUserWithClass)).thenReturn(Mono.just(mockUserWithClass));
     when(mockUserWithClass.getClassId()).thenReturn(mockClassId);
 
-    StepVerifier.create(userService.setClassId(mockUserId, mockClassId)).assertNext(user -> {
+    StepVerifier.create(userService.setClassId(mockUserId, mockClassId))
+        .expectNextMatches(user -> user.getClassId() == mockClassId).expectComplete().verify();
 
-      assertThat(user.getClassId(), is(mockClassId));
+    verify(userRepository, times(1)).findById(mockUserId);
+    verify(classService, times(1)).existsById(mockClassId);
 
-    }).expectComplete().verify();
-
+    verify(mockUser, times(1)).withClassId(mockClassId);
+    verify(userRepository, times(1)).save(mockUserWithClass);
+    verify(mockUserWithClass, times(1)).getClassId();
   }
 
   @Test
-  public void setDisplayName_EmptyDisplayName_ThrowsException() {
+  public void setDisplayName_EmptyDisplayName_ThrowsIllegalArgumentException() {
     assertThrows(IllegalArgumentException.class, () -> userService.setDisplayName(1, ""));
   }
 
   @Test
-  public void setDisplayName_InvalidUserId_ThrowsException() {
+  public void setDisplayName_InvalidUserId_ThrowsInvalidUserIdException() {
     assertThrows(InvalidUserIdException.class, () -> userService.setDisplayName(-1, "displayName"));
     assertThrows(InvalidUserIdException.class, () -> userService.setDisplayName(0, "displayName"));
     assertThrows(InvalidUserIdException.class,
@@ -535,16 +530,16 @@ public class UserServiceTest {
   }
 
   @Test
-  public void setDisplayName_NullDisplayName_ThrowsException() {
+  public void setDisplayName_NullDisplayName_ThrowsNullPointerException() {
     assertThrows(NullPointerException.class, () -> userService.setDisplayName(1, null));
   }
 
   @Test
   public void setDisplayName_UserIdDoesNotExist_ReturnsUserIdNotFoundException()
       throws InvalidUserIdException {
-    String newDisplayName = "newName";
+    final String newDisplayName = "newName";
 
-    int mockUserId = 550;
+    final int mockUserId = 550;
 
     when(userRepository.existsById(mockUserId)).thenReturn(Mono.just(false));
 
@@ -554,9 +549,9 @@ public class UserServiceTest {
   }
 
   @Test
-  public void setDisplayName_ValidName_Succeeds() throws Exception {
+  public void setDisplayName_ValidDisplayName_DisplayNameIsSet() throws Exception {
     User mockUser = mock(User.class);
-    String newDisplayName = "newName";
+    String newDisplayName = "newDisplayName";
 
     int mockUserId = 652;
 
@@ -572,9 +567,13 @@ public class UserServiceTest {
         .expectNextMatches(user -> user.getDisplayName().equals(newDisplayName))
         .as("Display name should change to supplied value").expectComplete().verify();
 
-    InOrder order = inOrder(mockUser, userRepository);
-    order.verify(mockUser, times(1)).withDisplayName(newDisplayName);
-    order.verify(userRepository, times(1)).save(mockUser);
+    verify(userRepository, times(1)).existsById(mockUserId);
+    verify(userRepository, times(1)).findById(mockUserId);
+    verify(userRepository, times(1)).findByDisplayName(newDisplayName);
+
+    verify(mockUser, times(1)).withDisplayName(newDisplayName);
+    verify(userRepository, times(1)).save(any(User.class));
+    verify(mockUser, times(1)).getDisplayName();
   }
 
   @BeforeEach
