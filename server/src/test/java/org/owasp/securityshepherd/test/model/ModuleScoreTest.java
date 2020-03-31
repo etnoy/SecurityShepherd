@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.owasp.securityshepherd.model.Configuration;
 import org.owasp.securityshepherd.model.ModuleScore;
 import org.owasp.securityshepherd.model.ModuleScore.ModuleScoreBuilder;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -131,5 +132,82 @@ public class ModuleScoreTest {
 
     assertThat(testModuleScore.toString(),
         is("ModuleScore(id=1337, moduleId=123, rank=6789, score=987)"));
+  }
+
+  @Test
+  public void withId_ValidId_ChangesId() {
+    final Integer originalId = 1;
+    final Integer[] testedIds = {originalId, 0, null, -1, 1000, -1000, 123456789, -12346789};
+
+    final ModuleScore moduleScore =
+        ModuleScore.builder().id(originalId).moduleId(163).rank(15).score(29).build();
+
+    for (Integer id : testedIds) {
+      final ModuleScore newModuleScore = moduleScore.withId(id);
+      assertThat(newModuleScore.getId(), is(id));
+    }
+  }
+
+  @Test
+  public void withModuleId_NullModuleId_ThrowsNullPointerException() {
+    final ModuleScore moduleScore =
+        ModuleScore.builder().moduleId(15).score(326).score(5).rank(15).id(29).build();
+    assertThrows(NullPointerException.class, () -> moduleScore.withModuleId(null));
+  }
+
+  @Test
+  public void withModuleId_ValidModuleId_ChangesModuleId() {
+    final Integer originalModuleId = 1;
+    final Integer[] testedModuleIds = {originalModuleId, 0, -1, 1000, -1000, 123456789, -12346789};
+
+    final ModuleScore moduleScore =
+        ModuleScore.builder().moduleId(originalModuleId).score(79).rank(15).id(29).build();
+
+    for (Integer moduleId : testedModuleIds) {
+      final ModuleScore newModuleScore = moduleScore.withModuleId(moduleId);
+      assertThat(newModuleScore.getModuleId(), is(moduleId));
+    }
+  }
+
+  @Test
+  public void withRank_NullRank_ThrowsNullPointerException() {
+    final ModuleScore moduleScore =
+        ModuleScore.builder().moduleId(15).score(326).score(5).rank(15).id(29).build();
+    assertThrows(NullPointerException.class, () -> moduleScore.withRank(null));
+  }
+
+  @Test
+  public void withRank_ValidRank_ChangesRank() {
+    final Integer originalRank = 1;
+    final Integer[] testedRanks = {originalRank, 0, -1, 1000, -1000, 123456789, -12346789};
+
+    final ModuleScore moduleScore =
+        ModuleScore.builder().score(17).moduleId(163).score(5).rank(originalRank).id(29).build();
+
+    for (Integer rank : testedRanks) {
+      final ModuleScore newModuleScore = moduleScore.withRank(rank);
+      assertThat(newModuleScore.getRank(), is(rank));
+    }
+  }
+
+  @Test
+  public void withScore_NullScore_ThrowsNullPointerException() {
+    final ModuleScore moduleScore =
+        ModuleScore.builder().moduleId(15).score(326).score(5).rank(15).id(29).build();
+    assertThrows(NullPointerException.class, () -> moduleScore.withScore(null));
+  }
+
+  @Test
+  public void withScore_ValidScore_ChangesScore() {
+    final Integer originalScore = 199;
+    final Integer[] testedScores = {originalScore, 0, -1, 1000, -1000, 123456789, -12346789};
+
+    final ModuleScore moduleScore =
+        ModuleScore.builder().score(originalScore).moduleId(163).rank(15).id(29).build();
+
+    for (Integer score : testedScores) {
+      final ModuleScore newModuleScore = moduleScore.withScore(score);
+      assertThat(newModuleScore.getScore(), is(score));
+    }
   }
 }
