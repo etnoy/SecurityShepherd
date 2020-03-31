@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.owasp.securityshepherd.model.Configuration;
 import org.owasp.securityshepherd.model.ModuleScore;
 import org.owasp.securityshepherd.model.ModuleScore.ModuleScoreBuilder;
 import org.springframework.boot.test.context.SpringBootTest;
