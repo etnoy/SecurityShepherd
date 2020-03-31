@@ -5,7 +5,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -55,13 +61,16 @@ public class AuthTest {
   public void buildAccountCreated_ValidTime_Builds() {
     final int[] timesToTest = {0, 1, 2, 1000, 4000, 1581806000, 42};
 
-    for (int accountCreated : timesToTest) {
+    for (final int accountCreated : timesToTest) {
       final AuthBuilder builder = Auth.builder();
 
-      builder.accountCreated(new Timestamp(accountCreated));
+      final LocalDateTime time =
+          LocalDateTime.ofInstant(Instant.ofEpochMilli(accountCreated), ZoneId.systemDefault());
+
+      builder.accountCreated(time);
 
       assertThat(builder.build(), instanceOf(Auth.class));
-      assertThat(builder.build().getAccountCreated(), is(new Timestamp(accountCreated)));
+      assertThat(builder.build().getAccountCreated(), is(time));
     }
   }
 
@@ -110,10 +119,13 @@ public class AuthTest {
 
       final AuthBuilder builder = Auth.builder();
 
-      builder.lastLogin(new Timestamp(lastLogin));
+      final LocalDateTime time =
+          LocalDateTime.ofInstant(Instant.ofEpochMilli(lastLogin), ZoneId.systemDefault());
+
+      builder.lastLogin(time);
 
       assertThat(builder.build(), instanceOf(Auth.class));
-      assertThat(builder.build().getLastLogin(), is(new Timestamp(lastLogin)));
+      assertThat(builder.build().getLastLogin(), is(time));
     }
   }
 
@@ -175,15 +187,18 @@ public class AuthTest {
 
   @Test
   public void buildSuspendedUntil_ValidTime_Builds() {
-    final int[] timesToTest = {0, 1, 2, 1000, 4000, 1581806000, 42};
+    final long[] timesToTest = {0, 1, 2, 1000, 4000, 1581806000, 42000043450000L};
 
-    for (int suspendedUntil : timesToTest) {
+    for (final long suspendedUntil : timesToTest) {
       final AuthBuilder builder = Auth.builder();
 
-      builder.suspendedUntil(new Timestamp(suspendedUntil));
+      final LocalDateTime time =
+          LocalDateTime.ofInstant(Instant.ofEpochMilli(suspendedUntil), ZoneId.systemDefault());
+
+      builder.suspendedUntil(time);
 
       assertThat(builder.build(), instanceOf(Auth.class));
-      assertThat(builder.build().getSuspendedUntil(), is(new Timestamp(suspendedUntil)));
+      assertThat(builder.build().getSuspendedUntil(), is(time));
     }
   }
 
@@ -217,14 +232,18 @@ public class AuthTest {
 
   @Test
   public void withAccountCreated_ValidTime_ChangesAccountCreationTime() {
-    final Timestamp originalTime = new Timestamp(0);
+    final long originalTime = 0L;
 
-    final Timestamp[] timesToTest = {originalTime, new Timestamp(1), new Timestamp(2),
-        new Timestamp(1000), new Timestamp(4000), new Timestamp(1581806000), new Timestamp(42)};
+    final List<Long> timesToTest =
+        Arrays.asList(originalTime, 1L, 2L, 1000L, 5000L, 9000990909L, 12398234987345983L);
 
-    final Auth testAuth = Auth.builder().accountCreated(originalTime).build();
+    final List<LocalDateTime> dateTimesToTest = timesToTest.stream()
+        .map(epoch -> LocalDateTime.ofInstant(Instant.ofEpochMilli(epoch), ZoneId.systemDefault()))
+        .collect(Collectors.toCollection(ArrayList::new));
 
-    for (final Timestamp time : timesToTest) {
+    final Auth testAuth = Auth.builder().accountCreated(dateTimesToTest.get(0)).build();
+
+    for (final LocalDateTime time : dateTimesToTest) {
       final Auth changedAuth = testAuth.withAccountCreated(time);
 
       assertThat(changedAuth.getAccountCreated(), is(time));
@@ -282,14 +301,18 @@ public class AuthTest {
 
   @Test
   public void withLastLogin_ValidTime_ChangesLastLoginTime() {
-    final Timestamp originalTime = new Timestamp(0);
+    final long originalTime = 0L;
 
-    final Timestamp[] timesToTest = {originalTime, new Timestamp(1), new Timestamp(2),
-        new Timestamp(1000), new Timestamp(4000), new Timestamp(1581806000), new Timestamp(42)};
+    final List<Long> timesToTest =
+        Arrays.asList(originalTime, 1L, 2L, 1000L, 5000L, 9000990909L, 12398234987345983L);
 
-    final Auth testAuth = Auth.builder().lastLogin(originalTime).build();
+    final List<LocalDateTime> dateTimesToTest = timesToTest.stream()
+        .map(epoch -> LocalDateTime.ofInstant(Instant.ofEpochMilli(epoch), ZoneId.systemDefault()))
+        .collect(Collectors.toCollection(ArrayList::new));
 
-    for (Timestamp time : timesToTest) {
+    final Auth testAuth = Auth.builder().lastLogin(dateTimesToTest.get(0)).build();
+
+    for (final LocalDateTime time : dateTimesToTest) {
       final Auth changedAuth = testAuth.withLastLogin(time);
 
       assertThat(changedAuth.getLastLogin(), is(time));
@@ -343,15 +366,19 @@ public class AuthTest {
   }
 
   @Test
-  public void withSuspendedUntil_ValidTime_ChangesSuspendedUntilTime() {
-    final Timestamp originalTime = new Timestamp(0);
+  public void withSuspendedUntil_ValidLocalDateTime_ChangesSuspendedUntil() {
+    final long originalTime = 0L;
 
-    final Timestamp[] timesToTest = {originalTime, new Timestamp(1), new Timestamp(2),
-        new Timestamp(1000), new Timestamp(4000), new Timestamp(1581806000), new Timestamp(42)};
+    final List<Long> timesToTest =
+        Arrays.asList(originalTime, 1L, 2L, 1000L, 5000L, 9000990909L, 12398234987345983L);
 
-    final Auth testAuth = Auth.builder().suspendedUntil(originalTime).build();
+    final List<LocalDateTime> dateTimesToTest = timesToTest.stream()
+        .map(epoch -> LocalDateTime.ofInstant(Instant.ofEpochMilli(epoch), ZoneId.systemDefault()))
+        .collect(Collectors.toCollection(ArrayList::new));
 
-    for (Timestamp time : timesToTest) {
+    final Auth testAuth = Auth.builder().lastLogin(dateTimesToTest.get(0)).build();
+
+    for (final LocalDateTime time : dateTimesToTest) {
       final Auth changedAuth = testAuth.withSuspendedUntil(time);
 
       assertThat(changedAuth.getSuspendedUntil(), is(time));

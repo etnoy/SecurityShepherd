@@ -1,6 +1,6 @@
 package org.owasp.securityshepherd.security;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -19,7 +19,7 @@ public final class ShepherdUserDetails implements UserDetails {
   public User getUser() {
     return user;
   }
-  
+
   @Override
   public String getPassword() {
     return user.getAuth().getPassword().getHashedPassword();
@@ -37,13 +37,13 @@ public final class ShepherdUserDetails implements UserDetails {
 
   @Override
   public boolean isAccountNonLocked() {
-    final Timestamp suspendedUntil = user.getAuth().getSuspendedUntil();
+    final LocalDateTime suspendedUntil = user.getAuth().getSuspendedUntil();
 
     if (suspendedUntil == null) {
       return true;
     }
 
-    return suspendedUntil.getTime() < System.currentTimeMillis();
+    return suspendedUntil.isBefore(LocalDateTime.now());
   }
 
   @Override

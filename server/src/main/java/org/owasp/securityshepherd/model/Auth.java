@@ -1,7 +1,7 @@
 package org.owasp.securityshepherd.model;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.annotation.Transient;
@@ -31,13 +31,13 @@ public final class Auth implements Serializable {
   @JsonProperty("isAdmin")
   private boolean isAdmin;
 
-  private Timestamp suspendedUntil;
+  private LocalDateTime suspendedUntil;
 
   private String suspensionMessage;
 
-  private Timestamp accountCreated;
+  private LocalDateTime accountCreated;
 
-  private Timestamp lastLogin;
+  private LocalDateTime lastLogin;
 
   private String lastLoginMethod;
 
@@ -49,8 +49,8 @@ public final class Auth implements Serializable {
 
   @PersistenceConstructor
   public Auth(final Integer id, final int userId, final boolean isEnabled, final int badLoginCount,
-      final boolean isAdmin, final Timestamp suspendedUntil, final String suspensionMessage,
-      final Timestamp accountCreated, final Timestamp lastLogin, final String lastLoginMethod) {
+      final boolean isAdmin, final LocalDateTime suspendedUntil, final String suspensionMessage,
+      final LocalDateTime accountCreated, final LocalDateTime lastLogin, final String lastLoginMethod) {
     this.id = id;
     this.userId = userId;
     this.isEnabled = isEnabled;
