@@ -6,15 +6,18 @@ import org.owasp.securityshepherd.exception.DuplicateUserDisplayNameException;
 import org.owasp.securityshepherd.exception.InvalidClassIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.UserIdNotFoundException;
-import org.owasp.securityshepherd.model.Auth;
+import org.owasp.securityshepherd.model.UserAuth;
 import org.owasp.securityshepherd.model.PasswordAuth;
 import org.owasp.securityshepherd.model.User;
-import org.owasp.securityshepherd.model.Auth.AuthBuilder;
 import org.owasp.securityshepherd.model.PasswordAuth.PasswordAuthBuilder;
 import org.owasp.securityshepherd.model.User.UserBuilder;
 import org.owasp.securityshepherd.repository.AuthRepository;
 import org.owasp.securityshepherd.repository.PasswordAuthRepository;
+import org.owasp.securityshepherd.repository.SubmissionDatabaseClient;
+import org.owasp.securityshepherd.repository.UserDatabaseClient;
 import org.owasp.securityshepherd.repository.UserRepository;
+import org.owasp.securityshepherd.security.ShepherdUserDetails;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +31,8 @@ public final class UserService {
 
   private final UserRepository userRepository;
 
+  private final UserDatabaseClient userDatabaseClient;
+
   private final AuthRepository authRepository;
 
   private final PasswordAuthRepository passwordAuthRepository;
@@ -40,7 +45,17 @@ public final class UserService {
     return userRepository.count();
   }
 
-  public Mono<User> create(final String displayName) {
+  public Mono<UserDetails> findUserDetailsByLoginName(final String loginName) {
+    final Mono<Integer> userIdMono = findUserIdByLoginName(loginName);
+
+    final Mono<UserAuth> userAuthMono = userIdMono.flatMap(this::findAuthByUserId);
+    final Mono<PasswordAuth> passwordAuthMono = userIdMono.flatMap(this::findPasswordAuthByUserId);
+
+    return Mono.zip(userAuthMono, passwordAuthMono,
+        (userAuth, passwordAuth) -> new ShepherdUserDetails(userAuth, passwordAuth));
+  }
+
+  public Mono<Integer> create(final String displayName) {
     if (displayName == null) {
       throw new NullPointerException();
     }
@@ -53,10 +68,11 @@ public final class UserService {
 
     return Mono.just(displayName).filterWhen(this::doesNotExistByDisplayName)
         .switchIfEmpty(displayNameAlreadyExists(displayName))
-        .flatMap(name -> userRepository.save(User.builder().displayName(name).build()));
+        .flatMap(name -> userRepository.save(User.builder().displayName(name).build()))
+        .map(User::getId);
   }
 
-  public Mono<User> createPasswordUser(final String displayName, final String loginName,
+  public Mono<Integer> createPasswordUser(final String displayName, final String loginName,
       final String hashedPassword) {
 
     if (displayName == null) {
@@ -86,34 +102,30 @@ public final class UserService {
             .switchIfEmpty(displayNameAlreadyExists(displayName));
 
     return Mono.zip(displayNameMono, loginNameMono).flatMap(tuple -> {
-      final PasswordAuthBuilder passwordAuthBuilder = PasswordAuth.builder();
-      passwordAuthBuilder.loginName(tuple.getT2());
-      passwordAuthBuilder.hashedPassword(hashedPassword);
-      final PasswordAuth passwordAuth = passwordAuthBuilder.build();
-
-      final AuthBuilder userAuthBuilder = Auth.builder();
-      userAuthBuilder.password(passwordAuth);
-      final Auth auth = userAuthBuilder.build();
 
       final UserBuilder userBuilder = User.builder();
       userBuilder.displayName(tuple.getT1());
-      userBuilder.auth(auth);
 
-      return userRepository.save(userBuilder.build()).flatMap(userWithId -> {
+      final Mono<Integer> userIdMono = userRepository.save(userBuilder.build()).map(User::getId);
 
-        final PasswordAuth passwordAuthWithUser = passwordAuth.withUserId(userWithId.getId());
+      final PasswordAuthBuilder passwordAuthBuilder = PasswordAuth.builder();
+      passwordAuthBuilder.loginName(tuple.getT2());
+      passwordAuthBuilder.hashedPassword(hashedPassword);
 
-        final Mono<PasswordAuth> passwordAuthMono =
-            passwordAuthRepository.save(passwordAuthWithUser);
+      return userIdMono.delayUntil(userId -> {
 
-        final Auth authWithUser = auth.withUserId(userWithId.getId());
+        Mono<UserAuth> userAuthMono =
+            authRepository.save(UserAuth.builder().userId(userId).build());
 
-        final Mono<Auth> authMono = authRepository.save(authWithUser).zipWith(passwordAuthMono)
-            .map(authTuple -> authTuple.getT1().withPassword(authTuple.getT2()));
+        Mono<PasswordAuth> passwordAuthMono =
+            passwordAuthRepository.save(passwordAuthBuilder.userId(userId).build());
 
-        return Mono.just(userWithId).zipWith(authMono)
-            .map(userTuple -> userTuple.getT1().withAuth(userTuple.getT2()));
+        return Mono.when(userAuthMono, passwordAuthMono);
+
       });
+
+
+
     });
   }
 
@@ -127,18 +139,19 @@ public final class UserService {
   }
 
   public Mono<Void> deleteById(final int userId) {
-    return userRepository.findById(userId).zipWith(getAuth(userId))
+    return userRepository.findById(userId).zipWith(findAuthByUserId(userId))
         .flatMap(tuple -> userRepository.delete(tuple.getT1()));
   }
 
-  public Mono<User> demote(final int userId) {
+  public Mono<Void> demote(final int userId) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
 
     log.info("Demoting user with id " + userId + " to user");
 
-    return setAdminStatus(userId, false);
+    return findAuthByUserId(userId).map(userAuth -> userAuth.withAdmin(false))
+        .flatMap(authRepository::save).then();
   }
 
   private Mono<String> displayNameAlreadyExists(final String displayName) {
@@ -163,48 +176,35 @@ public final class UserService {
       return Mono.error(new InvalidUserIdException());
     }
 
-    final Mono<User> userMono = userRepository.findById(userId);
-
-    return userMono.zipWith(getAuth(userId)).map(tuple -> tuple.getT1().withAuth(tuple.getT2()))
-        .switchIfEmpty(userMono);
+    return userRepository.findById(userId);
   }
 
-  public Mono<User> findByLoginName(final String loginName) {
+  public Mono<Integer> findUserIdByLoginName(final String loginName) {
     if (loginName == null) {
       throw new NullPointerException();
     }
 
     if (loginName.isEmpty()) {
+      // TODO: custom exception message
       throw new IllegalArgumentException();
     }
-
-    return passwordAuthRepository.findByLoginName(loginName).map(PasswordAuth::getUserId)
-        .flatMap(this::findById);
+    return userDatabaseClient.findUserIdByLoginName(loginName);
   }
 
-  private Mono<Auth> getAuth(final int id) {
-    if (id <= 0) {
+  public Mono<UserAuth> findAuthByUserId(final int userId) {
+    if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
 
-    final Mono<PasswordAuth> passwordAuth = Mono.just(id).flatMap(userId -> {
-      final Mono<PasswordAuth> returnedPasswordAuth = passwordAuthRepository.findByUserId(userId);
-      if (returnedPasswordAuth == null) {
-        return Mono.empty();
-      }
-      return returnedPasswordAuth;
-    });
+    return authRepository.findByUserId(userId);
+  }
 
-    final Mono<Auth> auth = Mono.just(id).flatMap(userId -> {
-      final Mono<Auth> returnedAuth = authRepository.findByUserId(userId);
-      if (returnedAuth == null) {
-        return Mono.empty();
-      }
-      return returnedAuth;
-    });
+  public Mono<PasswordAuth> findPasswordAuthByUserId(final int userId) {
+    if (userId <= 0) {
+      return Mono.error(new InvalidUserIdException());
+    }
 
-    return auth.zipWith(passwordAuth).map(tuple -> tuple.getT1().withPassword(tuple.getT2()))
-        .switchIfEmpty(auth);
+    return passwordAuthRepository.findByUserId(userId);
   }
 
   public Mono<byte[]> getKeyById(final int id) {
@@ -229,23 +229,15 @@ public final class UserService {
         .error(new DuplicateClassNameException("Login name " + loginName + " already exists"));
   }
 
-  public Mono<User> promote(final int userId) {
+  public Mono<Void> promote(final int userId) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
 
     log.info("Promoting user with id " + userId + " to admin");
 
-    return setAdminStatus(userId, true);
-  }
-
-  private Mono<User> setAdminStatus(final int userId, final boolean isAdmin) {
-    final Mono<User> userMono = findById(userId);
-
-    final Mono<Auth> authMono =
-        userMono.map(user -> user.getAuth().withAdmin(isAdmin)).flatMap(authRepository::save);
-
-    return userMono.zipWith(authMono).map(tuple -> tuple.getT1().withAuth(tuple.getT2()));
+    return findAuthByUserId(userId).map(userAuth -> userAuth.withAdmin(true))
+        .flatMap(authRepository::save).then();
   }
 
   public Mono<User> setClassId(final int userId, final int classId)

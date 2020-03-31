@@ -22,16 +22,16 @@ public class UserIT {
 
   @Autowired
   UserService userService;
-  
+
   @Autowired
   DatabaseService databaseService;
 
   @Test
   public void createPasswordUser_ValidData_RepositoryFindsCorrectUser() throws Exception {
-    final User testUser = userService.createPasswordUser("Test User", "user_login_name",
+    final Integer userId = userService.createPasswordUser("Test User", "user_login_name",
         "$2y$12$53B6QcsGwF3Os1GVFUFSQOhIPXnWFfuEkRJdbknFWnkXfUBMUKhaW").block();
 
-    StepVerifier.create(userService.findById(testUser.getId())).expectNext(testUser)
+    StepVerifier.create(userService.findById(userId).map(User::getId)).expectNext(userId)
         .expectComplete().verify();
   }
 

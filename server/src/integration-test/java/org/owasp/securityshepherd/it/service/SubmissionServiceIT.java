@@ -72,7 +72,7 @@ public class SubmissionServiceIT {
   public void submitFlag_ValidExactFlag_Success() throws Exception {
     final String flag = "thisisaflag";
 
-    final Mono<Integer> userIdMono = userService.create("TestUser").map(User::getId);
+    final Mono<Integer> userIdMono = userService.create("TestUser");
 
     final Mono<Integer> moduleIdMono = moduleService.create("Test Module").map(Module::getId)
         .flatMap(moduleId -> moduleService.setExactFlag(moduleId, flag)).map(Module::getId);
@@ -95,12 +95,12 @@ public class SubmissionServiceIT {
 
     // Create six users and store their ids
     List<Integer> userIds = new ArrayList<>();
-    userIds.add(userService.create("TestUser1").block().getId());
-    userIds.add(userService.create("TestUser2").block().getId());
-    userIds.add(userService.create("TestUser3").block().getId());
-    userIds.add(userService.create("TestUser4").block().getId());
-    userIds.add(userService.create("TestUser5").block().getId());
-    userIds.add(userService.create("TestUser6").block().getId());
+    userIds.add(userService.create("TestUser1").block());
+    userIds.add(userService.create("TestUser2").block());
+    userIds.add(userService.create("TestUser3").block());
+    userIds.add(userService.create("TestUser4").block());
+    userIds.add(userService.create("TestUser5").block());
+    userIds.add(userService.create("TestUser6").block());
 
     log.debug("Users: " + userIds);
     

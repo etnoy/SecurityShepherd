@@ -76,14 +76,14 @@ public class ScoringServiceIT {
 
     // Create six users and store their ids
     List<Integer> userIds = new ArrayList<>();
-    userIds.add(userService.create("TestUser1").block().getId());
-    userIds.add(userService.create("TestUser2").block().getId());
-    userIds.add(userService.create("TestUser3").block().getId());
-    userIds.add(userService.create("TestUser4").block().getId());
-    userIds.add(userService.create("TestUser5").block().getId());
-    userIds.add(userService.create("TestUser6").block().getId());
-    userIds.add(userService.create("TestUser7").block().getId());
-    userIds.add(userService.create("TestUser8").block().getId());
+    userIds.add(userService.create("TestUser1").block());
+    userIds.add(userService.create("TestUser2").block());
+    userIds.add(userService.create("TestUser3").block());
+    userIds.add(userService.create("TestUser4").block());
+    userIds.add(userService.create("TestUser5").block());
+    userIds.add(userService.create("TestUser6").block());
+    userIds.add(userService.create("TestUser7").block());
+    userIds.add(userService.create("TestUser8").block());
 
     // Create a module to submit to
     final int moduleId = moduleService.create("ScoreTestModule").block().getId();

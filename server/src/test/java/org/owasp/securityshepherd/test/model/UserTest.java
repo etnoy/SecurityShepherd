@@ -8,9 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.owasp.securityshepherd.model.Auth;
 import org.owasp.securityshepherd.model.User;
-import org.owasp.securityshepherd.model.Auth.AuthBuilder;
 import org.owasp.securityshepherd.model.User.UserBuilder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -135,31 +133,7 @@ public class UserTest {
   }
 
   @Test
-  public void withAuth_ValidAuth_ChangesAuth() {
-
-    final AuthBuilder authBuilder = Auth.builder();
-    final Auth originalAuth = authBuilder.build();
-    final User newUser = User.builder().displayName("Test User").auth(originalAuth).build();
-
-    assertThat(newUser.getAuth(), is(originalAuth));
-
-    assertThat(newUser.withAuth(originalAuth).getAuth(), is(originalAuth));
-
-    final AuthBuilder[] testedAuthBuilders = { authBuilder, authBuilder.isAdmin(true), authBuilder.badLoginCount(3) };
-
-    for (AuthBuilder newBuilder : testedAuthBuilders) {
-
-      final Auth newAuth = newBuilder.build();
-      final User changedUser = newUser.withAuth(newAuth);
-      assertThat(changedUser.getAuth(), is(newAuth));
-
-    }
-
-  }
-
-  @Test
   public void withClassId_ValidClassId_ChangesClassId() {
-
     final String displayName = "withClassId_ValidClassId";
     final int[] testedClassIds = { 0, 1, -1, 1000, -1000, 123456789 };
     final User newUser = User.builder().displayName(displayName).classId(0).build();
@@ -172,20 +146,16 @@ public class UserTest {
       assertThat(changedUser.getClassId(), is(newClassId));
 
     }
-
   }
 
   @Test
   public void withDisplayName_NullDisplayName_ThrowsException() {
-
     assertThrows(NullPointerException.class,
         () -> User.builder().displayName("TestUser").build().withDisplayName(null));
-
   }
 
   @Test
   public void withDisplayName_ValidDisplayName_ChangesDisplayName() {
-
     final String displayName = "withDisplayName_ValidDisplayName";
 
     final User newUser = User.builder().displayName(displayName).build();
@@ -196,17 +166,13 @@ public class UserTest {
 
     User changedUser;
     for (String newDisplayName : testedDisplayNames) {
-
       changedUser = newUser.withDisplayName(newDisplayName);
       assertThat(changedUser.getDisplayName(), is(newDisplayName));
-
     }
-
   }
 
   @Test
   public void withEmail_ValidEmail_ChangesEmail() {
-
     final String displayName = "withEmail_ValidEmail";
 
     final String email = "validEmail@example.com";
@@ -220,12 +186,9 @@ public class UserTest {
     User changedUser;
 
     for (String newEmail : testedStrings) {
-
       changedUser = newUser.withEmail(newEmail);
       assertThat(changedUser.getEmail(), is(newEmail));
-
     }
-
   }
 
   @Test

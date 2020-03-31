@@ -4,7 +4,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import org.owasp.securityshepherd.model.PasswordAuth;
 import org.owasp.securityshepherd.model.User;
+import org.owasp.securityshepherd.model.UserAuth;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,20 +16,18 @@ import lombok.Value;
 public final class ShepherdUserDetails implements UserDetails {
   private static final long serialVersionUID = 9011116395514302667L;
 
-  private final User user;
-
-  public User getUser() {
-    return user;
-  }
-
+  private UserAuth userAuth;
+  
+  private PasswordAuth passwordAuth;
+  
   @Override
   public String getPassword() {
-    return user.getAuth().getPassword().getHashedPassword();
+    return passwordAuth.getHashedPassword();
   }
 
   @Override
   public String getUsername() {
-    return user.getAuth().getPassword().getLoginName();
+    return passwordAuth.getLoginName();
   }
 
   @Override
@@ -37,7 +37,7 @@ public final class ShepherdUserDetails implements UserDetails {
 
   @Override
   public boolean isAccountNonLocked() {
-    final LocalDateTime suspendedUntil = user.getAuth().getSuspendedUntil();
+    final LocalDateTime suspendedUntil = userAuth.getSuspendedUntil();
 
     if (suspendedUntil == null) {
       return true;
@@ -48,16 +48,16 @@ public final class ShepherdUserDetails implements UserDetails {
 
   @Override
   public boolean isCredentialsNonExpired() {
-    return user.getAuth().getPassword().isPasswordNonExpired();
+    return passwordAuth.isPasswordNonExpired();
   }
 
   @Override
   public boolean isEnabled() {
-    return user.getAuth().isEnabled();
+    return userAuth.isEnabled();
   }
 
   public Role getRole() {
-    if (user.getAuth().isAdmin()) {
+    if (userAuth.isAdmin()) {
       return Role.ROLE_ADMIN;
     } else {
       return Role.ROLE_USER;
@@ -70,7 +70,7 @@ public final class ShepherdUserDetails implements UserDetails {
 
     authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 
-    if (user.getAuth().isAdmin()) {
+    if (userAuth.isAdmin()) {
       authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
     }
 

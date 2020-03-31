@@ -25,11 +25,13 @@ import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
 import org.owasp.securityshepherd.exception.DuplicateClassNameException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.UserIdNotFoundException;
-import org.owasp.securityshepherd.model.Auth;
+import org.owasp.securityshepherd.model.UserAuth;
 import org.owasp.securityshepherd.model.PasswordAuth;
 import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.repository.AuthRepository;
 import org.owasp.securityshepherd.repository.PasswordAuthRepository;
+import org.owasp.securityshepherd.repository.SubmissionDatabaseClient;
+import org.owasp.securityshepherd.repository.UserDatabaseClient;
 import org.owasp.securityshepherd.repository.UserRepository;
 import org.owasp.securityshepherd.service.ClassService;
 import org.owasp.securityshepherd.service.KeyService;
@@ -51,6 +53,9 @@ public class UserServiceTest {
 
   @Mock
   private UserRepository userRepository;
+
+  @Mock
+  private UserDatabaseClient userDatabaseClient;
 
   @Mock
   private AuthRepository authRepository;
@@ -121,13 +126,17 @@ public class UserServiceTest {
     when(userRepository.save(any(User.class)))
         .thenAnswer(user -> Mono.just(user.getArgument(0, User.class).withId(mockId)));
 
-    StepVerifier.create(userService.create(displayName)).assertNext(user -> {
+    StepVerifier.create(userService.create(displayName)).assertNext(userId -> {
 
-      assertThat(user.getDisplayName(), is(displayName));
+      assertThat(userId, is(mockId));
 
       verify(userRepository, times(1)).findByDisplayName(displayName);
       verify(userRepository, times(1)).save(any(User.class));
 
+      ArgumentCaptor<User> argument = ArgumentCaptor.forClass(User.class);
+
+      verify(userRepository, times(1)).save(argument.capture());
+      assertThat(argument.getValue().getDisplayName(), is(displayName));
     }).expectComplete().verify();
 
   }
@@ -201,7 +210,6 @@ public class UserServiceTest {
 
   @Test
   public void createPasswordUser_ValidData_Succeeds() throws Exception {
-
     final String displayName = "createPasswordUser_ValidData";
     final String loginName = "_createPasswordUser_ValidData_";
 
@@ -215,34 +223,39 @@ public class UserServiceTest {
     when(userRepository.save(any(User.class)))
         .thenAnswer(user -> Mono.just(user.getArgument(0, User.class).withId(mockId)));
 
-    when(authRepository.save(any(Auth.class)))
-        .thenAnswer(user -> Mono.just(user.getArgument(0, Auth.class).withId(mockId)));
+    when(authRepository.save(any(UserAuth.class)))
+        .thenAnswer(user -> Mono.just(user.getArgument(0, UserAuth.class).withId(mockId)));
 
     when(passwordAuthRepository.save(any(PasswordAuth.class)))
         .thenAnswer(user -> Mono.just(user.getArgument(0, PasswordAuth.class).withId(mockId)));
 
     StepVerifier.create(userService.createPasswordUser(displayName, loginName, hashedPassword))
-        .assertNext(user -> {
-
-          assertThat(user, is(notNullValue()));
-          assertThat(user.getAuth(), is(notNullValue()));
-          assertThat(user.getAuth().getPassword(), is(notNullValue()));
-
-          assertThat(user.getAuth().getPassword().getLoginName(), is(notNullValue()));
-          assertThat(user.getAuth().getPassword().getLoginName(), is(loginName));
-
-          assertThat(user.getAuth().getPassword().getHashedPassword(), is(notNullValue()));
-          assertThat(user.getAuth().getPassword().getHashedPassword(), is(hashedPassword));
-
+        .assertNext(userId -> {
           verify(passwordAuthRepository, times(1)).findByLoginName(loginName);
           verify(userRepository, times(1)).findByDisplayName(displayName);
 
           verify(userRepository, times(1)).save(any(User.class));
-          verify(authRepository, times(1)).save(any(Auth.class));
+          verify(authRepository, times(1)).save(any(UserAuth.class));
           verify(passwordAuthRepository, times(1)).save(any(PasswordAuth.class));
 
-        }).expectComplete().verify();
+          assertThat(userId, is(mockId));
 
+          ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
+          verify(userRepository, times(1)).save(userArgumentCaptor.capture());
+          assertThat(userArgumentCaptor.getValue().getId(), is(mockId));
+          assertThat(userArgumentCaptor.getValue().getDisplayName(), is(displayName));
+
+          ArgumentCaptor<UserAuth> userAuthArgumentCaptor = ArgumentCaptor.forClass(UserAuth.class);
+          verify(authRepository, times(1)).save(userAuthArgumentCaptor.capture());
+          assertThat(userAuthArgumentCaptor.getValue().getUserId(), is(mockId));
+
+          ArgumentCaptor<PasswordAuth> passwordAuthArgumentCaptor =
+              ArgumentCaptor.forClass(PasswordAuth.class);
+          verify(passwordAuthRepository, times(1)).save(passwordAuthArgumentCaptor.capture());
+          assertThat(passwordAuthArgumentCaptor.getValue().getUserId(), is(mockId));
+          assertThat(passwordAuthArgumentCaptor.getValue().getLoginName(), is(loginName));
+          assertThat(passwordAuthArgumentCaptor.getValue().getHashedPassword(), is(hashedPassword));
+        }).expectComplete().verify();
   }
 
   @Test
@@ -256,240 +269,96 @@ public class UserServiceTest {
 
   @Test
   public void demote_UserIsAdmin_Demoted() throws Exception {
-
-    final String displayName = "createPasswordUser_ValidData";
-    final String loginName = "_createPasswordUser_ValidData_";
-
-    final String hashedPassword = "a_valid_password";
-
     final int mockUserId = 933;
-    final int mockAuthId = 80;
-    final int mockPasswordAuthId = 710;
+    final int mockAuthId = 46;
 
-    final User mockUser = mock(User.class);
-    final User mockDemotedUser = mock(User.class);
-    final Auth mockAuth = mock(Auth.class);
-    final Auth mockDemotedAuth = mock(Auth.class);
+    final UserAuth mockAuth = mock(UserAuth.class);
+    final UserAuth mockDemotedAuth = mock(UserAuth.class);
 
-    when(passwordAuthRepository.findByLoginName(loginName)).thenReturn(Mono.empty());
-    when(userRepository.findByDisplayName(displayName)).thenReturn(Mono.empty());
-
-    when(userRepository.save(any(User.class)))
-        .thenAnswer(user -> Mono.just(user.getArgument(0, User.class).withId(mockUserId)));
-
-    when(authRepository.save(any(Auth.class))).thenAnswer(auth -> {
-      if (auth.getArgument(0, Auth.class) == mockDemotedAuth) {
+    when(authRepository.save(any(UserAuth.class))).thenAnswer(auth -> {
+      if (auth.getArgument(0, UserAuth.class) == mockDemotedAuth) {
         // We are saving the admin auth to db
-        return Mono.just(auth.getArgument(0, Auth.class));
+        return Mono.just(auth.getArgument(0, UserAuth.class));
       } else {
         // We are saving the newly created auth to db
-        return Mono.just(auth.getArgument(0, Auth.class).withId(mockAuthId));
+        return Mono.just(auth.getArgument(0, UserAuth.class).withId(mockAuthId));
       }
     });
 
-    when(passwordAuthRepository.save(any(PasswordAuth.class))).thenAnswer(
-        user -> Mono.just(user.getArgument(0, PasswordAuth.class).withId(mockPasswordAuthId)));
-
-    when(userRepository.existsById(mockUserId)).thenReturn(Mono.just(true));
-    when(userRepository.findById(mockUserId)).thenReturn(Mono.just(mockUser));
-
     when(authRepository.findByUserId(mockUserId)).thenReturn(Mono.just(mockAuth));
-    when(passwordAuthRepository.findByUserId(mockUserId)).thenReturn(Mono.empty());
 
     when(mockAuth.withAdmin(false)).thenReturn(mockDemotedAuth);
-    when(mockUser.getAuth()).thenReturn(mockAuth);
-    when(mockUser.withAuth(mockAuth)).thenReturn(mockUser);
-    when(mockUser.withAuth(mockDemotedAuth)).thenReturn(mockDemotedUser);
-    when(mockDemotedUser.getAuth()).thenReturn(mockDemotedAuth);
     when(mockDemotedAuth.isAdmin()).thenReturn(false);
 
-    StepVerifier.create(userService.createPasswordUser(displayName, loginName, hashedPassword)
-        .then(userService.demote(mockUserId))).assertNext(user -> {
+    StepVerifier.create(userService.demote(mockUserId)).expectComplete().verify();
 
-          verify(passwordAuthRepository, times(1)).findByLoginName(loginName);
-          verify(userRepository, times(1)).findByDisplayName(displayName);
+    verify(userRepository, never()).findById(any(Integer.class));
+    verify(userRepository, never()).save(any(User.class));
+    verify(passwordAuthRepository, never()).findByUserId(any(Integer.class));
 
-          verify(userRepository, times(1)).save(any(User.class));
-          verify(userRepository, never()).save(mockDemotedUser);
+    verify(authRepository, times(4)).findByUserId(mockUserId);
 
-          verify(authRepository, times(1)).save(mockDemotedAuth);
-
-          verify(userRepository, times(1)).findById(mockUserId);
-          verify(authRepository, times(4)).findByUserId(mockUserId);
-          verify(passwordAuthRepository, times(2)).findByUserId(mockUserId);
-
-          verify(mockAuth, times(1)).withAdmin(false);
-          verify(mockUser, times(1)).getAuth();
-          verify(mockUser, times(1)).withAuth(mockDemotedAuth);
-
-          // Assert that the returned user is admin
-          assertThat(user, is(mockDemotedUser));
-          assertThat(user.getAuth(), is(mockDemotedAuth));
-          assertThat(user.getAuth().isAdmin(), is(false));
-
-        }).expectComplete().verify();
-
+    verify(mockAuth, times(1)).withAdmin(false);
+    verify(authRepository, never()).save(mockAuth);
+    verify(authRepository, times(1)).save(mockDemotedAuth);
   }
 
   @Test
   public void demote_UserIsNotAdmin_StaysNotAdmin() throws Exception {
-
-    final String displayName = "createPasswordUser_ValidData";
-    final String loginName = "_createPasswordUser_ValidData_";
-
-    final String hashedPassword = "a_valid_password";
-
     final int mockUserId = 933;
     final int mockAuthId = 80;
     final int mockPasswordAuthId = 710;
 
-    final User mockUser = mock(User.class);
-    final Auth mockAuth = mock(Auth.class);
+    final UserAuth mockAuth = mock(UserAuth.class);
 
-    when(passwordAuthRepository.findByLoginName(loginName)).thenReturn(Mono.empty());
-    when(userRepository.findByDisplayName(displayName)).thenReturn(Mono.empty());
-
-    when(userRepository.save(any(User.class)))
-        .thenAnswer(user -> Mono.just(user.getArgument(0, User.class).withId(mockUserId)));
-
-    when(authRepository.save(any(Auth.class))).thenAnswer(auth -> {
-      if (auth.getArgument(0, Auth.class) == mockAuth) {
+    when(authRepository.save(any(UserAuth.class))).thenAnswer(auth -> {
+      if (auth.getArgument(0, UserAuth.class) == mockAuth) {
         // We are saving the admin auth to db
-        return Mono.just(auth.getArgument(0, Auth.class));
+        return Mono.just(auth.getArgument(0, UserAuth.class));
       } else {
         // We are saving the newly created auth to db
-        return Mono.just(auth.getArgument(0, Auth.class).withId(mockAuthId));
+        return Mono.just(auth.getArgument(0, UserAuth.class).withId(mockAuthId));
       }
     });
 
-    when(passwordAuthRepository.save(any(PasswordAuth.class))).thenAnswer(
-        user -> Mono.just(user.getArgument(0, PasswordAuth.class).withId(mockPasswordAuthId)));
-
-    when(userRepository.existsById(mockUserId)).thenReturn(Mono.just(true));
-    when(userRepository.findById(mockUserId)).thenReturn(Mono.just(mockUser));
-
     when(authRepository.findByUserId(mockUserId)).thenReturn(Mono.just(mockAuth));
-    when(passwordAuthRepository.findByUserId(mockUserId)).thenReturn(Mono.empty());
 
     when(mockAuth.withAdmin(false)).thenReturn(mockAuth);
-    when(mockUser.getAuth()).thenReturn(mockAuth);
-    when(mockUser.withAuth(mockAuth)).thenReturn(mockUser);
     when(mockAuth.isAdmin()).thenReturn(false);
 
-    StepVerifier.create(userService.createPasswordUser(displayName, loginName, hashedPassword)
-        .then(userService.demote(mockUserId))).assertNext(user -> {
+    StepVerifier.create(userService.demote(mockUserId)).expectComplete().verify();
 
-          verify(passwordAuthRepository, times(1)).findByLoginName(loginName);
-          verify(userRepository, times(1)).findByDisplayName(displayName);
+    verify(userRepository, never()).findById(any(Integer.class));
+    verify(userRepository, never()).save(any(User.class));
+    verify(passwordAuthRepository, never()).findByUserId(any(Integer.class));
+    verify(passwordAuthRepository, never()).save(any(PasswordAuth.class));
 
-          verify(userRepository, times(1)).save(any(User.class));
-          verify(userRepository, never()).save(mockUser);
+    verify(authRepository, times(1)).save(mockAuth);
 
-          verify(authRepository, times(1)).save(mockAuth);
+    verify(userRepository, times(1)).findById(mockUserId);
+    verify(authRepository, times(4)).findByUserId(mockUserId);
 
-          verify(userRepository, times(1)).findById(mockUserId);
-          verify(authRepository, times(4)).findByUserId(mockUserId);
-          verify(passwordAuthRepository, times(2)).findByUserId(mockUserId);
-
-          verify(mockAuth, times(1)).withAdmin(false);
-          verify(mockUser, times(1)).getAuth();
-          verify(mockUser, times(3)).withAuth(mockAuth);
-
-          // Assert that the returned user is admin
-          assertThat(user, is(mockUser));
-          assertThat(user.getAuth(), is(mockAuth));
-          assertThat(user.getAuth().isAdmin(), is(false));
-
-        }).expectComplete().verify();
-
+    verify(mockAuth, times(1)).withAdmin(false);
   }
 
   @Test
   public void findById_ExistingUserId_ReturnsUserEntity() {
-
-    final PasswordAuth mockPasswordAuth = mock(PasswordAuth.class);
-    final Auth mockAuth = mock(Auth.class);
-    final User mockUser = mock(User.class);
-
-    final Auth mockAuthWithPassword = mock(Auth.class);
-    final User mockUserWithAuth = mock(User.class);
-
-    final int mockId = 123;
-
-    when(userRepository.findById(mockId)).thenReturn(Mono.just(mockUser));
-    when(userRepository.existsById(mockId)).thenReturn(Mono.just(true));
-
-    when(authRepository.findByUserId(mockId)).thenReturn(Mono.just(mockAuth));
-    when(passwordAuthRepository.findByUserId(mockId)).thenReturn(Mono.just(mockPasswordAuth));
-    when(mockAuthWithPassword.getPassword()).thenReturn(mockPasswordAuth);
-    when(mockUserWithAuth.getAuth()).thenReturn(mockAuthWithPassword);
-
-    when(mockAuth.withPassword(any(PasswordAuth.class))).thenReturn(mockAuthWithPassword);
-    when(mockUser.withAuth(any(Auth.class))).thenReturn(mockUserWithAuth);
-
-    StepVerifier.create(userService.findById(mockId)).assertNext(user -> {
-      assertThat(user, is(mockUserWithAuth));
-      assertThat(user.getAuth(), is(mockAuthWithPassword));
-      assertThat(user.getAuth().getPassword(), is(mockPasswordAuth));
-
-      verify(userRepository, times(1)).findById(mockId);
-      verify(authRepository, times(1)).findByUserId(mockId);
-      verify(passwordAuthRepository, times(1)).findByUserId(mockId);
-
-    }).expectComplete().verify();
-
-  }
-
-  @Test
-  public void findById_ExistingUserIdButNoAuthEntity_ReturnsUserEntity() {
-
-    final User mockUser = mock(User.class);
-
-    final int mockId = 123;
-
-    when(userRepository.findById(mockId)).thenReturn(Mono.just(mockUser));
-    when(userRepository.existsById(mockId)).thenReturn(Mono.just(true));
-
-    when(mockUser.withAuth(any(Auth.class))).thenReturn(null);
-
-    StepVerifier.create(userService.findById(mockId)).assertNext(user -> {
-      assertThat(user, is(mockUser));
-      assertThat(user.getAuth(), is(nullValue()));
-
-      verify(userRepository, times(1)).findById(mockId);
-      verify(authRepository, times(2)).findByUserId(mockId);
-    }).expectComplete().verify();
-
-  }
-
-  @Test
-  public void findById_ExistingUserIdButNoPasswordAuthEntity_ReturnsUserEntity() {
-
-    final Auth mockAuth = mock(Auth.class);
     final User mockUser = mock(User.class);
 
     final User mockUserWithAuth = mock(User.class);
 
-    final int mockId = 123;
+    final int mockUserId = 123;
 
-    when(userRepository.findById(mockId)).thenReturn(Mono.just(mockUser));
-    when(userRepository.existsById(mockId)).thenReturn(Mono.just(true));
+    when(userRepository.findById(mockUserId)).thenReturn(Mono.just(mockUser));
+    when(userRepository.existsById(mockUserId)).thenReturn(Mono.just(true));
 
-    when(authRepository.findByUserId(mockId)).thenReturn(Mono.just(mockAuth));
-    when(mockUserWithAuth.getAuth()).thenReturn(mockAuth);
-
-    when(mockUser.withAuth(any(Auth.class))).thenReturn(mockUserWithAuth);
-
-    StepVerifier.create(userService.findById(mockId)).assertNext(user -> {
-      assertThat(user, is(mockUserWithAuth));
-      assertThat(user.getAuth(), is(mockAuth));
-      assertThat(user.getAuth().getPassword(), is(nullValue()));
-
-      verify(userRepository, times(1)).findById(mockId);
-      verify(authRepository, times(2)).findByUserId(mockId);
-      verify(passwordAuthRepository, times(1)).findByUserId(mockId);
+    StepVerifier.create(userService.findById(mockUserId)).assertNext(userId -> {
+      assertThat(userId, is(mockUserId));
     }).expectComplete().verify();
 
+    verify(userRepository, times(1)).findById(mockUserId);
+    verify(authRepository, never()).findByUserId(any(Integer.class));
+    verify(passwordAuthRepository, never()).findByUserId(any(Integer.class));
   }
 
   @Test
@@ -514,14 +383,14 @@ public class UserServiceTest {
   @Test
   public void findByLoginName_EmptyLoginName_ThrowsException() {
 
-    assertThrows(IllegalArgumentException.class, () -> userService.findByLoginName(""));
+    assertThrows(IllegalArgumentException.class, () -> userService.findUserIdByLoginName(""));
 
   }
 
   @Test
   public void findByLoginName_NullLoginName_ThrowsException() {
 
-    assertThrows(NullPointerException.class, () -> userService.findByLoginName(null));
+    assertThrows(NullPointerException.class, () -> userService.findUserIdByLoginName(null));
 
   }
 
@@ -539,66 +408,36 @@ public class UserServiceTest {
     when(userRepository.findById(mockId)).thenReturn(Mono.empty());
     when(userRepository.existsById(mockId)).thenReturn(Mono.just(false));
 
-    StepVerifier.create(userService.findByLoginName(loginName)).expectComplete().verify();
+    StepVerifier.create(userService.findUserIdByLoginName(loginName)).expectComplete().verify();
 
   }
 
   @Test
   public void findByLoginName_UserExists_ReturnsUser() {
-
-    final PasswordAuth mockPasswordAuth = mock(PasswordAuth.class);
-    final Auth mockAuth = mock(Auth.class);
-    final User mockUser = mock(User.class);
-
-    final Auth mockAuthWithPassword = mock(Auth.class);
-    final User mockUserWithAuth = mock(User.class);
-
     final String loginName = "MockUser";
-    final int mockId = 117;
+    final int mockUserId = 117;
 
-    when(userRepository.findById(mockId)).thenReturn(Mono.just(mockUser));
-    when(userRepository.existsById(mockId)).thenReturn(Mono.just(true));
+    when(userDatabaseClient.findUserIdByLoginName(loginName)).thenReturn(Mono.just(mockUserId));
 
-    when(authRepository.findByUserId(mockId)).thenReturn(Mono.just(mockAuth));
-    when(passwordAuthRepository.findByUserId(mockId)).thenReturn(Mono.just(mockPasswordAuth));
-    when(mockAuthWithPassword.getPassword()).thenReturn(mockPasswordAuth);
-    when(mockUserWithAuth.getAuth()).thenReturn(mockAuthWithPassword);
-
-    when(mockAuth.withPassword(any(PasswordAuth.class))).thenReturn(mockAuthWithPassword);
-    when(mockUser.withAuth(any(Auth.class))).thenReturn(mockUserWithAuth);
-
-    when(passwordAuthRepository.findByLoginName(loginName)).thenReturn(Mono.just(mockPasswordAuth));
-    when(mockPasswordAuth.getUserId()).thenReturn(mockId);
-
-    StepVerifier.create(userService.findByLoginName(loginName)).assertNext(user -> {
-      assertThat(user, is(mockUserWithAuth));
-      assertThat(user.getAuth(), is(mockAuthWithPassword));
-      assertThat(user.getAuth().getPassword(), is(mockPasswordAuth));
-
-      verify(userRepository, times(1)).findById(mockId);
-      verify(authRepository, times(1)).findByUserId(mockId);
-      verify(passwordAuthRepository, times(1)).findByUserId(mockId);
-
+    StepVerifier.create(userService.findUserIdByLoginName(loginName)).assertNext(userId -> {
+      assertThat(userId, is(mockUserId));
     }).expectComplete().verify();
 
+    verify(userDatabaseClient, times(1)).findUserIdByLoginName(loginName);
   }
 
   @Test
   public void findByLoginName_LoginNameDoesNotExist_ReturnsEmptyMono() {
-
     final PasswordAuth mockPasswordAuth = mock(PasswordAuth.class);
 
     final String loginName = "MockUser";
     final int mockId = 137;
 
-    when(mockPasswordAuth.getUserId()).thenReturn(mockId);
-    when(passwordAuthRepository.findByLoginName(loginName)).thenReturn(Mono.empty());
+    when(userDatabaseClient.findUserIdByLoginName(loginName)).thenReturn(Mono.empty());
 
-    when(userRepository.findById(mockId)).thenReturn(Mono.empty());
-    when(userRepository.existsById(mockId)).thenReturn(Mono.just(false));
-
-    StepVerifier.create(userService.findByLoginName(loginName)).expectComplete().verify();
-
+    StepVerifier.create(userService.findUserIdByLoginName(loginName)).expectComplete().verify();
+    
+    verify(userDatabaseClient, times(1)).findUserIdByLoginName(loginName);
   }
 
   @Test
@@ -615,7 +454,7 @@ public class UserServiceTest {
     when(userRepository.findById(mockId)).thenReturn(Mono.empty());
     when(userRepository.existsById(mockId)).thenReturn(Mono.just(false));
 
-    StepVerifier.create(userService.findByLoginName(loginName)).expectComplete().verify();
+    StepVerifier.create(userService.findUserIdByLoginName(loginName)).expectComplete().verify();
 
   }
 
@@ -692,177 +531,18 @@ public class UserServiceTest {
       // Assert that we got the correct key
       assertThat(key, is(testRandomBytes));
 
-      ArgumentCaptor<User> argument = ArgumentCaptor.forClass(User.class);
-
       verify(userRepository, times(1)).findById(mockId);
       verify(mockUserWithoutKey, times(1)).getKey();
       verify(keyService, times(1)).generateRandomBytes(16);
       verify(mockUserWithoutKey, times(1)).withKey(testRandomBytes);
       verify(mockUserWithKey, times(1)).getKey();
+
+      ArgumentCaptor<User> argument = ArgumentCaptor.forClass(User.class);
+
       verify(userRepository, times(1)).save(argument.capture());
       assertThat(argument.getValue(), is(mockUserWithKey));
       assertThat(argument.getValue().getKey(), is(testRandomBytes));
-
     }).expectComplete().verify();
-
-  }
-
-  @Test
-  public void promote_InvalidUserId_ThrowsException() {
-
-    StepVerifier.create(Flux.just(-1, -1000, 0, -99999).next().flatMap(userService::promote))
-        .expectError(InvalidUserIdException.class).verify();
-
-  }
-
-  @Test
-  public void promote_UserIsAdmin_StaysAdmin() throws Exception {
-
-    final String displayName = "createPasswordUser_ValidData";
-    final String loginName = "_createPasswordUser_ValidData_";
-
-    final String hashedPassword = "a_valid_password";
-
-    final int mockUserId = 933;
-    final int mockAuthId = 80;
-    final int mockPasswordAuthId = 710;
-
-    final User mockUser = mock(User.class);
-    final Auth mockAuth = mock(Auth.class);
-
-    when(passwordAuthRepository.findByLoginName(loginName)).thenReturn(Mono.empty());
-    when(userRepository.findByDisplayName(displayName)).thenReturn(Mono.empty());
-
-    when(userRepository.save(any(User.class)))
-        .thenAnswer(user -> Mono.just(user.getArgument(0, User.class).withId(mockUserId)));
-
-    when(authRepository.save(any(Auth.class))).thenAnswer(auth -> {
-      if (auth.getArgument(0, Auth.class) == mockAuth) {
-        // We are saving the admin auth to db
-        return Mono.just(auth.getArgument(0, Auth.class));
-      } else {
-        // We are saving the newly created auth to db
-        return Mono.just(auth.getArgument(0, Auth.class).withId(mockAuthId));
-      }
-    });
-
-    when(passwordAuthRepository.save(any(PasswordAuth.class))).thenAnswer(
-        user -> Mono.just(user.getArgument(0, PasswordAuth.class).withId(mockPasswordAuthId)));
-
-    when(userRepository.existsById(mockUserId)).thenReturn(Mono.just(true));
-    when(userRepository.findById(mockUserId)).thenReturn(Mono.just(mockUser));
-
-    when(authRepository.findByUserId(mockUserId)).thenReturn(Mono.just(mockAuth));
-    when(passwordAuthRepository.findByUserId(mockUserId)).thenReturn(Mono.empty());
-
-    when(mockAuth.withAdmin(true)).thenReturn(mockAuth);
-    when(mockUser.getAuth()).thenReturn(mockAuth);
-    when(mockUser.withAuth(mockAuth)).thenReturn(mockUser);
-    when(mockAuth.isAdmin()).thenReturn(true);
-
-    StepVerifier.create(userService.createPasswordUser(displayName, loginName, hashedPassword)
-        .then(userService.promote(mockUserId))).assertNext(user -> {
-
-          verify(passwordAuthRepository, times(1)).findByLoginName(loginName);
-          verify(userRepository, times(1)).findByDisplayName(displayName);
-
-          verify(userRepository, times(1)).save(any(User.class));
-          verify(userRepository, never()).save(mockUser);
-
-          verify(authRepository, times(1)).save(mockAuth);
-
-          verify(userRepository, times(1)).findById(mockUserId);
-          verify(authRepository, times(4)).findByUserId(mockUserId);
-          verify(passwordAuthRepository, times(2)).findByUserId(mockUserId);
-
-          verify(mockAuth, times(1)).withAdmin(true);
-          verify(mockUser, times(1)).getAuth();
-          verify(mockUser, times(3)).withAuth(mockAuth);
-
-          // Assert that the returned user is admin
-          assertThat(user, is(mockUser));
-          assertThat(user.getAuth(), is(mockAuth));
-          assertThat(user.getAuth().isAdmin(), is(true));
-
-        }).expectComplete().verify();
-
-  }
-
-  @Test
-  public void promote_UserIsNotAdmin_PromotedToAdmin() throws Exception {
-
-    final String displayName = "createPasswordUser_ValidData";
-    final String loginName = "_createPasswordUser_ValidData_";
-
-    final String hashedPassword = "a_valid_password";
-
-    final int mockUserId = 933;
-    final int mockAuthId = 80;
-    final int mockPasswordAuthId = 710;
-
-    final User mockUser = mock(User.class);
-    final User mockAdminUser = mock(User.class);
-    final Auth mockAuth = mock(Auth.class);
-    final Auth mockAdminAuth = mock(Auth.class);
-
-    when(passwordAuthRepository.findByLoginName(loginName)).thenReturn(Mono.empty());
-    when(userRepository.findByDisplayName(displayName)).thenReturn(Mono.empty());
-
-    when(userRepository.save(any(User.class)))
-        .thenAnswer(user -> Mono.just(user.getArgument(0, User.class).withId(mockUserId)));
-
-    when(authRepository.save(any(Auth.class))).thenAnswer(auth -> {
-      if (auth.getArgument(0, Auth.class) == mockAdminAuth) {
-        // We are saving the admin auth to db
-        return Mono.just(auth.getArgument(0, Auth.class));
-      } else {
-        // We are saving the newly created auth to db
-        return Mono.just(auth.getArgument(0, Auth.class).withId(mockAuthId));
-      }
-    });
-
-    when(passwordAuthRepository.save(any(PasswordAuth.class))).thenAnswer(
-        user -> Mono.just(user.getArgument(0, PasswordAuth.class).withId(mockPasswordAuthId)));
-
-    when(userRepository.existsById(mockUserId)).thenReturn(Mono.just(true));
-    when(userRepository.findById(mockUserId)).thenReturn(Mono.just(mockUser));
-
-    when(authRepository.findByUserId(mockUserId)).thenReturn(Mono.just(mockAuth));
-    when(passwordAuthRepository.findByUserId(mockUserId)).thenReturn(Mono.empty());
-
-    when(mockAuth.withAdmin(true)).thenReturn(mockAdminAuth);
-    when(mockUser.getAuth()).thenReturn(mockAuth);
-    when(mockUser.withAuth(mockAuth)).thenReturn(mockUser);
-    when(mockUser.withAuth(mockAdminAuth)).thenReturn(mockAdminUser);
-    when(mockAdminUser.getAuth()).thenReturn(mockAdminAuth);
-    when(mockAdminAuth.isAdmin()).thenReturn(true);
-
-    StepVerifier.create(userService.createPasswordUser(displayName, loginName, hashedPassword)
-        .then(userService.promote(mockUserId))).assertNext(user -> {
-
-          verify(passwordAuthRepository, times(1)).findByLoginName(loginName);
-          verify(userRepository, times(1)).findByDisplayName(displayName);
-
-          verify(userRepository, times(1)).save(any(User.class));
-          verify(userRepository, never()).save(mockAdminUser);
-
-          verify(authRepository, times(1)).save(mockAdminAuth);
-
-          verify(userRepository, times(1)).findById(mockUserId);
-          verify(authRepository, times(4)).findByUserId(mockUserId);
-          verify(passwordAuthRepository, times(2)).findByUserId(mockUserId);
-
-          verify(mockAuth, times(1)).withAdmin(true);
-          verify(mockUser, times(1)).getAuth();
-          verify(mockUser, times(1)).withAuth(mockAdminAuth);
-
-          // Assert that the returned user is admin
-          assertThat(user, is(mockAdminUser));
-          assertThat(user.getAuth(), is(mockAdminAuth));
-          assertThat(user.getAuth().isAdmin(), is(true));
-
-        }).expectComplete().verify();
-
   }
 
   @Test
@@ -994,8 +674,8 @@ public class UserServiceTest {
     Hooks.onOperatorDebug();
 
     // Set up userService to use our mocked repos and services
-    userService = new UserService(userRepository, authRepository, passwordAuthRepository,
-        classService, keyService);
+    userService = new UserService(userRepository, userDatabaseClient, authRepository,
+        passwordAuthRepository, classService, keyService);
   }
 
 }

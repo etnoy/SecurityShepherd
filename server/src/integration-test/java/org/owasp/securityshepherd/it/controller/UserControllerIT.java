@@ -68,7 +68,7 @@ public class UserControllerIT {
     final String hashedPassword = "$2y$12$53B6QcsGwF3Os1GVFUFSQOhIPXnWFfuEkRJdbknFWnkXfUBMUKhaW";
 
     final int userId =
-        userService.createPasswordUser("Test User", loginName, hashedPassword).block().getId();
+        userService.createPasswordUser("Test User", loginName, hashedPassword).block();
 
     String token = JsonPath.parse(
         new String(webTestClient.post().uri("/api/v1/login").contentType(MediaType.APPLICATION_JSON)

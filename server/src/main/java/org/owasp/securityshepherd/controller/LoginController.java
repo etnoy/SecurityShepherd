@@ -36,11 +36,11 @@ public class LoginController {
   public Mono<ResponseEntity<AuthResponse>> login(@RequestBody @Valid PasswordLoginDto loginDto) {
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
 
-    final Mono<User> userMono = userService.findByLoginName(loginDto.getUserName());
+    final Mono<Integer> userIdMono = userService.findUserIdByLoginName(loginDto.getUserName());
 
-    return userMono.map(ShepherdUserDetails::new)
+    return userIdMono.map(ShepherdUserDetails::new)
         .filter(userDetails -> encoder.matches(loginDto.getPassword(), userDetails.getPassword()))
-        .zipWith(userMono).map(Tuple2::getT2).map(jwtService::generateToken).map(AuthResponse::new)
+        .zipWith(userIdMono).map(Tuple2::getT2).map(jwtService::generateToken).map(AuthResponse::new)
         .map(authResponse -> new ResponseEntity<>(authResponse, HttpStatus.OK))
         .defaultIfEmpty(new ResponseEntity<>(HttpStatus.UNAUTHORIZED));
 
@@ -51,8 +51,6 @@ public class LoginController {
   public Mono<Integer> register(@Valid @RequestBody final PasswordRegistrationDto registerDto) {
 
     return userService.createPasswordUser(registerDto.getDisplayName(), registerDto.getUserName(),
-        passwordEncoder.encode(registerDto.getPassword())).map(User::getId);
-
+        passwordEncoder.encode(registerDto.getPassword()));
   }
-
 }
