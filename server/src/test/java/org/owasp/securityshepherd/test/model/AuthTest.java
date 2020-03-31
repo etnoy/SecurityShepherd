@@ -30,12 +30,14 @@ public class AuthTest {
   private static final boolean[] BOOLEANS = {false, true};
 
   @Test
-  public void authBuildertoString_ValidData_AsExpected() {
+  public void builderToString_ValidData_AsExpected() {
     final UserAuthBuilder builder = UserAuth.builder();
 
     assertThat(builder.toString(), is(
-        "Auth.UserAuthBuilder(id=null, userId=null, isEnabled=false, badLoginCount=0, isAdmin=false, suspendedUntil=null, suspensionMessage=null, accountCreated=null, lastLogin=null, lastLoginMethod=null, password=null, saml=null)"));
+        "UserAuth.UserAuthBuilder(id=null, userId=null, isEnabled=false, badLoginCount=0, isAdmin=false, suspendedUntil=null, suspensionMessage=null, accountCreated=null, lastLogin=null, lastLoginMethod=null)"));
   }
+
+
 
   @Test
   public void buildAccountCreated_ValidTime_Builds() {
@@ -166,7 +168,7 @@ public class AuthTest {
     final UserAuth testAuth = UserAuth.builder().build();
 
     assertThat(testAuth.toString(), is(
-        "Auth(id=null, userId=null, isEnabled=false, badLoginCount=0, isAdmin=false, suspendedUntil=null, suspensionMessage=null, accountCreated=null, lastLogin=null, lastLoginMethod=null, password=null, saml=null)"));
+        "UserAuth(id=null, userId=null, isEnabled=false, badLoginCount=0, isAdmin=false, suspendedUntil=null, suspensionMessage=null, accountCreated=null, lastLogin=null, lastLoginMethod=null)"));
   }
 
   @Test

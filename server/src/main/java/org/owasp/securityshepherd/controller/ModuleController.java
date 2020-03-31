@@ -26,7 +26,6 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/")
 public class ModuleController {
-
   private final SubmissionService submissionService;
 
   private final ModuleService moduleService;
@@ -46,12 +45,10 @@ public class ModuleController {
   @PostMapping(path = "module/submit")
   @PreAuthorize("hasRole('ROLE_USER')")
   public Mono<Boolean> submitById(@RequestBody @Valid SubmissionDto submissionDto) {
-
     return ReactiveSecurityContextHolder.getContext().map(SecurityContext::getAuthentication)
         .map(Authentication::getPrincipal).cast(ShepherdUserDetails.class)
-        .map(ShepherdUserDetails::getUser).map(User::getId).flatMap(
+        .map(ShepherdUserDetails::getUserId).flatMap(
             id -> submissionService.submit(id, submissionDto.getModuleId(), submissionDto.getFlag())
                 .map(Submission::isValid));
   }
-
 }

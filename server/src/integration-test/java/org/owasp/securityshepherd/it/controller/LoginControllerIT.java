@@ -41,7 +41,6 @@ public class LoginControllerIT {
 
   @Test
   public void login_CorrectCredentials_ReturnsJWS() {
-
     final String loginName = "test";
     final String hashedPassword = "$2y$12$53B6QcsGwF3Os1GVFUFSQOhIPXnWFfuEkRJdbknFWnkXfUBMUKhaW";
 
@@ -65,17 +64,13 @@ public class LoginControllerIT {
     final DocumentContext jsonBody =
         JsonPath.parse(new String(Base64.getDecoder().decode(jwt.substring(bodyDotPosition + 1))));
 
-    final Role userRole = Role.valueOf(jsonBody.read("$.role"));
     final int userId = Integer.parseInt(jsonBody.read("$.sub"));
     
-    assertThat(userRole, is(Role.ROLE_USER));
     assertThat(userId, is(createdUserId));
-
   }
 
   @Test
   public void login_WrongPassword_ReturnsUnauthorized() {
-
     final String loginName = "test";
     final String hashedPassword = "$2y$12$53B6QcsGwF3Os1GVFUFSQOhIPXnWFfuEkRJdbknFWnkXfUBMUKhaW";
 

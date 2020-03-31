@@ -115,12 +115,10 @@ public class UserTest {
 
   @Test
   public void toString_ValidData_AsExpected() {
-
     final User testUser = User.builder().displayName("TestUser").build();
 
     assertThat(testUser.toString(),
-        is("User(id=null, displayName=TestUser, classId=null, email=null, key=null, auth=null)"));
-
+        is("User(id=null, displayName=TestUser, classId=null, email=null, key=null)"));
   }
 
   @Test
@@ -128,8 +126,7 @@ public class UserTest {
     final UserBuilder builder = User.builder();
 
     assertThat(builder.toString(),
-        is("User.UserBuilder(id=null, displayName=null, classId=null, email=null, key=null, auth=null)"));
-
+        is("User.UserBuilder(id=null, displayName=null, classId=null, email=null, key=null)"));
   }
 
   @Test

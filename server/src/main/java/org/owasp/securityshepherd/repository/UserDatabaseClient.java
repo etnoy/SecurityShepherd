@@ -12,9 +12,8 @@ public class UserDatabaseClient {
 
   public Mono<Integer> findUserIdByLoginName(final String loginName) {
     return databaseClient
-        // TODO: prevent sql injection with template (but how?)
-        .execute("SELECT user_id from password_auth WHERE login_name = " + loginName + " LIMIT 1")
-        .map((row, rowMetadata) -> {
+        .execute("SELECT user_id from password_auth WHERE login_name = :login_name LIMIT 1")
+        .bind("login_name", loginName).map((row, rowMetadata) -> {
           return row.get("user_id", Integer.class);
         }).one();
   }

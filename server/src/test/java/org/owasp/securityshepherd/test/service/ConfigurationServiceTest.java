@@ -30,7 +30,7 @@ import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@DisplayName("ConfigurationService")
+@DisplayName("ConfigurationService unit test")
 public class ConfigurationServiceTest {
 
   private ConfigurationService configurationService;

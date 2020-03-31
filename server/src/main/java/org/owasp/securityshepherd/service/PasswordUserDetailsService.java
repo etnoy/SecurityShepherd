@@ -11,12 +11,11 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @Service
 public class PasswordUserDetailsService implements ReactiveUserDetailsService {
-
   @Autowired
   UserService userService;
 
   @Override
   public Mono<UserDetails> findByUsername(final String loginName) {
-    return userService.findUserDetailsByLoginName(loginName);
+    return userService.findUserDetailsByLoginName(loginName).cast(UserDetails.class);
   }
 }

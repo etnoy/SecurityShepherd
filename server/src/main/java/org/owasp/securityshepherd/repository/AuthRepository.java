@@ -10,6 +10,6 @@ import reactor.core.publisher.Mono;
 
 @Repository
 public interface AuthRepository extends ReactiveCrudRepository<UserAuth, Integer> {
-  @Query("SELECT * from auth WHERE user_id = :user_id")
+  @Query("SELECT * from user_auth WHERE user_id = :user_id")
   public Mono<UserAuth> findByUserId(@Param("user_id") final int userId);
 }

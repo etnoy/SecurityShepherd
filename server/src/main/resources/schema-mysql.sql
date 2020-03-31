@@ -46,7 +46,7 @@ CREATE TABLE module_score (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
-CREATE TABLE auth (
+CREATE TABLE user_auth (
   id INT AUTO_INCREMENT,
   user_id INT NOT NULL,
   is_enabled BOOLEAN DEFAULT FALSE,

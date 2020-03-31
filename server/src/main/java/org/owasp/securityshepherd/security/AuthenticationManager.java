@@ -16,25 +16,20 @@ import reactor.core.publisher.Mono;
 public class AuthenticationManager implements ReactiveAuthenticationManager {
 
   @Autowired
-  private WebTokenService jwtService;
+  private WebTokenService webTokenService;
 
   @Override
   public Mono<Authentication> authenticate(Authentication authentication) {
     String authToken = authentication.getCredentials().toString();
 
-    if (jwtService.validateToken(authToken)) {
-
-      final Mono<User> userMono = jwtService.getUserFromToken(authToken);
-
-      final Mono<UserDetails> userDetailsMono =
-          userMono.map(ShepherdUserDetails::new);
+    if (webTokenService.validateToken(authToken)) {
+      final Mono<ShepherdUserDetails> userDetailsMono = webTokenService.getUserDetailsFromToken(authToken);
 
       final Mono<Collection<? extends GrantedAuthority>> authoritiesMono =
-          userMono.map(ShepherdUserDetails::new).map(ShepherdUserDetails::getAuthorities);
+          userDetailsMono.map(ShepherdUserDetails::getAuthorities);
 
       return userDetailsMono.zipWith(authoritiesMono).map(
           tuple -> new UsernamePasswordAuthenticationToken(tuple.getT1(), null, tuple.getT2()));
-
     } else {
       return Mono.empty();
     }

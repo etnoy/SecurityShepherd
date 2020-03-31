@@ -28,7 +28,7 @@ public class LoginController {
 
   private final UserService userService;
 
-  private final WebTokenService jwtService;
+  private final WebTokenService webTokenService;
 
   private final PasswordEncoder passwordEncoder;
 
@@ -36,14 +36,11 @@ public class LoginController {
   public Mono<ResponseEntity<AuthResponse>> login(@RequestBody @Valid PasswordLoginDto loginDto) {
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
 
-    final Mono<Integer> userIdMono = userService.findUserIdByLoginName(loginDto.getUserName());
-
-    return userIdMono.map(ShepherdUserDetails::new)
+    return userService.findUserDetailsByLoginName(loginDto.getUserName())
         .filter(userDetails -> encoder.matches(loginDto.getPassword(), userDetails.getPassword()))
-        .zipWith(userIdMono).map(Tuple2::getT2).map(jwtService::generateToken).map(AuthResponse::new)
+        .map(webTokenService::generateToken).map(AuthResponse::new)
         .map(authResponse -> new ResponseEntity<>(authResponse, HttpStatus.OK))
         .defaultIfEmpty(new ResponseEntity<>(HttpStatus.UNAUTHORIZED));
-
   }
 
   @PostMapping(path = "/register")

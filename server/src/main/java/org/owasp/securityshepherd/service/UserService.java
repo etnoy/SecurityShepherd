@@ -6,14 +6,13 @@ import org.owasp.securityshepherd.exception.DuplicateUserDisplayNameException;
 import org.owasp.securityshepherd.exception.InvalidClassIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.UserIdNotFoundException;
-import org.owasp.securityshepherd.model.UserAuth;
 import org.owasp.securityshepherd.model.PasswordAuth;
-import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.model.PasswordAuth.PasswordAuthBuilder;
+import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.model.User.UserBuilder;
+import org.owasp.securityshepherd.model.UserAuth;
 import org.owasp.securityshepherd.repository.AuthRepository;
 import org.owasp.securityshepherd.repository.PasswordAuthRepository;
-import org.owasp.securityshepherd.repository.SubmissionDatabaseClient;
 import org.owasp.securityshepherd.repository.UserDatabaseClient;
 import org.owasp.securityshepherd.repository.UserRepository;
 import org.owasp.securityshepherd.security.ShepherdUserDetails;
@@ -45,14 +44,18 @@ public final class UserService {
     return userRepository.count();
   }
 
-  public Mono<UserDetails> findUserDetailsByLoginName(final String loginName) {
-    final Mono<Integer> userIdMono = findUserIdByLoginName(loginName);
+  public Mono<ShepherdUserDetails> findUserDetailsByUserId(final int userId) {
 
-    final Mono<UserAuth> userAuthMono = userIdMono.flatMap(this::findAuthByUserId);
-    final Mono<PasswordAuth> passwordAuthMono = userIdMono.flatMap(this::findPasswordAuthByUserId);
+    final Mono<UserAuth> userAuthMono = Mono.just(userId).flatMap(this::findAuthByUserId);
+    final Mono<PasswordAuth> passwordAuthMono =
+        Mono.just(userId).flatMap(this::findPasswordAuthByUserId);
 
     return Mono.zip(userAuthMono, passwordAuthMono,
         (userAuth, passwordAuth) -> new ShepherdUserDetails(userAuth, passwordAuth));
+  }
+
+  public Mono<ShepherdUserDetails> findUserDetailsByLoginName(final String loginName) {
+    return findUserIdByLoginName(loginName).flatMap(this::findUserDetailsByUserId);
   }
 
   public Mono<Integer> create(final String displayName) {

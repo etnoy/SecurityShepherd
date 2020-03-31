@@ -17,9 +17,13 @@ public final class ShepherdUserDetails implements UserDetails {
   private static final long serialVersionUID = 9011116395514302667L;
 
   private UserAuth userAuth;
-  
+
   private PasswordAuth passwordAuth;
-  
+
+  public int getUserId() {
+    return userAuth.getUserId();
+  }
+
   @Override
   public String getPassword() {
     return passwordAuth.getHashedPassword();
