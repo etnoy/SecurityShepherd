@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.model.UserAuth;
 import org.owasp.securityshepherd.model.UserAuth.UserAuthBuilder;
+import org.owasp.securityshepherd.test.util.TestUtils;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -26,17 +27,6 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 @SpringBootTest
 @DisplayName("UserAuth unit test")
 public class UserAuthTest {
-
-  private static final boolean[] BOOLEANS = {false, true};
-
-  @Test
-  public void builderToString_ValidData_AsExpected() {
-    final UserAuthBuilder builder = UserAuth.builder();
-
-    assertThat(builder.toString(), is(
-        "UserAuth.UserAuthBuilder(id=null, userId=null, isEnabled=false, badLoginCount=0, isAdmin=false, suspendedUntil=null, suspensionMessage=null, accountCreated=null, lastLogin=null, lastLoginMethod=null)"));
-  }
-
   @Test
   public void buildAccountCreated_ValidTime_Builds() {
     final int[] timesToTest = {0, 1, 2, 1000, 4000, 1581806000, 42};
@@ -69,8 +59,16 @@ public class UserAuthTest {
   }
 
   @Test
+  public void builderToString_ValidData_AsExpected() {
+    final UserAuthBuilder builder = UserAuth.builder();
+
+    assertThat(builder.toString(), is(
+        "UserAuth.UserAuthBuilder(id=null, userId=null, isEnabled=false, badLoginCount=0, isAdmin=false, suspendedUntil=null, suspensionMessage=null, accountCreated=null, lastLogin=null, lastLoginMethod=null)"));
+  }
+
+  @Test
   public void buildIsAdmin_TrueOrFalse_MatchesBuild() {
-    for (boolean isAdmin : BOOLEANS) {
+    for (boolean isAdmin : TestUtils.BOOLEANS) {
       final UserAuthBuilder builder = UserAuth.builder();
 
       builder.isAdmin(isAdmin);
@@ -82,7 +80,7 @@ public class UserAuthTest {
 
   @Test
   public void buildIsEnabled_TrueOrFalse_MatchesBuild() {
-    for (boolean isEnabled : BOOLEANS) {
+    for (boolean isEnabled : TestUtils.BOOLEANS) {
       final UserAuthBuilder builder = UserAuth.builder();
 
       builder.isEnabled(isEnabled);
@@ -193,7 +191,7 @@ public class UserAuthTest {
   public void withAdmin_ValidBoolean_ChangesIsAdmin() {
     final UserAuth testAuth = UserAuth.builder().build();
 
-    for (final boolean isAdmin : BOOLEANS) {
+    for (final boolean isAdmin : TestUtils.BOOLEANS) {
       final UserAuth changedAuth = testAuth.withAdmin(isAdmin);
       assertThat(changedAuth.isAdmin(), is(isAdmin));
     }
@@ -217,7 +215,7 @@ public class UserAuthTest {
   public void withEnabled_ValidBoolean_ChangesIsEnabled() {
     final UserAuth testAuth = UserAuth.builder().build();
 
-    for (boolean isEnabled : BOOLEANS) {
+    for (boolean isEnabled : TestUtils.BOOLEANS) {
       final UserAuth changedAuth = testAuth.withEnabled(isEnabled);
       assertThat(changedAuth.isEnabled(), is(isEnabled));
     }

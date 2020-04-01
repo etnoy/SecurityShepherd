@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.model.Submission;
 import org.owasp.securityshepherd.model.Submission.SubmissionBuilder;
+import org.owasp.securityshepherd.test.util.TestUtils;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -22,9 +23,6 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 @SpringBootTest
 @DisplayName("Submission unit test")
 public class SubmissionTest {
-
-  private static final boolean[] BOOLEANS = {false, true};
-
   @Test
   public void build_NoArguments_ThrowsException() {
     assertThrows(NullPointerException.class, () -> Submission.builder().build());
@@ -64,7 +62,7 @@ public class SubmissionTest {
 
   @Test
   public void buildIsValid_TrueOrFalse_MatchesBuild() {
-    for (boolean isValid : BOOLEANS) {
+    for (boolean isValid : TestUtils.BOOLEANS) {
 
       final SubmissionBuilder builder =
           Submission.builder().userId(123).moduleId(456).time(LocalDateTime.MIN);
@@ -235,7 +233,7 @@ public class SubmissionTest {
     final Submission testSubmission =
         Submission.builder().userId(123).moduleId(6789).time(LocalDateTime.MIN).build();
 
-    for (boolean isValid : BOOLEANS) {
+    for (boolean isValid : TestUtils.BOOLEANS) {
       final Submission changedSubmission = testSubmission.withValid(isValid);
       assertThat(changedSubmission.isValid(), is(isValid));
     }

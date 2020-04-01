@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.model.Module.ModuleBuilder;
+import org.owasp.securityshepherd.test.util.TestUtils;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -19,9 +20,6 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 @SpringBootTest
 @DisplayName("Module unit test")
 public class ModuleTest {
-
-  private static final boolean[] BOOLEANS = {false, true};
-
   @Test
   public void build_NoArguments_ThrowsException() {
     assertThrows(NullPointerException.class, () -> Module.builder().build());
@@ -55,7 +53,7 @@ public class ModuleTest {
 
   @Test
   public void buildIsExactFlag_TrueOrFalse_MatchesBuild() {
-    for (final boolean isFlagExact : BOOLEANS) {
+    for (final boolean isFlagExact : TestUtils.BOOLEANS) {
       final ModuleBuilder builder = Module.builder().name("TestModule");
 
       builder.isFlagExact(isFlagExact);
@@ -67,7 +65,7 @@ public class ModuleTest {
 
   @Test
   public void buildIsFlagEnabled_TrueOrFalse_MatchesBuild() {
-    for (final boolean isFlagEnabled : BOOLEANS) {
+    for (final boolean isFlagEnabled : TestUtils.BOOLEANS) {
       final ModuleBuilder builder = Module.builder().name("TestModule");
 
       builder.isFlagEnabled(isFlagEnabled);
@@ -79,7 +77,7 @@ public class ModuleTest {
 
   @Test
   public void buildIsOpen_TrueOrFalse_MatchesBuild() {
-    for (final boolean isOpen : BOOLEANS) {
+    for (final boolean isOpen : TestUtils.BOOLEANS) {
 
       final ModuleBuilder builder = Module.builder().name("TestModule");
 

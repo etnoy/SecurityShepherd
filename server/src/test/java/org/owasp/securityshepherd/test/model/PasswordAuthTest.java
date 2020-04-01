@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.model.PasswordAuth;
 import org.owasp.securityshepherd.model.PasswordAuth.PasswordAuthBuilder;
+import org.owasp.securityshepherd.test.util.TestUtils;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import lombok.NonNull;
@@ -18,9 +19,6 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 @SpringBootTest
 @DisplayName("PasswordAuth unit test")
 public class PasswordAuthTest {
-
-  private static final boolean[] BOOLEANS = {false, true};
-
   @Test
   public void builderToString_ValidData_AsExpected() {
     assertThat(PasswordAuth.builder().loginName("TestUser").hashedPassword("987").toString(), is(
@@ -64,10 +62,9 @@ public class PasswordAuthTest {
     }
   }
 
-
   @Test
   public void buildIsPasswordExpired_TrueOrFalse_MatchesBuild() {
-    for (final boolean isPasswordNonExpired : BOOLEANS) {
+    for (final boolean isPasswordNonExpired : TestUtils.BOOLEANS) {
       final PasswordAuthBuilder builder =
           PasswordAuth.builder().loginName("TestUser").hashedPassword("passwordHash");
 
