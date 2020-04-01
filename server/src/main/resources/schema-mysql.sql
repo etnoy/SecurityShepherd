@@ -34,9 +34,9 @@ CREATE TABLE module (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
-CREATE TABLE module_score (
+CREATE TABLE score (
 	id INT AUTO_INCREMENT,
-	module_id INT,
+	module_id INT NOT NULL,
 	user_rank INT NOT NULL,
 	user_id INT NOT NULL,
 	score INT NOT NULL,

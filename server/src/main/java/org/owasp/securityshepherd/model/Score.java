@@ -12,7 +12,7 @@ import lombok.With;
 @Value
 @Builder
 @With
-public class ModuleScore implements Serializable {
+public class Score implements Serializable {
 
   private static final long serialVersionUID = -3672798577756177047L;
 

@@ -25,7 +25,7 @@ import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.repository.ModuleRepository;
-import org.owasp.securityshepherd.repository.ModuleScoreRepository;
+import org.owasp.securityshepherd.repository.ScoreRepository;
 import org.owasp.securityshepherd.repository.SubmissionDatabaseClient;
 import org.owasp.securityshepherd.repository.ModulePointRepository;
 import org.owasp.securityshepherd.service.ConfigurationService;
@@ -59,7 +59,7 @@ public class ModuleServiceTest {
   private ModulePointRepository modulePointRepository;
 
   @Mock
-  private ModuleScoreRepository moduleScoreRepository;
+  private ScoreRepository scoreRepository;
 
   @Mock
   private SubmissionService submissionService;
@@ -137,7 +137,7 @@ public class ModuleServiceTest {
   @Test
   public void deleteAll_NoArgument_CallsRepository() {
     when(moduleRepository.deleteAll()).thenReturn(Mono.empty());
-    when(moduleScoreRepository.deleteAll()).thenReturn(Mono.empty());
+    when(scoreRepository.deleteAll()).thenReturn(Mono.empty());
     when(modulePointRepository.deleteAll()).thenReturn(Mono.empty());
     StepVerifier.create(moduleService.deleteAll()).expectComplete().verify();
     verify(moduleRepository, times(1)).deleteAll();
@@ -563,7 +563,7 @@ public class ModuleServiceTest {
     Hooks.onOperatorDebug();
 
     moduleService = new ModuleService(moduleRepository, modulePointRepository,
-        moduleScoreRepository, userService, configurationService, keyService, cryptoService);
+        scoreRepository, userService, configurationService, keyService, cryptoService);
   }
 
   @Test
