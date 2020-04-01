@@ -1,9 +1,9 @@
 package org.owasp.securityshepherd.service;
 
 import java.util.Map;
-import org.owasp.securityshepherd.model.ModulePoints;
-import org.owasp.securityshepherd.model.ModulePoints.ModulePointsBuilder;
-import org.owasp.securityshepherd.repository.ModulePointsRepository;
+import org.owasp.securityshepherd.model.ModulePoint;
+import org.owasp.securityshepherd.model.ModulePoint.ModulePointBuilder;
+import org.owasp.securityshepherd.repository.ModulePointRepository;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -15,14 +15,14 @@ public final class ScoringService {
 
   private final SubmissionService submissionService;
 
-  private final ModulePointsRepository moduleScoreRepository;
+  private final ModulePointRepository moduleScoreRepository;
 
   public Mono<Map<Integer, Integer>> computeScoreForModule(final int moduleId) {
     // Get the scoring rules for this module
-    final Mono<Map<Integer, Integer>> moduleRankPointsMap = moduleScoreRepository
-        .findAllByModuleId(moduleId).collectMap(ModulePoints::getRank, ModulePoints::getPoints);
+    final Mono<Map<Integer, Integer>> moduleRankPointMap = moduleScoreRepository
+        .findAllByModuleId(moduleId).collectMap(ModulePoint::getRank, ModulePoint::getPoints);
 
-    return moduleRankPointsMap.flatMap(scoreMap -> {
+    return moduleRankPointMap.flatMap(scoreMap -> {
       // The base score for this module is the 0th entry in the list
       final int baseScore = scoreMap.get(0);
       // Get all valid submissions related to this module, ranked by submission time
@@ -40,8 +40,8 @@ public final class ScoringService {
     return moduleScoreRepository.deleteAll();
   }
 
-  public Mono<ModulePoints> setModuleScore(final int moduleId, final int rank, final int score) {
-    ModulePointsBuilder builder = ModulePoints.builder().moduleId(moduleId).rank(rank).points(score);
+  public Mono<ModulePoint> setModuleScore(final int moduleId, final int rank, final int score) {
+    ModulePointBuilder builder = ModulePoint.builder().moduleId(moduleId).rank(rank).points(score);
 
     return moduleScoreRepository.save(builder.build());
   }

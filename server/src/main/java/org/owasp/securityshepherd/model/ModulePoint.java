@@ -11,7 +11,7 @@ import lombok.With;
 @Value
 @Builder
 @With
-public class ModulePoints implements Serializable {
+public class ModulePoint implements Serializable {
   private static final long serialVersionUID = 4548877736126023113L;
 
   @Id

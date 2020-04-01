@@ -16,7 +16,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.repository.ModuleRepository;
-import org.owasp.securityshepherd.repository.ModulePointsRepository;
+import org.owasp.securityshepherd.repository.ModulePointRepository;
 import org.owasp.securityshepherd.repository.SubmissionDatabaseClient;
 import org.owasp.securityshepherd.repository.SubmissionRepository;
 import org.owasp.securityshepherd.service.DatabaseService;
@@ -57,7 +57,7 @@ public class ScoringServiceIT {
   SubmissionRepository submissionRepository;
 
   @Autowired
-  ModulePointsRepository moduleScoreRepository;
+  ModulePointRepository moduleScoreRepository;
 
   @Autowired
   Clock clock;

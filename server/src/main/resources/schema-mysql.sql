@@ -35,7 +35,18 @@ CREATE TABLE module (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
-CREATE TABLE module_points (
+CREATE TABLE module_score (
+	id INT AUTO_INCREMENT,
+	module_id INT,
+	submission_rank INT,
+	points INT,
+  PRIMARY KEY (id),
+  UNIQUE KEY (module_id, submission_rank),
+  FOREIGN KEY (`module_id`) REFERENCES module(id))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4;
+
+CREATE TABLE module_point (
 	id INT AUTO_INCREMENT,
 	module_id INT,
 	submission_rank INT,
