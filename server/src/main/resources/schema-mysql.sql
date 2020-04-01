@@ -34,6 +34,16 @@ CREATE TABLE module (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
+CREATE TABLE scoreboard (
+	id INT AUTO_INCREMENT,
+	user_id INT NOT NULL UNIQUE,
+	user_rank INT NOT NULL,
+	score INT NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (`user_id`) REFERENCES user(id))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4;
+
 CREATE TABLE score (
 	id INT AUTO_INCREMENT,
 	module_id INT NOT NULL,
