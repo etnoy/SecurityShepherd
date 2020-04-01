@@ -33,7 +33,7 @@ public class LoginController {
   public Mono<ResponseEntity<AuthResponse>> login(@RequestBody @Valid PasswordLoginDto loginDto) {
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
 
-    return userService.findUserDetailsByLoginName(loginDto.getUserName())
+    return userService.createUserDetailsFromLoginName(loginDto.getUserName())
         .filter(userDetails -> encoder.matches(loginDto.getPassword(), userDetails.getPassword()))
         .map(webTokenService::generateToken).map(AuthResponse::new)
         .map(authResponse -> new ResponseEntity<>(authResponse, HttpStatus.OK))

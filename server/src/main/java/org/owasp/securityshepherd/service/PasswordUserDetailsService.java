@@ -15,6 +15,6 @@ public class PasswordUserDetailsService implements ReactiveUserDetailsService {
 
   @Override
   public Mono<UserDetails> findByUsername(final String loginName) {
-    return userService.findUserDetailsByLoginName(loginName).cast(UserDetails.class);
+    return userService.createUserDetailsFromLoginName(loginName).cast(UserDetails.class);
   }
 }

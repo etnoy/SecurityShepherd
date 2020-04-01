@@ -13,7 +13,6 @@ import org.owasp.securityshepherd.model.User.UserBuilder;
 import org.owasp.securityshepherd.model.UserAuth;
 import org.owasp.securityshepherd.repository.AuthRepository;
 import org.owasp.securityshepherd.repository.PasswordAuthRepository;
-import org.owasp.securityshepherd.repository.UserDatabaseClient;
 import org.owasp.securityshepherd.repository.UserRepository;
 import org.owasp.securityshepherd.security.ShepherdUserDetails;
 import org.springframework.stereotype.Service;
@@ -28,8 +27,6 @@ import reactor.core.publisher.Mono;
 public final class UserService {
 
   private final UserRepository userRepository;
-
-  private final UserDatabaseClient userDatabaseClient;
 
   private final AuthRepository authRepository;
 
@@ -111,13 +108,32 @@ public final class UserService {
     });
   }
 
+  public Mono<ShepherdUserDetails> createUserDetailsFromLoginName(final String loginName) {
+
+    final Mono<PasswordAuth> passwordAuthMono = passwordAuthRepository.findByLoginName(loginName);
+
+    final Mono<UserAuth> userAuthMono =
+        passwordAuthMono.map(PasswordAuth::getUserId).flatMap(this::findUserAuthByUserId);
+
+    return Mono.zip(userAuthMono, passwordAuthMono, ShepherdUserDetails::new);
+
+  }
+
+  public Mono<ShepherdUserDetails> createUserDetailsFromUserId(final int userId) {
+    final Mono<UserAuth> userAuthMono = Mono.just(userId).flatMap(this::findUserAuthByUserId);
+    final Mono<PasswordAuth> passwordAuthMono =
+        Mono.just(userId).flatMap(this::findPasswordAuthByUserId);
+
+    return Mono.zip(userAuthMono, passwordAuthMono, ShepherdUserDetails::new);
+  }
+
   public Mono<Void> deleteAll() {
     return passwordAuthRepository.deleteAll().then(authRepository.deleteAll())
         .then(userRepository.deleteAll());
   }
 
   public Mono<Void> deleteById(final int userId) {
-    return userRepository.findById(userId).zipWith(findAuthByUserId(userId))
+    return userRepository.findById(userId).zipWith(findUserAuthByUserId(userId))
         .flatMap(tuple -> userRepository.delete(tuple.getT1()));
   }
 
@@ -128,7 +144,7 @@ public final class UserService {
 
     log.info("Demoting user with id " + userId + " to user");
 
-    return findAuthByUserId(userId).map(userAuth -> userAuth.withAdmin(false))
+    return findUserAuthByUserId(userId).map(userAuth -> userAuth.withAdmin(false))
         .flatMap(authRepository::save).then();
   }
 
@@ -149,14 +165,6 @@ public final class UserService {
     return userRepository.findAll().flatMap(user -> findById(user.getId()));
   }
 
-  public Mono<UserAuth> findAuthByUserId(final int userId) {
-    if (userId <= 0) {
-      return Mono.error(new InvalidUserIdException());
-    }
-
-    return authRepository.findByUserId(userId);
-  }
-
   public Mono<User> findById(final int userId) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
@@ -167,39 +175,6 @@ public final class UserService {
 
   public Mono<String> findDisplayNameById(final int userId) {
     return userRepository.findById(userId).map(User::getDisplayName);
-  }
-
-  public Mono<PasswordAuth> findPasswordAuthByUserId(final int userId) {
-    if (userId <= 0) {
-      return Mono.error(new InvalidUserIdException());
-    }
-
-    return passwordAuthRepository.findByUserId(userId);
-  }
-
-  public Mono<ShepherdUserDetails> findUserDetailsByLoginName(final String loginName) {
-    return findUserIdByLoginName(loginName).flatMap(this::findUserDetailsByUserId);
-  }
-
-  public Mono<ShepherdUserDetails> findUserDetailsByUserId(final int userId) {
-
-    final Mono<UserAuth> userAuthMono = Mono.just(userId).flatMap(this::findAuthByUserId);
-    final Mono<PasswordAuth> passwordAuthMono =
-        Mono.just(userId).flatMap(this::findPasswordAuthByUserId);
-
-    return Mono.zip(userAuthMono, passwordAuthMono, ShepherdUserDetails::new);
-  }
-
-  public Mono<Integer> findUserIdByLoginName(final String loginName) {
-    if (loginName == null) {
-      throw new NullPointerException();
-    }
-
-    if (loginName.isEmpty()) {
-      // TODO: custom exception message
-      throw new IllegalArgumentException();
-    }
-    return userDatabaseClient.findUserIdByLoginName(loginName);
   }
 
   public Mono<byte[]> findKeyById(final int id) {
@@ -219,6 +194,34 @@ public final class UserService {
         });
   }
 
+  public Mono<PasswordAuth> findPasswordAuthByUserId(final int userId) {
+    if (userId <= 0) {
+      return Mono.error(new InvalidUserIdException());
+    }
+
+    return passwordAuthRepository.findByUserId(userId);
+  }
+
+  public Mono<UserAuth> findUserAuthByUserId(final int userId) {
+    if (userId <= 0) {
+      return Mono.error(new InvalidUserIdException());
+    }
+
+    return authRepository.findByUserId(userId);
+  }
+
+  public Mono<Integer> findUserIdByLoginName(final String loginName) {
+    if (loginName == null) {
+      throw new NullPointerException();
+    }
+
+    if (loginName.isEmpty()) {
+      // TODO: custom exception message
+      throw new IllegalArgumentException();
+    }
+    return passwordAuthRepository.findByLoginName(loginName).map(PasswordAuth::getUserId);
+  }
+
   private Mono<String> loginNameAlreadyExists(final String loginName) {
     return Mono
         .error(new DuplicateClassNameException("Login name " + loginName + " already exists"));
@@ -231,7 +234,7 @@ public final class UserService {
 
     log.info("Promoting user with id " + userId + " to admin");
 
-    return findAuthByUserId(userId).map(userAuth -> userAuth.withAdmin(true))
+    return findUserAuthByUserId(userId).map(userAuth -> userAuth.withAdmin(true))
         .flatMap(authRepository::save).then();
   }
 

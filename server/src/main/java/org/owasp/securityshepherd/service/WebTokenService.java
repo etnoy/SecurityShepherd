@@ -30,7 +30,7 @@ public class WebTokenService {
 
   public Mono<ShepherdUserDetails> getUserDetailsFromToken(final String token) {
     final int userId = Integer.parseInt(getAllClaimsFromToken(token).getSubject());
-    return userService.findUserDetailsByUserId(userId);
+    return userService.createUserDetailsFromUserId(userId);
   }
 
   public Date getExpirationDateFromToken(final String token) {
