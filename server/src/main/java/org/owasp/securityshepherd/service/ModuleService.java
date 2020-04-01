@@ -7,11 +7,11 @@ import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
 import org.owasp.securityshepherd.model.Module;
+import org.owasp.securityshepherd.repository.ModulePointRepository;
 import org.owasp.securityshepherd.repository.ModuleRepository;
+import org.owasp.securityshepherd.repository.ModuleScoreRepository;
 import org.springframework.stereotype.Service;
-
 import com.google.common.primitives.Bytes;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
@@ -24,6 +24,10 @@ public final class ModuleService {
 
   private final ModuleRepository moduleRepository;
 
+  private final ModulePointRepository modulePointRepository;
+
+  private final ModuleScoreRepository moduleScoreRepository;
+  
   private final UserService userService;
 
   private final ConfigurationService configurationService;
@@ -53,7 +57,8 @@ public final class ModuleService {
   }
 
   public Mono<Void> deleteAll() {
-    return moduleRepository.deleteAll();
+    return moduleScoreRepository.deleteAll().then(modulePointRepository.deleteAll())
+        .then(moduleRepository.deleteAll());
   }
 
   private Mono<Boolean> doesNotExistByName(final String moduleName) {
@@ -209,4 +214,6 @@ public final class ModuleService {
 
     return isValid;
   }
+
+
 }

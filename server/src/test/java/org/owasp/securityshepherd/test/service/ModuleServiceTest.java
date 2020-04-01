@@ -25,11 +25,14 @@ import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.repository.ModuleRepository;
+import org.owasp.securityshepherd.repository.ModuleScoreRepository;
+import org.owasp.securityshepherd.repository.SubmissionDatabaseClient;
 import org.owasp.securityshepherd.repository.ModulePointRepository;
 import org.owasp.securityshepherd.service.ConfigurationService;
 import org.owasp.securityshepherd.service.CryptoService;
 import org.owasp.securityshepherd.service.KeyService;
 import org.owasp.securityshepherd.service.ModuleService;
+import org.owasp.securityshepherd.service.SubmissionService;
 import org.owasp.securityshepherd.service.UserService;
 import org.owasp.securityshepherd.test.util.TestUtils;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -53,7 +56,13 @@ public class ModuleServiceTest {
   private ModuleRepository moduleRepository;
 
   @Mock
-  private ModulePointRepository moduleScoreRepository;
+  private ModulePointRepository modulePointRepository;
+
+  @Mock
+  private ModuleScoreRepository moduleScoreRepository;
+
+  @Mock
+  private SubmissionService submissionService;
 
   @Mock
   private ConfigurationService configurationService;
@@ -63,6 +72,9 @@ public class ModuleServiceTest {
 
   @Mock
   private CryptoService cryptoService;
+
+  @Mock
+  private SubmissionDatabaseClient submissionDatabaseClient;
 
   @Test
   public void count_NoArgument_ReturnsCount() {
@@ -125,6 +137,8 @@ public class ModuleServiceTest {
   @Test
   public void deleteAll_NoArgument_CallsRepository() {
     when(moduleRepository.deleteAll()).thenReturn(Mono.empty());
+    when(moduleScoreRepository.deleteAll()).thenReturn(Mono.empty());
+    when(modulePointRepository.deleteAll()).thenReturn(Mono.empty());
     StepVerifier.create(moduleService.deleteAll()).expectComplete().verify();
     verify(moduleRepository, times(1)).deleteAll();
   }
@@ -548,8 +562,8 @@ public class ModuleServiceTest {
     // Print more verbose errors if something goes wrong
     Hooks.onOperatorDebug();
 
-    moduleService = new ModuleService(moduleRepository, userService, configurationService,
-        keyService, cryptoService);
+    moduleService = new ModuleService(moduleRepository, modulePointRepository,
+        moduleScoreRepository, userService, configurationService, keyService, cryptoService);
   }
 
   @Test

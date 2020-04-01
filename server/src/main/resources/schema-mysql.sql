@@ -38,11 +38,13 @@ DEFAULT CHARACTER SET = utf8mb4;
 CREATE TABLE module_score (
 	id INT AUTO_INCREMENT,
 	module_id INT,
-	submission_rank INT,
-	points INT,
+	user_rank INT,
+	user_id INT,
+	score INT,
   PRIMARY KEY (id),
-  UNIQUE KEY (module_id, submission_rank),
-  FOREIGN KEY (`module_id`) REFERENCES module(id))
+  UNIQUE KEY (user_id, module_id),
+  FOREIGN KEY (`module_id`) REFERENCES module(id),
+  FOREIGN KEY (`user_id`) REFERENCES user(id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 

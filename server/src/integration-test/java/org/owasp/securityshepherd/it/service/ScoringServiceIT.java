@@ -1,7 +1,5 @@
 package org.owasp.securityshepherd.it.service;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
@@ -15,11 +13,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.owasp.securityshepherd.repository.ModuleRepository;
 import org.owasp.securityshepherd.repository.ModulePointRepository;
+import org.owasp.securityshepherd.repository.ModuleRepository;
+import org.owasp.securityshepherd.repository.ModuleScoreRepository;
 import org.owasp.securityshepherd.repository.SubmissionDatabaseClient;
 import org.owasp.securityshepherd.repository.SubmissionRepository;
+import org.owasp.securityshepherd.service.ConfigurationService;
+import org.owasp.securityshepherd.service.CryptoService;
 import org.owasp.securityshepherd.service.DatabaseService;
+import org.owasp.securityshepherd.service.KeyService;
 import org.owasp.securityshepherd.service.ModuleService;
 import org.owasp.securityshepherd.service.ScoringService;
 import org.owasp.securityshepherd.service.SubmissionService;
@@ -38,13 +40,18 @@ import reactor.test.StepVerifier;
 public class ScoringServiceIT {
 
   @Autowired
+  ModuleService moduleService;
+
+  @Autowired
   UserService userService;
 
   @Autowired
-  ModuleService moduleService;
+  ModuleScoreRepository moduleScoreRepository;
 
+  @Autowired
   SubmissionService submissionService;
 
+  @Autowired
   ScoringService scoringService;
 
   @Autowired
@@ -57,13 +64,22 @@ public class ScoringServiceIT {
   SubmissionRepository submissionRepository;
 
   @Autowired
-  ModulePointRepository moduleScoreRepository;
+  ModulePointRepository modulePointRepository;
 
   @Autowired
   Clock clock;
-  
+
   @Autowired
   DatabaseService databaseService;
+
+  @Autowired
+  ConfigurationService configurationService;
+
+  @Autowired
+  KeyService keyService;
+
+  @Autowired
+  CryptoService cryptoService;
 
   @Test
   public void computeScoreForModule_SubmittedScores_ReturnsCorrectScoresForUsers()
@@ -144,35 +160,23 @@ public class ScoringServiceIT {
       submissionService.submit(currentUserId, moduleId3, currentFlag).block();
     }
 
-    StepVerifier.create(scoringService.computeScoreForModule(moduleId)).assertNext(scores -> {
-      // This user submitted first and got the max bonus!
-      assertThat(scores.get(userIds.get(6)), is(150));
-      
-      assertThat(scores.get(userIds.get(0)), is(120));
-      assertThat(scores.get(userIds.get(1)), is(100));
-      assertThat(scores.get(userIds.get(2)), is(140));
-      assertThat(scores.get(userIds.get(4)), is(120));
-      assertThat(scores.get(userIds.get(5)), is(140));
-
-      // These users submitted invalid flags, no score!
-      assertThat(scores.containsKey(userIds.get(3)), is(false));
-      assertThat(scores.containsKey(userIds.get(7)), is(false));
-    }).expectComplete().verify();
+    StepVerifier.create(scoringService.computeScoreForModule(moduleId)).expectNextCount(6).expectComplete()
+        .verify();
+    StepVerifier.create(scoringService.computeScoreForModule(moduleId2)).expectNextCount(6).expectComplete()
+    .verify();
+    StepVerifier.create(scoringService.computeScoreForModule(moduleId3)).expectNextCount(6).expectComplete()
+    .verify();
   }
 
   private void initializeService(Clock injectedClock) {
     submissionService = new SubmissionService(moduleService, submissionRepository, injectedClock,
         submissionDatabaseClient);
-
-    scoringService = new ScoringService(submissionService, moduleScoreRepository);
   }
 
   @BeforeEach
   private void clear() {
     // Print more verbose errors if something goes wrong with reactor
     Hooks.onOperatorDebug();
-
-    initializeService(clock);
 
     databaseService.clearAll().block();
   }

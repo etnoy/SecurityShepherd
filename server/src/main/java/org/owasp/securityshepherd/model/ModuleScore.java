@@ -2,6 +2,7 @@ package org.owasp.securityshepherd.model;
 
 import java.io.Serializable;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -24,5 +25,9 @@ public class ModuleScore implements Serializable {
   private Integer userId;
 
   @NonNull
-  private Integer points;
+  private Integer score;
+  
+  @NonNull
+  @Column("user_rank")
+  private Integer rank;
 }

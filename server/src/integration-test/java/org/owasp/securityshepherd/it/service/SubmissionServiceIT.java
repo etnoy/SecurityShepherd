@@ -41,13 +41,13 @@ import reactor.test.StepVerifier;
 @DisplayName("SubmissionService integration test")
 public class SubmissionServiceIT {
 
+  SubmissionService submissionService;
+  
   @Autowired
   UserService userService;
 
   @Autowired
   ModuleService moduleService;
-
-  SubmissionService submissionService;
 
   @Autowired
   Clock clock;

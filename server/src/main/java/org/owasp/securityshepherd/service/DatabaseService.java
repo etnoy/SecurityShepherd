@@ -17,14 +17,14 @@ public final class DatabaseService {
 
   @Autowired
   SubmissionService submissionService;
-  
+
   @Autowired
   ScoringService scoringService;
 
   public Mono<Void> clearAll() {
     // Clear all users and modules from repository before every test
     return scoringService.deleteAll().then(submissionService.deleteAll())
-        .then(classService.deleteAll()).then(userService.deleteAll())
-        .then(moduleService.deleteAll());
+        .then(classService.deleteAll()).then(moduleService.deleteAll())
+        .then(userService.deleteAll());
   }
 }
