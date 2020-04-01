@@ -26,7 +26,7 @@ import org.owasp.securityshepherd.exception.UserIdNotFoundException;
 import org.owasp.securityshepherd.model.UserAuth;
 import org.owasp.securityshepherd.model.PasswordAuth;
 import org.owasp.securityshepherd.model.User;
-import org.owasp.securityshepherd.repository.AuthRepository;
+import org.owasp.securityshepherd.repository.UserAuthRepository;
 import org.owasp.securityshepherd.repository.PasswordAuthRepository;
 import org.owasp.securityshepherd.repository.UserRepository;
 import org.owasp.securityshepherd.service.ClassService;
@@ -52,7 +52,7 @@ public class UserServiceTest {
   private UserRepository userRepository;
 
   @Mock
-  private AuthRepository userAuthRepository;
+  private UserAuthRepository userAuthRepository;
 
   @Mock
   private PasswordAuthRepository passwordAuthRepository;

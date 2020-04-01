@@ -11,7 +11,7 @@ import org.owasp.securityshepherd.model.PasswordAuth.PasswordAuthBuilder;
 import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.model.User.UserBuilder;
 import org.owasp.securityshepherd.model.UserAuth;
-import org.owasp.securityshepherd.repository.AuthRepository;
+import org.owasp.securityshepherd.repository.UserAuthRepository;
 import org.owasp.securityshepherd.repository.PasswordAuthRepository;
 import org.owasp.securityshepherd.repository.UserRepository;
 import org.owasp.securityshepherd.security.ShepherdUserDetails;
@@ -28,7 +28,7 @@ public final class UserService {
 
   private final UserRepository userRepository;
 
-  private final AuthRepository userAuthRepository;
+  private final UserAuthRepository userAuthRepository;
 
   private final PasswordAuthRepository passwordAuthRepository;
 
