@@ -31,7 +31,6 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Hooks;
-import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -107,7 +106,7 @@ public class ScoringServiceIT {
     // Set that module to have an exact flag
     moduleService.setExactFlag(moduleId, flag).block();
 
-    // Set scoring levels for module
+    // Set scoring levels for module1
     scoringService.setModuleScore(moduleId, 0, 100).block();
 
     scoringService.setModuleScore(moduleId, 1, 50).block();
@@ -119,9 +118,10 @@ public class ScoringServiceIT {
     final int moduleId2 = moduleService.create("AnotherModule").block().getId();
     moduleService.setExactFlag(moduleId2, flag).block();
 
-    // Set scoring levels for module
-    scoringService.setModuleScore(moduleId2, 0, 9999).block();
-    scoringService.setModuleScore(moduleId2, 1, 10).block();
+    // Set scoring levels for module2
+    scoringService.setModuleScore(moduleId2, 0, 50).block();
+    scoringService.setModuleScore(moduleId2, 1, 30).block();
+    scoringService.setModuleScore(moduleId2, 2, 10).block();
 
     final int moduleId3 = moduleService.create("IrrelevantModule").block().getId();
     moduleService.setExactFlag(moduleId3, flag).block();
@@ -160,12 +160,7 @@ public class ScoringServiceIT {
       submissionService.submit(currentUserId, moduleId3, currentFlag).block();
     }
 
-    StepVerifier.create(scoringService.computeScoreForModule(moduleId)).expectNextCount(6).expectComplete()
-        .verify();
-    StepVerifier.create(scoringService.computeScoreForModule(moduleId2)).expectNextCount(6).expectComplete()
-    .verify();
-    StepVerifier.create(scoringService.computeScoreForModule(moduleId3)).expectNextCount(6).expectComplete()
-    .verify();
+    scoringService.computeScores().blockLast();
   }
 
   private void initializeService(Clock injectedClock) {
