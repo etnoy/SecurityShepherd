@@ -748,7 +748,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void setClassId_InvalidClassId_ThrowsInvalidClassIdException() throws Exception {
+  public void setClassId_InvalidClassId_ThrowsInvalidClassIdException() {
     for (final int classId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.setClassId(10, classId))
           .expectError(InvalidClassIdException.class).verify();
@@ -756,8 +756,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void setClassId_InvalidUserId_ThrowsInvalidUserIdException()
-      throws InvalidUserIdException, InvalidClassIdException, AssertionError {
+  public void setClassId_InvalidUserId_ThrowsInvalidUserIdException() {
     for (final int userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.setClassId(userId, 61))
           .expectError(InvalidUserIdException.class).verify();
@@ -765,8 +764,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void setClassId_NonExistentClassId_ReturnsClassIdNotFoundException()
-      throws InvalidUserIdException, InvalidClassIdException, AssertionError {
+  public void setClassId_NonExistentClassId_ReturnsClassIdNotFoundException() {
     final int mockUserId = 16;
     final int mockClassId = 638;
 
@@ -783,8 +781,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void setClassId_ValidClassId_Succeeds()
-      throws InvalidUserIdException, InvalidClassIdException, AssertionError {
+  public void setClassId_ValidClassId_Succeeds() {
     final int mockUserId = 875;
     final int mockClassId = 213;
 
@@ -816,7 +813,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void setDisplayName_InvalidUserId_ThrowsInvalidUserIdException() throws Exception {
+  public void setDisplayName_InvalidUserId_ThrowsInvalidUserIdException() {
     for (final int userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.setDisplayName(userId, "displayName"))
           .expectError(InvalidUserIdException.class).verify();
@@ -830,7 +827,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void setDisplayName_UserIdDoesNotExist_ReturnsUserIdNotFoundException() throws Exception {
+  public void setDisplayName_UserIdDoesNotExist_ReturnsUserIdNotFoundException() {
     final String newDisplayName = "newName";
 
     final int mockUserId = 550;
@@ -843,7 +840,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void setDisplayName_ValidArguments_DisplayNameIsSet() throws Exception {
+  public void setDisplayName_ValidArguments_DisplayNameIsSet() {
     User mockUser = mock(User.class);
     String newDisplayName = "newDisplayName";
 

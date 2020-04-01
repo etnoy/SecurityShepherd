@@ -16,5 +16,4 @@ public class SubmissionDto  implements Serializable  {
   
   @NotNull
   private String flag;
-
 }

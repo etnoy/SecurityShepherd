@@ -24,5 +24,4 @@ public class PasswordRegistrationDto implements Serializable {
   @ValidPassword
   @NotNull
   private String password;
-
 }

@@ -64,20 +64,19 @@ public final class ModuleService {
     return moduleRepository.findAll();
   }
 
-  public Mono<Module> findById(final int id) {
-    if (id <= 0) {
+  public Mono<Module> findById(final int moduleId) {
+    if (moduleId <= 0) {
       return Mono.error(new InvalidModuleIdException());
     }
-
-    return moduleRepository.findById(id).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()));
+    return moduleRepository.findById(moduleId);
   }
 
-  public Mono<String> findNameById(final int id) {
-    if (id <= 0) {
+  public Mono<String> findNameById(final int moduleId) {
+    if (moduleId <= 0) {
       return Mono.error(new InvalidModuleIdException());
     }
 
-    return moduleRepository.findById(id).map(Module::getName);
+    return moduleRepository.findById(moduleId).map(Module::getName);
   }
 
   public Mono<String> getDynamicFlag(final int userId, final int moduleId) {

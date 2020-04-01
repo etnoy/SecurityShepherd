@@ -23,7 +23,6 @@ import org.owasp.securityshepherd.exception.InvalidFlagException;
 import org.owasp.securityshepherd.exception.InvalidFlagStateException;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
-import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.repository.ModuleRepository;
 import org.owasp.securityshepherd.repository.ModuleScoreRepository;
@@ -66,21 +65,18 @@ public class ModuleServiceTest {
   private CryptoService cryptoService;
 
   @Test
-  public void count_FiniteNumberOfModules_ReturnsCount() {
+  public void count_NoArgument_ReturnsCount() {
     final long mockedModuleCount = 75L;
 
     when(moduleRepository.count()).thenReturn(Mono.just(mockedModuleCount));
 
-    StepVerifier.create(moduleService.count()).assertNext(count -> {
-
-      assertThat(count, is(mockedModuleCount));
-      verify(moduleRepository, times(1)).count();
-
-    }).expectComplete().verify();
+    StepVerifier.create(moduleService.count()).expectNext(mockedModuleCount).expectComplete()
+        .verify();
+    verify(moduleRepository, times(1)).count();
   }
 
   @Test
-  public void create_DuplicateName_ThrowsException() {
+  public void create_DuplicateName_ThrowsDuplicateModuleNameException() {
     final String name = "TestModule";
     final Module mockModule = mock(Module.class);
 
@@ -88,16 +84,18 @@ public class ModuleServiceTest {
 
     StepVerifier.create(moduleService.create(name)).expectError(DuplicateModuleNameException.class)
         .verify();
+
+    verify(moduleRepository, times(1)).findByName(name);
   }
 
   @Test
-  public void create_EmptyArgument_ThrowsException() {
+  public void create_EmptyName_ThrowsIllegalArgumentException() {
     StepVerifier.create(moduleService.create("")).expectError(IllegalArgumentException.class)
         .verify();
   }
 
   @Test
-  public void create_NullArgument_ThrowsException() {
+  public void create_NullName_ThrowsNullPointerException() {
     StepVerifier.create(moduleService.create(null)).expectError(NullPointerException.class)
         .verify();
   }
@@ -113,17 +111,15 @@ public class ModuleServiceTest {
     when(moduleRepository.findByName(name)).thenReturn(Mono.empty());
 
     StepVerifier.create(moduleService.create(name)).assertNext(module -> {
-
       assertThat(module.getName(), is(name));
-
-      ArgumentCaptor<Module> argument = ArgumentCaptor.forClass(Module.class);
-
-      verify(moduleRepository, times(1)).findByName(name);
-      verify(moduleRepository, times(1)).save(argument.capture());
-      verify(moduleRepository, times(1)).save(any(Module.class));
-      assertThat(argument.getValue().getName(), is(name));
-
     }).expectComplete().verify();
+
+    ArgumentCaptor<Module> argument = ArgumentCaptor.forClass(Module.class);
+
+    verify(moduleRepository, times(1)).findByName(name);
+    verify(moduleRepository, times(1)).save(argument.capture());
+    verify(moduleRepository, times(1)).save(any(Module.class));
+    assertThat(argument.getValue().getName(), is(name));
   }
 
   @Test
@@ -155,30 +151,19 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void findById_NegativeModuleId_ThrowsException() {
-    StepVerifier.create(moduleService.findById(-1)).expectError(InvalidModuleIdException.class)
-        .verify();
-    StepVerifier.create(moduleService.findById(-100)).expectError(InvalidModuleIdException.class)
-        .verify();
-    StepVerifier.create(moduleService.findById(-99999)).expectError(InvalidModuleIdException.class)
-        .verify();
+  public void findById_InvalidModuleId_ThrowsInvalidModuleIdException() {
+    for (final int moduleId : TestUtils.INVALID_IDS) {
+      StepVerifier.create(moduleService.findById(moduleId))
+          .expectError(InvalidModuleIdException.class).verify();
+    }
   }
 
   @Test
-  public void findById_NonExistentModuleId_ThrowsException() {
+  public void findById_NonExistentModuleId_ReturnsEmpty() {
     final int mockModuleId = 286;
-
-    when(moduleRepository.existsById(mockModuleId)).thenReturn(Mono.just(false));
     when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.empty());
-
-    StepVerifier.create(moduleService.findById(mockModuleId))
-        .expectError(ModuleIdNotFoundException.class).verify();
-  }
-
-  @Test
-  public void findById_ZeroModuleId_ThrowsException() {
-    StepVerifier.create(moduleService.findById(0)).expectError(InvalidModuleIdException.class)
-        .verify();
+    StepVerifier.create(moduleService.findById(mockModuleId)).expectComplete().verify();
+    verify(moduleRepository, times(1)).findById(mockModuleId);
   }
 
   @Test
@@ -214,7 +199,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void getDynamicFlag_FlagIsExact_ThrowsException() {
+  public void getDynamicFlag_FlagIsExact_ThrowsInvalidFlagStateException() {
     final Module mockModule = mock(Module.class);
 
     final int mockModuleId = 18;
@@ -266,6 +251,7 @@ public class ModuleServiceTest {
         {-128, 1, -7, -35, 15, -116, -94, 0, -32, -117, 115, -127, 12, 82, 97, 19};
 
     final String mockedBaseFlag = "ZrLBRsS0QfL5TDz5";
+    final String correctFlag = "thisistheoutputtedflag";
 
     when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
 
@@ -278,27 +264,26 @@ public class ModuleServiceTest {
 
     when(cryptoService.hmac(mockedTotalKey, mockedBaseFlag.getBytes()))
         .thenReturn(Mono.just(mockedHmacOutput));
-    when(keyService.convertByteKeyToString(mockedHmacOutput)).thenReturn("thisistheoutputtedflag");
+    when(keyService.convertByteKeyToString(mockedHmacOutput)).thenReturn(correctFlag);
 
-    StepVerifier.create(moduleService.getDynamicFlag(mockUserId, mockModuleId)).assertNext(flag -> {
-      assertThat(flag, is(flag));
-      verify(moduleRepository, times(1)).findById(mockModuleId);
+    StepVerifier.create(moduleService.getDynamicFlag(mockUserId, mockModuleId))
+        .expectNext(correctFlag).expectComplete().verify();
 
-      verify(userService, times(1)).findKeyById(mockUserId);
-      verify(configurationService, times(1)).getServerKey();
-      verify(mockModule, times(1)).getFlag();
-      verify(mockModule, times(1)).isFlagEnabled();
+    verify(moduleRepository, times(1)).findById(mockModuleId);
 
-      verify(configurationService, times(1)).getServerKey();
+    verify(userService, times(1)).findKeyById(mockUserId);
+    verify(configurationService, times(1)).getServerKey();
+    verify(mockModule, times(1)).getFlag();
+    verify(mockModule, times(1)).isFlagEnabled();
 
-      verify(cryptoService, times(1)).hmac(mockedTotalKey, mockedBaseFlag.getBytes());
-      verify(keyService, times(1)).convertByteKeyToString(mockedHmacOutput);
+    verify(configurationService, times(1)).getServerKey();
 
-    }).expectComplete().verify();
+    verify(cryptoService, times(1)).hmac(mockedTotalKey, mockedBaseFlag.getBytes());
+    verify(keyService, times(1)).convertByteKeyToString(mockedHmacOutput);
   }
 
   @Test
-  public void getDynamicFlag_FlagNotEnabled_ThrowsException() {
+  public void getDynamicFlag_FlagNotEnabled_ThrowsInvalidFlagStateException() {
     final int mockModuleId = 440;
     final int mockUserId = 332;
 
@@ -325,7 +310,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void getDynamicFlag_NegativeModuleId_ThrowsException() {
+  public void getDynamicFlag_NegativeModuleId_ThrowsInvalidModuleIdException() {
     StepVerifier.create(moduleService.getDynamicFlag(768, -1))
         .expectError(InvalidModuleIdException.class).verify();
     StepVerifier.create(moduleService.getDynamicFlag(768, -1000))
@@ -333,7 +318,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void getDynamicFlag_NegativeUserId_ThrowsException() {
+  public void getDynamicFlag_NegativeUserId_ThrowsInvalidUserIdException() {
     StepVerifier.create(moduleService.getDynamicFlag(-1, 302))
         .expectError(InvalidUserIdException.class).verify();
     StepVerifier.create(moduleService.getDynamicFlag(-1000, 302))
@@ -341,13 +326,13 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void getDynamicFlag_ZeroModuleId_ThrowsException() {
+  public void getDynamicFlag_ZeroModuleId_ThrowsInvalidModuleIdException() {
     StepVerifier.create(moduleService.getDynamicFlag(267, 0))
         .expectError(InvalidModuleIdException.class).verify();
   }
 
   @Test
-  public void getDynamicFlag_ZeroUserId_ThrowsException() {
+  public void getDynamicFlag_ZeroUserId_ThrowsInvalidUserIdException() {
     StepVerifier.create(moduleService.getDynamicFlag(0, 186))
         .expectError(InvalidUserIdException.class).verify();
   }
@@ -379,18 +364,18 @@ public class ModuleServiceTest {
 
     StepVerifier.create(moduleService.setDynamicFlag(mockModuleId)).assertNext(module -> {
       assertThat(module.getFlag(), is(newFlag));
-
-      verify(moduleRepository, times(1)).save(any(Module.class));
-      verify(keyService, never()).generateRandomString(any(Integer.class));
-
-      ArgumentCaptor<Module> argument = ArgumentCaptor.forClass(Module.class);
-      verify(moduleRepository, times(1)).save(argument.capture());
-      assertThat(argument.getValue().getFlag(), is(newFlag));
     }).expectComplete().verify();
+
+    verify(moduleRepository, times(1)).save(any(Module.class));
+    verify(keyService, never()).generateRandomString(any(Integer.class));
+
+    ArgumentCaptor<Module> argument = ArgumentCaptor.forClass(Module.class);
+    verify(moduleRepository, times(1)).save(argument.capture());
+    assertThat(argument.getValue().getFlag(), is(newFlag));
   }
 
   @Test
-  public void setDynamicFlag_NegativeModuleId_ThrowsException() {
+  public void setDynamicFlag_NegativeModuleId_ThrowsInvalidModuleIdException() {
     StepVerifier.create(moduleService.setDynamicFlag(-1))
         .expectError(InvalidModuleIdException.class).verify();
     StepVerifier.create(moduleService.setDynamicFlag(-1000))
@@ -425,39 +410,36 @@ public class ModuleServiceTest {
     when(moduleRepository.save(mockModuleWithFlag)).thenReturn(Mono.just(mockModuleWithFlag));
 
     StepVerifier.create(moduleService.setDynamicFlag(mockModuleId)).assertNext(module -> {
-
       assertThat(module.isFlagEnabled(), is(true));
       assertThat(module.isFlagExact(), is(false));
-
       assertThat(module.getFlag(), is(newFlag));
-
-      verify(mockModuleWithoutExactFlag, atMost(1)).withFlagEnabled(true);
-      verify(mockModuleWithExactFlag, atMost(1)).withFlagExact(false);
-      verify(mockModuleWithoutExactFlag, atMost(1)).withFlagExact(false);
-      verify(mockModuleWithoutDynamicFlag, atMost(1)).withFlagEnabled(true);
-
-      verify(keyService, times(1)).generateRandomString(16);
-      verify(mockModuleWithDynamicFlag, times(1)).withFlag(newFlag);
-
-      verify(moduleRepository, times(1)).save(any(Module.class));
-
     }).expectComplete().verify();
+
+    verify(mockModuleWithoutExactFlag, atMost(1)).withFlagEnabled(true);
+    verify(mockModuleWithExactFlag, atMost(1)).withFlagExact(false);
+    verify(mockModuleWithoutExactFlag, atMost(1)).withFlagExact(false);
+    verify(mockModuleWithoutDynamicFlag, atMost(1)).withFlagEnabled(true);
+
+    verify(keyService, times(1)).generateRandomString(16);
+    verify(mockModuleWithDynamicFlag, times(1)).withFlag(newFlag);
+
+    verify(moduleRepository, times(1)).save(any(Module.class));
   }
 
   @Test
-  public void setDynamicFlag_ZeroModuleId_ThrowsException() {
+  public void setDynamicFlag_ZeroModuleId_ThrowsInvalidModuleIdException() {
     StepVerifier.create(moduleService.setDynamicFlag(0)).expectError(InvalidModuleIdException.class)
         .verify();
   }
 
   @Test
-  public void setExactFlag_EmptyExactFlag_ThrowsException() {
+  public void setExactFlag_EmptyExactFlag_ThrowsInvalidFlagException() {
     StepVerifier.create(moduleService.setExactFlag(1, "")).expectError(InvalidFlagException.class)
         .verify();
   }
 
   @Test
-  public void setExactFlag_InvalidModuleId_ThrowsException() {
+  public void setExactFlag_InvalidModuleId_ThrowsInvalidModuleIdException() {
     StepVerifier.create(moduleService.setExactFlag(0, "flag"))
         .expectError(InvalidModuleIdException.class).verify();
     StepVerifier.create(moduleService.setExactFlag(-1, "flag"))
@@ -467,7 +449,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void setExactFlag_NullExactFlag_ThrowsException() {
+  public void setExactFlag_NullExactFlag_ThrowsInvalidFlagException() {
     StepVerifier.create(moduleService.setExactFlag(1, null)).expectError(InvalidFlagException.class)
         .verify();
   }
@@ -499,30 +481,28 @@ public class ModuleServiceTest {
         .thenReturn(Mono.just(mockModuleWithExactFlagEnabledAndSet));
 
     StepVerifier.create(moduleService.setExactFlag(mockModuleId, exactFlag)).assertNext(module -> {
-
       assertThat(module.isFlagEnabled(), is(true));
       assertThat(module.isFlagExact(), is(true));
       assertThat(module.getFlag(), is(exactFlag));
-
-      ArgumentCaptor<Integer> findArgument = ArgumentCaptor.forClass(Integer.class);
-      verify(moduleRepository, times(1)).findById(findArgument.capture());
-      assertThat(findArgument.getValue(), is(mockModuleId));
-
-      ArgumentCaptor<Module> saveArgument = ArgumentCaptor.forClass(Module.class);
-      verify(moduleRepository, times(1)).save(saveArgument.capture());
-      assertThat(saveArgument.getValue().getFlag(), is(exactFlag));
-
     }).expectComplete().verify();
+
+    ArgumentCaptor<Integer> findArgument = ArgumentCaptor.forClass(Integer.class);
+    verify(moduleRepository, times(1)).findById(findArgument.capture());
+    assertThat(findArgument.getValue(), is(mockModuleId));
+
+    ArgumentCaptor<Module> saveArgument = ArgumentCaptor.forClass(Module.class);
+    verify(moduleRepository, times(1)).save(saveArgument.capture());
+    assertThat(saveArgument.getValue().getFlag(), is(exactFlag));
   }
 
   @Test
-  public void setName_EmptyName_ThrowsException() {
+  public void setName_EmptyName_ThrowsIllegalArgumentException() {
     StepVerifier.create(moduleService.setName(847, "")).expectError(IllegalArgumentException.class)
         .verify();
   }
 
   @Test
-  public void setName_InvalidModuleId_ThrowsException() {
+  public void setName_InvalidModuleId_ThrowsInvalidModuleIdException() {
     StepVerifier.create(moduleService.setName(-1, "name"))
         .expectError(InvalidModuleIdException.class).verify();
 
@@ -534,7 +514,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void setName_NullName_ThrowsException() {
+  public void setName_NullName_ThrowsNullPointerException() {
     StepVerifier.create(moduleService.setName(204, null)).expectError(NullPointerException.class)
         .verify();
   }
@@ -554,16 +534,13 @@ public class ModuleServiceTest {
     when(moduleRepository.save(any(Module.class))).thenReturn(Mono.just(mockModule));
     when(mockModule.getName()).thenReturn(newName);
 
-    StepVerifier.create(moduleService.setName(mockModuleId, newName)).assertNext(module -> {
+    StepVerifier.create(moduleService.setName(mockModuleId, newName))
+        .assertNext(module -> assertThat(module.getName(), is(newName))).expectComplete().verify();
 
-      assertThat(module.getName(), is(newName));
+    InOrder order = inOrder(mockModule, moduleRepository);
 
-      InOrder order = inOrder(mockModule, moduleRepository);
-
-      order.verify(mockModule, times(1)).withName(newName);
-      order.verify(moduleRepository, times(1)).save(mockModule);
-
-    }).expectComplete().verify();
+    order.verify(mockModule, times(1)).withName(newName);
+    order.verify(moduleRepository, times(1)).save(mockModule);
   }
 
   @BeforeEach
@@ -610,21 +587,18 @@ public class ModuleServiceTest {
 
     when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
 
-    StepVerifier.create(moduleService.verifyFlag(mockUserId, mockModuleId, ""))
-        .assertNext(isValid -> {
+    StepVerifier.create(moduleService.verifyFlag(mockUserId, mockModuleId, "")).expectNext(false)
+        .expectComplete().verify();
 
-          assertThat(isValid, is(false));
-          verify(moduleRepository, atLeast(1)).findById(mockModuleId);
-          verify(mockModule, atLeast(1)).isFlagEnabled();
-          verify(mockModule, atLeast(1)).isFlagExact();
-          verify(mockModule, times(2)).getFlag();
-          verify(mockModule, never()).getId();
-          verify(configurationService, atLeast(1)).getServerKey();
-          verify(cryptoService, atLeast(1)).hmac(mockedTotalKey, validFlag.getBytes());
-          verify(keyService, atLeast(1)).convertByteKeyToString(mockedHmacOutput);
-          verify(userService, atLeast(1)).findKeyById(mockUserId);
-
-        }).expectComplete().verify();
+    verify(moduleRepository, atLeast(1)).findById(mockModuleId);
+    verify(mockModule, atLeast(1)).isFlagEnabled();
+    verify(mockModule, atLeast(1)).isFlagExact();
+    verify(mockModule, times(2)).getFlag();
+    verify(mockModule, never()).getId();
+    verify(configurationService, atLeast(1)).getServerKey();
+    verify(cryptoService, atLeast(1)).hmac(mockedTotalKey, validFlag.getBytes());
+    verify(keyService, atLeast(1)).convertByteKeyToString(mockedHmacOutput);
+    verify(userService, atLeast(1)).findKeyById(mockUserId);
   }
 
   @Test
@@ -644,22 +618,18 @@ public class ModuleServiceTest {
     when(userService.findDisplayNameById(mockUserId)).thenReturn(Mono.just("MockUser"));
     when(mockModule.getName()).thenReturn("TestModule");
 
-    StepVerifier.create(moduleService.verifyFlag(mockUserId, mockModuleId, ""))
-        .assertNext(isValid -> {
+    StepVerifier.create(moduleService.verifyFlag(mockUserId, mockModuleId, "")).expectNext(false)
+        .expectComplete().verify();
 
-          assertThat(isValid, is(false));
+    verify(moduleRepository, times(1)).findById(mockModuleId);
 
-          verify(moduleRepository, times(1)).findById(mockModuleId);
-
-          verify(mockModule, times(2)).isFlagEnabled();
-          verify(mockModule, times(2)).isFlagExact();
-          verify(mockModule, times(2)).getFlag();
-
-        }).expectComplete().verify();
+    verify(mockModule, times(2)).isFlagEnabled();
+    verify(mockModule, times(2)).isFlagExact();
+    verify(mockModule, times(2)).getFlag();
   }
 
   @Test
-  public void verifyFlag_FlagNotEnabled_ThrowsException() {
+  public void verifyFlag_FlagNotEnabled_ThrowsInvalidFlagStateException() {
     final int mockUserId = 515;
     final int mockModuleId = 161;
 
@@ -677,7 +647,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void verifyFlag_InvalidDynamicFlag_ReturnsFalse() {
+  public void verifyFlag_WrongDynamicFlag_ReturnsFalse() {
     final Module mockModule = mock(Module.class);
 
     final int mockUserId = 193;
@@ -712,23 +682,22 @@ public class ModuleServiceTest {
     when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
 
     StepVerifier.create(moduleService.verifyFlag(mockUserId, mockModuleId, "invalidFlag"))
-        .assertNext(isValid -> {
-          assertThat(isValid, is(false));
-          verify(moduleRepository, atLeast(1)).findById(mockModuleId);
-          verify(mockModule, atLeast(1)).isFlagEnabled();
-          verify(mockModule, atLeast(1)).isFlagExact();
-          verify(mockModule, times(2)).getFlag();
-          verify(mockModule, never()).getId();
-          verify(configurationService, atLeast(1)).getServerKey();
-          verify(cryptoService, atLeast(1)).hmac(mockedTotalKey, validFlag.getBytes());
-          verify(keyService, atLeast(1)).convertByteKeyToString(mockedHmacOutput);
-          verify(userService, atLeast(1)).findKeyById(mockUserId);
-        }).expectComplete().verify();
+        .expectNext(false).expectComplete().verify();
+
+    verify(moduleRepository, atLeast(1)).findById(mockModuleId);
+    verify(mockModule, atLeast(1)).isFlagEnabled();
+    verify(mockModule, atLeast(1)).isFlagExact();
+    verify(mockModule, times(2)).getFlag();
+    verify(mockModule, never()).getId();
+    verify(configurationService, atLeast(1)).getServerKey();
+    verify(cryptoService, atLeast(1)).hmac(mockedTotalKey, validFlag.getBytes());
+    verify(keyService, atLeast(1)).convertByteKeyToString(mockedHmacOutput);
+    verify(userService, atLeast(1)).findKeyById(mockUserId);
   }
 
 
   @Test
-  public void verifyFlag_InvalidExactFlag_ReturnsFalse() {
+  public void verifyFlag_WrongExactFlag_ReturnsFalse() {
     final int mockUserId = 709;
     final int mockModuleId = 677;
     final String validExactFlag = "validFlag";
@@ -745,17 +714,13 @@ public class ModuleServiceTest {
     when(mockModule.getName()).thenReturn("TestModule");
 
     StepVerifier.create(moduleService.verifyFlag(mockUserId, mockModuleId, "invalidFlag"))
-        .assertNext(isValid -> {
+        .expectNext(false).expectComplete().verify();
 
-          assertThat(isValid, is(false));
+    verify(moduleRepository, times(1)).findById(mockModuleId);
 
-          verify(moduleRepository, times(1)).findById(mockModuleId);
-
-          verify(mockModule, times(2)).isFlagEnabled();
-          verify(mockModule, times(2)).isFlagExact();
-          verify(mockModule, times(2)).getFlag();
-
-        }).expectComplete().verify();
+    verify(mockModule, times(2)).isFlagEnabled();
+    verify(mockModule, times(2)).isFlagExact();
+    verify(mockModule, times(2)).getFlag();
   }
 
   @Test
@@ -777,7 +742,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void verifyFlag_ValidDynamicFlag_ReturnsTrue() {
+  public void verifyFlag_CorrectDynamicFlag_ReturnsTrue() {
     final Module mockModule = mock(Module.class);
 
     final int mockUserId = 158;
@@ -813,25 +778,21 @@ public class ModuleServiceTest {
     when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
 
     StepVerifier.create(moduleService.verifyFlag(mockUserId, mockModuleId, validFlag))
-        .assertNext(isValid -> {
+        .expectNext(true).expectComplete().verify();
 
-          assertThat(isValid, is(true));
-
-          verify(moduleRepository, atLeast(1)).findById(mockModuleId);
-          verify(mockModule, atLeast(1)).isFlagEnabled();
-          verify(mockModule, atLeast(1)).isFlagExact();
-          verify(mockModule, times(2)).getFlag();
-          verify(mockModule, never()).getId();
-          verify(configurationService, atLeast(1)).getServerKey();
-          verify(cryptoService, atLeast(1)).hmac(mockedTotalKey, baseFlag.getBytes());
-          verify(keyService, atLeast(1)).convertByteKeyToString(mockedHmacOutput);
-          verify(userService, atLeast(1)).findKeyById(mockUserId);
-
-        }).expectComplete().verify();
+    verify(moduleRepository, atLeast(1)).findById(mockModuleId);
+    verify(mockModule, atLeast(1)).isFlagEnabled();
+    verify(mockModule, atLeast(1)).isFlagExact();
+    verify(mockModule, times(2)).getFlag();
+    verify(mockModule, never()).getId();
+    verify(configurationService, atLeast(1)).getServerKey();
+    verify(cryptoService, atLeast(1)).hmac(mockedTotalKey, baseFlag.getBytes());
+    verify(keyService, atLeast(1)).convertByteKeyToString(mockedHmacOutput);
+    verify(userService, atLeast(1)).findKeyById(mockUserId);
   }
 
   @Test
-  public void verifyFlag_ValidExactFlag_ReturnsTrue() {
+  public void verifyFlag_CorrectExactFlag_ReturnsTrue() {
     final int mockUserId = 225;
     final int mockModuleId = 201;
     final String validExactFlag = "validFlag";
@@ -848,19 +809,17 @@ public class ModuleServiceTest {
     when(mockModule.getFlag()).thenReturn(validExactFlag);
 
     StepVerifier.create(moduleService.verifyFlag(mockUserId, mockModuleId, validExactFlag))
-        .assertNext(isValid -> {
-          assertThat(isValid, is(true));
+        .expectNext(true).expectComplete().verify();
 
-          verify(moduleRepository, times(1)).findById(mockModuleId);
+    verify(moduleRepository, times(1)).findById(mockModuleId);
 
-          verify(mockModule, times(2)).isFlagEnabled();
-          verify(mockModule, times(2)).isFlagExact();
-          verify(mockModule, times(2)).getFlag();
-        }).expectComplete().verify();
+    verify(mockModule, times(2)).isFlagEnabled();
+    verify(mockModule, times(2)).isFlagExact();
+    verify(mockModule, times(2)).getFlag();
   }
 
   @Test
-  public void verifyFlag_ValidExactLowerCaseFlag_ReturnsTrue() {
+  public void verifyFlag_CorrectLowerCaseFlag_ReturnsTrue() {
     final int mockUserId = 594;
     final int mockModuleId = 769;
     final String validExactFlag = "validFlagWithUPPERCASEandlowercase";
@@ -878,21 +837,17 @@ public class ModuleServiceTest {
 
     StepVerifier
         .create(moduleService.verifyFlag(mockUserId, mockModuleId, validExactFlag.toLowerCase()))
-        .assertNext(isValid -> {
+        .expectNext(true).expectComplete().verify();
 
-          assertThat(isValid, is(true));
+    verify(moduleRepository, times(1)).findById(mockModuleId);
 
-          verify(moduleRepository, times(1)).findById(mockModuleId);
-
-          verify(mockModule, times(2)).isFlagEnabled();
-          verify(mockModule, times(2)).isFlagExact();
-          verify(mockModule, times(2)).getFlag();
-
-        }).expectComplete().verify();
+    verify(mockModule, times(2)).isFlagEnabled();
+    verify(mockModule, times(2)).isFlagExact();
+    verify(mockModule, times(2)).getFlag();
   }
 
   @Test
-  public void verifyFlag_ValidExactUpperCaseFlag_ReturnsTrue() {
+  public void verifyFlag_CorrectUpperCaseFlag_ReturnsTrue() {
     final int mockUserId = 594;
     final int mockModuleId = 769;
     final String validExactFlag = "validFlagWithUPPERCASEandlowercase";
@@ -910,16 +865,12 @@ public class ModuleServiceTest {
 
     StepVerifier
         .create(moduleService.verifyFlag(mockUserId, mockModuleId, validExactFlag.toUpperCase()))
-        .assertNext(isValid -> {
+        .expectNext(true).expectComplete().verify();
 
-          assertThat(isValid, is(true));
+    verify(moduleRepository, times(1)).findById(mockModuleId);
 
-          verify(moduleRepository, times(1)).findById(mockModuleId);
-
-          verify(mockModule, times(2)).isFlagEnabled();
-          verify(mockModule, times(2)).isFlagExact();
-          verify(mockModule, times(2)).getFlag();
-
-        }).expectComplete().verify();
+    verify(mockModule, times(2)).isFlagEnabled();
+    verify(mockModule, times(2)).isFlagExact();
+    verify(mockModule, times(2)).getFlag();
   }
 }

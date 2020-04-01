@@ -1,6 +1,9 @@
 package org.owasp.securityshepherd.test.application;
 
 import org.junit.jupiter.api.DisplayName;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.SecurityShepherdApplication;
@@ -16,5 +19,6 @@ class SecurityShepherdApplicationTest {
   @DisplayName("Application context loads")
   public void main_ApplicationStartup_ContextLoads() throws Throwable {
      SecurityShepherdApplication.main(new String[] {});
+     assertThat(true, is(true));
   }
 }
