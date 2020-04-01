@@ -25,7 +25,7 @@ import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.repository.ModuleRepository;
-import org.owasp.securityshepherd.repository.ModuleScoreRepository;
+import org.owasp.securityshepherd.repository.ModulePointsRepository;
 import org.owasp.securityshepherd.service.ConfigurationService;
 import org.owasp.securityshepherd.service.CryptoService;
 import org.owasp.securityshepherd.service.KeyService;
@@ -53,7 +53,7 @@ public class ModuleServiceTest {
   private ModuleRepository moduleRepository;
 
   @Mock
-  private ModuleScoreRepository moduleScoreRepository;
+  private ModulePointsRepository moduleScoreRepository;
 
   @Mock
   private ConfigurationService configurationService;
