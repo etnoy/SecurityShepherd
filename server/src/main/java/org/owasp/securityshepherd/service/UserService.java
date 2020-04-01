@@ -162,7 +162,7 @@ public final class UserService {
   }
 
   public Flux<User> findAll() {
-    return userRepository.findAll().flatMap(user -> findById(user.getId()));
+    return userRepository.findAll();
   }
 
   public Mono<User> findById(final int userId) {

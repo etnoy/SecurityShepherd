@@ -318,6 +318,29 @@ public class UserServiceTest {
   }
 
   @Test
+  public void findAll_NoUsersExist_ReturnsEmpty() {
+    when(userRepository.findAll()).thenReturn(Flux.empty());
+
+    StepVerifier.create(userService.findAll()).expectComplete().verify();
+
+    verify(userRepository, times(1)).findAll();
+  }
+
+  @Test
+  public void findAll_UsersExist_ReturnsUsers() {
+    final User mockUser1 = mock(User.class);
+    final User mockUser2 = mock(User.class);
+    final User mockUser3 = mock(User.class);
+
+    when(userRepository.findAll()).thenReturn(Flux.just(mockUser1, mockUser2, mockUser3));
+
+    StepVerifier.create(userService.findAll()).expectNext(mockUser1).expectNext(mockUser2)
+        .expectNext(mockUser3).expectComplete().verify();
+
+    verify(userRepository, times(1)).findAll();
+  }
+
+  @Test
   public void findById_ExistingUserId_ReturnsUserEntity() {
     final User mockUser = mock(User.class);
 
