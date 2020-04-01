@@ -37,7 +37,7 @@ public final class ScoringService {
     return modulePointRepository.save(builder.build());
   }
 
-  public Flux<Score> computeScores() {
+  public Flux<Score> computeScoresFromSubmissions() {
     final Flux<Integer> moduleIds = moduleRepository.findAll().map(Module::getId);
 
     // Get the scoring rules for this module
@@ -49,24 +49,28 @@ public final class ScoringService {
       // The base score for this module is the 0th entry in the list
       final int baseScore = tuple.getT2().get(0);
       // Get all valid submissions related to this module, ranked by submission time
-      return submissionDatabaseClient.findAllValidByModuleIdSortedBySubmissionTime(tuple.getT1())
-          // And then extract a score for each users's submission
-          .map(rankedSubmissionDto -> {
-            // Create a score entity
-            final ScoreBuilder builder = Score.builder();
-            // ModuleId is extracted from the tuple
-            builder.moduleId(tuple.getT1());
-            // UserId, rank and time are simply mapped from the Dto
-            builder.userId(rankedSubmissionDto.getUserId());
-            builder.rank(rankedSubmissionDto.getRank());
-            builder.time(rankedSubmissionDto.getTime());
-            // Score is calculated as base score + bonus for early completion
-            builder.score(baseScore + tuple.getT2().getOrDefault(rankedSubmissionDto.getRank(), 0));
-            // Finish building the database row entity and return it
-            return builder.build();
-          })
-          // Save the score row in the database
-          .flatMap(scoreRepository::save);
+
+      final Flux<Score> scores =
+          submissionDatabaseClient.findAllValidByModuleIdSortedBySubmissionTime(tuple.getT1())
+              // And then extract a score for each users's submission
+              .map(rankedSubmissionDto -> {
+                // Create a score entity
+                final ScoreBuilder builder = Score.builder();
+                // ModuleId is extracted from the tuple
+                builder.moduleId(tuple.getT1());
+                // UserId, rank and time are simply mapped from the Dto
+                builder.userId(rankedSubmissionDto.getUserId());
+                builder.rank(rankedSubmissionDto.getRank());
+                builder.time(rankedSubmissionDto.getTime());
+                // Score is calculated as base score + bonus for early completion
+                builder.amount(
+                    baseScore + tuple.getT2().getOrDefault(rankedSubmissionDto.getRank(), 0));
+                // Finish building the database row entity and return it
+                return builder.build();
+              });
+
+      // Save the scores in the database and return
+      return scoreRepository.saveAll(scores);
     });
   }
 }

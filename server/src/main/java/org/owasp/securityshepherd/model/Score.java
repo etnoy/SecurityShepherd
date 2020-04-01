@@ -26,7 +26,7 @@ public class Score implements Serializable {
   private Integer userId;
 
   @NonNull
-  private Integer score;
+  private Integer amount;
   
   @NonNull
   @Column("user_rank")

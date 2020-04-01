@@ -39,7 +39,7 @@ CREATE TABLE score (
 	module_id INT NOT NULL,
 	user_rank INT NOT NULL,
 	user_id INT NOT NULL,
-	score INT NOT NULL,
+	amount INT NOT NULL,
 	time TIMESTAMP NOT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY (user_id, module_id),

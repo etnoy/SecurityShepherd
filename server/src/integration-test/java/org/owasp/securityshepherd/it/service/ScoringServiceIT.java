@@ -160,7 +160,7 @@ public class ScoringServiceIT {
       submissionService.submit(currentUserId, moduleId3, currentFlag).block();
     }
 
-    scoringService.computeScores().blockLast();
+    scoringService.computeScoresFromSubmissions().blockLast();
   }
 
   private void initializeService(Clock injectedClock) {
