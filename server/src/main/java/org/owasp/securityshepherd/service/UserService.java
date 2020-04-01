@@ -42,11 +42,11 @@ public final class UserService {
 
   public Mono<Integer> create(final String displayName) {
     if (displayName == null) {
-      throw new NullPointerException();
+      return Mono.error(new NullPointerException());
     }
 
     if (displayName.isEmpty()) {
-      throw new IllegalArgumentException();
+      return Mono.error(new IllegalArgumentException());
     }
 
     log.info("Creating new user with display name " + displayName);
@@ -60,19 +60,19 @@ public final class UserService {
   public Mono<Integer> createPasswordUser(final String displayName, final String loginName,
       final String hashedPassword) {
     if (displayName == null) {
-      throw new NullPointerException("Display name cannot be null");
+      return Mono.error(new NullPointerException("Display name cannot be null"));
     }
 
     if (loginName == null) {
-      throw new NullPointerException("Login name cannot be null");
+      return Mono.error(new NullPointerException("Login name cannot be null"));
     }
 
     if (hashedPassword == null) {
-      throw new NullPointerException("Password hash cannot be null");
+      return Mono.error(new NullPointerException("Password hash cannot be null"));
     }
 
     if (displayName.isEmpty() || loginName.isEmpty() || hashedPassword.isEmpty()) {
-      throw new IllegalArgumentException();
+      return Mono.error(new IllegalArgumentException());
     }
 
     log.info("Creating new password login user with display name " + displayName
@@ -133,6 +133,9 @@ public final class UserService {
   }
 
   public Mono<Void> deleteById(final int userId) {
+    if (userId <= 0) {
+      return Mono.error(new InvalidUserIdException());
+    }
     return userRepository.findById(userId).zipWith(findUserAuthByUserId(userId))
         .flatMap(tuple -> userRepository.delete(tuple.getT1()));
   }
@@ -212,12 +215,12 @@ public final class UserService {
 
   public Mono<Integer> findUserIdByLoginName(final String loginName) {
     if (loginName == null) {
-      throw new NullPointerException();
+      return Mono.error(new NullPointerException());
     }
 
     if (loginName.isEmpty()) {
       // TODO: custom exception message
-      throw new IllegalArgumentException();
+      return Mono.error(new IllegalArgumentException());
     }
     return passwordAuthRepository.findByLoginName(loginName).map(PasswordAuth::getUserId);
   }
@@ -238,15 +241,13 @@ public final class UserService {
         .flatMap(authRepository::save).then();
   }
 
-  public Mono<User> setClassId(final int userId, final int classId)
-      throws InvalidUserIdException, InvalidClassIdException {
-
+  public Mono<User> setClassId(final int userId, final int classId) {
     if (userId <= 0) {
-      throw new InvalidUserIdException();
+      return Mono.error(new InvalidUserIdException());
     }
 
     if (classId <= 0) {
-      throw new InvalidClassIdException();
+      return Mono.error(new InvalidClassIdException());
     }
 
     final Mono<Integer> classIdMono = Mono.just(classId).filterWhen(classService::existsById)
@@ -256,19 +257,17 @@ public final class UserService {
         .map(tuple -> tuple.getT1().withClassId(tuple.getT2())).flatMap(userRepository::save);
   }
 
-  public Mono<User> setDisplayName(final int userId, final String displayName)
-      throws InvalidUserIdException {
-
+  public Mono<User> setDisplayName(final int userId, final String displayName) {
     if (userId <= 0) {
-      throw new InvalidUserIdException();
+      return Mono.error(new InvalidUserIdException());
     }
 
     if (displayName == null) {
-      throw new NullPointerException();
+      return Mono.error(new NullPointerException());
     }
 
     if (displayName.isEmpty()) {
-      throw new IllegalArgumentException();
+      return Mono.error(new IllegalArgumentException());
     }
 
     log.info("Setting display name of user id " + userId + " to " + displayName);
