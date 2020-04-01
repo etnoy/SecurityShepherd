@@ -44,7 +44,6 @@ public class ModuleControllerIT {
 
   @Test
   public void submitModule_ValidExactFlag_Success() throws Exception {
-
     final String loginName = "testUser";
     final String password = "paLswOrdha17£@£sh";
 
@@ -76,12 +75,10 @@ public class ModuleControllerIT {
         .assertNext(correctFlag -> {
           assertThat(correctFlag, is(true));
         }).expectComplete().verify();
-
   }
 
   @Test
   public void submitModule_InvalidExactFlag_Success() throws Exception {
-
     final String loginName = "testUser";
     final String password = "paLswOrdha17£@£sh";
 
@@ -113,7 +110,6 @@ public class ModuleControllerIT {
         .assertNext(correctFlag -> {
           assertThat(correctFlag, is(false));
         }).expectComplete().verify();
-
   }
 
   @BeforeEach
