@@ -40,7 +40,6 @@ public final class ScoringService {
   public Flux<ModuleScore> computeScores() {
     final Flux<Integer> moduleIds = moduleRepository.findAll().map(Module::getId);
 
-
     // Get the scoring rules for this module
     final Flux<Map<Integer, Integer>> moduleRankPointMap =
         moduleIds.flatMap(moduleId -> modulePointRepository.findAllByModuleId(moduleId)
@@ -54,9 +53,20 @@ public final class ScoringService {
       final int baseScore = tuple.getT2().get(0);
       // Get all valid submissions related to this module, ranked by submission time
       return submissionDatabaseClient.findAllValidByModuleIdSortedBySubmissionTime(tuple.getT1())
-          .map(submission -> tuple.getT3().userId(submission.get("userId"))
-              .rank(submission.get("rank"))
-              .score(baseScore + tuple.getT2().getOrDefault(submission.get("rank"), 0)).build())
+          // And then extract a score for each users's submission
+          .map(rankedSubmissionDto -> {
+            // Extract the builder from tuple for clarity
+            final ModuleScoreBuilder builder = tuple.getT3();
+            // UserId, rank and time are simply mapped from the Dto
+            builder.userId(rankedSubmissionDto.getUserId());
+            builder.rank(rankedSubmissionDto.getRank());
+            builder.time(rankedSubmissionDto.getTime());
+            // Score is calculated as base score + bonus for early completion
+            builder.score(baseScore + tuple.getT2().getOrDefault(rankedSubmissionDto.getRank(), 0));
+            // Finish building the database row entity and return it
+            return builder.build();
+          })
+          // Save the score row in the database
           .flatMap(moduleScoreRepository::save);
     });
   }

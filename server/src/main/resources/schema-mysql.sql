@@ -9,7 +9,7 @@ CREATE TABLE user (
   class_id INT NULL,
   email VARCHAR(128) NULL,
   user_key BINARY(16) NULL,
-  PRIMARY KEY (id) ,
+  PRIMARY KEY (id),
   INDEX class_id (class_id ASC) ,
   UNIQUE INDEX display_name_UNIQUE (display_name ASC))
 ENGINE = InnoDB
@@ -26,11 +26,10 @@ CREATE TABLE module (
 	id INT AUTO_INCREMENT,
 	name VARCHAR(191) NOT NULL UNIQUE,
  	description VARCHAR(191),
- 	short_name VARCHAR(191),
-	is_flag_enabled BOOLEAN,
-  	is_flag_exact BOOLEAN,
+	is_flag_enabled BOOLEAN DEFAULT FALSE,
+  	is_flag_exact BOOLEAN DEFAULT FALSE,
 	flag VARCHAR(64) NULL,
-	is_open BOOLEAN,
+	is_open BOOLEAN DEFAULT FALSE,
   PRIMARY KEY (id) )
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
@@ -38,9 +37,10 @@ DEFAULT CHARACTER SET = utf8mb4;
 CREATE TABLE module_score (
 	id INT AUTO_INCREMENT,
 	module_id INT,
-	user_rank INT,
-	user_id INT,
-	score INT,
+	user_rank INT NOT NULL,
+	user_id INT NOT NULL,
+	score INT NOT NULL,
+	time TIMESTAMP NOT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY (user_id, module_id),
   FOREIGN KEY (`module_id`) REFERENCES module(id),
@@ -50,9 +50,9 @@ DEFAULT CHARACTER SET = utf8mb4;
 
 CREATE TABLE module_point (
 	id INT AUTO_INCREMENT,
-	module_id INT,
-	submission_rank INT,
-	points INT,
+	module_id INT NOT NULL,
+	submission_rank INT NOT NULL,
+	points INT NOT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY (module_id, submission_rank),
   FOREIGN KEY (`module_id`) REFERENCES module(id))
@@ -61,7 +61,7 @@ DEFAULT CHARACTER SET = utf8mb4;
 
 CREATE TABLE user_auth (
   id INT AUTO_INCREMENT,
-  user_id INT NOT NULL,
+  user_id INT UNIQUE NOT NULL,
   is_enabled BOOLEAN DEFAULT FALSE,
   bad_login_count INT DEFAULT 0,
   is_admin BOOLEAN DEFAULT FALSE NOT NULL,
@@ -69,7 +69,7 @@ CREATE TABLE user_auth (
   suspension_message VARCHAR(191),
   suspended_until DATETIME NULL DEFAULT NULL,
   last_login DATETIME NULL DEFAULT NULL,
-  last_login_method VARCHAR(10),
+  last_login_method VARCHAR(10) DEFAULT NULL,
  PRIMARY KEY (id) ,
  FOREIGN KEY (user_id) REFERENCES user(id))
 ENGINE = InnoDB
@@ -77,18 +77,18 @@ DEFAULT CHARACTER SET = utf8mb4;
 
 CREATE TABLE saml_auth (
   id INT AUTO_INCREMENT,
-  user_id INT,
-  saml_id VARCHAR(40) NOT NULL,
-      PRIMARY KEY (id) ,
-    FOREIGN KEY (user_id) REFERENCES user(id))
+  user_id INT NOT NULL UNIQUE,
+  saml_id VARCHAR(40) NOT NULL UNIQUE,
+  PRIMARY KEY (id) ,
+  FOREIGN KEY (user_id) REFERENCES user(id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
 CREATE TABLE password_auth (
   id INT AUTO_INCREMENT,
-  user_id INT,
+  user_id INT NOT NULL UNIQUE,
   login_name VARCHAR(191) NOT NULL UNIQUE,
-  hashed_password VARCHAR(191),
+  hashed_password VARCHAR(191) NOT NULL,
   is_password_non_expired BOOLEAN DEFAULT FALSE,
   PRIMARY KEY (id) ,
   FOREIGN KEY (user_id) REFERENCES user(id))
@@ -98,10 +98,10 @@ DEFAULT CHARACTER SET = utf8mb4;
 CREATE TABLE submission (
 	id INT AUTO_INCREMENT,
     user_id INT NOT NULL,
-    module_id INT NOT NULL, 
+    module_id INT NOT NULL,
     time DATETIME NULL DEFAULT NULL,
-    is_valid BOOLEAN,
-    flag VARCHAR(191),
+    is_valid BOOLEAN NOT NULL,
+    flag VARCHAR(191) NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (`user_id`) REFERENCES user(id),
     FOREIGN KEY (`module_id`) REFERENCES module(id))
@@ -112,6 +112,6 @@ CREATE TABLE configuration (
   id INT AUTO_INCREMENT,
   config_key VARCHAR(191) NOT NULL UNIQUE,
   value VARCHAR(191) NOT NULL,
-  PRIMARY KEY (id) )
+  PRIMARY KEY (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;

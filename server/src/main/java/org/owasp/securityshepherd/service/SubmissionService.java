@@ -2,7 +2,7 @@ package org.owasp.securityshepherd.service;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.Map;
+import org.owasp.securityshepherd.dto.RankedSubmissionDto;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.model.Submission;
@@ -30,12 +30,12 @@ public final class SubmissionService {
     return submissionRepository.deleteAll();
   }
 
-  public Flux<Map<String, Integer>> findAllValidByModuleIdSortedBySubmissionTime(
+  public Flux<RankedSubmissionDto> findAllValidByModuleIdSortedBySubmissionTime(
       final int moduleId) {
     return submissionDatabaseClient.findAllValidByModuleIdSortedBySubmissionTime(moduleId);
   }
   
-  public Flux<Map<String, Integer>> findValidUserIdsByModuleIdRankedBySubmissionTime(
+  public Flux<RankedSubmissionDto> findValidUserIdsByModuleIdRankedBySubmissionTime(
       final int moduleId) {
     return submissionDatabaseClient.findAllValidByModuleIdSortedBySubmissionTime(moduleId);
   }

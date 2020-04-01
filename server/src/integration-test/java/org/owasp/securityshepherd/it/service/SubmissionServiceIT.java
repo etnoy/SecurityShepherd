@@ -42,7 +42,7 @@ import reactor.test.StepVerifier;
 public class SubmissionServiceIT {
 
   SubmissionService submissionService;
-  
+
   @Autowired
   UserService userService;
 
@@ -63,7 +63,7 @@ public class SubmissionServiceIT {
 
   @Autowired
   SubmissionDatabaseClient submissionDatabaseClient;
-  
+
   @Autowired
   DatabaseService databaseService;
 
@@ -102,7 +102,7 @@ public class SubmissionServiceIT {
     userIds.add(userService.create("TestUser6").block());
 
     log.debug("Users: " + userIds);
-    
+
     // Create a module to submit to
     final int moduleId = moduleService.create("TestModule").block().getId();
 
@@ -133,31 +133,29 @@ public class SubmissionServiceIT {
 
       final int currentUserId = userIdIterator.next();
       final String currentFlag = flagIterator.next();
-      
+
       // Submit a new flag
       submissionService.submit(currentUserId, moduleId, currentFlag).block();
     }
 
     // Now verify that the submission service finds all valid submissions and lists them
     // chronologically
-
     StepVerifier.create(submissionService.findAllValidByModuleIdSortedBySubmissionTime(moduleId))
         .assertNext(result -> {
-          log.debug(result.toString());
-          assertThat(result.get("userId"), is(userIds.get(5))); // userId 6 ranks 1
-          assertThat(result.get("rank"), is(1));
+          assertThat(result.getUserId(), is(userIds.get(5))); // userId 6 ranks 1
+          assertThat(result.getRank(), is(1));
         }).assertNext(result -> {
-          assertThat(result.get("userId"), is(userIds.get(1))); // userId 2 ranks 2
-          assertThat(result.get("rank"), is(2));
+          assertThat(result.getUserId(), is(userIds.get(1))); // userId 2 ranks 2
+          assertThat(result.getRank(), is(2));
         }).assertNext(result -> {
-          assertThat(result.get("userId"), is(userIds.get(4))); // userId 5 ranks 2
-          assertThat(result.get("rank"), is(2));
+          assertThat(result.getUserId(), is(userIds.get(4))); // userId 5 ranks 2
+          assertThat(result.getRank(), is(2));
         }).assertNext(result -> {
-          assertThat(result.get("userId"), is(userIds.get(2))); // userId 3 ranks 4
-          assertThat(result.get("rank"), is(4));
+          assertThat(result.getUserId(), is(userIds.get(2))); // userId 3 ranks 4
+          assertThat(result.getRank(), is(4));
         }).assertNext(result -> {
-          assertThat(result.get("userId"), is(userIds.get(0))); // userId 1 ranks 5
-          assertThat(result.get("rank"), is(5));
+          assertThat(result.getUserId(), is(userIds.get(0))); // userId 1 ranks 5
+          assertThat(result.getRank(), is(5));
         }).expectComplete().verify();
   }
 
