@@ -9,8 +9,6 @@ import reactor.core.publisher.Flux;
 
 @Repository
 public interface SubmissionRepository extends ReactiveCrudRepository<Submission, Integer> {
-
   @Query("SELECT * from submission WHERE module_id = :module")
   public Flux<Submission> findAllByModuleId(@Param("module") final int moduleId);
-
 }

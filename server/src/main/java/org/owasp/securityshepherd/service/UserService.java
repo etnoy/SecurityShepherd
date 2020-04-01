@@ -28,7 +28,7 @@ public final class UserService {
 
   private final UserRepository userRepository;
 
-  private final AuthRepository authRepository;
+  private final AuthRepository userAuthRepository;
 
   private final PasswordAuthRepository passwordAuthRepository;
 
@@ -98,7 +98,7 @@ public final class UserService {
 
       return userIdMono.delayUntil(userId -> {
         Mono<UserAuth> userAuthMono =
-            authRepository.save(UserAuth.builder().userId(userId).build());
+            userAuthRepository.save(UserAuth.builder().userId(userId).build());
 
         Mono<PasswordAuth> passwordAuthMono =
             passwordAuthRepository.save(passwordAuthBuilder.userId(userId).build());
@@ -109,6 +109,12 @@ public final class UserService {
   }
 
   public Mono<ShepherdUserDetails> createUserDetailsFromLoginName(final String loginName) {
+    if (loginName == null) {
+      return Mono.error(new NullPointerException());
+    }
+    if (loginName.isEmpty()) {
+      return Mono.error(new IllegalArgumentException());
+    }
 
     final Mono<PasswordAuth> passwordAuthMono = passwordAuthRepository.findByLoginName(loginName);
 
@@ -116,10 +122,13 @@ public final class UserService {
         passwordAuthMono.map(PasswordAuth::getUserId).flatMap(this::findUserAuthByUserId);
 
     return Mono.zip(userAuthMono, passwordAuthMono, ShepherdUserDetails::new);
-
   }
 
   public Mono<ShepherdUserDetails> createUserDetailsFromUserId(final int userId) {
+    if (userId <= 0) {
+      return Mono.error(new InvalidUserIdException());
+    }
+    
     final Mono<UserAuth> userAuthMono = Mono.just(userId).flatMap(this::findUserAuthByUserId);
     final Mono<PasswordAuth> passwordAuthMono =
         Mono.just(userId).flatMap(this::findPasswordAuthByUserId);
@@ -128,7 +137,7 @@ public final class UserService {
   }
 
   public Mono<Void> deleteAll() {
-    return passwordAuthRepository.deleteAll().then(authRepository.deleteAll())
+    return passwordAuthRepository.deleteAll().then(userAuthRepository.deleteAll())
         .then(userRepository.deleteAll());
   }
 
@@ -136,8 +145,8 @@ public final class UserService {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
-    return userRepository.findById(userId).zipWith(findUserAuthByUserId(userId))
-        .flatMap(tuple -> userRepository.delete(tuple.getT1()));
+    return passwordAuthRepository.deleteByUserId(userId)
+        .then(userAuthRepository.deleteByUserId(userId)).then(userRepository.deleteById(userId));
   }
 
   public Mono<Void> demote(final int userId) {
@@ -148,7 +157,7 @@ public final class UserService {
     log.info("Demoting user with id " + userId + " to user");
 
     return findUserAuthByUserId(userId).map(userAuth -> userAuth.withAdmin(false))
-        .flatMap(authRepository::save).then();
+        .flatMap(userAuthRepository::save).then();
   }
 
   private Mono<String> displayNameAlreadyExists(final String displayName) {
@@ -177,6 +186,9 @@ public final class UserService {
   }
 
   public Mono<String> findDisplayNameById(final int userId) {
+    if (userId <= 0) {
+      return Mono.error(new InvalidUserIdException());
+    }
     return userRepository.findById(userId).map(User::getDisplayName);
   }
 
@@ -210,18 +222,17 @@ public final class UserService {
       return Mono.error(new InvalidUserIdException());
     }
 
-    return authRepository.findByUserId(userId);
+    return userAuthRepository.findByUserId(userId);
   }
 
   public Mono<Integer> findUserIdByLoginName(final String loginName) {
     if (loginName == null) {
       return Mono.error(new NullPointerException());
     }
-
     if (loginName.isEmpty()) {
-      // TODO: custom exception message
       return Mono.error(new IllegalArgumentException());
     }
+
     return passwordAuthRepository.findByLoginName(loginName).map(PasswordAuth::getUserId);
   }
 
@@ -238,7 +249,7 @@ public final class UserService {
     log.info("Promoting user with id " + userId + " to admin");
 
     return findUserAuthByUserId(userId).map(userAuth -> userAuth.withAdmin(true))
-        .flatMap(authRepository::save).then();
+        .flatMap(userAuthRepository::save).then();
   }
 
   public Mono<User> setClassId(final int userId, final int classId) {

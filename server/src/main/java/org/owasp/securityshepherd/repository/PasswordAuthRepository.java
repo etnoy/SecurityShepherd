@@ -1,6 +1,8 @@
 package org.owasp.securityshepherd.repository;
 
 import org.owasp.securityshepherd.model.PasswordAuth;
+import org.owasp.securityshepherd.model.UserAuth;
+import org.springframework.data.r2dbc.repository.Modifying;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
@@ -17,4 +19,7 @@ public interface PasswordAuthRepository extends ReactiveCrudRepository<PasswordA
   @Query("SELECT * from password_auth WHERE user_id = :user_id")
   public Mono<PasswordAuth> findByUserId(@Param("user_id") final int userId);
 
+  @Modifying
+  @Query("delete from password_auth WHERE user_id = :user_id")
+  public Mono<UserAuth> deleteByUserId(@Param("user_id") final int userId);
 }

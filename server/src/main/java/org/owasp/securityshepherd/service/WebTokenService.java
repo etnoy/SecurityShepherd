@@ -53,5 +53,4 @@ public class WebTokenService {
   public boolean validateToken(String token) {
     return !isTokenExpired(token);
   }
-
 }

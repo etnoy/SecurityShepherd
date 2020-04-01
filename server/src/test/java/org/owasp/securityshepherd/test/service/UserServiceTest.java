@@ -3,7 +3,6 @@ package org.owasp.securityshepherd.test.service;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -65,14 +64,11 @@ public class UserServiceTest {
   private KeyService keyService;
 
   @Test
-  @DisplayName("count() must return number of users")
-  public void count_FiniteNumberOfUsers_ReturnsCount() {
+  @DisplayName("count() should call repository and return user count")
+  public void count_ReturnsCount() {
     final long mockedUserCount = 11L;
-
     when(userRepository.count()).thenReturn(Mono.just(mockedUserCount));
-
     StepVerifier.create(userService.count()).expectNext(mockedUserCount).expectComplete().verify();
-
     verify(userRepository, times(1)).count();
   }
 
@@ -92,6 +88,7 @@ public class UserServiceTest {
   }
 
   @Test
+  @DisplayName("create() must throw exception if display name already exists")
   public void create_EmptyArgument_ThrowsIllegalArgumentException() {
     StepVerifier.create(userService.create("")).expectError(IllegalArgumentException.class)
         .verify();
@@ -244,14 +241,97 @@ public class UserServiceTest {
   }
 
   @Test
+  public void createUserDetailsByLoginName_EmptyLoginName_ReturnsIllegalArgumentException() {
+    StepVerifier.create(userService.createUserDetailsFromLoginName(""))
+        .expectError(IllegalArgumentException.class).verify();
+  }
+
+  @Test
+  public void createUserDetailsByLoginName_ExistingLoginName_CreatesUserDetails() {
+    final PasswordAuth mockPasswordAuth = mock(PasswordAuth.class);
+    final UserAuth mockUserAuth = mock(UserAuth.class);
+
+    final String mockLoginName = "loginName";
+    final int mockUserId = 301;
+
+    when(passwordAuthRepository.findByLoginName(mockLoginName))
+        .thenReturn(Mono.just(mockPasswordAuth));
+    when(userAuthRepository.findByUserId(mockUserId)).thenReturn(Mono.just(mockUserAuth));
+
+    when(mockPasswordAuth.getUserId()).thenReturn(mockUserId);
+
+    StepVerifier.create(userService.createUserDetailsFromLoginName(mockLoginName))
+        .assertNext(userDetails -> {
+          assertThat(userDetails.getUserAuth(), is(mockUserAuth));
+          assertThat(userDetails.getPasswordAuth(), is(mockPasswordAuth));
+        }).expectComplete().verify();
+
+    verify(passwordAuthRepository, times(1)).findByLoginName(mockLoginName);
+  }
+
+  @Test
+  public void createUserDetailsByLoginName_NonExistentLoginName_ReturnsEmpty() {
+    final String mockLoginName = "loginName";
+    when(passwordAuthRepository.findByLoginName(mockLoginName)).thenReturn(Mono.empty());
+    StepVerifier.create(userService.createUserDetailsFromLoginName(mockLoginName)).expectComplete()
+        .verify();
+    verify(passwordAuthRepository, times(1)).findByLoginName(mockLoginName);
+  }
+
+  @Test
+  public void createUserDetailsByLoginName_NullLoginName_ReturnsNullPointerException() {
+    StepVerifier.create(userService.createUserDetailsFromLoginName(null))
+        .expectError(NullPointerException.class).verify();
+  }
+
+  @Test
+  public void createUserDetailsByUserId_ExistingUserId_CreatesUserDetails() {
+    final PasswordAuth mockPasswordAuth = mock(PasswordAuth.class);
+    final UserAuth mockUserAuth = mock(UserAuth.class);
+    final int mockUserId = 301;
+
+    when(passwordAuthRepository.findByUserId(mockUserId)).thenReturn(Mono.just(mockPasswordAuth));
+    when(userAuthRepository.findByUserId(mockUserId)).thenReturn(Mono.just(mockUserAuth));
+
+    StepVerifier.create(userService.createUserDetailsFromUserId(mockUserId))
+        .assertNext(userDetails -> {
+          assertThat(userDetails.getUserAuth(), is(mockUserAuth));
+          assertThat(userDetails.getPasswordAuth(), is(mockPasswordAuth));
+        }).expectComplete().verify();
+
+    verify(passwordAuthRepository, times(1)).findByUserId(mockUserId);
+    verify(userAuthRepository, times(1)).findByUserId(mockUserId);
+  }
+
+  @Test
+  public void createUserDetailsByUserId_InvalidUserId_ThrowsInvalidUserIdException() {
+    for (final int userId : TestUtils.INVALID_IDS) {
+      StepVerifier.create(userService.createUserDetailsFromUserId(userId))
+          .expectError(InvalidUserIdException.class).verify();
+    }
+  }
+
+  @Test
+  public void createUserDetailsByUserId_NonExistentUserId_ReturnsEmpty() {
+    final int mockUserId = 301;
+
+    when(passwordAuthRepository.findByUserId(mockUserId)).thenReturn(Mono.empty());
+    when(userAuthRepository.findByUserId(mockUserId)).thenReturn(Mono.empty());
+
+    StepVerifier.create(userService.createUserDetailsFromUserId(mockUserId)).expectComplete()
+        .verify();
+
+    verify(passwordAuthRepository, times(1)).findByUserId(mockUserId);
+    verify(userAuthRepository, times(1)).findByUserId(mockUserId);
+  }
+
+  @Test
   public void deleteAll_NoArgument_CallsRepository() {
     when(passwordAuthRepository.deleteAll()).thenReturn(Mono.empty());
     when(userAuthRepository.deleteAll()).thenReturn(Mono.empty());
     when(userRepository.deleteAll()).thenReturn(Mono.empty());
 
     StepVerifier.create(userService.deleteAll()).expectComplete().verify();
-
-    verify(userRepository, times(1)).deleteAll();
 
     // Order of deletion is important due to RDBMS constraints
     final InOrder deletionOrder =
@@ -267,6 +347,23 @@ public class UserServiceTest {
       StepVerifier.create(userService.deleteById(userId)).expectError(InvalidUserIdException.class)
           .verify();
     }
+  }
+
+  @Test
+  public void deleteById_ValidUserId_CallsRepository() {
+    final int mockUserId = 358;
+    when(passwordAuthRepository.deleteByUserId(mockUserId)).thenReturn(Mono.empty());
+    when(userAuthRepository.deleteByUserId(mockUserId)).thenReturn(Mono.empty());
+    when(userRepository.deleteById(mockUserId)).thenReturn(Mono.empty());
+
+    StepVerifier.create(userService.deleteById(mockUserId)).expectComplete().verify();
+
+    // Order of deletion is important due to RDBMS constraints
+    final InOrder deletionOrder =
+        inOrder(passwordAuthRepository, userAuthRepository, userRepository);
+    deletionOrder.verify(passwordAuthRepository, times(1)).deleteByUserId(mockUserId);
+    deletionOrder.verify(userAuthRepository, times(1)).deleteByUserId(mockUserId);
+    deletionOrder.verify(userRepository, times(1)).deleteById(mockUserId);
   }
 
   @Test
@@ -440,6 +537,14 @@ public class UserServiceTest {
   }
 
   @Test
+  public void findDisplayNameById_InvalidUserId_ThrowsInvalidUserIdExceptio() {
+    for (final int userId : TestUtils.INVALID_IDS) {
+      StepVerifier.create(userService.findDisplayNameById(userId))
+          .expectError(InvalidUserIdException.class).verify();
+    }
+  }
+
+  @Test
   public void findDisplayNameById_NoUserExists_ReturnsEmpty() {
     final int mockUserId = 294;
     when(userRepository.findById(mockUserId)).thenReturn(Mono.empty());
@@ -526,29 +631,6 @@ public class UserServiceTest {
     StepVerifier.create(userService.findUserAuthByUserId(nonExistentUserId)).expectComplete()
         .verify();
     verify(userAuthRepository, times(1)).findByUserId(nonExistentUserId);
-  }
-
-  @Test
-  public void findUserDetailsByLoginName_ExistingUserId_ReturnsUserAuth() {
-    final PasswordAuth mockPasswordAuth = mock(PasswordAuth.class);
-    final UserAuth mockUserAuth = mock(UserAuth.class);
-
-    final String mockLoginName = "loginName";
-    final int mockUserId = 301;
-
-    when(passwordAuthRepository.findByLoginName(mockLoginName))
-        .thenReturn(Mono.just(mockPasswordAuth));
-    when(userAuthRepository.findByUserId(mockUserId)).thenReturn(Mono.just(mockUserAuth));
-
-    when(mockPasswordAuth.getUserId()).thenReturn(mockUserId);
-
-    StepVerifier.create(userService.createUserDetailsFromLoginName(mockLoginName))
-        .assertNext(userDetails -> {
-          assertThat(userDetails.getUserAuth(), is(mockUserAuth));
-          assertThat(userDetails.getPasswordAuth(), is(mockPasswordAuth));
-        }).expectComplete().verify();
-
-    verify(passwordAuthRepository, times(1)).findByLoginName(mockLoginName);
   }
 
   @Test
@@ -764,7 +846,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void setDisplayName_ValidDisplayName_DisplayNameIsSet() throws Exception {
+  public void setDisplayName_ValidArguments_DisplayNameIsSet() throws Exception {
     User mockUser = mock(User.class);
     String newDisplayName = "newDisplayName";
 

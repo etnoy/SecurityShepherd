@@ -10,12 +10,10 @@ import reactor.core.publisher.Flux;
 @AllArgsConstructor
 @Service
 public class SubmissionDatabaseClient {
-
   private final DatabaseClient databaseClient;
 
   public Flux<Map<String, Integer>> findAllValidByModuleIdSortedBySubmissionTime(
       final int moduleId) {
-
     return databaseClient.execute(
         "SELECT user_id, RANK() over(ORDER BY time) user_rank from submission WHERE is_valid = true AND module_id = "
             + moduleId)
@@ -25,7 +23,5 @@ public class SubmissionDatabaseClient {
           resultMap.put("rank", Math.toIntExact(row.get("user_rank", Long.class)));
           return resultMap;
         }).all();
-
   }
-
 }
