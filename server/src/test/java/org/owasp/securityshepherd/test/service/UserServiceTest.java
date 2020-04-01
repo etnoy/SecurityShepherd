@@ -65,7 +65,7 @@ public class UserServiceTest {
 
   @Test
   @DisplayName("count() should call repository and return user count")
-  public void count_ReturnsCount() {
+  public void count_NoArgument_ReturnsCount() {
     final long mockedUserCount = 11L;
     when(userRepository.count()).thenReturn(Mono.just(mockedUserCount));
     StepVerifier.create(userService.count()).expectNext(mockedUserCount).expectComplete().verify();
@@ -475,14 +475,11 @@ public class UserServiceTest {
     final int mockUserId = 910;
 
     when(userRepository.findById(mockUserId)).thenReturn(Mono.just(mockUser));
-    when(userRepository.existsById(mockUserId)).thenReturn(Mono.just(true));
 
     StepVerifier.create(userService.findById(mockUserId)).expectNext(mockUser).expectComplete()
         .verify();
 
     verify(userRepository, times(1)).findById(mockUserId);
-    verify(userAuthRepository, never()).findByUserId(any(Integer.class));
-    verify(passwordAuthRepository, never()).findByUserId(any(Integer.class));
   }
 
   @Test

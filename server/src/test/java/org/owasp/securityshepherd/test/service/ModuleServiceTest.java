@@ -25,6 +25,7 @@ import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
 import org.owasp.securityshepherd.model.Module;
+import org.owasp.securityshepherd.model.User;
 import org.owasp.securityshepherd.repository.ModuleRepository;
 import org.owasp.securityshepherd.repository.ModuleScoreRepository;
 import org.owasp.securityshepherd.service.ConfigurationService;
@@ -32,8 +33,10 @@ import org.owasp.securityshepherd.service.CryptoService;
 import org.owasp.securityshepherd.service.KeyService;
 import org.owasp.securityshepherd.service.ModuleService;
 import org.owasp.securityshepherd.service.UserService;
+import org.owasp.securityshepherd.test.util.TestUtils;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -125,6 +128,34 @@ public class ModuleServiceTest {
   }
 
   @Test
+  public void deleteAll_NoArgument_CallsRepository() {
+    when(moduleRepository.deleteAll()).thenReturn(Mono.empty());
+    StepVerifier.create(moduleService.deleteAll()).expectComplete().verify();
+    verify(moduleRepository, times(1)).deleteAll();
+  }
+
+  @Test
+  public void findAll_ModulesExist_ReturnsModules() {
+    final Module mockModule1 = mock(Module.class);
+    final Module mockModule2 = mock(Module.class);
+    final Module mockModule3 = mock(Module.class);
+
+    when(moduleRepository.findAll()).thenReturn(Flux.just(mockModule1, mockModule2, mockModule3));
+
+    StepVerifier.create(moduleService.findAll()).expectNext(mockModule1).expectNext(mockModule2)
+        .expectNext(mockModule3).expectComplete().verify();
+
+    verify(moduleRepository, times(1)).findAll();
+  }
+
+  @Test
+  public void findAll_NoModulesExist_ReturnsEmpty() {
+    when(moduleRepository.findAll()).thenReturn(Flux.empty());
+    StepVerifier.create(moduleService.findAll()).expectComplete().verify();
+    verify(moduleRepository, times(1)).findAll();
+  }
+
+  @Test
   public void findById_NegativeModuleId_ThrowsException() {
     StepVerifier.create(moduleService.findById(-1)).expectError(InvalidModuleIdException.class)
         .verify();
@@ -149,6 +180,38 @@ public class ModuleServiceTest {
   public void findById_ZeroModuleId_ThrowsException() {
     StepVerifier.create(moduleService.findById(0)).expectError(InvalidModuleIdException.class)
         .verify();
+  }
+
+  @Test
+  public void findNameById_ExistingModuleId_ReturnsUserEntity() {
+    final Module mockModule = mock(Module.class);
+    final String mockModuleName = "MockName";
+    final int mockModuleId = 21;
+
+    when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
+    when(mockModule.getName()).thenReturn(mockModuleName);
+
+    StepVerifier.create(moduleService.findNameById(mockModuleId)).expectNext(mockModuleName)
+        .expectComplete().verify();
+
+    verify(moduleRepository, times(1)).findById(mockModuleId);
+    verify(mockModule, times(1)).getName();
+  }
+
+  @Test
+  public void findNameById_InvalidModuleId_ThrowsInvalidModuleIdException() {
+    for (final int moduleId : TestUtils.INVALID_IDS) {
+      StepVerifier.create(moduleService.findNameById(moduleId))
+          .expectError(InvalidModuleIdException.class).verify();
+    }
+  }
+
+  @Test
+  public void findNameById_NonExistentModuleId_ReturnsEmpty() {
+    final int nonExistentModuleId = 248;
+    when(moduleRepository.findById(nonExistentModuleId)).thenReturn(Mono.empty());
+    StepVerifier.create(moduleService.findNameById(nonExistentModuleId)).expectComplete().verify();
+    verify(moduleRepository, times(1)).findById(nonExistentModuleId);
   }
 
   @Test
