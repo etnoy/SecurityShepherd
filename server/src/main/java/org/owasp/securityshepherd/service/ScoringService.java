@@ -6,6 +6,7 @@ import org.owasp.securityshepherd.model.ModulePoint;
 import org.owasp.securityshepherd.model.Score;
 import org.owasp.securityshepherd.model.ModulePoint.ModulePointBuilder;
 import org.owasp.securityshepherd.model.Score.ScoreBuilder;
+import org.owasp.securityshepherd.model.Scoreboard;
 import org.owasp.securityshepherd.repository.ModulePointRepository;
 import org.owasp.securityshepherd.repository.ModuleRepository;
 import org.owasp.securityshepherd.repository.ScoreRepository;
@@ -25,7 +26,7 @@ public final class ScoringService {
   private final SubmissionDatabaseClient submissionDatabaseClient;
 
   private final ScoreRepository scoreRepository;
-
+  
   private final ModuleRepository moduleRepository;
 
   public Mono<Void> deleteAll() {
@@ -72,5 +73,9 @@ public final class ScoringService {
       // Save the scores in the database and return
       return scoreRepository.saveAll(scores);
     });
+  }
+  
+  public Flux<Scoreboard> computeScoreboard() {
+    return submissionDatabaseClient.getScoreboard();
   }
 }

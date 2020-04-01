@@ -1,30 +1,22 @@
 package org.owasp.securityshepherd.model;
 
 import java.io.Serializable;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
-import lombok.With;
 
 @Value
 @Builder
-@With
 public class Scoreboard implements Serializable {
 
-  private static final long serialVersionUID = -3672798577756177047L;
+  private static final long serialVersionUID = 902640084501001329L;
 
-  @Id
-  private Integer id;
+  @NonNull
+  private Integer rank;
   
   @NonNull
   private Integer userId;
 
   @NonNull
-  private Integer score;
-  
-  @NonNull
-  @Column("user_rank")
-  private Integer rank;
+  private Long score;
 }

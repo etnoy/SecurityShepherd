@@ -3,6 +3,8 @@ package org.owasp.securityshepherd.repository;
 import java.time.LocalDateTime;
 import org.owasp.securityshepherd.dto.RankedSubmissionDto;
 import org.owasp.securityshepherd.dto.RankedSubmissionDto.RankedSubmissionDtoBuilder;
+import org.owasp.securityshepherd.model.Scoreboard;
+import org.owasp.securityshepherd.model.Scoreboard.ScoreboardBuilder;
 import org.springframework.data.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Service;
 import lombok.AllArgsConstructor;
@@ -16,6 +18,7 @@ public class SubmissionDatabaseClient {
   public Flux<RankedSubmissionDto> findAllValidByModuleIdSortedBySubmissionTime(
       final int moduleId) {
     return databaseClient.execute(
+        // TODO: bind arguments
         "SELECT user_id, time, RANK() over(ORDER BY time) user_rank from submission WHERE is_valid = true AND module_id = "
             + moduleId)
         .map((row, rowMetadata) -> {
@@ -26,5 +29,15 @@ public class SubmissionDatabaseClient {
           rankedSubmissionDtoBuilder.rank(Math.toIntExact(row.get("user_rank", Long.class)));
           return rankedSubmissionDtoBuilder.build();
         }).all();
+  }
+
+  public Flux<Scoreboard> getScoreboard() {
+    return databaseClient.execute("SELECT * from core.scoreboard").map((row, rowMetadata) -> {
+      final ScoreboardBuilder scoreboardBuilder = Scoreboard.builder();
+      scoreboardBuilder.userId(row.get("user_id", Integer.class));
+      scoreboardBuilder.score(row.get("score", Long.class));
+      scoreboardBuilder.rank(Math.toIntExact(row.get("rank", Long.class)));
+      return scoreboardBuilder.build();
+    }).all();
   }
 }
