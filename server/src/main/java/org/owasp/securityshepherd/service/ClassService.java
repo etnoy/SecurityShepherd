@@ -40,10 +40,6 @@ public final class ClassService {
         .flatMap(className -> classRepository.save(ClassEntity.builder().name(className).build()));
   }
 
-  public Mono<Void> deleteAll() {
-    return classRepository.deleteAll();
-  }
-
   private Mono<Boolean> doesNotExistByName(final String name) {
     return classRepository.findByName(name).map(u -> false).defaultIfEmpty(true);
   }

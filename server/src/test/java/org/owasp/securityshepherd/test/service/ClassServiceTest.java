@@ -6,7 +6,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.BeforeAll;
@@ -86,14 +85,7 @@ public class ClassServiceTest {
     verify(classRepository).findByName(mockClassName);
     verify(classRepository).save(any(ClassEntity.class));
   }
-
-  @Test
-  public void deleteAll_NoArgument_CallsRepository() {
-    when(classRepository.deleteAll()).thenReturn(Mono.empty());
-    StepVerifier.create(classService.deleteAll()).expectComplete().verify();
-    verify(classRepository, times(1)).deleteAll();
-  }
-
+  
   @Test
   @DisplayName("Return true when checking if an existing class id exists")
   public void existsById_ExistingClassId_ReturnsTrue() throws Exception {

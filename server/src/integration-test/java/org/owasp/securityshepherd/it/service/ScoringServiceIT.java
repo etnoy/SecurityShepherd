@@ -26,7 +26,7 @@ import org.owasp.securityshepherd.service.ModuleService;
 import org.owasp.securityshepherd.service.ScoreService;
 import org.owasp.securityshepherd.service.SubmissionService;
 import org.owasp.securityshepherd.service.UserService;
-import org.owasp.securityshepherd.test.util.TestService;
+import org.owasp.securityshepherd.test.util.TestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -73,7 +73,7 @@ public class ScoringServiceIT {
   Clock clock;
 
   @Autowired
-  TestService testService;
+  TestUtils testService;
 
   @Autowired
   ConfigurationService configurationService;

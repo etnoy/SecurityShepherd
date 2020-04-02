@@ -323,22 +323,6 @@ public class UserServiceTest {
   }
 
   @Test
-  public void deleteAll_NoArgument_CallsRepository() {
-    when(passwordAuthRepository.deleteAll()).thenReturn(Mono.empty());
-    when(userAuthRepository.deleteAll()).thenReturn(Mono.empty());
-    when(userRepository.deleteAll()).thenReturn(Mono.empty());
-
-    StepVerifier.create(userService.deleteAll()).expectComplete().verify();
-
-    // Order of deletion is important due to RDBMS constraints
-    final InOrder deletionOrder =
-        inOrder(passwordAuthRepository, userAuthRepository, userRepository);
-    deletionOrder.verify(passwordAuthRepository, times(1)).deleteAll();
-    deletionOrder.verify(userAuthRepository, times(1)).deleteAll();
-    deletionOrder.verify(userRepository, times(1)).deleteAll();
-  }
-
-  @Test
   public void deleteById_InvalidUserId_ThrowsInvalidUserIdException() {
     for (final int userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.deleteById(userId)).expectError(InvalidUserIdException.class)
@@ -866,9 +850,8 @@ public class UserServiceTest {
   
   @BeforeEach
   private void setUp() {
-    // Set up userService to use our mocked repos and services
+    // Set up the system under test
     userService = new UserService(userRepository, userAuthRepository, passwordAuthRepository,
         classService, keyService);
   }
-
 }

@@ -7,7 +7,6 @@ import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
 import org.owasp.securityshepherd.model.Module;
-import org.owasp.securityshepherd.repository.ModulePointRepository;
 import org.owasp.securityshepherd.repository.ModuleRepository;
 import org.springframework.stereotype.Service;
 import com.google.common.primitives.Bytes;
@@ -23,8 +22,6 @@ public final class ModuleService {
 
   private final ModuleRepository moduleRepository;
 
-  private final ModulePointRepository modulePointRepository;
-  
   private final UserService userService;
 
   private final ConfigurationService configurationService;
@@ -51,11 +48,6 @@ public final class ModuleService {
     return Mono.just(moduleName).filterWhen(this::doesNotExistByName)
         .switchIfEmpty(Mono.error(new DuplicateModuleNameException("Module name already exists")))
         .map(name -> Module.builder().name(name).build()).flatMap(moduleRepository::save);
-  }
-
-  public Mono<Void> deleteAll() {
-    return modulePointRepository.deleteAll()
-        .then(moduleRepository.deleteAll());
   }
 
   private Mono<Boolean> doesNotExistByName(final String moduleName) {

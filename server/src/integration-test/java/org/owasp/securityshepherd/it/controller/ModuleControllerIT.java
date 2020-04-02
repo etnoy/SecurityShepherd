@@ -11,7 +11,7 @@ import org.owasp.securityshepherd.dto.PasswordRegistrationDto;
 import org.owasp.securityshepherd.dto.SubmissionDto;
 import org.owasp.securityshepherd.service.ModuleService;
 import org.owasp.securityshepherd.service.UserService;
-import org.owasp.securityshepherd.test.util.TestService;
+import org.owasp.securityshepherd.test.util.TestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -43,7 +43,7 @@ public class ModuleControllerIT {
   ModuleService moduleService;
 
   @Autowired
-  TestService testService;
+  TestUtils testService;
 
   @Autowired
   private WebTestClient webTestClient;

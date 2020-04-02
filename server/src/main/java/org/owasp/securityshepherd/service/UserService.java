@@ -136,11 +136,6 @@ public final class UserService {
     return Mono.zip(userAuthMono, passwordAuthMono, ShepherdUserDetails::new);
   }
 
-  public Mono<Void> deleteAll() {
-    return passwordAuthRepository.deleteAll().then(userAuthRepository.deleteAll())
-        .then(userRepository.deleteAll());
-  }
-
   public Mono<Void> deleteById(final int userId) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());

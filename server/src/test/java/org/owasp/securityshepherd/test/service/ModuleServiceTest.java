@@ -25,7 +25,6 @@ import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.repository.ModuleRepository;
-import org.owasp.securityshepherd.repository.ModulePointRepository;
 import org.owasp.securityshepherd.service.ConfigurationService;
 import org.owasp.securityshepherd.service.CryptoService;
 import org.owasp.securityshepherd.service.KeyService;
@@ -51,8 +50,6 @@ public class ModuleServiceTest {
   private UserService userService = Mockito.mock(UserService.class);
 
   private ModuleRepository moduleRepository = Mockito.mock(ModuleRepository.class);
-
-  private ModulePointRepository modulePointRepository = Mockito.mock(ModulePointRepository.class);
 
   private ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
 
@@ -116,14 +113,6 @@ public class ModuleServiceTest {
     verify(moduleRepository, times(1)).save(argument.capture());
     verify(moduleRepository, times(1)).save(any(Module.class));
     assertThat(argument.getValue().getName(), is(name));
-  }
-
-  @Test
-  public void deleteAll_NoArgument_CallsRepository() {
-    when(moduleRepository.deleteAll()).thenReturn(Mono.empty());
-    when(modulePointRepository.deleteAll()).thenReturn(Mono.empty());
-    StepVerifier.create(moduleService.deleteAll()).expectComplete().verify();
-    verify(moduleRepository, times(1)).deleteAll();
   }
 
   @Test
@@ -542,8 +531,9 @@ public class ModuleServiceTest {
 
   @BeforeEach
   private void setUp() {
-    moduleService = new ModuleService(moduleRepository, modulePointRepository,
-        userService, configurationService, keyService, cryptoService);
+    // Set up the system under test
+    moduleService = new ModuleService(moduleRepository, userService, configurationService,
+        keyService, cryptoService);
   }
 
   @Test

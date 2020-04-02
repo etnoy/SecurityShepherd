@@ -9,7 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.service.UserService;
-import org.owasp.securityshepherd.test.util.TestService;
+import org.owasp.securityshepherd.test.util.TestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,7 +41,7 @@ public class LoginControllerIT {
   private WebTestClient webTestClient;
   
   @Autowired
-  TestService testService;
+  TestUtils testService;
 
   @Test
   public void login_CorrectCredentials_ReturnsJWS() {

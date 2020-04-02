@@ -27,10 +27,6 @@ public final class SubmissionService {
 
   private final Clock clock;
 
-  public Mono<Void> deleteAll() {
-    return submissionRepository.deleteAll();
-  }
-
   public Mono<Submission> submit(final int userId, final int moduleId, final String flag) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());

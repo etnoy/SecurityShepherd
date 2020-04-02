@@ -17,7 +17,7 @@ import org.owasp.securityshepherd.repository.UserRepository;
 import org.owasp.securityshepherd.service.ModuleService;
 import org.owasp.securityshepherd.service.SubmissionService;
 import org.owasp.securityshepherd.service.UserService;
-import org.owasp.securityshepherd.test.util.TestService;
+import org.owasp.securityshepherd.test.util.TestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -61,7 +61,7 @@ public class SubmissionServiceIT {
   UserRepository userRepository;
 
   @Autowired
-  TestService testService;
+  TestUtils testService;
 
   @Test
   public void submitFlag_ValidExactFlag_Success() throws Exception {
