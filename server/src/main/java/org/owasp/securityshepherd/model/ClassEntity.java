@@ -18,8 +18,8 @@ public class ClassEntity implements Serializable {
   private static final long serialVersionUID = 7375094814834027958L;
 
   @Id
-  private final int id;
+  private Integer id;
 
   @NonNull
-  private final String name;
+  private String name;
 }
