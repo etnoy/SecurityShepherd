@@ -48,6 +48,6 @@ public class ModuleController {
         .map(Authentication::getPrincipal).cast(ShepherdUserDetails.class)
         .map(ShepherdUserDetails::getUserId).flatMap(
             id -> submissionService.submit(id, submissionDto.getModuleId(), submissionDto.getFlag())
-                .map(Submission::isValid));
+                .map(Submission::getIsValid));
   }
 }

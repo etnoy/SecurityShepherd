@@ -10,8 +10,7 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
 @Repository
-public interface ModuleRepository extends ReactiveCrudRepository<Module, Integer> {
-
+public interface ModuleRepository extends ReactiveCrudRepository<Module, Long> {
   @Modifying
   @Query("delete from module where name = :name")
   public void deleteByName(@Param("name") final String name);
@@ -21,5 +20,4 @@ public interface ModuleRepository extends ReactiveCrudRepository<Module, Integer
 
   @Query("select * from module where name = :name")
   public Mono<Module> findByName(@Param("name") final String name);
-
 }

@@ -48,7 +48,7 @@ public class LoginControllerIT {
     final String loginName = "test";
     final String hashedPassword = "$2y$12$53B6QcsGwF3Os1GVFUFSQOhIPXnWFfuEkRJdbknFWnkXfUBMUKhaW";
 
-    final Integer createdUserId = userService.createPasswordUser("Test User", loginName, hashedPassword).block();
+    final long createdUserId = userService.createPasswordUser("Test User", loginName, hashedPassword).block();
 
     final String jws = JsonPath.parse(
         new String(webTestClient.post().uri("/api/v1/login").contentType(MediaType.APPLICATION_JSON)
@@ -68,7 +68,7 @@ public class LoginControllerIT {
     final DocumentContext jsonBody =
         JsonPath.parse(new String(Base64.getDecoder().decode(jwt.substring(bodyDotPosition + 1))));
 
-    final int userId = Integer.parseInt(jsonBody.read("$.sub"));
+    final long userId = Long.parseLong(jsonBody.read("$.sub"));
     
     assertThat(userId, is(createdUserId));
   }

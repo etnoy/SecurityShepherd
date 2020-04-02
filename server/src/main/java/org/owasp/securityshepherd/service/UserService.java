@@ -40,7 +40,7 @@ public final class UserService {
     return userRepository.count();
   }
 
-  public Mono<Integer> create(final String displayName) {
+  public Mono<Long> create(final String displayName) {
     if (displayName == null) {
       return Mono.error(new NullPointerException());
     }
@@ -57,7 +57,7 @@ public final class UserService {
         .map(User::getId);
   }
 
-  public Mono<Integer> createPasswordUser(final String displayName, final String loginName,
+  public Mono<Long> createPasswordUser(final String displayName, final String loginName,
       final String hashedPassword) {
     if (displayName == null) {
       return Mono.error(new NullPointerException("Display name cannot be null"));
@@ -90,7 +90,7 @@ public final class UserService {
       final UserBuilder userBuilder = User.builder();
       userBuilder.displayName(tuple.getT1());
 
-      final Mono<Integer> userIdMono = userRepository.save(userBuilder.build()).map(User::getId);
+      final Mono<Long> userIdMono = userRepository.save(userBuilder.build()).map(User::getId);
 
       final PasswordAuthBuilder passwordAuthBuilder = PasswordAuth.builder();
       passwordAuthBuilder.loginName(tuple.getT2());
@@ -124,11 +124,11 @@ public final class UserService {
     return Mono.zip(userAuthMono, passwordAuthMono, ShepherdUserDetails::new);
   }
 
-  public Mono<ShepherdUserDetails> createUserDetailsFromUserId(final int userId) {
+  public Mono<ShepherdUserDetails> createUserDetailsFromUserId(final long userId) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
-    
+
     final Mono<UserAuth> userAuthMono = Mono.just(userId).flatMap(this::findUserAuthByUserId);
     final Mono<PasswordAuth> passwordAuthMono =
         Mono.just(userId).flatMap(this::findPasswordAuthByUserId);
@@ -136,7 +136,7 @@ public final class UserService {
     return Mono.zip(userAuthMono, passwordAuthMono, ShepherdUserDetails::new);
   }
 
-  public Mono<Void> deleteById(final int userId) {
+  public Mono<Void> deleteById(final long userId) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
@@ -144,7 +144,7 @@ public final class UserService {
         .then(userAuthRepository.deleteByUserId(userId)).then(userRepository.deleteById(userId));
   }
 
-  public Mono<Void> demote(final int userId) {
+  public Mono<Void> demote(final long userId) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
@@ -172,7 +172,7 @@ public final class UserService {
     return userRepository.findAll();
   }
 
-  public Mono<User> findById(final int userId) {
+  public Mono<User> findById(final long userId) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
@@ -180,14 +180,14 @@ public final class UserService {
     return userRepository.findById(userId);
   }
 
-  public Mono<String> findDisplayNameById(final int userId) {
+  public Mono<String> findDisplayNameById(final long userId) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
     return userRepository.findById(userId).map(User::getDisplayName);
   }
 
-  public Mono<byte[]> findKeyById(final int id) {
+  public Mono<byte[]> findKeyById(final long id) {
     if (id <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
@@ -204,7 +204,7 @@ public final class UserService {
         });
   }
 
-  public Mono<PasswordAuth> findPasswordAuthByUserId(final int userId) {
+  public Mono<PasswordAuth> findPasswordAuthByUserId(final long userId) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
@@ -212,7 +212,7 @@ public final class UserService {
     return passwordAuthRepository.findByUserId(userId);
   }
 
-  public Mono<UserAuth> findUserAuthByUserId(final int userId) {
+  public Mono<UserAuth> findUserAuthByUserId(final long userId) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
@@ -220,7 +220,7 @@ public final class UserService {
     return userAuthRepository.findByUserId(userId);
   }
 
-  public Mono<Integer> findUserIdByLoginName(final String loginName) {
+  public Mono<Long> findUserIdByLoginName(final String loginName) {
     if (loginName == null) {
       return Mono.error(new NullPointerException());
     }
@@ -236,7 +236,7 @@ public final class UserService {
         .error(new DuplicateClassNameException("Login name " + loginName + " already exists"));
   }
 
-  public Mono<Void> promote(final int userId) {
+  public Mono<Void> promote(final long userId) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
@@ -247,7 +247,7 @@ public final class UserService {
         .flatMap(userAuthRepository::save).then();
   }
 
-  public Mono<User> setClassId(final int userId, final int classId) {
+  public Mono<User> setClassId(final long userId, final long classId) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
@@ -256,14 +256,14 @@ public final class UserService {
       return Mono.error(new InvalidClassIdException());
     }
 
-    final Mono<Integer> classIdMono = Mono.just(classId).filterWhen(classService::existsById)
+    final Mono<Long> classIdMono = Mono.just(classId).filterWhen(classService::existsById)
         .switchIfEmpty(Mono.error(new ClassIdNotFoundException()));
 
     return Mono.just(userId).flatMap(this::findById).zipWith(classIdMono)
         .map(tuple -> tuple.getT1().withClassId(tuple.getT2())).flatMap(userRepository::save);
   }
 
-  public Mono<User> setDisplayName(final int userId, final String displayName) {
+  public Mono<User> setDisplayName(final long userId, final String displayName) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }

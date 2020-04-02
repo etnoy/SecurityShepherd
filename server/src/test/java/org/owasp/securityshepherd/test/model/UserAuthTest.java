@@ -217,14 +217,14 @@ public class UserAuthTest {
 
   @Test
   public void withId_ValidId_ChangesId() {
-    final int originalId = 1;
-    final int[] testedIds = {originalId, 0, -1, 1000, -1000, 123456789};
+    final Long originalId = 1L;
+    final Long[] testedIds = {originalId, 0L, -1L, 1000L, -1000L, 123456789L};
 
     final UserAuth newAuth = UserAuth.builder().id(originalId).build();
 
     assertThat(newAuth.getId(), is(originalId));
 
-    for (final int newId : testedIds) {
+    for (final Long newId : testedIds) {
       final UserAuth changedAuth = newAuth.withId(newId);
       assertThat(changedAuth.getId(), is(newId));
     }
@@ -284,7 +284,7 @@ public class UserAuthTest {
 
       assertThat(changedAuth.getSuspendedUntil(), is(time));
     }
-    
+
     final UserAuth changedAuth = testAuth.withSuspendedUntil(null);
 
     assertThat(changedAuth.getSuspendedUntil(), is(nullValue()));
@@ -299,24 +299,22 @@ public class UserAuthTest {
     final String[] testedSuspensionMessages = {null, "", "banned", "Long  With     Whitespace",
         "12345", "You tried to hack the server, fool!"};
 
-    for (String newSuspensionMessage : testedSuspensionMessages) {
+    for (final String newSuspensionMessage : testedSuspensionMessages) {
       final UserAuth changedAuth = auth.withSuspensionMessage(newSuspensionMessage);
       assertThat(changedAuth.getSuspensionMessage(), is(newSuspensionMessage));
     }
   }
 
   @Test
-  public void withUser_ValidUser_ChangesUser() {
-    final int originalUser = 1;
-    final int[] testedUsers = {originalUser, 0, -1, 1000, -1000, 123456789};
+  public void withUserId_ValidUser_ChangesUser() {
+    final long originalUserId = 1;
+    final long[] testedUserIds = {originalUserId, 0, -1, 1000, -1000, 123456789};
 
-    final UserAuth newAuth = UserAuth.builder().userId(originalUser).build();
+    final UserAuth newAuth = UserAuth.builder().userId(originalUserId).build();
 
-    assertThat(newAuth.getUserId(), is(originalUser));
-
-    for (int newUser : testedUsers) {
-      final UserAuth changedAuth = newAuth.withUserId(newUser);
-      assertThat(changedAuth.getUserId(), is(newUser));
+    for (final long newUserId : testedUserIds) {
+      final UserAuth changedAuth = newAuth.withUserId(newUserId);
+      assertThat(changedAuth.getUserId(), is(newUserId));
     }
   }
 }

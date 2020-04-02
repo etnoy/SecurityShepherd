@@ -94,7 +94,7 @@ public class ScoringServiceIT {
     final String wrongFlag = "itsanincorrectflag";
 
     // Create six users and store their ids
-    List<Integer> userIds = new ArrayList<>();
+    List<Long> userIds = new ArrayList<>();
     userIds.add(userService.create("TestUser1").block());
     userIds.add(userService.create("TestUser2").block());
     userIds.add(userService.create("TestUser3").block());
@@ -105,7 +105,7 @@ public class ScoringServiceIT {
     userIds.add(userService.create("TestUser8").block());
 
     // Create a module to submit to
-    final int moduleId = moduleService.create("ScoreTestModule").block().getId();
+    final long moduleId = moduleService.create("ScoreTestModule").block().getId();
 
     // Set that module to have an exact flag
     moduleService.setExactFlag(moduleId, flag).block();
@@ -119,7 +119,7 @@ public class ScoringServiceIT {
     scoringService.setModuleScore(moduleId, 4, 20).block();
 
     // Create some other modules we aren't interested in
-    final int moduleId2 = moduleService.create("AnotherModule").block().getId();
+    final long moduleId2 = moduleService.create("AnotherModule").block().getId();
     moduleService.setExactFlag(moduleId2, flag).block();
 
     // Set scoring levels for module2
@@ -127,7 +127,7 @@ public class ScoringServiceIT {
     scoringService.setModuleScore(moduleId2, 1, 30).block();
     scoringService.setModuleScore(moduleId2, 2, 10).block();
 
-    final int moduleId3 = moduleService.create("IrrelevantModule").block().getId();
+    final long moduleId3 = moduleService.create("IrrelevantModule").block().getId();
     moduleService.setExactFlag(moduleId3, flag).block();
 
     // You only get 1 point for this module
@@ -147,7 +147,7 @@ public class ScoringServiceIT {
         Arrays.asList(flag, flag, flag, wrongFlag, flag, flag, flag, wrongFlag);
 
     // Iterate over the user ids and clocks at the same time
-    Iterator<Integer> userIdIterator = userIds.iterator();
+    Iterator<Long> userIdIterator = userIds.iterator();
     Iterator<Clock> clockIterator = clocks.iterator();
     Iterator<String> flagIterator = flags.iterator();
 
@@ -155,7 +155,7 @@ public class ScoringServiceIT {
       // Recreate the submission service every time with a new clock
       initializeService(clockIterator.next());
 
-      final int currentUserId = userIdIterator.next();
+      final Long currentUserId = userIdIterator.next();
       final String currentFlag = flagIterator.next();
 
       // Submit a new flag
@@ -173,14 +173,14 @@ public class ScoringServiceIT {
     // scoringService.computeScoresFromSubmissions().blockLast();
 
     StepVerifier.create(scoringService.getScoreboard())
-        .expectNext(Scoreboard.builder().rank(1).userId(userIds.get(1)).score(251L).build())
-        .expectNext(Scoreboard.builder().rank(2).userId(userIds.get(6)).score(231L).build())
-        .expectNext(Scoreboard.builder().rank(3).userId(userIds.get(5)).score(201L).build())
-        .expectNext(Scoreboard.builder().rank(4).userId(userIds.get(0)).score(171L).build())
-        .expectNext(Scoreboard.builder().rank(4).userId(userIds.get(4)).score(171L).build())
-        .expectNext(Scoreboard.builder().rank(6).userId(userIds.get(3)).score(0L).build())
-        .expectNext(Scoreboard.builder().rank(6).userId(userIds.get(7)).score(0L).build())
-        .expectNext(Scoreboard.builder().rank(8).userId(userIds.get(2)).score(-799L).build())
+        .expectNext(Scoreboard.builder().rank(1L).userId(userIds.get(1)).score(251L).build())
+        .expectNext(Scoreboard.builder().rank(2L).userId(userIds.get(6)).score(231L).build())
+        .expectNext(Scoreboard.builder().rank(3L).userId(userIds.get(5)).score(201L).build())
+        .expectNext(Scoreboard.builder().rank(4L).userId(userIds.get(0)).score(171L).build())
+        .expectNext(Scoreboard.builder().rank(4L).userId(userIds.get(4)).score(171L).build())
+        .expectNext(Scoreboard.builder().rank(6L).userId(userIds.get(3)).score(0L).build())
+        .expectNext(Scoreboard.builder().rank(6L).userId(userIds.get(7)).score(0L).build())
+        .expectNext(Scoreboard.builder().rank(8L).userId(userIds.get(2)).score(-799L).build())
         .expectComplete().verify();
   }
 

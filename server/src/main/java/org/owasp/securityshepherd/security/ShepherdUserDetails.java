@@ -19,7 +19,7 @@ public final class ShepherdUserDetails implements UserDetails {
 
   private PasswordAuth passwordAuth;
 
-  public int getUserId() {
+  public long getUserId() {
     return userAuth.getUserId();
   }
 

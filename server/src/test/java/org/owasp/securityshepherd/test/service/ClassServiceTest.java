@@ -3,7 +3,6 @@ package org.owasp.securityshepherd.test.service;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -96,7 +95,7 @@ public class ClassServiceTest {
   @Test
   @DisplayName("Return true when checking if an existing class id exists")
   public void existsById_ExistingClassId_ReturnsTrue() {
-    final int mockClassId = 440;
+    final long mockClassId = 440;
 
     when(classRepository.existsById(mockClassId)).thenReturn(Mono.just(true));
 
@@ -108,7 +107,7 @@ public class ClassServiceTest {
   @Test
   @DisplayName("Return false when checking if a nonexistent class id exists")
   public void existsById_NonExistentClassId_ReturnsFalse() {
-    final int mockClassId = 920;
+    final long mockClassId = 920;
 
     when(classRepository.existsById(mockClassId)).thenReturn(Mono.just(false));
 
@@ -133,7 +132,7 @@ public class ClassServiceTest {
     final ClassEntity mockClass = mock(ClassEntity.class);
 
     final String mockName = "TestClass";
-    final int mockId = 123;
+    final long mockId = 123;
 
     when(classRepository.existsById(mockId)).thenReturn(Mono.just(true));
 
@@ -153,7 +152,7 @@ public class ClassServiceTest {
     final ClassEntity mockClass = mock(ClassEntity.class);
     final String newName = "newTestClass";
 
-    final int mockClassId = 123;
+    final long mockClassId = 123;
 
     when(classRepository.existsById(mockClassId)).thenReturn(Mono.just(true));
 
@@ -168,9 +167,9 @@ public class ClassServiceTest {
   @DisplayName("Throw exception when setting name of an invalid class id")
   public void setName_InvalidClassId_ThrowsInvalidClassIdException() {
     final String newName = "newName";
-    final int[] idsToTest = {0, -1, -1000, -99999};
+    final long[] idsToTest = {0, -1, -1000, -99999};
 
-    for (final int id : idsToTest) {
+    for (final long id : idsToTest) {
       StepVerifier.create(classService.setName(id, newName))
           .expectError(InvalidClassIdException.class).verify();
     }
@@ -182,7 +181,7 @@ public class ClassServiceTest {
     final ClassEntity mockClass = mock(ClassEntity.class);
     final String newName = "newTestClass";
 
-    final int mockId = 1234567;
+    final long mockId = 1234567;
 
     when(classRepository.existsById(mockId)).thenReturn(Mono.just(false));
 
@@ -208,7 +207,7 @@ public class ClassServiceTest {
 
     final String newName = "newTestClass";
 
-    final int mockId = 123;
+    final long mockId = 123;
 
     when(classRepository.findById(mockId)).thenReturn(Mono.just(mockClass));
     when(classRepository.existsById(mockId)).thenReturn(Mono.just(true));

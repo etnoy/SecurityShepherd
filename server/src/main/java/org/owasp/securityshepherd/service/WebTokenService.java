@@ -46,7 +46,7 @@ public class WebTokenService {
     final Date creationTime = new Date(clock.millis());
     final Date expirationTime = new Date(clock.millis() + 1000*EXPIRATION_TIME);
     
-    return Jwts.builder().setSubject(Integer.toString(userDetails.getUserId()))
+    return Jwts.builder().setSubject(Long.toString(userDetails.getUserId()))
         .setIssuedAt(creationTime).setExpiration(expirationTime).signWith(JWT_KEY).compact();
   }
 

@@ -42,33 +42,33 @@ public final class ClassService {
     return classRepository.findByName(name).map(u -> false).defaultIfEmpty(true);
   }
 
-  public Mono<Boolean> existsById(final int id) {
-    return classRepository.existsById(id);
+  public Mono<Boolean> existsById(final long classIdd) {
+    return classRepository.existsById(classIdd);
   }
 
-  public Mono<ClassEntity> getById(final int id) {
-    if (id <= 0) {
+  public Mono<ClassEntity> getById(final long classId) {
+    if (classId <= 0) {
       return Mono.error(new InvalidClassIdException());
     }
 
-    return Mono.just(id).filterWhen(classRepository::existsById)
+    return Mono.just(classId).filterWhen(classRepository::existsById)
         .switchIfEmpty(Mono.error(new ClassIdNotFoundException()))
         .flatMap(classRepository::findById);
   }
 
-  public Mono<ClassEntity> setName(final int id, final String name) {
+  public Mono<ClassEntity> setName(final long classId, final String name) {
     if (name == null) {
       return Mono.error(new IllegalArgumentException("Class name can't be null"));
     }
 
-    if (id <= 0) {
+    if (classId <= 0) {
       return Mono.error(new InvalidClassIdException());
     }
 
     Mono<String> nameMono = Mono.just(name).filterWhen(this::doesNotExistByName)
         .switchIfEmpty(Mono.error(new DuplicateClassNameException("Class name already exists")));
 
-    return Mono.just(id).flatMap(this::getById).zipWith(nameMono)
+    return Mono.just(classId).flatMap(this::getById).zipWith(nameMono)
         .map(tuple -> tuple.getT1().withName(tuple.getT2())).flatMap(classRepository::save);
   }
 

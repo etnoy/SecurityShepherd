@@ -33,8 +33,8 @@ public class UserIT {
   TestUtils testService;
   
   @Test
-  public void createPasswordUser_ValidData_RepositoryFindsCorrectUser() throws Exception {
-    final Integer userId = userService.createPasswordUser("Test User", "user_login_name",
+  public void createPasswordUser_ValidData_RepositoryFindsCorrectUser() {
+    final long userId = userService.createPasswordUser("Test User", "user_login_name",
         "$2y$12$53B6QcsGwF3Os1GVFUFSQOhIPXnWFfuEkRJdbknFWnkXfUBMUKhaW").block();
 
     StepVerifier.create(userService.findById(userId).map(User::getId)).expectNext(userId)

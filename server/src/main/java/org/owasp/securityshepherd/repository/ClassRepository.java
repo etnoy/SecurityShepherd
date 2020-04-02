@@ -10,13 +10,11 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
 @Repository
-public interface ClassRepository extends ReactiveCrudRepository<ClassEntity, Integer> {
-
+public interface ClassRepository extends ReactiveCrudRepository<ClassEntity, Long> {
   @Modifying
   @Query("delete from class where name = :name")
   public void deleteByName(@Param("name") final String name);
 
   @Query("select * from class where name = :name")
   public Mono<ClassEntity> findByName(@Param("name") final String name);
-
 }

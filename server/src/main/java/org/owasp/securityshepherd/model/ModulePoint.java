@@ -15,10 +15,10 @@ public class ModulePoint implements Serializable {
   private static final long serialVersionUID = 4548877736126023113L;
 
   @Id
-  private Integer id;
+  private Long id;
 
   @NonNull
-  private Integer moduleId;
+  private Long moduleId;
 
   @Column("submission_rank")
   @NonNull

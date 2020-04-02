@@ -1,7 +1,5 @@
 package org.owasp.securityshepherd.it.service;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import java.time.Clock;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +34,7 @@ public class SubmissionServiceIT {
     // Tell Reactor to print verbose error messages
     Hooks.onOperatorDebug();
   }
-  
+
   SubmissionService submissionService;
 
   @Autowired
@@ -64,20 +62,20 @@ public class SubmissionServiceIT {
   TestUtils testService;
 
   @Test
-  public void submitFlag_ValidExactFlag_Success() throws Exception {
+  public void submitFlag_ValidExactFlag_Success() {
     final String flag = "thisisaflag";
 
-    final Mono<Integer> userIdMono = userService.create("TestUser");
+    final Mono<Long> userIdMono = userService.create("TestUser");
 
-    final Mono<Integer> moduleIdMono = moduleService.create("Test Module").map(Module::getId)
+    final Mono<Long> moduleIdMono = moduleService.create("Test Module").map(Module::getId)
         .flatMap(moduleId -> moduleService.setExactFlag(moduleId, flag)).map(Module::getId);
 
     StepVerifier
-        .create(Mono.zip(userIdMono, moduleIdMono).flatMap(tuple -> submissionService
-            .submit(tuple.getT1(), tuple.getT2(), flag).map(Submission::isValid)))
-        .assertNext(correctFlag -> {
-          assertThat(correctFlag, is(true));
-        }).expectComplete().verify();
+        .create(Mono.zip(userIdMono, moduleIdMono).flatMap(tuple -> 
+        submissionService
+            .submit(tuple.getT1(), tuple.getT2(), flag)
+            .map(Submission::getIsValid)))
+        .expectNext(true).expectComplete().verify();
   }
 
   private void initializeService(Clock injectedClock) {

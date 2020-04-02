@@ -10,11 +10,11 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
 @Repository
-public interface UserAuthRepository extends ReactiveCrudRepository<UserAuth, Integer> {
+public interface UserAuthRepository extends ReactiveCrudRepository<UserAuth, Long> {
   @Query("SELECT * from user_auth WHERE user_id = :user_id")
-  public Mono<UserAuth> findByUserId(@Param("user_id") final int userId);
+  public Mono<UserAuth> findByUserId(@Param("user_id") final long userId);
 
   @Modifying
   @Query("delete from user_auth WHERE user_id = :user_id")
-  public Mono<UserAuth> deleteByUserId(@Param("user_id") final int userId);
+  public Mono<UserAuth> deleteByUserId(@Param("user_id") final long userId);
 }

@@ -17,7 +17,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public final class TestUtils {
 
-  public static final int[] INVALID_IDS = {-1, -1000, 0, -1234567, -500};
+  public static final long[] INVALID_IDS = {-1, -1000, 0, -1234567, -500};
 
   public static final boolean[] BOOLEANS = {false, true};
 

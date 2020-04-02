@@ -2,7 +2,6 @@ package org.owasp.securityshepherd.test.model;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.DisplayName;
@@ -19,28 +18,18 @@ public class UserTest {
   public void build_NoArguments_ThrowsException() {
     assertThrows(NullPointerException.class, () -> User.builder().build());
   }
-  
-  @Test
-  public void PersistenceConstructor_ValidData_ConstructsObject() {
-    final User testUser=new User(1,"displayName", 2, "me@example.com", null);
-    
-    assertThat(testUser.getId(), is(1));
-    assertThat(testUser.getDisplayName(), is("displayName"));
-    assertThat(testUser.getClassId(), is(2));
-    assertThat(testUser.getEmail(), is("me@example.com"));
-    assertThat(testUser.getKey(), is(nullValue()));
-  }
-  
+
   @Test
   public void PersistenceConstructor_NullDisplayName_ThrowsNullPointerException() {
-    assertThrows(NullPointerException.class, () -> new User(1, null, 2, "me@example.com", null));
+    assertThrows(NullPointerException.class, () -> new User(1L, null, 2L, "me@example.com", null));
   }
 
   @Test
   public void build_ValidDisplayName_ReturnsUser() {
     final String validDisplayName = "build_ValidDisplayName";
 
-    final User build_ValidDisplayNameLengthUser = User.builder().displayName(validDisplayName).build();
+    final User build_ValidDisplayNameLengthUser =
+        User.builder().displayName(validDisplayName).build();
 
     assertThat(build_ValidDisplayNameLengthUser, instanceOf(User.class));
 
@@ -52,7 +41,7 @@ public class UserTest {
 
     final UserBuilder builder = User.builder().displayName("TestUser");
 
-    builder.classId(1);
+    builder.classId(1L);
 
     final User newUser = builder.build();
 
@@ -80,7 +69,7 @@ public class UserTest {
   public void buildId_ValidId_Builds() {
     final UserBuilder builder = User.builder();
 
-    builder.id(12345);
+    builder.id(12345L);
     builder.displayName("TestUser");
 
     assertThat(builder.build(), instanceOf(User.class));
@@ -111,13 +100,15 @@ public class UserTest {
   @Test
   public void withClassId_ValidClassId_ChangesClassId() {
     final String displayName = "withClassId_ValidClassId";
-    final int[] testedClassIds = { 0, 1, -1, 1000, -1000, 123456789 };
-    final User newUser = User.builder().displayName(displayName).classId(0).build();
+    final Long originalClassId = 17L;
+    final Long[] testedClassIds = {originalClassId, 0L, 1L, null, -1L, 1000L, -1000L, 123456789L};
+    final User newUser = User.builder().displayName(displayName).classId(originalClassId).build();
 
     assertThat(newUser.getClassId(), is(0));
 
-    for (int newClassId : testedClassIds) {
+    for (Long newClassId : testedClassIds) {
       final User changedUser = newUser.withClassId(newClassId);
+      assertThat(changedUser.getClassId(), is(instanceOf(User.class)));
       assertThat(changedUser.getClassId(), is(newClassId));
     }
   }
@@ -136,7 +127,8 @@ public class UserTest {
 
     assertThat(newUser.getDisplayName(), is(displayName));
 
-    final String[] testedDisplayNames = { displayName, "", "newUser", "Long  With     Whitespace", "12345" };
+    final String[] testedDisplayNames =
+        {displayName, "", "newUser", "Long  With     Whitespace", "12345"};
 
     User changedUser;
     for (String newDisplayName : testedDisplayNames) {
@@ -151,7 +143,8 @@ public class UserTest {
 
     final String email = "validEmail@example.com";
 
-    final String[] testedStrings = { email, null, "", "newEmail@example.com", "e@e", "a", "alongemail@example.com" };
+    final String[] testedStrings =
+        {email, null, "", "newEmail@example.com", "e@e", "a", "alongemail@example.com"};
 
     final User newUser = User.builder().displayName(displayName).email(email).build();
 
@@ -167,17 +160,13 @@ public class UserTest {
 
   @Test
   public void withId_ValidId_ChangesId() {
-    final int originalId = 1;
-    final int[] testedIds = { originalId, 0, -1, 1000, -1000, 123456789 };
+    final Long originalId = 1L;
+    final Long[] testedIds = {originalId, null, 0L, -1L, 1000L, -1000L, 123456789L};
 
     final User newUser = User.builder().id(originalId).displayName("Test User").build();
 
-    assertThat(newUser.getId(), is(originalId));
-
-    User changedUser;
-
-    for (int newId : testedIds) {
-      changedUser = newUser.withId(newId);
+    for (Long newId : testedIds) {
+      final User changedUser = newUser.withId(newId);
       assertThat(changedUser.getId(), is(newId));
     }
   }
@@ -185,8 +174,8 @@ public class UserTest {
   @Test
   public void withKey_ValidKey_ChangesKey() {
     final String displayName = "withKey_ValidKey";
-    final byte[] key = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-    final byte[][] testedKeys = { key, null, {}, { 1 }, { 19, 26, 127, -128 } };
+    final byte[] key = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    final byte[][] testedKeys = {key, null, {}, {1}, {19, 26, 127, -128}};
     final User newUser = User.builder().displayName(displayName).key(key).build();
 
     assertThat(newUser.getKey(), is(key));

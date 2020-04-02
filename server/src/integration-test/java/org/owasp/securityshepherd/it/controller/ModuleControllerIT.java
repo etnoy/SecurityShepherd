@@ -55,7 +55,7 @@ public class ModuleControllerIT {
 
     final String flag = "thisisaflag";
 
-    final int moduleId = moduleService.create("Test Module").block().getId();
+    final long moduleId = moduleService.create("Test Module").block().getId();
 
     moduleService.setExactFlag(moduleId, flag).block();
 
@@ -90,7 +90,7 @@ public class ModuleControllerIT {
 
     final String flag = "thisisaflag";
 
-    final int moduleId = moduleService.create("Test Module").block().getId();
+    final long moduleId = moduleService.create("Test Module").block().getId();
 
     moduleService.setExactFlag(moduleId, flag).block();
 

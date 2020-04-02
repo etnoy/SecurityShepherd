@@ -29,7 +29,7 @@ public class SubmissionTest {
     for (String flag : flagsToTest) {
 
       final SubmissionBuilder builder =
-          Submission.builder().userId(123).moduleId(456).time(LocalDateTime.MIN);
+          Submission.builder().userId(123L).moduleId(456L).time(LocalDateTime.MIN);
 
       builder.flag(flag);
 
@@ -40,12 +40,12 @@ public class SubmissionTest {
 
   @Test
   public void buildId_ValidId_Builds() {
-    final int[] idsToTest = {0, 1, -1, 1000, -1000, 1234567, -1234567, 42};
+    final long[] idsToTest = {0, 1, -1, 1000, -1000, 1234567, -1234567, 42};
 
-    for (int id : idsToTest) {
+    for (final long id : idsToTest) {
 
       final SubmissionBuilder builder =
-          Submission.builder().userId(123).moduleId(456).time(LocalDateTime.MIN);
+          Submission.builder().userId(1263L).moduleId(4756L).time(LocalDateTime.MIN);
 
       builder.id(id);
 
@@ -59,22 +59,22 @@ public class SubmissionTest {
     for (boolean isValid : TestUtils.BOOLEANS) {
 
       final SubmissionBuilder builder =
-          Submission.builder().userId(123).moduleId(456).time(LocalDateTime.MIN);
+          Submission.builder().userId(1231L).moduleId(811L).time(LocalDateTime.MIN);
 
       builder.isValid(isValid);
 
       assertThat(builder.build(), instanceOf(Submission.class));
-      assertThat(builder.build().isValid(), is(isValid));
+      assertThat(builder.build().getIsValid(), is(isValid));
     }
   }
 
   @Test
   public void buildModuleId_ValidModuleId_Builds() {
-    final int[] moduleIdsToTest = {0, 1, -1, 1000, -1000, 1234567, -1234567, 42};
+    final long[] moduleIdsToTest = {0, 1, -1, 1000, -1000, 1234567, -1234567, 42};
 
-    for (int moduleId : moduleIdsToTest) {
+    for (final long moduleId : moduleIdsToTest) {
 
-      final SubmissionBuilder builder = Submission.builder().userId(456).time(LocalDateTime.MIN);
+      final SubmissionBuilder builder = Submission.builder().userId(456L).time(LocalDateTime.MIN);
 
       builder.moduleId(moduleId);
 
@@ -86,15 +86,15 @@ public class SubmissionTest {
   @Test
   public void buildTime_NullTime_ThrowsException() {
     assertThrows(NullPointerException.class,
-        () -> Submission.builder().userId(123).moduleId(456).time(null));
+        () -> Submission.builder().userId(23L).moduleId(56L).time(null));
   }
 
   @Test
   public void buildTime_ValidTime_Builds() {
-    final int[] timesToTest = {0, 1, 2, 1000, 4000, 1581806000, 42};
-    for (int time : timesToTest) {
+    final long[] timesToTest = {0, 1, 2, 1000, 4000, 1581806000, 42};
+    for (final long time : timesToTest) {
 
-      final SubmissionBuilder builder = Submission.builder().userId(123).moduleId(456);
+      final SubmissionBuilder builder = Submission.builder().userId(1234L).moduleId(4556L);
 
       final LocalDateTime localTime =
           LocalDateTime.ofInstant(Instant.ofEpochMilli(time), TimeZone.getDefault().toZoneId());
@@ -108,15 +108,16 @@ public class SubmissionTest {
 
   @Test
   public void buildUserId_ValidUserId_Builds() {
-    final int[] userIdsToTest = {0, 1, -1, 1000, -1000, 1234567, -1234567, 42};
+    final long[] userIdsToTest = {0, 1, -1, 1000, -1000, 1234567, -1234567, 42};
 
-    for (int userId : userIdsToTest) {
-      final SubmissionBuilder builder = Submission.builder().moduleId(456).time(LocalDateTime.MIN);
+    for (final long userId : userIdsToTest) {
+      final SubmissionBuilder builder =
+          Submission.builder().moduleId(4561L).time(LocalDateTime.MIN);
 
-      builder.userId(userId);
+      final Submission newSubmission = builder.userId(userId).build();
 
-      assertThat(builder.build(), instanceOf(Submission.class));
-      assertThat(builder.build().getUserId(), is(userId));
+      assertThat(newSubmission, instanceOf(Submission.class));
+      assertThat(newSubmission.getUserId(), is(userId));
     }
   }
 
@@ -136,7 +137,7 @@ public class SubmissionTest {
   @Test
   public void toString_ValidData_AsExpected() {
     final Submission testSubmission =
-        Submission.builder().moduleId(123).userId(6789).time(LocalDateTime.MIN).build();
+        Submission.builder().moduleId(11234L).userId(67898L).time(LocalDateTime.MIN).build();
 
     assertThat(testSubmission.toString(), is("Submission(id=null, userId=6789, moduleId=123, time="
         + LocalDateTime.MIN + ", isValid=false, flag=null)"));
@@ -146,7 +147,7 @@ public class SubmissionTest {
   public void withFlag_ValidFlag_ChangesFlag() {
     final String[] testedFlags = {"abc123xyz789", null, "", "a", "Long Flag With Spaces", "12345"};
 
-    final Submission testSubmission = Submission.builder().userId(123).moduleId(6789)
+    final Submission testSubmission = Submission.builder().userId(1345L).moduleId(64627489L)
         .time(LocalDateTime.MIN).flag("abc123xyz789").build();
 
     for (String newFlag : testedFlags) {
@@ -157,28 +158,27 @@ public class SubmissionTest {
 
   @Test
   public void withId_ValidId_ChangesId() {
-    final int originalId = 1;
-    final Integer[] testedIds = {originalId, null, 0, -1, 1000, -1000, 123456789, -12346789};
+    final long originalId = 1;
+    final Long[] testedIds = {originalId, null, 0L, -1L, 1000L, -1000L, 123456789L, -12346789L};
 
     final Submission testSubmission =
-        Submission.builder().userId(123).moduleId(6789).time(LocalDateTime.MIN).build();
+        Submission.builder().userId(12393L).moduleId(4689L).time(LocalDateTime.MIN).build();
 
-    for (Integer newId : testedIds) {
-      final Submission changedSubmission = testSubmission.withId(newId);
-      assertThat(changedSubmission.getId(), is(newId));
+    for (final Long newSubmissionId : testedIds) {
+      final Submission changedSubmission = testSubmission.withId(newSubmissionId);
+      assertThat(changedSubmission.getId(), is(newSubmissionId));
     }
   }
 
   @Test
   public void withModuleId_ValidModuleId_ChangesModuleId() {
-    final int originalId = 1;
-    final int[] testedIds = {originalId, 0, -1, 1000, -1000, 123456789, -12346789};
+    final long originalId = 1;
+    final long[] testedIds = {originalId, 0, -1, 1000, -1000, 123456789, -12346789};
 
-    final Submission testSubmission = Submission.builder().moduleId(originalId).userId(6789)
+    final Submission testSubmission = Submission.builder().moduleId(originalId).userId(6736L)
         .time(LocalDateTime.MIN.plusDays(77)).build();
 
-    for (int newId : testedIds) {
-
+    for (final long newId : testedIds) {
       final Submission changedSubmission = testSubmission.withModuleId(newId);
       assertThat(changedSubmission.getModuleId(), is(newId));
     }
@@ -186,8 +186,8 @@ public class SubmissionTest {
 
   @Test
   public void withTime_NullTime_ThrowsException() {
-    assertThrows(NullPointerException.class, () -> Submission.builder().userId(123).moduleId(6789)
-        .time(LocalDateTime.MIN).build().withTime(null));
+    assertThrows(NullPointerException.class, () -> Submission.builder().userId(143723L)
+        .moduleId(7189L).time(LocalDateTime.MIN).build().withTime(null));
   }
 
   @Test
@@ -199,7 +199,7 @@ public class SubmissionTest {
         originalTime.plusHours(5), originalTime.plusYears(70), originalTime.plusHours(9)};
 
     final Submission testSubmission =
-        Submission.builder().userId(123).moduleId(6789).time(originalTime).build();
+        Submission.builder().userId(4L).moduleId(716789L).time(originalTime).build();
 
     for (LocalDateTime time : timesToTest) {
       final Submission changedSubmission = testSubmission.withTime(time);
@@ -210,13 +210,13 @@ public class SubmissionTest {
 
   @Test
   public void withUserId_ValidUserId_ChangesUserId() {
-    final int originalId = 1;
-    final int[] testedIds = {originalId, 0, -1, 1000, -1000, 123456789, -12346789};
+    final long originalId = 1;
+    final long[] testedIds = {originalId, 0, -1, 1000, -1000, 123456789, -12346789};
 
     final Submission testSubmission =
-        Submission.builder().userId(originalId).moduleId(6789).time(LocalDateTime.MIN).build();
+        Submission.builder().userId(originalId).moduleId(66789L).time(LocalDateTime.MIN).build();
 
-    for (int newId : testedIds) {
+    for (final long newId : testedIds) {
       final Submission changedSubmission = testSubmission.withUserId(newId);
       assertThat(changedSubmission.getUserId(), is(newId));
     }
@@ -225,11 +225,11 @@ public class SubmissionTest {
   @Test
   public void withValid_ValidBoolean_ChangesIsValid() {
     final Submission testSubmission =
-        Submission.builder().userId(123).moduleId(6789).time(LocalDateTime.MIN).build();
+        Submission.builder().userId(15123L).moduleId(6789L).time(LocalDateTime.MIN).build();
 
-    for (boolean isValid : TestUtils.BOOLEANS) {
-      final Submission changedSubmission = testSubmission.withValid(isValid);
-      assertThat(changedSubmission.isValid(), is(isValid));
+    for (final boolean isValid : TestUtils.BOOLEANS) {
+      final Submission changedSubmission = testSubmission.withIsValid(isValid);
+      assertThat(changedSubmission.getIsValid(), is(isValid));
     }
   }
 }

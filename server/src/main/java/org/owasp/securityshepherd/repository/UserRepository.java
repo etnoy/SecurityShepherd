@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
 @Repository
-public interface UserRepository extends ReactiveCrudRepository<User, Integer> {
+public interface UserRepository extends ReactiveCrudRepository<User, Long> {
   @Query("SELECT * from user WHERE display_name = :display_name")
   public Mono<User> findByDisplayName(@Param("display_name") final String displayName);
 }

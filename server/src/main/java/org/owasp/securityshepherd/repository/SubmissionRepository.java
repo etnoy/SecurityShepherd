@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 
 @Repository
-public interface SubmissionRepository extends ReactiveCrudRepository<Submission, Integer> {
+public interface SubmissionRepository extends ReactiveCrudRepository<Submission, Long> {
   @Query("SELECT * from submission WHERE module_id = :module")
-  public Flux<Submission> findAllByModuleId(@Param("module") final int moduleId);
+  public Flux<Submission> findAllByModuleId(@Param("module") final long moduleId);
 }

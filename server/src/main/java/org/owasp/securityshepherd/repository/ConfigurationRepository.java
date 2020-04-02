@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
 @Repository
-public interface ConfigurationRepository extends ReactiveCrudRepository<Configuration, Integer> {
+public interface ConfigurationRepository extends ReactiveCrudRepository<Configuration, Long> {
   @Modifying
   @Query("delete from configuration where config_key = :key")
   public void deleteByKey(@Param("key") final String key);

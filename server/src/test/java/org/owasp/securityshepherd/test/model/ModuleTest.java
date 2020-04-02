@@ -38,7 +38,7 @@ public class ModuleTest {
   public void buildId_ValidId_Builds() {
     final ModuleBuilder builder = Module.builder();
 
-    builder.id(123456);
+    builder.id(123456L);
     builder.name("TestModule");
 
     assertThat(builder.build(), instanceOf(Module.class));
@@ -178,8 +178,8 @@ public class ModuleTest {
 
   @Test
   public void withId_ValidId_ChangesId() {
-    final int originalId = 1;
-    final int[] testedIds = {originalId, 0, -1, 1000, -1000, 123456789, -12346789};
+    final long originalId = 1;
+    final long[] testedIds = {originalId, 0, -1, 1000, -1000, 123456789, -12346789};
 
     final Module testModule = Module.builder().id(originalId).name("TestModule").build();
 
@@ -187,7 +187,7 @@ public class ModuleTest {
 
     Module changedModule;
 
-    for (final int newId : testedIds) {
+    for (final long newId : testedIds) {
       changedModule = testModule.withId(newId);
       assertThat(changedModule.getId(), is(newId));
     }

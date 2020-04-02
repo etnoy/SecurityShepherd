@@ -18,16 +18,15 @@ public final class User implements Serializable {
   private static final long serialVersionUID = 3097353498257801154L;
 
   @Id
-  private Integer id;
+  private Long id;
 
   @NonNull
   private String displayName;
 
-  private Integer classId;
+  private Long classId;
 
   private String email;
 
   @Column("user_key")
   private byte[] key;
-
 }

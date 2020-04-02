@@ -58,14 +58,14 @@ public final class ModuleService {
     return moduleRepository.findAll();
   }
 
-  public Mono<Module> findById(final int moduleId) {
+  public Mono<Module> findById(final long moduleId) {
     if (moduleId <= 0) {
       return Mono.error(new InvalidModuleIdException());
     }
     return moduleRepository.findById(moduleId);
   }
 
-  public Mono<String> findNameById(final int moduleId) {
+  public Mono<String> findNameById(final long moduleId) {
     if (moduleId <= 0) {
       return Mono.error(new InvalidModuleIdException());
     }
@@ -73,7 +73,7 @@ public final class ModuleService {
     return moduleRepository.findById(moduleId).map(Module::getName);
   }
 
-  public Mono<String> getDynamicFlag(final int userId, final int moduleId) {
+  public Mono<String> getDynamicFlag(final long userId, final long moduleId) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
@@ -115,7 +115,7 @@ public final class ModuleService {
     return new InvalidModuleIdException("Module id must be a strictly positive integer");
   }
 
-  public Mono<Module> setDynamicFlag(final int moduleId) {
+  public Mono<Module> setDynamicFlag(final long moduleId) {
     if (moduleId <= 0) {
       return Mono.error(moduleIdMustBePositive());
     }
@@ -129,7 +129,7 @@ public final class ModuleService {
         }).flatMap(moduleRepository::save);
   }
 
-  public Mono<Module> setExactFlag(final int moduleId, final String exactFlag) {
+  public Mono<Module> setExactFlag(final long moduleId, final String exactFlag) {
     if (moduleId <= 0) {
       return Mono.error(moduleIdMustBePositive());
     }
@@ -145,7 +145,7 @@ public final class ModuleService {
         .flatMap(moduleRepository::save);
   }
 
-  public Mono<Module> setName(final int moduleId, final String moduleName) {
+  public Mono<Module> setName(final Long moduleId, final String moduleName) {
     if (moduleId <= 0) {
       return Mono.error(moduleIdMustBePositive());
     }
@@ -164,7 +164,7 @@ public final class ModuleService {
         .map(module -> module.withName(moduleName)).flatMap(moduleRepository::save);
   }
 
-  public Mono<Boolean> verifyFlag(final int userId, final int moduleId,
+  public Mono<Boolean> verifyFlag(final long userId, final long moduleId,
       final String submittedFlag) {
     if (submittedFlag == null) {
       return Mono.error(new NullPointerException("Submitted flag cannot be null"));

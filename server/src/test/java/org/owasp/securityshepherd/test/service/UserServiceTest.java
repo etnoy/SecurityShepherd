@@ -99,7 +99,7 @@ public class UserServiceTest {
   @Test
   public void create_ValidDisplayName_CreatesUser() {
     final String displayName = "TestUser";
-    final int mockUserId = 651;
+    final Long mockUserId = 651L;
 
     when(userRepository.findByDisplayName(displayName)).thenReturn(Mono.empty());
 
@@ -196,7 +196,7 @@ public class UserServiceTest {
 
     final String hashedPassword = "a_valid_password";
 
-    final int mockUserId = 199;
+    final Long mockUserId = 199L;
 
     when(passwordAuthRepository.findByLoginName(loginName)).thenReturn(Mono.empty());
     when(userRepository.findByDisplayName(displayName)).thenReturn(Mono.empty());
@@ -249,7 +249,7 @@ public class UserServiceTest {
     final UserAuth mockUserAuth = mock(UserAuth.class);
 
     final String mockLoginName = "loginName";
-    final int mockUserId = 301;
+    final Long mockUserId = 301L;
 
     when(passwordAuthRepository.findByLoginName(mockLoginName))
         .thenReturn(Mono.just(mockPasswordAuth));
@@ -285,7 +285,7 @@ public class UserServiceTest {
   public void createUserDetailsByUserId_ExistingUserId_CreatesUserDetails() {
     final PasswordAuth mockPasswordAuth = mock(PasswordAuth.class);
     final UserAuth mockUserAuth = mock(UserAuth.class);
-    final int mockUserId = 301;
+    final long mockUserId = 301;
 
     when(passwordAuthRepository.findByUserId(mockUserId)).thenReturn(Mono.just(mockPasswordAuth));
     when(userAuthRepository.findByUserId(mockUserId)).thenReturn(Mono.just(mockUserAuth));
@@ -302,7 +302,7 @@ public class UserServiceTest {
 
   @Test
   public void createUserDetailsByUserId_InvalidUserId_ReturnsInvalidUserIdException() {
-    for (final int userId : TestUtils.INVALID_IDS) {
+    for (final Long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.createUserDetailsFromUserId(userId))
           .expectError(InvalidUserIdException.class).verify();
     }
@@ -310,7 +310,7 @@ public class UserServiceTest {
 
   @Test
   public void createUserDetailsByUserId_NonExistentUserId_ReturnsEmpty() {
-    final int mockUserId = 301;
+    final long mockUserId = 301;
 
     when(passwordAuthRepository.findByUserId(mockUserId)).thenReturn(Mono.empty());
     when(userAuthRepository.findByUserId(mockUserId)).thenReturn(Mono.empty());
@@ -324,7 +324,7 @@ public class UserServiceTest {
 
   @Test
   public void deleteById_InvalidUserId_ReturnsInvalidUserIdException() {
-    for (final int userId : TestUtils.INVALID_IDS) {
+    for (final Long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.deleteById(userId)).expectError(InvalidUserIdException.class)
           .verify();
     }
@@ -332,7 +332,7 @@ public class UserServiceTest {
 
   @Test
   public void deleteById_ValidUserId_CallsRepository() {
-    final int mockUserId = 358;
+    final long mockUserId = 358L;
     when(passwordAuthRepository.deleteByUserId(mockUserId)).thenReturn(Mono.empty());
     when(userAuthRepository.deleteByUserId(mockUserId)).thenReturn(Mono.empty());
     when(userRepository.deleteById(mockUserId)).thenReturn(Mono.empty());
@@ -349,7 +349,7 @@ public class UserServiceTest {
 
   @Test
   public void demote_InvalidUserId_ReturnsInvalidUserIdException() {
-    for (final int userId : TestUtils.INVALID_IDS) {
+    for (final Long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.demote(userId)).expectError(InvalidUserIdException.class)
           .verify();
     }
@@ -357,8 +357,8 @@ public class UserServiceTest {
 
   @Test
   public void demote_UserIsAdmin_Demoted() {
-    final int mockUserId = 933;
-    final int mockAuthId = 46;
+    final long mockUserId = 933;
+    final long mockAuthId = 46;
 
     final UserAuth mockAuth = mock(UserAuth.class);
     final UserAuth mockDemotedAuth = mock(UserAuth.class);
@@ -380,9 +380,9 @@ public class UserServiceTest {
 
     StepVerifier.create(userService.demote(mockUserId)).expectComplete().verify();
 
-    verify(userRepository, never()).findById(any(Integer.class));
+    verify(userRepository, never()).findById(any(Long.class));
     verify(userRepository, never()).save(any(User.class));
-    verify(passwordAuthRepository, never()).findByUserId(any(Integer.class));
+    verify(passwordAuthRepository, never()).findByUserId(any(Long.class));
 
     verify(userAuthRepository, times(1)).findByUserId(mockUserId);
 
@@ -393,8 +393,8 @@ public class UserServiceTest {
 
   @Test
   public void demote_UserIsNotAdmin_StaysNotAdmin() {
-    final int mockUserId = 933;
-    final int mockAuthId = 80;
+    final long mockUserId = 933;
+    final long mockAuthId = 80;
 
     final UserAuth mockAuth = mock(UserAuth.class);
 
@@ -415,14 +415,14 @@ public class UserServiceTest {
 
     StepVerifier.create(userService.demote(mockUserId)).expectComplete().verify();
 
-    verify(userRepository, never()).findById(any(Integer.class));
+    verify(userRepository, never()).findById(any(Long.class));
     verify(userRepository, never()).save(any(User.class));
     verify(passwordAuthRepository, never()).findByUserId(any(Integer.class));
     verify(passwordAuthRepository, never()).save(any(PasswordAuth.class));
 
     verify(userAuthRepository, times(1)).save(mockAuth);
 
-    verify(userRepository, never()).findById(any(Integer.class));
+    verify(userRepository, never()).findById(any(Long.class));
     verify(userAuthRepository, times(1)).findByUserId(mockUserId);
 
     verify(mockAuth, times(1)).withAdmin(false);
@@ -453,7 +453,7 @@ public class UserServiceTest {
   public void findById_ExistingUserId_ReturnsUserEntity() {
     final User mockUser = mock(User.class);
 
-    final int mockUserId = 910;
+    final long mockUserId = 910;
 
     when(userRepository.findById(mockUserId)).thenReturn(Mono.just(mockUser));
 
@@ -465,7 +465,7 @@ public class UserServiceTest {
 
   @Test
   public void findById_InvalidUserId_ReturnsInvalidUserIdException() {
-    for (final int userId : TestUtils.INVALID_IDS) {
+    for (final long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.findById(userId)).expectError(InvalidUserIdException.class)
           .verify();
     }
@@ -473,7 +473,7 @@ public class UserServiceTest {
 
   @Test
   public void findById_NonExistentUserId_ReturnsEmpty() {
-    final int nonExistentUserId = 248;
+    final long nonExistentUserId = 248;
     when(userRepository.findById(nonExistentUserId)).thenReturn(Mono.empty());
     StepVerifier.create(userService.findById(nonExistentUserId)).expectComplete().verify();
     verify(userRepository, times(1)).findById(nonExistentUserId);
@@ -504,7 +504,7 @@ public class UserServiceTest {
   public void findByLoginName_UserExists_ReturnsUser() {
     final PasswordAuth mockPasswordAuth = mock(PasswordAuth.class);
     final String loginName = "MockUser";
-    final int mockUserId = 117;
+    final long mockUserId = 117;
 
     when(passwordAuthRepository.findByLoginName(loginName)).thenReturn(Mono.just(mockPasswordAuth));
     when(mockPasswordAuth.getUserId()).thenReturn(mockUserId);
@@ -516,7 +516,7 @@ public class UserServiceTest {
 
   @Test
   public void findDisplayNameById_InvalidUserId_ReturnsInvalidUserIdExceptio() {
-    for (final int userId : TestUtils.INVALID_IDS) {
+    for (final long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.findDisplayNameById(userId))
           .expectError(InvalidUserIdException.class).verify();
     }
@@ -524,7 +524,7 @@ public class UserServiceTest {
 
   @Test
   public void findDisplayNameById_NoUserExists_ReturnsEmpty() {
-    final int mockUserId = 294;
+    final long mockUserId = 294;
     when(userRepository.findById(mockUserId)).thenReturn(Mono.empty());
     StepVerifier.create(userService.findDisplayNameById(mockUserId)).expectComplete().verify();
     verify(userRepository, times(1)).findById(mockUserId);
@@ -533,7 +533,7 @@ public class UserServiceTest {
   @Test
   public void findDisplayNameById_UserExists_ReturnsDisplayName() {
     final User mockUser = mock(User.class);
-    final int mockUserId = 490;
+    final long mockUserId = 490;
     final String mockDisplayName = "mockDisplayName";
 
     when(userRepository.findById(mockUserId)).thenReturn(Mono.just(mockUser));
@@ -548,7 +548,7 @@ public class UserServiceTest {
 
   @Test
   public void findPasswordAuthByUserId_InvalidUserId_ReturnsInvalidUserIdException() {
-    for (final int userId : TestUtils.INVALID_IDS) {
+    for (final long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.findPasswordAuthByUserId(userId))
           .expectError(InvalidUserIdException.class).verify();
     }
@@ -556,7 +556,7 @@ public class UserServiceTest {
 
   @Test
   public void findPasswordAuthByUserId_NoPasswordAuthExists_ReturnsEmpty() {
-    final int mockUserId = 999;
+    final long mockUserId = 999;
 
     when(passwordAuthRepository.findByUserId(mockUserId)).thenReturn(Mono.empty());
 
@@ -568,7 +568,7 @@ public class UserServiceTest {
   @Test
   public void findPasswordAuthByUserId_PasswordAuthExists_ReturnsPasswordAuth() {
     final PasswordAuth mockPasswordAuth = mock(PasswordAuth.class);
-    final int mockUserId = 974;
+    final long mockUserId = 974;
 
     when(passwordAuthRepository.findByUserId(mockUserId)).thenReturn(Mono.just(mockPasswordAuth));
 
@@ -582,7 +582,7 @@ public class UserServiceTest {
   public void findUserAuthByUserId_ExistingUserId_ReturnsUserAuth() {
     final UserAuth mockUserAuth = mock(UserAuth.class);
 
-    final int mockUserId = 841;
+    final long mockUserId = 841;
 
     when(userAuthRepository.findByUserId(mockUserId)).thenReturn(Mono.just(mockUserAuth));
 
@@ -590,13 +590,13 @@ public class UserServiceTest {
         .expectComplete().verify();
 
     verify(userAuthRepository, times(1)).findByUserId(mockUserId);
-    verify(userRepository, never()).findById(any(Integer.class));
+    verify(userRepository, never()).findById(any(Long.class));
     verify(passwordAuthRepository, never()).findByUserId(any(Integer.class));
   }
 
   @Test
   public void findUserAuthByUserId_InvalidUserId_ReturnsInvalidUserIdException() {
-    for (final int userId : TestUtils.INVALID_IDS) {
+    for (final long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.findUserAuthByUserId(userId))
           .expectError(InvalidUserIdException.class).verify();
     }
@@ -604,7 +604,7 @@ public class UserServiceTest {
 
   @Test
   public void findUserAuthByUserId_NonExistentUserId_ReturnsEmpty() {
-    final int nonExistentUserId = 547;
+    final long nonExistentUserId = 547;
     when(userAuthRepository.findByUserId(nonExistentUserId)).thenReturn(Mono.empty());
     StepVerifier.create(userService.findUserAuthByUserId(nonExistentUserId)).expectComplete()
         .verify();
@@ -613,7 +613,7 @@ public class UserServiceTest {
 
   @Test
   public void getKeyById_InvalidUserId_ReturnsInvalidUserIdException() {
-    for (final int userId : TestUtils.INVALID_IDS) {
+    for (final long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.findKeyById(userId)).expectError(InvalidUserIdException.class)
           .verify();
     }
@@ -624,21 +624,21 @@ public class UserServiceTest {
     // Establish a random key
     final byte[] testRandomBytes =
         {-108, 101, -7, -36, 17, -26, -24, 0, -32, -117, 75, -127, 22, 62, 9, 19};
-    final int mockId = 17;
+    final long mockUserId = 17;
 
     // Mock a test user that has a key
     final User mockUserWithKey = mock(User.class);
     when(mockUserWithKey.getKey()).thenReturn(testRandomBytes);
 
-    when(userRepository.existsById(mockId)).thenReturn(Mono.just(true));
-    when(userRepository.findById(mockId)).thenReturn(Mono.just(mockUserWithKey));
+    when(userRepository.existsById(mockUserId)).thenReturn(Mono.just(true));
+    when(userRepository.findById(mockUserId)).thenReturn(Mono.just(mockUserWithKey));
 
-    StepVerifier.create(userService.findKeyById(mockId)).expectNext(testRandomBytes)
+    StepVerifier.create(userService.findKeyById(mockUserId)).expectNext(testRandomBytes)
         .expectComplete().verify();
 
     final InOrder order = inOrder(mockUserWithKey, userRepository);
     // userService should query the repository
-    order.verify(userRepository, times(1)).findById(mockId);
+    order.verify(userRepository, times(1)).findById(mockUserId);
     // and then extract the key
     order.verify(mockUserWithKey, times(1)).getKey();
   }
@@ -648,7 +648,7 @@ public class UserServiceTest {
     // Establish a random key
     final byte[] testRandomBytes =
         {-108, 101, -7, -36, 17, -26, -24, 0, -32, -117, 75, -127, 22, 62, 9, 19};
-    final int mockId = 19;
+    final long mockUserId = 19;
 
     // This user does not have a key
     final User mockUserWithoutKey = mock(User.class);
@@ -656,13 +656,13 @@ public class UserServiceTest {
 
     // When that user is given a key, return an entity that has the key
     final User mockUserWithKey = mock(User.class);
-    when(userRepository.findById(mockId)).thenReturn(Mono.just(mockUserWithoutKey));
+    when(userRepository.findById(mockUserId)).thenReturn(Mono.just(mockUserWithoutKey));
     when(mockUserWithoutKey.getKey()).thenReturn(null);
 
     when(mockUserWithoutKey.withKey(testRandomBytes)).thenReturn(mockUserWithKey);
 
     // Set up the mock repository
-    when(userRepository.existsById(mockId)).thenReturn(Mono.just(true));
+    when(userRepository.existsById(mockUserId)).thenReturn(Mono.just(true));
     when(userRepository.save(mockUserWithKey)).thenReturn(Mono.just(mockUserWithKey));
 
     // Set up the mock key service
@@ -670,10 +670,10 @@ public class UserServiceTest {
 
     when(mockUserWithKey.getKey()).thenReturn(testRandomBytes);
 
-    StepVerifier.create(userService.findKeyById(mockId)).expectNext(testRandomBytes)
+    StepVerifier.create(userService.findKeyById(mockUserId)).expectNext(testRandomBytes)
         .expectComplete().verify();
 
-    verify(userRepository, times(1)).findById(mockId);
+    verify(userRepository, times(1)).findById(mockUserId);
     verify(mockUserWithoutKey, times(1)).getKey();
     verify(keyService, times(1)).generateRandomBytes(16);
     verify(mockUserWithoutKey, times(1)).withKey(testRandomBytes);
@@ -689,7 +689,7 @@ public class UserServiceTest {
 
   @Test
   public void promote_InvalidUserId_ReturnsInvalidUserIdException() {
-    for (final int userId : TestUtils.INVALID_IDS) {
+    for (final long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.promote(userId)).expectError(InvalidUserIdException.class)
           .verify();
     }
@@ -697,8 +697,8 @@ public class UserServiceTest {
 
   @Test
   public void promote_UserIsAdmin_StaysAdmin() {
-    final int mockUserId = 899;
-    final int mockAuthId = 551;
+    final long mockUserId = 899;
+    final long mockAuthId = 551;
 
     final UserAuth mockAuth = mock(UserAuth.class);
 
@@ -718,7 +718,7 @@ public class UserServiceTest {
 
     StepVerifier.create(userService.promote(mockUserId)).expectComplete().verify();
 
-    verify(userRepository, never()).findById(any(Integer.class));
+    verify(userRepository, never()).findById(any(Long.class));
     verify(userRepository, never()).save(any(User.class));
     verify(passwordAuthRepository, never()).findByUserId(any(Integer.class));
 
@@ -730,15 +730,15 @@ public class UserServiceTest {
 
   @Test
   public void setClassId_InvalidClassId_ReturnsInvalidClassIdException() {
-    for (final int classId : TestUtils.INVALID_IDS) {
-      StepVerifier.create(userService.setClassId(10, classId))
+    for (final long classId : TestUtils.INVALID_IDS) {
+      StepVerifier.create(userService.setClassId(10L, classId))
           .expectError(InvalidClassIdException.class).verify();
     }
   }
 
   @Test
   public void setClassId_InvalidUserId_ReturnsInvalidUserIdException() {
-    for (final int userId : TestUtils.INVALID_IDS) {
+    for (final long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.setClassId(userId, 61))
           .expectError(InvalidUserIdException.class).verify();
     }
@@ -746,8 +746,8 @@ public class UserServiceTest {
 
   @Test
   public void setClassId_NonExistentClassId_ReturnsClassIdNotFoundException() {
-    final int mockUserId = 16;
-    final int mockClassId = 638;
+    final long mockUserId = 16;
+    final long mockClassId = 638;
 
     User mockUser = mock(User.class);
 
@@ -763,8 +763,8 @@ public class UserServiceTest {
 
   @Test
   public void setClassId_ValidClassId_Succeeds() {
-    final int mockUserId = 875;
-    final int mockClassId = 213;
+    final long mockUserId = 875;
+    final long mockClassId = 213;
 
     final User mockUser = mock(User.class);
     final User mockUserWithClass = mock(User.class);
@@ -795,7 +795,7 @@ public class UserServiceTest {
 
   @Test
   public void setDisplayName_InvalidUserId_ReturnsInvalidUserIdException() {
-    for (final int userId : TestUtils.INVALID_IDS) {
+    for (final long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.setDisplayName(userId, "displayName"))
           .expectError(InvalidUserIdException.class).verify();
     }
@@ -811,7 +811,7 @@ public class UserServiceTest {
   public void setDisplayName_UserIdDoesNotExist_ReturnsUserIdNotFoundException() {
     final String newDisplayName = "newName";
 
-    final int mockUserId = 550;
+    final long mockUserId = 550;
 
     when(userRepository.existsById(mockUserId)).thenReturn(Mono.just(false));
 
@@ -825,7 +825,7 @@ public class UserServiceTest {
     User mockUser = mock(User.class);
     String newDisplayName = "newDisplayName";
 
-    int mockUserId = 652;
+    final long mockUserId = 652;
 
     when(userRepository.existsById(mockUserId)).thenReturn(Mono.just(true));
     when(userRepository.findById(mockUserId)).thenReturn(Mono.just(mockUser));

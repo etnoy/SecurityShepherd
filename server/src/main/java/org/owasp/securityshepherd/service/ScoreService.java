@@ -18,7 +18,7 @@ public final class ScoreService {
 
   private final ScoreboardRepository scoreboardRepository;
   
-  public Mono<ModulePoint> setModuleScore(final int moduleId, final int rank, final int score) {
+  public Mono<ModulePoint> setModuleScore(final long moduleId, final int rank, final int score) {
     ModulePointBuilder builder = ModulePoint.builder().moduleId(moduleId).rank(rank).points(score);
     return modulePointRepository.save(builder.build());
   }

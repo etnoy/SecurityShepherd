@@ -16,7 +16,7 @@ public class Module implements Serializable {
   private static final long serialVersionUID = 6391362512222766270L;
 
   @Id
-  private Integer id;
+  private Long id;
 
   @NonNull
   private String name;

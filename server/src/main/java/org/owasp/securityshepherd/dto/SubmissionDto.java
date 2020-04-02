@@ -12,7 +12,7 @@ public class SubmissionDto  implements Serializable  {
   private static final long serialVersionUID = 8425777966286079418L;
 
   @NotNull
-  private Integer moduleId;
+  private Long moduleId;
   
   @NotNull
   private String flag;

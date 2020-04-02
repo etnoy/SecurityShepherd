@@ -70,7 +70,7 @@ public class UserControllerIT {
     final String loginName = "test";
     final String hashedPassword = "$2y$12$53B6QcsGwF3Os1GVFUFSQOhIPXnWFfuEkRJdbknFWnkXfUBMUKhaW";
 
-    final int userId =
+    final long userId =
         userService.createPasswordUser("Test User", loginName, hashedPassword).block();
 
     String token = JsonPath.parse(

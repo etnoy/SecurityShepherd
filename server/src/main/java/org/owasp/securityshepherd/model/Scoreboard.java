@@ -12,10 +12,10 @@ public class Scoreboard implements Serializable {
   private static final long serialVersionUID = 902640084501001329L;
 
   @NonNull
-  private Integer rank;
+  private Long rank;
   
   @NonNull
-  private Integer userId;
+  private Long userId;
 
   @NonNull
   private Long score;

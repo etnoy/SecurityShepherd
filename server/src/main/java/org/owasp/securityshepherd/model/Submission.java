@@ -16,16 +16,20 @@ public class Submission implements Serializable {
   private static final long serialVersionUID = -5485881248601955741L;
 
   @Id
-  private Integer id;
+  private Long id;
 
-  private int userId;
+  @NonNull
+  private Long userId;
 
-  private int moduleId;
+  @NonNull
+  private Long moduleId;
 
   @NonNull
   private LocalDateTime time;
 
-  private boolean isValid;
+  @NonNull
+  private Boolean isValid;
 
+  @NonNull
   private String flag;
 }
