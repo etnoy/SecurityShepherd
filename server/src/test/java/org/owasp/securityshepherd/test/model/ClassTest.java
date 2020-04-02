@@ -11,8 +11,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-//@ExtendWith(SpringExtension.class)
-//@SpringBootTest
 @DisplayName("Class unit test")
 public class ClassTest {
   @Test

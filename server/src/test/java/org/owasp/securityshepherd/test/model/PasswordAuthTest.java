@@ -12,8 +12,6 @@ import org.owasp.securityshepherd.test.util.TestUtils;
 import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-//@ExtendWith(SpringExtension.class)
-//@SpringBootTest
 @DisplayName("PasswordAuth unit test")
 public class PasswordAuthTest {
   @Test

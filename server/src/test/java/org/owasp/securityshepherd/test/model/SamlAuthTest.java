@@ -11,8 +11,6 @@ import org.owasp.securityshepherd.model.SamlAuth.SamlAuthBuilder;
 import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-//@ExtendWith(SpringExtension.class)
-//@SpringBootTest
 @DisplayName("SamlAuth unit test")
 public class SamlAuthTest {
   @Test

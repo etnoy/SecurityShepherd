@@ -11,8 +11,6 @@ import org.owasp.securityshepherd.model.ModulePoint.ModulePointBuilder;
 import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-//@ExtendWith(SpringExtension.class)
-//@SpringBootTest
 @DisplayName("ModuleScore unit test")
 public class ModuleScoreTest {
 

@@ -19,8 +19,6 @@ import org.owasp.securityshepherd.model.UserAuth.UserAuthBuilder;
 import org.owasp.securityshepherd.test.util.TestUtils;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-//@ExtendWith(SpringExtension.class)
-//@SpringBootTest
 @DisplayName("UserAuth unit test")
 public class UserAuthTest {
   @Test

@@ -12,21 +12,16 @@ import org.owasp.securityshepherd.model.User.UserBuilder;
 import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-//@ExtendWith(SpringExtension.class)
-//@SpringBootTest
 @DisplayName("User unit test")
 public class UserTest {
 
   @Test
   public void build_NoArguments_ThrowsException() {
-
     assertThrows(NullPointerException.class, () -> User.builder().build());
-
   }
   
   @Test
   public void PersistenceConstructor_ValidData_ConstructsObject() {
-
     final User testUser=new User(1,"displayName", 2, "me@example.com", null);
     
     assertThat(testUser.getId(), is(1));
@@ -34,19 +29,15 @@ public class UserTest {
     assertThat(testUser.getClassId(), is(2));
     assertThat(testUser.getEmail(), is("me@example.com"));
     assertThat(testUser.getKey(), is(nullValue()));
-    
   }
   
   @Test
   public void PersistenceConstructor_NullDisplayName_ThrowsNullPointerException() {
-
     assertThrows(NullPointerException.class, () -> new User(1, null, 2, "me@example.com", null));
-
   }
 
   @Test
   public void build_ValidDisplayName_ReturnsUser() {
-
     final String validDisplayName = "build_ValidDisplayName";
 
     final User build_ValidDisplayNameLengthUser = User.builder().displayName(validDisplayName).build();
@@ -66,19 +57,15 @@ public class UserTest {
     final User newUser = builder.build();
 
     assertThat(newUser.getClassId(), is(1));
-
   }
 
   @Test
   public void buildDisplayName_NullDisplayName_ThrowsException() {
-
     assertThrows(NullPointerException.class, () -> User.builder().displayName(null));
-
   }
 
   @Test
   public void buildDisplayName_ValidDisplayName_Builds() {
-
     final String displayName = "buildDisplayName_ValidDisplayName";
 
     final UserBuilder builder = User.builder();
@@ -87,12 +74,10 @@ public class UserTest {
     assertThat(builder.build(), instanceOf(User.class));
 
     assertThat(builder.build().getDisplayName(), is(displayName));
-
   }
 
   @Test
   public void buildId_ValidId_Builds() {
-
     final UserBuilder builder = User.builder();
 
     builder.id(12345);
@@ -100,14 +85,11 @@ public class UserTest {
 
     assertThat(builder.build(), instanceOf(User.class));
     assertThat(builder.build().getId(), is(12345));
-
   }
 
   @Test
   public void equals_AutomaticTesting() {
-
     EqualsVerifier.forClass(User.class).withIgnoredAnnotations(NonNull.class).verify();
-
   }
 
   @Test
@@ -135,10 +117,8 @@ public class UserTest {
     assertThat(newUser.getClassId(), is(0));
 
     for (int newClassId : testedClassIds) {
-
       final User changedUser = newUser.withClassId(newClassId);
       assertThat(changedUser.getClassId(), is(newClassId));
-
     }
   }
 
@@ -187,7 +167,6 @@ public class UserTest {
 
   @Test
   public void withId_ValidId_ChangesId() {
-
     final int originalId = 1;
     final int[] testedIds = { originalId, 0, -1, 1000, -1000, 123456789 };
 
@@ -198,17 +177,13 @@ public class UserTest {
     User changedUser;
 
     for (int newId : testedIds) {
-
       changedUser = newUser.withId(newId);
       assertThat(changedUser.getId(), is(newId));
-
     }
-
   }
 
   @Test
   public void withKey_ValidKey_ChangesKey() {
-
     final String displayName = "withKey_ValidKey";
     final byte[] key = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     final byte[][] testedKeys = { key, null, {}, { 1 }, { 19, 26, 127, -128 } };
@@ -217,12 +192,8 @@ public class UserTest {
     assertThat(newUser.getKey(), is(key));
 
     for (byte[] newKey : testedKeys) {
-
       final User changedUser = newUser.withKey(newKey);
       assertThat(changedUser.getKey(), is(newKey));
-
     }
-
   }
-
 }

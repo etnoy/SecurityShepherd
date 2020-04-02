@@ -11,8 +11,6 @@ import org.owasp.securityshepherd.model.Configuration.ConfigurationBuilder;
 import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-//@ExtendWith(SpringExtension.class)
-//@SpringBootTest
 @DisplayName("Configuration unit test")
 public class ConfigurationTest {
   @Test
