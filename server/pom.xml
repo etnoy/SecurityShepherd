@@ -66,6 +66,13 @@
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.github.spotbugs/spotbugs -->
+		<dependency>
+			<groupId>com.github.spotbugs</groupId>
+			<artifactId>spotbugs</artifactId>
+			<version>4.0.1</version>
+			<type>pom</type>
+		</dependency>
 		<!-- Test -->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
@@ -120,8 +127,8 @@
 		<dependency>
 			<groupId>dev.miku</groupId>
 			<artifactId>r2dbc-mysql</artifactId>
-			<!--We need at least 0.8.1 for working mysql8 support-->
-			<version>0.8.1.RELEASE</version><!--$NO-MVN-MAN-VER$-->
+			<!--We need at least 0.8.1 for working mysql8 support -->
+			<version>0.8.1.RELEASE</version><!--$NO-MVN-MAN-VER$ -->
 		</dependency>
 		<dependency>
 			<groupId>io.projectreactor</groupId>
