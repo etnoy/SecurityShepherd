@@ -9,6 +9,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -223,11 +224,14 @@ public class ClassServiceTest {
     verify(classRepository).findByName(newName);
   }
 
+  @BeforeAll
+  private static void reactorVerbose() {
+    // Tell Reactor to print verbose error messages
+    Hooks.onOperatorDebug();
+  }
+  
   @BeforeEach
   private void setUp() {
-    // Print more verbose errors if something goes wrong
-    Hooks.onOperatorDebug();
-
     classService = new ClassService(classRepository);
   }
 

@@ -10,6 +10,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,6 +40,12 @@ import reactor.test.StepVerifier;
 
 @DisplayName("UserService unit test")
 public class UserServiceTest {
+
+  @BeforeAll
+  private static void reactorVerbose() {
+    // Tell Reactor to print verbose error messages
+    Hooks.onOperatorDebug();
+  }
 
   private UserService userService;
 
@@ -856,12 +863,9 @@ public class UserServiceTest {
     verify(userRepository, times(1)).save(any(User.class));
     verify(mockUser, times(1)).getDisplayName();
   }
-
+  
   @BeforeEach
   private void setUp() {
-    // Print more verbose errors if something goes wrong
-    Hooks.onOperatorDebug();
-
     // Set up userService to use our mocked repos and services
     userService = new UserService(userRepository, userAuthRepository, passwordAuthRepository,
         classService, keyService);

@@ -10,7 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Base64;
-
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -160,14 +160,15 @@ public class ConfigurationServiceTest {
 
   }
 
+  @BeforeAll
+  private static void reactorVerbose() {
+    // Tell Reactor to print verbose error messages
+    Hooks.onOperatorDebug();
+  }
+  
   @BeforeEach
   private void setUp() {
-    // Print more verbose errors if something goes wrong
-    Hooks.onOperatorDebug();
-
     // Set up configurationService to use our mocked repos and services
     configurationService = new ConfigurationService(configurationRepository, keyService);
-
   }
-
 }

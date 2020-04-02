@@ -3,7 +3,7 @@ package org.owasp.securityshepherd.test.service;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -58,10 +58,14 @@ public class KeyServiceTest {
     }
   }
 
+  @BeforeAll
+  private static void reactorVerbose() {
+    // Tell Reactor to print verbose error messages
+    Hooks.onOperatorDebug();
+  }
+  
   @BeforeEach
   private void setUp() {
-    // Print more verbose errors if something goes wrong
-    Hooks.onOperatorDebug();
     keyService = new KeyService();
   }
 }
