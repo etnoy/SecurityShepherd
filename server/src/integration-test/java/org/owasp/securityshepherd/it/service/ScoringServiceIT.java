@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,6 +39,11 @@ import reactor.test.StepVerifier;
 @AutoConfigureWebTestClient
 @DisplayName("ScoringService integration test")
 public class ScoringServiceIT {
+  @BeforeAll
+  private static void reactorVerbose() {
+    // Tell Reactor to print verbose error messages
+    Hooks.onOperatorDebug();
+  }
 
   @Autowired
   ModuleService moduleService;
@@ -185,9 +191,6 @@ public class ScoringServiceIT {
 
   @BeforeEach
   private void clear() {
-    // Print more verbose errors if something goes wrong with reactor
-    Hooks.onOperatorDebug();
-
     testService.deleteAll().block();
   }
 }

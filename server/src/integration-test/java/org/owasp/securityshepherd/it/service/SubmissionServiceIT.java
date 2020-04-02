@@ -3,6 +3,7 @@ package org.owasp.securityshepherd.it.service;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import java.time.Clock;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,12 @@ import reactor.test.StepVerifier;
 @AutoConfigureWebTestClient
 @DisplayName("SubmissionService integration test")
 public class SubmissionServiceIT {
-
+  @BeforeAll
+  private static void reactorVerbose() {
+    // Tell Reactor to print verbose error messages
+    Hooks.onOperatorDebug();
+  }
+  
   SubmissionService submissionService;
 
   @Autowired
@@ -81,9 +87,6 @@ public class SubmissionServiceIT {
 
   @BeforeEach
   private void clear() {
-    // Print more verbose errors if something goes wrong with reactor
-    Hooks.onOperatorDebug();
-
     // Initialize services with the real clock
     initializeService(clock);
 

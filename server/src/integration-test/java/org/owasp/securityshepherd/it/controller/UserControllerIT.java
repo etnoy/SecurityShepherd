@@ -3,6 +3,7 @@ package org.owasp.securityshepherd.it.controller;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import java.util.HashSet;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,12 @@ import reactor.test.StepVerifier;
 @AutoConfigureWebTestClient
 @DisplayName("UserController integration test")
 public class UserControllerIT {
-
+  @BeforeAll
+  private static void reactorVerbose() {
+    // Tell Reactor to print verbose error messages
+    Hooks.onOperatorDebug();
+  }
+  
   @Autowired
   UserService userService;
 
@@ -174,9 +180,6 @@ public class UserControllerIT {
 
   @BeforeEach
   private void setUp() {
-    // Print more verbose errors if something goes wrong with reactor
-    Hooks.onOperatorDebug();
-
     testService.deleteAll().block();
   }
 }

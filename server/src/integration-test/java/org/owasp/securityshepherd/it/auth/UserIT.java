@@ -1,5 +1,6 @@
 package org.owasp.securityshepherd.it.auth;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,13 +20,18 @@ import reactor.test.StepVerifier;
 @AutoConfigureWebTestClient
 @DisplayName("User integration test")
 public class UserIT {
+  @BeforeAll
+  private static void reactorVerbose() {
+    // Tell Reactor to print verbose error messages
+    Hooks.onOperatorDebug();
+  }
 
   @Autowired
   UserService userService;
 
   @Autowired
   TestService testService;
-
+  
   @Test
   public void createPasswordUser_ValidData_RepositoryFindsCorrectUser() throws Exception {
     final Integer userId = userService.createPasswordUser("Test User", "user_login_name",
@@ -37,9 +43,6 @@ public class UserIT {
 
   @BeforeEach
   private void setUp() {
-    // Print more verbose errors if something goes wrong with reactor
-    Hooks.onOperatorDebug();
-
     testService.deleteAll().block();
   }
 
