@@ -17,7 +17,6 @@ import org.owasp.securityshepherd.model.Scoreboard;
 import org.owasp.securityshepherd.repository.CorrectionRepository;
 import org.owasp.securityshepherd.repository.ModulePointRepository;
 import org.owasp.securityshepherd.repository.ModuleRepository;
-import org.owasp.securityshepherd.repository.SubmissionDatabaseClient;
 import org.owasp.securityshepherd.repository.SubmissionRepository;
 import org.owasp.securityshepherd.service.ConfigurationService;
 import org.owasp.securityshepherd.service.CryptoService;
@@ -51,9 +50,6 @@ public class ScoringServiceIT {
 
   @Autowired
   ScoreService scoringService;
-
-  @Autowired
-  SubmissionDatabaseClient submissionDatabaseClient;
 
   @Autowired
   CorrectionRepository correctionRepository;
@@ -184,7 +180,7 @@ public class ScoringServiceIT {
 
   private void initializeService(Clock injectedClock) {
     submissionService = new SubmissionService(moduleService, submissionRepository,
-        correctionRepository, injectedClock, submissionDatabaseClient);
+        correctionRepository, injectedClock);
   }
 
   @BeforeEach

@@ -2,7 +2,6 @@ package org.owasp.securityshepherd.service;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
-import org.owasp.securityshepherd.dto.RankedSubmissionDto;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.model.Correction;
@@ -10,7 +9,6 @@ import org.owasp.securityshepherd.model.Correction.CorrectionBuilder;
 import org.owasp.securityshepherd.model.Submission;
 import org.owasp.securityshepherd.model.Submission.SubmissionBuilder;
 import org.owasp.securityshepherd.repository.CorrectionRepository;
-import org.owasp.securityshepherd.repository.SubmissionDatabaseClient;
 import org.owasp.securityshepherd.repository.SubmissionRepository;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
@@ -29,20 +27,8 @@ public final class SubmissionService {
 
   private final Clock clock;
 
-  private final SubmissionDatabaseClient submissionDatabaseClient;
-
   public Mono<Void> deleteAll() {
     return submissionRepository.deleteAll();
-  }
-
-  public Flux<RankedSubmissionDto> findAllValidByModuleIdSortedBySubmissionTime(
-      final int moduleId) {
-    return submissionDatabaseClient.findAllValidByModuleIdSortedBySubmissionTime(moduleId);
-  }
-
-  public Flux<RankedSubmissionDto> findValidUserIdsByModuleIdRankedBySubmissionTime(
-      final int moduleId) {
-    return submissionDatabaseClient.findAllValidByModuleIdSortedBySubmissionTime(moduleId);
   }
 
   public Mono<Submission> submit(final int userId, final int moduleId, final String flag) {
