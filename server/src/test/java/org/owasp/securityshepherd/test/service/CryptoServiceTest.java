@@ -7,21 +7,13 @@ import static org.hamcrest.Matchers.greaterThan;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.service.CryptoService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
 import reactor.core.publisher.Hooks;
 import reactor.test.StepVerifier;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
 @DisplayName("CryptoService unit test")
 public class CryptoServiceTest {
 
-  @Autowired
   CryptoService cryptoService;
 
   @Test
@@ -70,6 +62,7 @@ public class CryptoServiceTest {
   private void setUp() {
     // Print more verbose errors if something goes wrong
     Hooks.onOperatorDebug();
+    cryptoService = new CryptoService();
   }
 
 }

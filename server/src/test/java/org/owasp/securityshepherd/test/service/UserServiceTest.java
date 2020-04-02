@@ -13,10 +13,9 @@ import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
-import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.owasp.securityshepherd.exception.DuplicateUserDisplayNameException;
 import org.owasp.securityshepherd.exception.InvalidClassIdException;
 import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
@@ -33,35 +32,26 @@ import org.owasp.securityshepherd.service.ClassService;
 import org.owasp.securityshepherd.service.KeyService;
 import org.owasp.securityshepherd.service.UserService;
 import org.owasp.securityshepherd.test.util.TestUtils;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
 @DisplayName("UserService unit test")
 public class UserServiceTest {
 
   private UserService userService;
 
-  @Mock
-  private UserRepository userRepository;
+  private UserRepository userRepository = Mockito.mock(UserRepository.class);
 
-  @Mock
-  private UserAuthRepository userAuthRepository;
+  private UserAuthRepository userAuthRepository = Mockito.mock(UserAuthRepository.class);
 
-  @Mock
-  private PasswordAuthRepository passwordAuthRepository;
+  private PasswordAuthRepository passwordAuthRepository =
+      Mockito.mock(PasswordAuthRepository.class);
 
-  @Mock
-  private ClassService classService;
+  private ClassService classService = Mockito.mock(ClassService.class);
 
-  @Mock
-  private KeyService keyService;
+  private KeyService keyService = Mockito.mock(KeyService.class);
 
   @Test
   @DisplayName("count() should call repository and return user count")

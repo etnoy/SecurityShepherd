@@ -14,17 +14,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.model.UserAuth;
 import org.owasp.securityshepherd.model.UserAuth.UserAuthBuilder;
 import org.owasp.securityshepherd.test.util.TestUtils;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
+//@ExtendWith(SpringExtension.class)
+//@SpringBootTest
 @DisplayName("UserAuth unit test")
 public class UserAuthTest {
   @Test

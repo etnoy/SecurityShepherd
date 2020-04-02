@@ -12,29 +12,23 @@ import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
 import org.owasp.securityshepherd.exception.DuplicateClassNameException;
 import org.owasp.securityshepherd.exception.InvalidClassIdException;
 import org.owasp.securityshepherd.model.ClassEntity;
 import org.owasp.securityshepherd.repository.ClassRepository;
 import org.owasp.securityshepherd.service.ClassService;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
 @DisplayName("ClassService unit test")
 public class ClassServiceTest {
 
   private ClassService classService;
 
-  @Mock
-  private ClassRepository classRepository;
+  private ClassRepository classRepository = Mockito.mock(ClassRepository.class);
 
   @Test
   @DisplayName("Return the correct number of class entities in the repository")

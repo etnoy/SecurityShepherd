@@ -7,37 +7,29 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.service.KeyService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
 import reactor.core.publisher.Hooks;
 import reactor.test.StepVerifier;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
 @DisplayName("KeyService unit test")
 public class KeyServiceTest {
 
-  @Autowired
   private KeyService keyService;
 
   @Test
-  public void convertByteKeyToString_ValidInput_ReturnsExpectedOutput()  {
+  public void convertByteKeyToString_ValidInput_ReturnsExpectedOutput() {
     assertThat(keyService.convertStringKeyToBytes("thisisaflag"),
         is(new byte[] {116, 104, 105, 115, 105, 115, 97, 102, 108, 97, 103}));
   }
 
   @Test
-  public void convertStringKeyToBytes_ValidInput_ReturnsExpectedOutput()  {
+  public void convertStringKeyToBytes_ValidInput_ReturnsExpectedOutput() {
     assertThat(keyService.convertByteKeyToString(
         new byte[] {116, 104, 105, 115, 105, 115, 97, 102, 108, 97, 103}), is("thisisaflag"));
   }
 
   @Test
-  public void generateRandomBytes_ValidLength_ReturnsRandomBytes()  {
+  public void generateRandomBytes_ValidLength_ReturnsRandomBytes() {
     final int[] testedLengths = {0, 1, 12, 16, 128, 4096};
 
     for (int length : testedLengths) {
@@ -52,7 +44,7 @@ public class KeyServiceTest {
   }
 
   @Test
-  public void generateRandomString_ValidLength_ReturnsRandomString()  {
+  public void generateRandomString_ValidLength_ReturnsRandomString() {
     final int[] testedLengths = {0, 1, 12, 16, 128, 4096};
 
     for (int length : testedLengths) {
@@ -70,5 +62,6 @@ public class KeyServiceTest {
   private void setUp() {
     // Print more verbose errors if something goes wrong
     Hooks.onOperatorDebug();
+    keyService = new KeyService();
   }
 }

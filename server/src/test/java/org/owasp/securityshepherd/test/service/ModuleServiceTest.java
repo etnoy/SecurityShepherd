@@ -14,10 +14,9 @@ import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
-import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.owasp.securityshepherd.exception.DuplicateModuleNameException;
 import org.owasp.securityshepherd.exception.InvalidFlagException;
 import org.owasp.securityshepherd.exception.InvalidFlagStateException;
@@ -26,55 +25,36 @@ import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.repository.ModuleRepository;
 import org.owasp.securityshepherd.repository.ScoreRepository;
-import org.owasp.securityshepherd.repository.SubmissionDatabaseClient;
 import org.owasp.securityshepherd.repository.ModulePointRepository;
 import org.owasp.securityshepherd.service.ConfigurationService;
 import org.owasp.securityshepherd.service.CryptoService;
 import org.owasp.securityshepherd.service.KeyService;
 import org.owasp.securityshepherd.service.ModuleService;
-import org.owasp.securityshepherd.service.SubmissionService;
 import org.owasp.securityshepherd.service.UserService;
 import org.owasp.securityshepherd.test.util.TestUtils;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
 @DisplayName("ModuleService unit test")
 public class ModuleServiceTest {
 
   private ModuleService moduleService;
 
-  @Mock
-  private UserService userService;
+  private UserService userService = Mockito.mock(UserService.class);
 
-  @Mock
-  private ModuleRepository moduleRepository;
+  private ModuleRepository moduleRepository = Mockito.mock(ModuleRepository.class);
 
-  @Mock
-  private ModulePointRepository modulePointRepository;
+  private ModulePointRepository modulePointRepository = Mockito.mock(ModulePointRepository.class);
 
-  @Mock
-  private ScoreRepository scoreRepository;
+  private ScoreRepository scoreRepository = Mockito.mock(ScoreRepository.class);
 
-  @Mock
-  private SubmissionService submissionService;
+  private ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
 
-  @Mock
-  private ConfigurationService configurationService;
+  private KeyService keyService = Mockito.mock(KeyService.class);
 
-  @Mock
-  private KeyService keyService;
-
-  @Mock
-  private CryptoService cryptoService;
-
-  @Mock
-  private SubmissionDatabaseClient submissionDatabaseClient;
+  private CryptoService cryptoService = Mockito.mock(CryptoService.class);
 
   @Test
   public void count_NoArgument_ReturnsCount() {
@@ -562,8 +542,8 @@ public class ModuleServiceTest {
     // Print more verbose errors if something goes wrong
     Hooks.onOperatorDebug();
 
-    moduleService = new ModuleService(moduleRepository, modulePointRepository,
-        scoreRepository, userService, configurationService, keyService, cryptoService);
+    moduleService = new ModuleService(moduleRepository, modulePointRepository, scoreRepository,
+        userService, configurationService, keyService, cryptoService);
   }
 
   @Test
