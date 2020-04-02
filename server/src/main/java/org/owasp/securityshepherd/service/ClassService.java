@@ -19,18 +19,16 @@ public final class ClassService {
   private final ClassRepository classRepository;
 
   public Mono<Long> count() {
-
     return classRepository.count();
-
   }
 
   public Mono<ClassEntity> create(final String name) {
     if (name == null) {
-      throw new NullPointerException();
+      return Mono.error(new NullPointerException());
     }
 
     if (name.isEmpty()) {
-      throw new IllegalArgumentException();
+      return Mono.error(new IllegalArgumentException());
     }
 
     log.debug("Creating class with name " + name);
@@ -58,14 +56,13 @@ public final class ClassService {
         .flatMap(classRepository::findById);
   }
 
-  public Mono<ClassEntity> setName(final int id, final String name) throws InvalidClassIdException {
-
+  public Mono<ClassEntity> setName(final int id, final String name) {
     if (name == null) {
-      throw new IllegalArgumentException("Class name can't be null");
+      return Mono.error(new IllegalArgumentException("Class name can't be null"));
     }
 
     if (id <= 0) {
-      throw new InvalidClassIdException();
+      return Mono.error(new InvalidClassIdException());
     }
 
     Mono<String> nameMono = Mono.just(name).filterWhen(this::doesNotExistByName)
@@ -73,7 +70,6 @@ public final class ClassService {
 
     return Mono.just(id).flatMap(this::getById).zipWith(nameMono)
         .map(tuple -> tuple.getT1().withName(tuple.getT2())).flatMap(classRepository::save);
-
   }
 
 }
