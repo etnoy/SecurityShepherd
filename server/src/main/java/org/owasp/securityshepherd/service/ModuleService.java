@@ -9,7 +9,6 @@ import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.repository.ModulePointRepository;
 import org.owasp.securityshepherd.repository.ModuleRepository;
-import org.owasp.securityshepherd.repository.ScoreRepository;
 import org.springframework.stereotype.Service;
 import com.google.common.primitives.Bytes;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +24,6 @@ public final class ModuleService {
   private final ModuleRepository moduleRepository;
 
   private final ModulePointRepository modulePointRepository;
-
-  private final ScoreRepository moduleScoreRepository;
   
   private final UserService userService;
 
@@ -57,7 +54,7 @@ public final class ModuleService {
   }
 
   public Mono<Void> deleteAll() {
-    return moduleScoreRepository.deleteAll().then(modulePointRepository.deleteAll())
+    return modulePointRepository.deleteAll()
         .then(moduleRepository.deleteAll());
   }
 

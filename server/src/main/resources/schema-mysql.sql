@@ -45,20 +45,6 @@ CREATE TABLE correction (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
-CREATE TABLE score (
-	id INT AUTO_INCREMENT,
-	module_id INT NOT NULL,
-	user_rank INT NOT NULL,
-	user_id INT NOT NULL,
-	amount INT NOT NULL,
-	time TIMESTAMP NOT NULL,
-  PRIMARY KEY (id),
-  UNIQUE KEY (user_id, module_id),
-  FOREIGN KEY (`module_id`) REFERENCES module(id),
-  FOREIGN KEY (`user_id`) REFERENCES user(id))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
-
 CREATE TABLE module_point (
 	id INT AUTO_INCREMENT,
 	module_id INT NOT NULL,
@@ -127,15 +113,65 @@ CREATE TABLE configuration (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
-CREATE VIEW scoreboard AS SELECT
+CREATE VIEW submission_ranks AS 
+SELECT user_id, rank() over (partition by module_id order by time) as 'rank',  module_id, time 
+FROM submission where is_valid=true;
+
+CREATE VIEW bonus AS 
+SELECT 
+	user_id, 
+	submission_ranks.module_id, 
+	COALESCE(points, 0) as bonus, 
+	time  
+FROM 
+	submission_ranks 
+left join 
+	module_point 
+	on (
+		submission_ranks.module_id = module_point.module_id 
+	and 
+		submission_ranks.rank = submission_rank
+	);
+
+CREATE VIEW score AS 
+select 
+	user_id, bonus.module_id, bonus+points as amount, time 
+from 
+	bonus 
+inner join 
+	module_point 
+	on (
+		bonus.module_id=module_point.module_id 
+	and 
+		module_point.submission_rank=0
+	);
+
+CREATE VIEW scoreboard AS 
+SELECT
 	rank() over(order by sum(amount) desc) as 'rank',
 	user_id,
 	CAST(sum(amount) as SIGNED) as score
-FROM 
-(SELECT user_id, amount FROM score 
-UNION ALL
-SELECT user_id, amount FROM correction
-UNION ALL
-SELECT id as user_id, 0 FROM user
-) as all_scores 
+FROM (
+	SELECT 
+		user_id, amount 
+	FROM 
+		score 
+	UNION ALL
+	SELECT 
+		user_id, 
+		amount 
+	FROM 
+		correction
+	UNION ALL
+	SELECT 
+		id 
+	as 
+		user_id, 
+		0 
+	FROM 
+		user) 
+	as 
+	all_scores 
 group by user_id order by 'rank' desc;
+
+

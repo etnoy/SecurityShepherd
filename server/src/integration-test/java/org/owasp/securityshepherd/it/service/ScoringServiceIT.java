@@ -17,7 +17,6 @@ import org.owasp.securityshepherd.model.Scoreboard;
 import org.owasp.securityshepherd.repository.CorrectionRepository;
 import org.owasp.securityshepherd.repository.ModulePointRepository;
 import org.owasp.securityshepherd.repository.ModuleRepository;
-import org.owasp.securityshepherd.repository.ScoreRepository;
 import org.owasp.securityshepherd.repository.SubmissionDatabaseClient;
 import org.owasp.securityshepherd.repository.SubmissionRepository;
 import org.owasp.securityshepherd.service.ConfigurationService;
@@ -46,9 +45,6 @@ public class ScoringServiceIT {
 
   @Autowired
   UserService userService;
-
-  @Autowired
-  ScoreRepository moduleScoreRepository;
 
   @Autowired
   SubmissionService submissionService;
@@ -172,7 +168,7 @@ public class ScoringServiceIT {
     submissionService.submitCorrection(userIds.get(2), -1000, "Penalty for cheating").block();
     initializeService(Clock.offset(correctionClock, Duration.ofHours(10)));
     submissionService.submitCorrection(userIds.get(1), 100, "Thanks for the bribe").block();
-    scoringService.computeScoresFromSubmissions().blockLast();
+    // scoringService.computeScoresFromSubmissions().blockLast();
 
     StepVerifier.create(scoringService.getScoreboard())
         .expectNext(Scoreboard.builder().rank(1).userId(userIds.get(1)).score(251L).build())
