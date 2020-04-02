@@ -27,8 +27,7 @@ public class Submission implements Serializable {
   @NonNull
   private LocalDateTime time;
 
-  @NonNull
-  private Boolean isValid;
+  private boolean isValid;
 
   @NonNull
   private String flag;

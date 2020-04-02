@@ -42,7 +42,7 @@ public class ModuleTest {
     builder.name("TestModule");
 
     assertThat(builder.build(), instanceOf(Module.class));
-    assertThat(builder.build().getId(), is(123456));
+    assertThat(builder.build().getId(), is(123456L));
   }
 
   @Test

@@ -46,14 +46,16 @@ public class PasswordAuthTest {
   public void buildHashedPassword_ValidHashedPassword_Builds() {
     final String[] hashedPasswordsToTest =
         {"abc123", "0xdeadbeef", "", "me@example.com", "a", "1", "password"};
+    final PasswordAuthBuilder passwordAuthBuilder =
+        PasswordAuth.builder().userId(555L).loginName("TestUser");
 
     for (final String hashedPassword : hashedPasswordsToTest) {
-      final PasswordAuthBuilder builder = PasswordAuth.builder().loginName("TestUser");
+      passwordAuthBuilder.hashedPassword(hashedPassword);
 
-      builder.hashedPassword(hashedPassword);
+      final PasswordAuth passwordAuth = passwordAuthBuilder.build();
 
-      assertThat(builder.build(), instanceOf(PasswordAuth.class));
-      assertThat(builder.build().getHashedPassword(), is(hashedPassword));
+      assertThat(passwordAuth, instanceOf(PasswordAuth.class));
+      assertThat(passwordAuth.getHashedPassword(), is(hashedPassword));
     }
   }
 
@@ -61,7 +63,7 @@ public class PasswordAuthTest {
   public void buildIsPasswordExpired_TrueOrFalse_MatchesBuild() {
     for (final boolean isPasswordNonExpired : TestUtils.BOOLEANS) {
       final PasswordAuthBuilder builder =
-          PasswordAuth.builder().loginName("TestUser").hashedPassword("passwordHash");
+          PasswordAuth.builder().userId(45L).loginName("TestUser").hashedPassword("passwordHash");
 
       builder.isPasswordNonExpired(isPasswordNonExpired);
 
@@ -79,13 +81,15 @@ public class PasswordAuthTest {
   public void buildLoginName_ValidLoginName_Builds() {
     final String[] loginNamesToTest = {"", "me@example.com", "a", "1", "userName"};
 
+    final PasswordAuthBuilder passwordAuthBuilder =
+        PasswordAuth.builder().userId(681L).hashedPassword("passwordHash");
+
     for (final String loginName : loginNamesToTest) {
-      final PasswordAuthBuilder builder = PasswordAuth.builder().hashedPassword("passwordHash");
+      passwordAuthBuilder.loginName(loginName);
 
-      builder.loginName(loginName);
-
-      assertThat(builder.build(), instanceOf(PasswordAuth.class));
-      assertThat(builder.build().getLoginName(), is(loginName));
+      final PasswordAuth changedPasswordAuth = passwordAuthBuilder.build();
+      assertThat(changedPasswordAuth, instanceOf(PasswordAuth.class));
+      assertThat(changedPasswordAuth.getLoginName(), is(loginName));
     }
   }
 
@@ -97,9 +101,9 @@ public class PasswordAuthTest {
   @Test
   public void toString_ValidData_AsExpected() {
     assertThat(
-        PasswordAuth.builder().loginName("TestUser").hashedPassword("hashedPassword").build()
-            .toString(),
-        is("PasswordAuth(id=null, userId=null, loginName=TestUser, hashedPassword=hashedPassword, isPasswordNonExpired=false)"));
+        PasswordAuth.builder().loginName("TestUser").hashedPassword("hashedPassword").userId(1278L)
+            .build().toString(),
+        is("PasswordAuth(id=null, userId=1278, loginName=TestUser, hashedPassword=hashedPassword, isPasswordNonExpired=false)"));
     assertThat(
         PasswordAuth.builder().id(5L).userId(95L).loginName("TestUser3")
             .hashedPassword("hashedPassword2").build().toString(),
@@ -120,7 +124,7 @@ public class PasswordAuthTest {
   public void withHashedPassword_ValidHashedPassword_ChangesHashedPassword() {
     final String originalHashedPassword = "passwordHash";
 
-    final PasswordAuth passwordAuth = PasswordAuth.builder().loginName("abc123hash")
+    final PasswordAuth passwordAuth = PasswordAuth.builder().userId(46L).loginName("abc123hash")
         .hashedPassword(originalHashedPassword).build();
 
     final String[] testedHashedPasswords = {originalHashedPassword, "abc123hash", "", "!\"+,-",
@@ -140,8 +144,8 @@ public class PasswordAuthTest {
     final long originalId = 1;
     final long[] testedIds = {originalId, 0, -1, 1000, -1000, 123456789};
 
-    final PasswordAuth newPasswordAuth = PasswordAuth.builder().id(originalId).loginName(loginName)
-        .hashedPassword(hashedPassword).build();
+    final PasswordAuth newPasswordAuth = PasswordAuth.builder().userId(6L).id(originalId)
+        .loginName(loginName).hashedPassword(hashedPassword).build();
 
     assertThat(newPasswordAuth.getId(), is(originalId));
 
@@ -160,26 +164,29 @@ public class PasswordAuthTest {
   public void withLoginName_ValidLoginName_ChangesLoginName() {
     final String originalLoginName = "me@example.com";
 
-    final PasswordAuth passwordAuth =
-        PasswordAuth.builder().loginName(originalLoginName).hashedPassword("passwordHash").build();
+    final PasswordAuth passwordAuth = PasswordAuth.builder().loginName(originalLoginName)
+        .userId(31L).hashedPassword("passwordHash").build();
 
     final String[] testedLoginNames =
         {originalLoginName, "", "userName", "Long  With     Whitespace", "12345"};
 
-    for (final String newLoginName : testedLoginNames) {
-      assertThat(passwordAuth.withLoginName(newLoginName).getLoginName(), is(newLoginName));
+    for (final String loginName : testedLoginNames) {
+      final PasswordAuth changedPasswordAuth = passwordAuth.withLoginName(loginName);
+      assertThat(changedPasswordAuth.getLoginName(), is(loginName));
     }
   }
 
   @Test
-  public void withPasswordExpired_ValidBoolean_ChangesPasswordExpired() {
-    final PasswordAuth testPasswordAuth =
-        PasswordAuth.builder().loginName("TestUser").hashedPassword("passwordHash").build();
+  public void withPasswordNonExpired_ValidBoolean_ChangesPasswordExpired() {
+    final PasswordAuth passwordAuth = PasswordAuth.builder().userId(45L).loginName("TestUser")
+        .hashedPassword("passwordHash").build();
 
-    final PasswordAuth changedPasswordAuth1 = testPasswordAuth.withPasswordNonExpired(false);
-    assertThat(changedPasswordAuth1.isPasswordNonExpired(), is(false));
-    final PasswordAuth changedPasswordAuth2 = testPasswordAuth.withPasswordNonExpired(true);
-    assertThat(changedPasswordAuth2.isPasswordNonExpired(), is(true));
+    for (final boolean isPasswordNonExpired : TestUtils.BOOLEANS) {
+      final PasswordAuth changedAuth = passwordAuth.withPasswordNonExpired(isPasswordNonExpired);
+
+      assertThat(changedAuth, instanceOf(PasswordAuth.class));
+      assertThat(changedAuth.isPasswordNonExpired(), is(isPasswordNonExpired));
+    }
   }
 
   @Test

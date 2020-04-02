@@ -5,6 +5,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.util.HashSet;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -97,13 +98,13 @@ public class UserControllerIT {
     final String loginName = "test";
     final String password = "paLswOrdha17£@£sh";
 
-    HashSet<Integer> userIdSet = new HashSet<Integer>();
+    HashSet<Long> userIdSet = new HashSet<Long>();
 
-    final int userId = webTestClient.post().uri("/api/v1/register")
+    final long userId = webTestClient.post().uri("/api/v1/register")
         .contentType(MediaType.APPLICATION_JSON)
         .body(BodyInserters
             .fromValue(new PasswordRegistrationDto("TestUserDisplayName", loginName, password)))
-        .exchange().expectStatus().isCreated().expectBody(Integer.class).returnResult()
+        .exchange().expectStatus().isCreated().expectBody(Long.class).returnResult()
         .getResponseBody();
 
     // Promote this user to admin
@@ -123,16 +124,16 @@ public class UserControllerIT {
         .add(webTestClient.post().uri("/api/v1/register").contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(
                 new PasswordRegistrationDto("TestUser2", "loginName2", "paLswOrdha17£@£sh")))
-            .exchange().expectStatus().isCreated().expectBody(Integer.class).returnResult()
+            .exchange().expectStatus().isCreated().expectBody(Long.class).returnResult()
             .getResponseBody());
 
     userIdSet
         .add(webTestClient.post().uri("/api/v1/register").contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(
                 new PasswordRegistrationDto("TestUser3", "loginName3", "paLswOrdha17£@£sh")))
-            .exchange().expectStatus().isCreated().expectBody(Integer.class).returnResult()
+            .exchange().expectStatus().isCreated().expectBody(Long.class).returnResult()
             .getResponseBody());
-
+    
     StepVerifier
         .create(webTestClient.get().uri("/api/v1/users").header("Authorization", "Bearer " + token)
             .accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk().expectHeader()

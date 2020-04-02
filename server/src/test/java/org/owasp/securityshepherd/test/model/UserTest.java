@@ -27,25 +27,19 @@ public class UserTest {
   @Test
   public void build_ValidDisplayName_ReturnsUser() {
     final String validDisplayName = "build_ValidDisplayName";
-
     final User build_ValidDisplayNameLengthUser =
         User.builder().displayName(validDisplayName).build();
-
     assertThat(build_ValidDisplayNameLengthUser, instanceOf(User.class));
-
     assertThat(build_ValidDisplayNameLengthUser.getDisplayName(), is(validDisplayName));
   }
 
   @Test
   public void buildClassId_ValidClassId_Builds() {
-
-    final UserBuilder builder = User.builder().displayName("TestUser");
-
-    builder.classId(1L);
-
-    final User newUser = builder.build();
-
-    assertThat(newUser.getClassId(), is(1));
+    final UserBuilder userBuilder = User.builder().displayName("TestUser");
+    userBuilder.classId(1L);
+    final User user = userBuilder.build();
+    assertThat(user, is(instanceOf(User.class)));
+    assertThat(user.getClassId(), is(1L));
   }
 
   @Test
@@ -67,13 +61,15 @@ public class UserTest {
 
   @Test
   public void buildId_ValidId_Builds() {
-    final UserBuilder builder = User.builder();
+    final UserBuilder userBuilder = User.builder();
 
-    builder.id(12345L);
-    builder.displayName("TestUser");
+    userBuilder.id(12345L);
+    userBuilder.displayName("TestUser");
 
-    assertThat(builder.build(), instanceOf(User.class));
-    assertThat(builder.build().getId(), is(12345));
+    final User user = userBuilder.build();
+
+    assertThat(user, instanceOf(User.class));
+    assertThat(user.getId(), is(12345L));
   }
 
   @Test
@@ -104,12 +100,10 @@ public class UserTest {
     final Long[] testedClassIds = {originalClassId, 0L, 1L, null, -1L, 1000L, -1000L, 123456789L};
     final User newUser = User.builder().displayName(displayName).classId(originalClassId).build();
 
-    assertThat(newUser.getClassId(), is(0));
-
-    for (Long newClassId : testedClassIds) {
-      final User changedUser = newUser.withClassId(newClassId);
-      assertThat(changedUser.getClassId(), is(instanceOf(User.class)));
-      assertThat(changedUser.getClassId(), is(newClassId));
+    for (Long classId : testedClassIds) {
+      final User changedUser = newUser.withClassId(classId);
+      assertThat(changedUser, is(instanceOf(User.class)));
+      assertThat(changedUser.getClassId(), is(classId));
     }
   }
 
@@ -141,14 +135,14 @@ public class UserTest {
   public void withEmail_ValidEmail_ChangesEmail() {
     final String displayName = "withEmail_ValidEmail";
 
-    final String email = "validEmail@example.com";
+    final String originalEmail = "validEmail@example.com";
 
     final String[] testedStrings =
-        {email, null, "", "newEmail@example.com", "e@e", "a", "alongemail@example.com"};
+        {originalEmail, null, "", "newEmail@example.com", "e@e", "a", "alongemail@example.com"};
 
-    final User newUser = User.builder().displayName(displayName).email(email).build();
+    final User newUser = User.builder().displayName(displayName).email(originalEmail).build();
 
-    assertThat(newUser.getEmail(), is(email));
+    assertThat(newUser.getEmail(), is(originalEmail));
 
     User changedUser;
 

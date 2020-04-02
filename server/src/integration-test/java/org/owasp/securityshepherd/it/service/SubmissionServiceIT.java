@@ -74,7 +74,7 @@ public class SubmissionServiceIT {
         .create(Mono.zip(userIdMono, moduleIdMono).flatMap(tuple -> 
         submissionService
             .submit(tuple.getT1(), tuple.getT2(), flag)
-            .map(Submission::getIsValid)))
+            .map(Submission::isValid)))
         .expectNext(true).expectComplete().verify();
   }
 
