@@ -70,7 +70,7 @@ public class UserServiceTest {
   }
 
   @Test
-  @DisplayName("create() must throw exception if display name already exists")
+  @DisplayName("create() must return exception if display name already exists")
   public void create_DisplayNameAlreadyExists_ReturnsDuplicateUserDisplayNameException() {
     final String displayName = "createPasswordUser_DuplicateDisplayName";
 
@@ -85,14 +85,14 @@ public class UserServiceTest {
   }
 
   @Test
-  @DisplayName("create() must throw exception if display name already exists")
-  public void create_EmptyArgument_ThrowsIllegalArgumentException() {
+  @DisplayName("create() must return exception if display name already exists")
+  public void create_EmptyArgument_ReturnsIllegalArgumentException() {
     StepVerifier.create(userService.create("")).expectError(IllegalArgumentException.class)
         .verify();
   }
 
   @Test
-  public void create_NullArgument_ThrowsNullPointerException() {
+  public void create_NullArgument_ReturnsNullPointerException() {
     StepVerifier.create(userService.create(null)).expectError(NullPointerException.class).verify();
   }
 
@@ -118,7 +118,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void createPasswordUser_DuplicateDisplayName_ThrowsDuplicateUserDisplayNameException() {
+  public void createPasswordUser_DuplicateDisplayName_ReturnsDuplicateUserDisplayNameException() {
     final String displayName = "createPasswordUser_DuplicateDisplayName";
     final String loginName = "_createPasswordUser_DuplicateDisplayName_";
 
@@ -135,7 +135,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void createPasswordUser_DuplicateLoginName_ThrowsDuplicateClassNameException() {
+  public void createPasswordUser_DuplicateLoginName_ReturnsDuplicateClassNameException() {
     final String displayName = "createPasswordUser_DuplicateLoginName";
     final String loginName = "_createPasswordUser_DuplicateLoginName_";
 
@@ -154,37 +154,37 @@ public class UserServiceTest {
   }
 
   @Test
-  public void createPasswordUser_EmptyDisplayName_ThrowsIllegalArgumentException() {
+  public void createPasswordUser_EmptyDisplayName_ReturnsIllegalArgumentException() {
     StepVerifier.create(userService.createPasswordUser("", "loginName", "passwordHash"))
         .expectError(IllegalArgumentException.class).verify();
   }
 
   @Test
-  public void createPasswordUser_EmptyLoginName_ThrowsIllegalArgumentException() {
+  public void createPasswordUser_EmptyLoginName_ReturnsIllegalArgumentException() {
     StepVerifier.create(userService.createPasswordUser("displayName", "", "passwordHash"))
         .expectError(IllegalArgumentException.class).verify();
   }
 
   @Test
-  public void createPasswordUser_EmptyPasswordHash_ThrowsIllegalArgumentException() {
+  public void createPasswordUser_EmptyPasswordHash_ReturnsIllegalArgumentException() {
     StepVerifier.create(userService.createPasswordUser("displayName", "loginName", ""))
         .expectError(IllegalArgumentException.class).verify();
   }
 
   @Test
-  public void createPasswordUser_NullDisplayName_ThrowsNullPointerException() {
+  public void createPasswordUser_NullDisplayName_ReturnsNullPointerException() {
     StepVerifier.create(userService.createPasswordUser(null, "loginName", "passwordHash"))
         .expectError(NullPointerException.class).verify();
   }
 
   @Test
-  public void createPasswordUser_NullLoginName_ThrowsNullPointerException() {
+  public void createPasswordUser_NullLoginName_ReturnsNullPointerException() {
     StepVerifier.create(userService.createPasswordUser("displayName", null, "passwordHash"))
         .expectError(NullPointerException.class).verify();
   }
 
   @Test
-  public void createPasswordUser_NullPasswordHash_ThrowsNullPointerException() {
+  public void createPasswordUser_NullPasswordHash_ReturnsNullPointerException() {
     StepVerifier.create(userService.createPasswordUser("displayName", "loginName", null))
         .expectError(NullPointerException.class).verify();
   }
@@ -301,7 +301,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void createUserDetailsByUserId_InvalidUserId_ThrowsInvalidUserIdException() {
+  public void createUserDetailsByUserId_InvalidUserId_ReturnsInvalidUserIdException() {
     for (final int userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.createUserDetailsFromUserId(userId))
           .expectError(InvalidUserIdException.class).verify();
@@ -323,7 +323,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void deleteById_InvalidUserId_ThrowsInvalidUserIdException() {
+  public void deleteById_InvalidUserId_ReturnsInvalidUserIdException() {
     for (final int userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.deleteById(userId)).expectError(InvalidUserIdException.class)
           .verify();
@@ -348,7 +348,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void demote_InvalidUserId_ThrowsInvalidUserIdException() {
+  public void demote_InvalidUserId_ReturnsInvalidUserIdException() {
     for (final int userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.demote(userId)).expectError(InvalidUserIdException.class)
           .verify();
@@ -464,7 +464,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void findById_InvalidUserId_ThrowsInvalidUserIdException() {
+  public void findById_InvalidUserId_ReturnsInvalidUserIdException() {
     for (final int userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.findById(userId)).expectError(InvalidUserIdException.class)
           .verify();
@@ -480,7 +480,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void findByLoginName_EmptyLoginName_ThrowsIllegalArgumentException() {
+  public void findByLoginName_EmptyLoginName_ReturnsIllegalArgumentException() {
     StepVerifier.create(userService.findUserIdByLoginName(""))
         .expectError(IllegalArgumentException.class).verify();
   }
@@ -495,7 +495,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void findByLoginName_NullLoginName_ThrowsNullPointerException() {
+  public void findByLoginName_NullLoginName_ReturnsNullPointerException() {
     StepVerifier.create(userService.findUserIdByLoginName(null))
         .expectError(NullPointerException.class).verify();
   }
@@ -515,7 +515,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void findDisplayNameById_InvalidUserId_ThrowsInvalidUserIdExceptio() {
+  public void findDisplayNameById_InvalidUserId_ReturnsInvalidUserIdExceptio() {
     for (final int userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.findDisplayNameById(userId))
           .expectError(InvalidUserIdException.class).verify();
@@ -547,7 +547,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void findPasswordAuthByUserId_InvalidUserId_ThrowsInvalidUserIdException() {
+  public void findPasswordAuthByUserId_InvalidUserId_ReturnsInvalidUserIdException() {
     for (final int userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.findPasswordAuthByUserId(userId))
           .expectError(InvalidUserIdException.class).verify();
@@ -595,7 +595,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void findUserAuthByUserId_InvalidUserId_ThrowsInvalidUserIdException() {
+  public void findUserAuthByUserId_InvalidUserId_ReturnsInvalidUserIdException() {
     for (final int userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.findUserAuthByUserId(userId))
           .expectError(InvalidUserIdException.class).verify();
@@ -612,7 +612,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void getKeyById_InvalidUserId_ThrowsInvalidUserIdException() {
+  public void getKeyById_InvalidUserId_ReturnsInvalidUserIdException() {
     for (final int userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.findKeyById(userId)).expectError(InvalidUserIdException.class)
           .verify();
@@ -688,7 +688,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void promote_InvalidUserId_ThrowsInvalidUserIdException() {
+  public void promote_InvalidUserId_ReturnsInvalidUserIdException() {
     for (final int userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.promote(userId)).expectError(InvalidUserIdException.class)
           .verify();
@@ -729,7 +729,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void setClassId_InvalidClassId_ThrowsInvalidClassIdException() {
+  public void setClassId_InvalidClassId_ReturnsInvalidClassIdException() {
     for (final int classId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.setClassId(10, classId))
           .expectError(InvalidClassIdException.class).verify();
@@ -737,7 +737,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void setClassId_InvalidUserId_ThrowsInvalidUserIdException() {
+  public void setClassId_InvalidUserId_ReturnsInvalidUserIdException() {
     for (final int userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.setClassId(userId, 61))
           .expectError(InvalidUserIdException.class).verify();
@@ -788,13 +788,13 @@ public class UserServiceTest {
   }
 
   @Test
-  public void setDisplayName_EmptyDisplayName_ThrowsIllegalArgumentException() {
+  public void setDisplayName_EmptyDisplayName_ReturnsIllegalArgumentException() {
     StepVerifier.create(userService.setDisplayName(725, ""))
         .expectError(IllegalArgumentException.class).verify();
   }
 
   @Test
-  public void setDisplayName_InvalidUserId_ThrowsInvalidUserIdException() {
+  public void setDisplayName_InvalidUserId_ReturnsInvalidUserIdException() {
     for (final int userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.setDisplayName(userId, "displayName"))
           .expectError(InvalidUserIdException.class).verify();
@@ -802,7 +802,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void setDisplayName_NullDisplayName_ThrowsNullPointerException() {
+  public void setDisplayName_NullDisplayName_ReturnsNullPointerException() {
     StepVerifier.create(userService.setDisplayName(480, null))
         .expectError(NullPointerException.class).verify();
   }

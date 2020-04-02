@@ -69,7 +69,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void create_DuplicateName_ThrowsDuplicateModuleNameException() {
+  public void create_DuplicateName_ReturnsDuplicateModuleNameException() {
     final String name = "TestModule";
     final Module mockModule = mock(Module.class);
 
@@ -82,13 +82,13 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void create_EmptyName_ThrowsIllegalArgumentException() {
+  public void create_EmptyName_ReturnsIllegalArgumentException() {
     StepVerifier.create(moduleService.create("")).expectError(IllegalArgumentException.class)
         .verify();
   }
 
   @Test
-  public void create_NullName_ThrowsNullPointerException() {
+  public void create_NullName_ReturnsNullPointerException() {
     StepVerifier.create(moduleService.create(null)).expectError(NullPointerException.class)
         .verify();
   }
@@ -137,7 +137,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void findById_InvalidModuleId_ThrowsInvalidModuleIdException() {
+  public void findById_InvalidModuleId_ReturnsInvalidModuleIdException() {
     for (final int moduleId : TestUtils.INVALID_IDS) {
       StepVerifier.create(moduleService.findById(moduleId))
           .expectError(InvalidModuleIdException.class).verify();
@@ -169,7 +169,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void findNameById_InvalidModuleId_ThrowsInvalidModuleIdException() {
+  public void findNameById_InvalidModuleId_ReturnsInvalidModuleIdException() {
     for (final int moduleId : TestUtils.INVALID_IDS) {
       StepVerifier.create(moduleService.findNameById(moduleId))
           .expectError(InvalidModuleIdException.class).verify();
@@ -185,7 +185,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void getDynamicFlag_FlagIsExact_ThrowsInvalidFlagStateException() {
+  public void getDynamicFlag_FlagIsExact_ReturnsInvalidFlagStateException() {
     final Module mockModule = mock(Module.class);
 
     final int mockModuleId = 18;
@@ -269,7 +269,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void getDynamicFlag_FlagNotEnabled_ThrowsInvalidFlagStateException() {
+  public void getDynamicFlag_FlagNotEnabled_ReturnsInvalidFlagStateException() {
     final int mockModuleId = 440;
     final int mockUserId = 332;
 
@@ -296,7 +296,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void getDynamicFlag_NegativeModuleId_ThrowsInvalidModuleIdException() {
+  public void getDynamicFlag_NegativeModuleId_ReturnsInvalidModuleIdException() {
     StepVerifier.create(moduleService.getDynamicFlag(768, -1))
         .expectError(InvalidModuleIdException.class).verify();
     StepVerifier.create(moduleService.getDynamicFlag(768, -1000))
@@ -304,7 +304,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void getDynamicFlag_NegativeUserId_ThrowsInvalidUserIdException() {
+  public void getDynamicFlag_NegativeUserId_ReturnsInvalidUserIdException() {
     StepVerifier.create(moduleService.getDynamicFlag(-1, 302))
         .expectError(InvalidUserIdException.class).verify();
     StepVerifier.create(moduleService.getDynamicFlag(-1000, 302))
@@ -312,13 +312,13 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void getDynamicFlag_ZeroModuleId_ThrowsInvalidModuleIdException() {
+  public void getDynamicFlag_ZeroModuleId_ReturnsInvalidModuleIdException() {
     StepVerifier.create(moduleService.getDynamicFlag(267, 0))
         .expectError(InvalidModuleIdException.class).verify();
   }
 
   @Test
-  public void getDynamicFlag_ZeroUserId_ThrowsInvalidUserIdException() {
+  public void getDynamicFlag_ZeroUserId_ReturnsInvalidUserIdException() {
     StepVerifier.create(moduleService.getDynamicFlag(0, 186))
         .expectError(InvalidUserIdException.class).verify();
   }
@@ -361,7 +361,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void setDynamicFlag_NegativeModuleId_ThrowsInvalidModuleIdException() {
+  public void setDynamicFlag_NegativeModuleId_ReturnsInvalidModuleIdException() {
     StepVerifier.create(moduleService.setDynamicFlag(-1))
         .expectError(InvalidModuleIdException.class).verify();
     StepVerifier.create(moduleService.setDynamicFlag(-1000))
@@ -413,19 +413,19 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void setDynamicFlag_ZeroModuleId_ThrowsInvalidModuleIdException() {
+  public void setDynamicFlag_ZeroModuleId_ReturnsInvalidModuleIdException() {
     StepVerifier.create(moduleService.setDynamicFlag(0)).expectError(InvalidModuleIdException.class)
         .verify();
   }
 
   @Test
-  public void setExactFlag_EmptyExactFlag_ThrowsInvalidFlagException() {
+  public void setExactFlag_EmptyExactFlag_ReturnsInvalidFlagException() {
     StepVerifier.create(moduleService.setExactFlag(1, "")).expectError(InvalidFlagException.class)
         .verify();
   }
 
   @Test
-  public void setExactFlag_InvalidModuleId_ThrowsInvalidModuleIdException() {
+  public void setExactFlag_InvalidModuleId_ReturnsInvalidModuleIdException() {
     StepVerifier.create(moduleService.setExactFlag(0, "flag"))
         .expectError(InvalidModuleIdException.class).verify();
     StepVerifier.create(moduleService.setExactFlag(-1, "flag"))
@@ -435,7 +435,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void setExactFlag_NullExactFlag_ThrowsInvalidFlagException() {
+  public void setExactFlag_NullExactFlag_ReturnsInvalidFlagException() {
     StepVerifier.create(moduleService.setExactFlag(1, null)).expectError(InvalidFlagException.class)
         .verify();
   }
@@ -482,13 +482,13 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void setName_EmptyName_ThrowsIllegalArgumentException() {
+  public void setName_EmptyName_ReturnsIllegalArgumentException() {
     StepVerifier.create(moduleService.setName(847, "")).expectError(IllegalArgumentException.class)
         .verify();
   }
 
   @Test
-  public void setName_InvalidModuleId_ThrowsInvalidModuleIdException() {
+  public void setName_InvalidModuleId_ReturnsInvalidModuleIdException() {
     StepVerifier.create(moduleService.setName(-1, "name"))
         .expectError(InvalidModuleIdException.class).verify();
 
@@ -500,7 +500,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void setName_NullName_ThrowsNullPointerException() {
+  public void setName_NullName_ReturnsNullPointerException() {
     StepVerifier.create(moduleService.setName(204, null)).expectError(NullPointerException.class)
         .verify();
   }
@@ -747,7 +747,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void verifyFlag_FlagNotEnabled_ThrowsInvalidFlagStateException() {
+  public void verifyFlag_FlagNotEnabled_ReturnsInvalidFlagStateException() {
     final int mockUserId = 515;
     final int mockModuleId = 161;
 

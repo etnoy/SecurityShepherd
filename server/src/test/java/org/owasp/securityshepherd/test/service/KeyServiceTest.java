@@ -14,6 +14,12 @@ import reactor.test.StepVerifier;
 @DisplayName("KeyService unit test")
 public class KeyServiceTest {
 
+  @BeforeAll
+  private static void reactorVerbose() {
+    // Tell Reactor to print verbose error messages
+    Hooks.onOperatorDebug();
+  }
+
   private KeyService keyService;
 
   @Test
@@ -35,10 +41,8 @@ public class KeyServiceTest {
     for (int length : testedLengths) {
 
       StepVerifier.create(keyService.generateRandomBytes(length)).assertNext(randomBytes -> {
-
         assertThat(randomBytes, is(notNullValue()));
         assertThat(randomBytes.length, is(length));
-
       }).expectComplete().verify();
     }
   }
@@ -50,18 +54,10 @@ public class KeyServiceTest {
     for (int length : testedLengths) {
 
       StepVerifier.create(keyService.generateRandomString(length)).assertNext(randomBytes -> {
-
         assertThat(randomBytes, is(notNullValue()));
         assertThat(randomBytes.length(), is(length));
-
       }).expectComplete().verify();
     }
-  }
-
-  @BeforeAll
-  private static void reactorVerbose() {
-    // Tell Reactor to print verbose error messages
-    Hooks.onOperatorDebug();
   }
   
   @BeforeEach

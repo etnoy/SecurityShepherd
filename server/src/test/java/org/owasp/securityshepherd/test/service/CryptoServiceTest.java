@@ -14,10 +14,16 @@ import reactor.test.StepVerifier;
 @DisplayName("CryptoService unit test")
 public class CryptoServiceTest {
 
+  @BeforeAll
+  private static void reactorVerbose() {
+    // Tell Reactor to print verbose error messages
+    Hooks.onOperatorDebug();
+  }
+
   CryptoService cryptoService;
 
   @Test
-  public void hmac_NullKey_ThrowsException() throws Exception {
+  public void hmac_NullKey_ThrowsException() {
     final byte[] message = {120, 56, 111, -98, -118, 44, -65, -127, 39, 35};
 
     StepVerifier.create(cryptoService.hmac(null, message)).expectError(NullPointerException.class)
@@ -25,7 +31,7 @@ public class CryptoServiceTest {
   }
 
   @Test
-  public void hmac_NullMessage_ThrowsException() throws Exception {
+  public void hmac_NullMessage_ThrowsNullPointerException() {
     final byte[] key = {-91, -79, 67, -107, 9, 91, 62, -95, 80, 78};
 
     StepVerifier.create(cryptoService.hmac(key, null)).expectError(NullPointerException.class)
@@ -33,7 +39,7 @@ public class CryptoServiceTest {
   }
 
   @Test
-  public void hmac_ValidData_ReturnsHash() throws Exception {
+  public void hmac_ValidData_ReturnsHash() {
     final byte[] key = {-91, -79, 67, -107, 9, 91, 62, -95, 80, 78};
 
     final byte[] message = {120, 56, 111, -98, -118, 44, -65, -127, 39, 35};
@@ -44,20 +50,11 @@ public class CryptoServiceTest {
         -81, 65, -97, -49, 23, 2, 111, 20, 58, 56, -2};
 
     StepVerifier.create(cryptoService.hmac(key, message)).assertNext(hash -> {
-
       assertThat(hash, is(expectedHash));
-
       assertThat(hash.length, greaterThan(1));
-
     }).expectComplete().verify();
   }
 
-  @BeforeAll
-  private static void reactorVerbose() {
-    // Tell Reactor to print verbose error messages
-    Hooks.onOperatorDebug();
-  }
-  
   @BeforeEach
   private void setUp() {
     cryptoService = new CryptoService();
