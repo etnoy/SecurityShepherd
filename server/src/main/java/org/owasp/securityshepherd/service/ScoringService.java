@@ -75,7 +75,7 @@ public final class ScoringService {
     });
   }
   
-  public Flux<Scoreboard> computeScoreboard() {
+  public Flux<Scoreboard> getScoreboard() {
     return submissionDatabaseClient.getScoreboard();
   }
 }

@@ -116,8 +116,8 @@ CREATE TABLE configuration (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
-CREATE VIEW scoreboard AS SELECT 
+CREATE VIEW scoreboard AS SELECT
 	rank() over(order by sum(amount) desc) as 'rank',
-	user_id, 
-	CAST(sum(amount) as UNSIGNED) as score  
+	user_id,
+	CAST(sum(amount) as UNSIGNED) as score
 FROM core.score group by user_id order by 'rank' desc;

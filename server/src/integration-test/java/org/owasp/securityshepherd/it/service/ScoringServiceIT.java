@@ -162,8 +162,7 @@ public class ScoringServiceIT {
 
     scoringService.computeScoresFromSubmissions().blockLast();
 
-    System.out.println("Scoreboard: " + scoringService.computeScoreboard().collectList().block());
-
+    System.out.println("Scoreboard: " + scoringService.getScoreboard().collectList().block());
   }
 
   private void initializeService(Clock injectedClock) {
