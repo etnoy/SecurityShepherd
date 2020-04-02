@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.dto.PasswordRegistrationDto;
 import org.owasp.securityshepherd.dto.SubmissionDto;
-import org.owasp.securityshepherd.service.DatabaseService;
 import org.owasp.securityshepherd.service.ModuleService;
 import org.owasp.securityshepherd.service.UserService;
+import org.owasp.securityshepherd.test.util.TestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,7 +37,7 @@ public class ModuleControllerIT {
   ModuleService moduleService;
 
   @Autowired
-  DatabaseService databaseService;
+  TestService testService;
 
   @Autowired
   private WebTestClient webTestClient;
@@ -117,6 +117,6 @@ public class ModuleControllerIT {
     // Print more verbose errors if something goes wrong with reactor
     Hooks.onOperatorDebug();
 
-    databaseService.clearAll().block();
+    testService.deleteAll().block();
   }
 }

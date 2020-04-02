@@ -34,6 +34,17 @@ CREATE TABLE module (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
+CREATE TABLE correction (
+	id INT AUTO_INCREMENT,
+	user_id INT NOT NULL,
+	amount INT NOT NULL,
+	time TIMESTAMP NOT NULL,
+	description VARCHAR(191),
+  PRIMARY KEY (id),
+  FOREIGN KEY (`user_id`) REFERENCES user(id))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4;
+
 CREATE TABLE score (
 	id INT AUTO_INCREMENT,
 	module_id INT NOT NULL,
@@ -119,5 +130,12 @@ DEFAULT CHARACTER SET = utf8mb4;
 CREATE VIEW scoreboard AS SELECT
 	rank() over(order by sum(amount) desc) as 'rank',
 	user_id,
-	CAST(sum(amount) as UNSIGNED) as score
-FROM core.score group by user_id order by 'rank' desc;
+	CAST(sum(amount) as SIGNED) as score
+FROM 
+(SELECT user_id, amount FROM score 
+UNION ALL
+SELECT user_id, amount FROM correction
+UNION ALL
+SELECT id as user_id, 0 FROM user
+) as all_scores 
+group by user_id order by 'rank' desc;

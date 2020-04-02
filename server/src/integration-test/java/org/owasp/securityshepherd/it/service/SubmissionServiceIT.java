@@ -17,14 +17,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.model.Submission;
+import org.owasp.securityshepherd.repository.CorrectionRepository;
 import org.owasp.securityshepherd.repository.ModuleRepository;
 import org.owasp.securityshepherd.repository.SubmissionDatabaseClient;
 import org.owasp.securityshepherd.repository.SubmissionRepository;
 import org.owasp.securityshepherd.repository.UserRepository;
-import org.owasp.securityshepherd.service.DatabaseService;
 import org.owasp.securityshepherd.service.ModuleService;
 import org.owasp.securityshepherd.service.SubmissionService;
 import org.owasp.securityshepherd.service.UserService;
+import org.owasp.securityshepherd.test.util.TestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -59,13 +60,16 @@ public class SubmissionServiceIT {
   SubmissionRepository submissionRepository;
 
   @Autowired
+  CorrectionRepository correctionRepository;
+
+  @Autowired
   UserRepository userRepository;
 
   @Autowired
   SubmissionDatabaseClient submissionDatabaseClient;
 
   @Autowired
-  DatabaseService databaseService;
+  TestService testService;
 
   @Test
   public void submitFlag_ValidExactFlag_Success() throws Exception {
@@ -160,8 +164,8 @@ public class SubmissionServiceIT {
   }
 
   private void initializeService(Clock injectedClock) {
-    submissionService = new SubmissionService(moduleService, submissionRepository, injectedClock,
-        submissionDatabaseClient);
+    submissionService = new SubmissionService(moduleService, submissionRepository,
+        correctionRepository, injectedClock, submissionDatabaseClient);
   }
 
   @BeforeEach
@@ -172,6 +176,6 @@ public class SubmissionServiceIT {
     // Initialize services with the real clock
     initializeService(clock);
 
-    databaseService.clearAll().block();
+    testService.deleteAll().block();
   }
 }

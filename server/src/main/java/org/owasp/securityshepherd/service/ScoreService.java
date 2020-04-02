@@ -7,6 +7,7 @@ import org.owasp.securityshepherd.model.Score;
 import org.owasp.securityshepherd.model.ModulePoint.ModulePointBuilder;
 import org.owasp.securityshepherd.model.Score.ScoreBuilder;
 import org.owasp.securityshepherd.model.Scoreboard;
+import org.owasp.securityshepherd.repository.CorrectionRepository;
 import org.owasp.securityshepherd.repository.ModulePointRepository;
 import org.owasp.securityshepherd.repository.ModuleRepository;
 import org.owasp.securityshepherd.repository.ScoreRepository;
@@ -19,18 +20,21 @@ import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
 @Service
-public final class ScoringService {
+public final class ScoreService {
 
   private final ModulePointRepository modulePointRepository;
 
   private final SubmissionDatabaseClient submissionDatabaseClient;
 
   private final ScoreRepository scoreRepository;
-  
+
   private final ModuleRepository moduleRepository;
 
+  private final CorrectionRepository correctionRepository;
+
   public Mono<Void> deleteAll() {
-    return modulePointRepository.deleteAll();
+    return scoreRepository.deleteAll().then(correctionRepository.deleteAll())
+        .then(modulePointRepository.deleteAll());
   }
 
   public Mono<ModulePoint> setModuleScore(final int moduleId, final int rank, final int score) {
@@ -74,7 +78,7 @@ public final class ScoringService {
       return scoreRepository.saveAll(scores);
     });
   }
-  
+
   public Flux<Scoreboard> getScoreboard() {
     return submissionDatabaseClient.getScoreboard();
   }

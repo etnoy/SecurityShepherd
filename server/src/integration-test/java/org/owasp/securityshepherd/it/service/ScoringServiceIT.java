@@ -13,6 +13,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.owasp.securityshepherd.model.Scoreboard;
+import org.owasp.securityshepherd.repository.CorrectionRepository;
 import org.owasp.securityshepherd.repository.ModulePointRepository;
 import org.owasp.securityshepherd.repository.ModuleRepository;
 import org.owasp.securityshepherd.repository.ScoreRepository;
@@ -20,17 +22,18 @@ import org.owasp.securityshepherd.repository.SubmissionDatabaseClient;
 import org.owasp.securityshepherd.repository.SubmissionRepository;
 import org.owasp.securityshepherd.service.ConfigurationService;
 import org.owasp.securityshepherd.service.CryptoService;
-import org.owasp.securityshepherd.service.DatabaseService;
 import org.owasp.securityshepherd.service.KeyService;
 import org.owasp.securityshepherd.service.ModuleService;
-import org.owasp.securityshepherd.service.ScoringService;
+import org.owasp.securityshepherd.service.ScoreService;
 import org.owasp.securityshepherd.service.SubmissionService;
 import org.owasp.securityshepherd.service.UserService;
+import org.owasp.securityshepherd.test.util.TestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Hooks;
+import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -51,10 +54,13 @@ public class ScoringServiceIT {
   SubmissionService submissionService;
 
   @Autowired
-  ScoringService scoringService;
+  ScoreService scoringService;
 
   @Autowired
   SubmissionDatabaseClient submissionDatabaseClient;
+
+  @Autowired
+  CorrectionRepository correctionRepository;
 
   @Autowired
   ModuleRepository moduleRepository;
@@ -69,7 +75,7 @@ public class ScoringServiceIT {
   Clock clock;
 
   @Autowired
-  DatabaseService databaseService;
+  TestService testService;
 
   @Autowired
   ConfigurationService configurationService;
@@ -160,14 +166,29 @@ public class ScoringServiceIT {
       submissionService.submit(currentUserId, moduleId3, currentFlag).block();
     }
 
+    final Clock correctionClock =
+        Clock.fixed(Instant.parse("2000-01-04T10:00:00.00Z"), ZoneId.of("Z"));
+    initializeService(correctionClock);
+    submissionService.submitCorrection(userIds.get(2), -1000, "Penalty for cheating").block();
+    initializeService(Clock.offset(correctionClock, Duration.ofHours(10)));
+    submissionService.submitCorrection(userIds.get(1), 100, "Thanks for the bribe").block();
     scoringService.computeScoresFromSubmissions().blockLast();
 
-    System.out.println("Scoreboard: " + scoringService.getScoreboard().collectList().block());
+    StepVerifier.create(scoringService.getScoreboard())
+        .expectNext(Scoreboard.builder().rank(1).userId(userIds.get(1)).score(251L).build())
+        .expectNext(Scoreboard.builder().rank(2).userId(userIds.get(6)).score(231L).build())
+        .expectNext(Scoreboard.builder().rank(3).userId(userIds.get(5)).score(201L).build())
+        .expectNext(Scoreboard.builder().rank(4).userId(userIds.get(0)).score(171L).build())
+        .expectNext(Scoreboard.builder().rank(4).userId(userIds.get(4)).score(171L).build())
+        .expectNext(Scoreboard.builder().rank(6).userId(userIds.get(3)).score(0L).build())
+        .expectNext(Scoreboard.builder().rank(6).userId(userIds.get(7)).score(0L).build())
+        .expectNext(Scoreboard.builder().rank(8).userId(userIds.get(2)).score(-799L).build())
+        .expectComplete().verify();
   }
 
   private void initializeService(Clock injectedClock) {
-    submissionService = new SubmissionService(moduleService, submissionRepository, injectedClock,
-        submissionDatabaseClient);
+    submissionService = new SubmissionService(moduleService, submissionRepository,
+        correctionRepository, injectedClock, submissionDatabaseClient);
   }
 
   @BeforeEach
@@ -175,6 +196,6 @@ public class ScoringServiceIT {
     // Print more verbose errors if something goes wrong with reactor
     Hooks.onOperatorDebug();
 
-    databaseService.clearAll().block();
+    testService.deleteAll().block();
   }
 }

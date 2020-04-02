@@ -5,8 +5,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.model.User;
-import org.owasp.securityshepherd.service.DatabaseService;
 import org.owasp.securityshepherd.service.UserService;
+import org.owasp.securityshepherd.test.util.TestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,7 +24,7 @@ public class UserIT {
   UserService userService;
 
   @Autowired
-  DatabaseService databaseService;
+  TestService testService;
 
   @Test
   public void createPasswordUser_ValidData_RepositoryFindsCorrectUser() throws Exception {
@@ -40,7 +40,7 @@ public class UserIT {
     // Print more verbose errors if something goes wrong with reactor
     Hooks.onOperatorDebug();
 
-    databaseService.clearAll().block();
+    testService.deleteAll().block();
   }
 
 }

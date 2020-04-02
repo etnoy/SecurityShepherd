@@ -1,7 +1,7 @@
 package org.owasp.securityshepherd.controller;
 
 import org.owasp.securityshepherd.model.Scoreboard;
-import org.owasp.securityshepherd.service.ScoringService;
+import org.owasp.securityshepherd.service.ScoreService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,7 +13,7 @@ import reactor.core.publisher.Flux;
 @RequestMapping("/api/v1/")
 public class ScoreboardController {
 
-  private final ScoringService scoringService;
+  private final ScoreService scoringService;
 
   @PostMapping(path = "scoreboard")
   public Flux<Scoreboard> scoreboard() {

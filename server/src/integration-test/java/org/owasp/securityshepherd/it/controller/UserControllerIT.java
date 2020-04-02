@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.dto.PasswordRegistrationDto;
 import org.owasp.securityshepherd.model.User;
-import org.owasp.securityshepherd.service.DatabaseService;
 import org.owasp.securityshepherd.service.UserService;
+import org.owasp.securityshepherd.test.util.TestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,11 +38,10 @@ public class UserControllerIT {
   private WebTestClient webTestClient;
   
   @Autowired
-  DatabaseService databaseService;
+  TestService testService;
 
   @Test
   public void getUserList_AuthenticatedUser_Forbidden() {
-
     final String loginName = "test";
     final String hashedPassword = "$2y$12$53B6QcsGwF3Os1GVFUFSQOhIPXnWFfuEkRJdbknFWnkXfUBMUKhaW";
 
@@ -58,12 +57,10 @@ public class UserControllerIT {
 
     webTestClient.get().uri("/api/v1/users").header("Authorization", "Bearer " + token)
         .accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isForbidden();
-
   }
 
   @Test
   public void getUserList_UserPromotedToAdmin_Success() {
-
     final String loginName = "test";
     final String hashedPassword = "$2y$12$53B6QcsGwF3Os1GVFUFSQOhIPXnWFfuEkRJdbknFWnkXfUBMUKhaW";
 
@@ -87,12 +84,10 @@ public class UserControllerIT {
     // Now the user should be able to see user list
     webTestClient.get().uri("/api/v1/users").header("Authorization", "Bearer " + token)
     .accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk();
-    
   }
 
   @Test
   public void listUsers_UsersExist_ReturnsUserList() throws Exception {
-
     final String loginName = "test";
     final String password = "paLswOrdha17£@£sh";
 
@@ -139,12 +134,10 @@ public class UserControllerIT {
             .map(User::getId))
         .recordWith(HashSet::new).thenConsumeWhile(x -> true)
         .expectRecordedMatches(x -> x.equals(userIdSet)).expectComplete().verify();
-
   }
 
   @Test
   public void register_ValidData_ReturnsValidUser() throws Exception {
-
     final String loginName = "test";
     final String password = "paLswOrdha17£@£sh";
 
@@ -177,7 +170,6 @@ public class UserControllerIT {
       assertThat(getData, is(userService.findById(userId).block()));
 
     }).expectComplete().verify();
-
   }
 
   @BeforeEach
@@ -185,7 +177,6 @@ public class UserControllerIT {
     // Print more verbose errors if something goes wrong with reactor
     Hooks.onOperatorDebug();
 
-    databaseService.clearAll().block();
+    testService.deleteAll().block();
   }
-
 }
