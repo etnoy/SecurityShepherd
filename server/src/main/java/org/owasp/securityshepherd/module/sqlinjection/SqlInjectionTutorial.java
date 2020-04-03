@@ -29,7 +29,7 @@ public class SqlInjectionTutorial {
             + "%5C%3B" + flag);
 
     final Mono<DatabaseClient> databaseClientMono =
-        connectionUrlMono.map(url -> ConnectionFactories.get(url.replaceAll(" ", "%20")))
+        connectionUrlMono.map(url -> ConnectionFactories.get(url.replace(" ", "%20")))
             .map(DatabaseClient::create);
 
     final String injectionQuery =
