@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.owasp.securityshepherd.dto.PasswordRegistrationDto;
 import org.owasp.securityshepherd.dto.SubmissionDto;
 import org.owasp.securityshepherd.service.ModuleService;
@@ -28,6 +30,7 @@ import reactor.test.StepVerifier;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
+@Execution(ExecutionMode.SAME_THREAD)
 @DisplayName("ModuleController integration test")
 public class ModuleControllerIT {
   @BeforeAll

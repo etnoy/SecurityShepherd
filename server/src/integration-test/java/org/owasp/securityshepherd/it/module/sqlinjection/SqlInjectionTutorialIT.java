@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.model.Submission;
 import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorial;
@@ -23,6 +25,7 @@ import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
+@Execution(ExecutionMode.SAME_THREAD)
 @DisplayName("SqlInjectionTutorial integration test")
 public class SqlInjectionTutorialIT {
 

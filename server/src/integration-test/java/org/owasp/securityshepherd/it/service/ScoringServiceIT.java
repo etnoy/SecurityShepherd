@@ -14,6 +14,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.owasp.securityshepherd.model.Scoreboard;
 import org.owasp.securityshepherd.repository.CorrectionRepository;
 import org.owasp.securityshepherd.repository.ModulePointRepository;
@@ -28,7 +30,6 @@ import org.owasp.securityshepherd.service.SubmissionService;
 import org.owasp.securityshepherd.service.UserService;
 import org.owasp.securityshepherd.test.util.TestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Hooks;
@@ -36,7 +37,7 @@ import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@AutoConfigureWebTestClient
+@Execution(ExecutionMode.SAME_THREAD)
 @DisplayName("ScoringService integration test")
 public class ScoringServiceIT {
   @BeforeAll
