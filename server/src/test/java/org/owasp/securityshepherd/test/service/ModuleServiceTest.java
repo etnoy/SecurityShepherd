@@ -251,7 +251,7 @@ public class ModuleServiceTest {
     when(cryptoService.hmac(mockedTotalKey, mockedBaseFlag.getBytes()))
         .thenReturn(Mono.just(mockedHmacOutput));
     when(keyService.convertByteKeyToString(mockedHmacOutput)).thenReturn(correctFlag);
-    when(keyService.base64Encode(mockedHmacOutput)).thenReturn(correctFlag);
+    when(keyService.byteFlagToString(mockedHmacOutput)).thenReturn(correctFlag);
     
     StepVerifier.create(moduleService.getDynamicFlag(mockUserId, mockModuleId))
         .expectNext(correctFlag).expectComplete().verify();
@@ -573,7 +573,7 @@ public class ModuleServiceTest {
     when(keyService.convertByteKeyToString(mockedHmacOutput)).thenReturn(validFlag);
 
     when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
-    when(keyService.base64Encode(mockedHmacOutput)).thenReturn(validFlag);
+    when(keyService.byteFlagToString(mockedHmacOutput)).thenReturn(validFlag);
 
     StepVerifier.create(moduleService.verifyFlag(mockUserId, mockModuleId, validFlag))
         .expectNext(true).expectComplete().verify();
@@ -707,7 +707,7 @@ public class ModuleServiceTest {
 
     when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
 
-    when(keyService.base64Encode(mockedHmacOutput)).thenReturn(validFlag);
+    when(keyService.byteFlagToString(mockedHmacOutput)).thenReturn(validFlag);
 
     StepVerifier.create(moduleService.verifyFlag(mockUserId, mockModuleId, ""))
         // We expect this to return false
@@ -725,7 +725,7 @@ public class ModuleServiceTest {
     verify(configurationService, atLeast(1)).getServerKey();
     verify(cryptoService, times(2)).hmac(mockedTotalKey, validFlag.getBytes());
     verify(userService, times(2)).findKeyById(mockUserId);
-    verify(keyService, times(2)).base64Encode(mockedHmacOutput);
+    verify(keyService, times(2)).byteFlagToString(mockedHmacOutput);
   }
 
   @Test
@@ -826,7 +826,7 @@ public class ModuleServiceTest {
 
     when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
 
-    when(keyService.base64Encode(mockedHmacOutput)).thenReturn(validFlag);
+    when(keyService.byteFlagToString(mockedHmacOutput)).thenReturn(validFlag);
     
     StepVerifier.create(moduleService.verifyFlag(mockUserId, mockModuleId, "invalidFlag"))
         //

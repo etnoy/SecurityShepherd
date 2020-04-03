@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.model.Submission;
 import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorial;
 import org.owasp.securityshepherd.service.ModuleService;
@@ -54,35 +55,61 @@ public class SqlInjectionTutorialIT {
   }
 
   @Test
-  public void test() {
-    final Long userId1 = userService.create("TestUser1").block();
-    final Long userId2 = userService.create("TestUser2").block();
+  public void submitSql_QueryWithNoMatches_EmptyResultSet() {
+    final Long userId = userService.create("TestUser1").block();
+
+    final Long moduleId = moduleService.create("Sql Injection Tutorial").map(Module::getId).block();
+
+    moduleService.setDynamicFlag(moduleId).block();
+
+    StepVerifier.create(sqlInjectionTutorial.submitSql(userId, moduleId, "test")).expectComplete()
+        .verify();
+  }
+
+  @Test
+  public void submitSql_CorrectAttackQuery_ReturnsWholeDatabase() {
+    final Long userId = userService.create("TestUser1").block();
 
     final long moduleId = moduleService.create("Sql Injection Tutorial").block().getId();
 
     moduleService.setDynamicFlag(moduleId).block();
 
-    scoreService.setModuleScore(moduleId, 0, 100).block();
-    scoreService.setModuleScore(moduleId, 1, 10).block();
-    scoreService.setModuleScore(moduleId, 2, 5).block();
-
-    StepVerifier.create(sqlInjectionTutorial.submitSql(userId1, moduleId, "test")).expectComplete()
-        .verify();
-
-    StepVerifier.create(sqlInjectionTutorial.submitSql(userId1, moduleId, "OR 1=1"))
-        .expectNextCount(1).expectComplete().verify();
-
-    StepVerifier.create(sqlInjectionTutorial.submitSql(userId2, moduleId, "' OR '1' = '1"))
+    StepVerifier.create(sqlInjectionTutorial.submitSql(userId, moduleId, "' OR '1' = '1"))
         .expectNextCount(6).expectComplete().verify();
+  }
+
+  @Test
+  public void submitSql_CorrectAttackQuery_ReturnedFlagIsCorrect() {
+    final Long userId = userService.create("TestUser1").block();
+
+    final long moduleId = moduleService.create("Sql Injection Tutorial").block().getId();
+
+    moduleService.setDynamicFlag(moduleId).block();
 
     final Mono<String> flagVerificationMono = sqlInjectionTutorial
-        .submitSql(userId1, moduleId, "' OR '1' = '1").skip(5).next().map(this::extractFlagFromRow);
+        .submitSql(userId, moduleId, "' OR '1' = '1").skip(5).next().map(this::extractFlagFromRow);
 
     // Submit the flag we got from the sql injection and make sure it validates
-    StepVerifier.create(
-        flagVerificationMono.flatMap(flag -> submissionService.submit(userId1, moduleId, flag))
-            .map(Submission::isValid))
+    StepVerifier.create(flagVerificationMono
+        .flatMap(flag -> submissionService.submit(userId, moduleId, flag)).map(Submission::isValid))
         .expectNext(true).expectComplete().verify();
+  }
+
+  @Test
+  public void submitSql_CorrectAttackQuery_ModifiedFlagIsWrong() {
+    final Long userId = userService.create("TestUser1").block();
+
+    final long moduleId = moduleService.create("Sql Injection Tutorial").block().getId();
+
+    moduleService.setDynamicFlag(moduleId).block();
+
+    final Mono<String> flagVerificationMono = sqlInjectionTutorial
+        .submitSql(userId, moduleId, "' OR '1' = '1").skip(5).next().map(this::extractFlagFromRow);
+
+    // Take the flag we got from the tutorial, modify it, and expect validation to fail
+    StepVerifier.create(flagVerificationMono
+        .flatMap(flag -> submissionService.submit(userId, moduleId, flag + "wrong"))
+        .map(Submission::isValid)).expectNext(false).expectComplete().verify();
   }
 
   @BeforeEach

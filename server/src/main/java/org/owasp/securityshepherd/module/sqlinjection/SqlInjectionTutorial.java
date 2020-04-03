@@ -17,27 +17,33 @@ public class SqlInjectionTutorial {
 
   public Flux<Map<String, Object>> submitSql(final long userId, final long moduleId,
       final String usernameQuery) {
-
     // Generate a dynamic flag and add it as a row to the database creation script. The flag is
     // different for every user to prevent copying flags
-    final Mono<String> insertedFlag = moduleService.getDynamicFlag(userId, moduleId).map(
-        flag -> "INSERT INTO sqlinjection.users values ('666', 'Union Jack', 'Well done, flag is "
-            + flag + "')");
+    final Mono<String> insertionQuery = moduleService.getDynamicFlag(userId, moduleId)
+        .map(flag -> String.format(
+            "INSERT INTO sqlinjection.users values ('666', 'Union Jack', 'Well done, flag is %s')",
+            flag));
 
-    // Create a H2SQL in-memory database that loads the data needed for this tutorial.
-    final Mono<String> connectionUrlMono = insertedFlag
-        .map(flag -> "r2dbc:h2:mem:///sql-injection-tutorial-for-uid" + Long.toString(userId)
-            + ";INIT=RUNSCRIPT FROM 'classpath:module/sql-injection-tutorial.sql'"
-            // The following inserts URL encoded backslash and semicolon, i.e. "\;"
-            + "%5C%3B" + flag);
+    // Create a connection URL to a H2SQL in-memory database. Each submission call creates a
+    // completely new instance of this database.
+    final Mono<String> connectionUrl = insertionQuery
+        .map(query -> String.format("r2dbc:h2:mem:///sql-injection-tutorial-for-uid%d;"
+            + "INIT=RUNSCRIPT FROM 'classpath:module/sql-injection-tutorial.sql'" +
+            // %5C%3B is a backslash and semicolon URL-formatted
+            "%s%s", userId, "%5C%3B", query));
 
     // Create a DatabaseClient that allows us to manually interact with the database
-    final Mono<DatabaseClient> databaseClientMono = connectionUrlMono
-        .map(url -> ConnectionFactories.get(url.replace(" ", "%20"))).map(DatabaseClient::create);
+    final Mono<DatabaseClient> databaseClientMono = connectionUrl
+        // We have to replace all spaces with URL-encoded spaces for r2dbc to work
+        .map(url -> url.replace(" ", "%20"))
+        // Create a connection factory from the URL
+        .map(ConnectionFactories::get)
+        // Create a database client from the connection factory
+        .map(DatabaseClient::create);
 
     // Create the database query. Yes, this is vulnerable to SQL injection. That's the whole point.
     final String injectionQuery =
-        "SELECT * FROM sqlinjection.users WHERE name = '" + usernameQuery + "'";
+        String.format("SELECT * FROM sqlinjection.users WHERE name = '%s'", usernameQuery);
 
     // Return all rows that match
     return databaseClientMono.flatMapMany(client -> client.execute(injectionQuery).fetch().all());

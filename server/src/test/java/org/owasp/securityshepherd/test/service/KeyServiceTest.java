@@ -24,7 +24,7 @@ public class KeyServiceTest {
 
   @Test
   public void convertByteKeyToString_ValidInput_ReturnsExpectedOutput() {
-    assertThat(keyService.convertStringKeyToBytes("thisisaflag"),
+    assertThat(keyService.convertStringFlagToBytes("thisisaflag"),
         is(new byte[] {116, 104, 105, 115, 105, 115, 97, 102, 108, 97, 103}));
   }
 
