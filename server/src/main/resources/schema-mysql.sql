@@ -99,7 +99,9 @@ CREATE TABLE submission (
     time DATETIME NULL DEFAULT NULL,
     is_valid BOOLEAN NOT NULL,
     flag VARCHAR(191) NOT NULL,
+    valid_or_null  boolean as (if(is_valid = true,true, null)) stored,
     PRIMARY KEY (id),
+    UNIQUE KEY (user_id, module_id, valid_or_null),
     FOREIGN KEY (`user_id`) REFERENCES user(id),
     FOREIGN KEY (`module_id`) REFERENCES module(id))
 ENGINE = InnoDB

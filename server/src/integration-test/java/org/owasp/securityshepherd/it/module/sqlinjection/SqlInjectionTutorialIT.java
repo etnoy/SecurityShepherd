@@ -78,6 +78,7 @@ public class SqlInjectionTutorialIT {
     final Mono<String> flagVerificationMono = sqlInjectionTutorial
         .submitSql(userId1, moduleId, "' OR '1' = '1").skip(5).next().map(this::extractFlagFromRow);
 
+    // Submit the flag we got from the sql injection and make sure it validates
     StepVerifier.create(
         flagVerificationMono.flatMap(flag -> submissionService.submit(userId1, moduleId, flag))
             .map(Submission::isValid))
