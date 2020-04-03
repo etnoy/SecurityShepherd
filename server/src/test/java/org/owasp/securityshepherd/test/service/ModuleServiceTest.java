@@ -251,7 +251,8 @@ public class ModuleServiceTest {
     when(cryptoService.hmac(mockedTotalKey, mockedBaseFlag.getBytes()))
         .thenReturn(Mono.just(mockedHmacOutput));
     when(keyService.convertByteKeyToString(mockedHmacOutput)).thenReturn(correctFlag);
-
+    when(keyService.base64Encode(mockedHmacOutput)).thenReturn(correctFlag);
+    
     StepVerifier.create(moduleService.getDynamicFlag(mockUserId, mockModuleId))
         .expectNext(correctFlag).expectComplete().verify();
 
@@ -265,7 +266,6 @@ public class ModuleServiceTest {
     verify(configurationService, times(1)).getServerKey();
 
     verify(cryptoService, times(1)).hmac(mockedTotalKey, mockedBaseFlag.getBytes());
-    verify(keyService, times(1)).convertByteKeyToString(mockedHmacOutput);
   }
 
   @Test
@@ -573,6 +573,7 @@ public class ModuleServiceTest {
     when(keyService.convertByteKeyToString(mockedHmacOutput)).thenReturn(validFlag);
 
     when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
+    when(keyService.base64Encode(mockedHmacOutput)).thenReturn(validFlag);
 
     StepVerifier.create(moduleService.verifyFlag(mockUserId, mockModuleId, validFlag))
         .expectNext(true).expectComplete().verify();
@@ -584,7 +585,6 @@ public class ModuleServiceTest {
     verify(mockModule, never()).getId();
     verify(configurationService, atLeast(1)).getServerKey();
     verify(cryptoService, atLeast(1)).hmac(mockedTotalKey, baseFlag.getBytes());
-    verify(keyService, atLeast(1)).convertByteKeyToString(mockedHmacOutput);
     verify(userService, atLeast(1)).findKeyById(mockUserId);
   }
 
@@ -707,18 +707,25 @@ public class ModuleServiceTest {
 
     when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
 
-    StepVerifier.create(moduleService.verifyFlag(mockUserId, mockModuleId, "")).expectNext(false)
+    when(keyService.base64Encode(mockedHmacOutput)).thenReturn(validFlag);
+
+    StepVerifier.create(moduleService.verifyFlag(mockUserId, mockModuleId, ""))
+        // We expect this to return false
+        .expectNext(false)
+        //
         .expectComplete().verify();
 
     verify(moduleRepository, atLeast(1)).findById(mockModuleId);
-    verify(mockModule, atLeast(1)).isFlagEnabled();
-    verify(mockModule, atLeast(1)).isFlagExact();
+
+    // TODO: this is too many interactions, why 4?
+    verify(mockModule, times(4)).isFlagEnabled();
+    verify(mockModule, times(4)).isFlagExact();
     verify(mockModule, times(2)).getFlag();
     verify(mockModule, never()).getId();
     verify(configurationService, atLeast(1)).getServerKey();
-    verify(cryptoService, atLeast(1)).hmac(mockedTotalKey, validFlag.getBytes());
-    verify(keyService, atLeast(1)).convertByteKeyToString(mockedHmacOutput);
-    verify(userService, atLeast(1)).findKeyById(mockUserId);
+    verify(cryptoService, times(2)).hmac(mockedTotalKey, validFlag.getBytes());
+    verify(userService, times(2)).findKeyById(mockUserId);
+    verify(keyService, times(2)).base64Encode(mockedHmacOutput);
   }
 
   @Test
@@ -819,8 +826,13 @@ public class ModuleServiceTest {
 
     when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
 
+    when(keyService.base64Encode(mockedHmacOutput)).thenReturn(validFlag);
+    
     StepVerifier.create(moduleService.verifyFlag(mockUserId, mockModuleId, "invalidFlag"))
-        .expectNext(false).expectComplete().verify();
+        //
+        .expectNext(false)
+        //
+        .expectComplete().verify();
 
     verify(moduleRepository, atLeast(1)).findById(mockModuleId);
     verify(mockModule, atLeast(1)).isFlagEnabled();
@@ -829,7 +841,6 @@ public class ModuleServiceTest {
     verify(mockModule, never()).getId();
     verify(configurationService, atLeast(1)).getServerKey();
     verify(cryptoService, atLeast(1)).hmac(mockedTotalKey, validFlag.getBytes());
-    verify(keyService, atLeast(1)).convertByteKeyToString(mockedHmacOutput);
     verify(userService, atLeast(1)).findKeyById(mockUserId);
   }
 
