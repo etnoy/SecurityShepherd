@@ -25,13 +25,13 @@ public class SqlInjectionTutorial {
             + flag + "')");
 
     // Create a H2SQL in-memory database that loads the data needed for this tutorial.
-    final Mono<String> connectionUrlMono =
-        insertedFlag.map(flag -> "r2dbc:h2:mem:///sql-injection-tutorial-for-uid"
-            + Long.toString(userId) + ";INIT=RUNSCRIPT FROM 'classpath:module/sql-injection.sql'"
+    final Mono<String> connectionUrlMono = insertedFlag
+        .map(flag -> "r2dbc:h2:mem:///sql-injection-tutorial-for-uid" + Long.toString(userId)
+            + ";INIT=RUNSCRIPT FROM 'classpath:module/sql-injection-tutorial.sql'"
             // The following inserts URL encoded backslash and semicolon, i.e. "\;"
             + "%5C%3B" + flag);
 
-    // Create a databaseclient that interacts with the database
+    // Create a DatabaseClient that allows us to manually interact with the database
     final Mono<DatabaseClient> databaseClientMono = connectionUrlMono
         .map(url -> ConnectionFactories.get(url.replace(" ", "%20"))).map(DatabaseClient::create);
 
