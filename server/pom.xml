@@ -66,6 +66,11 @@
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/io.r2dbc/r2dbc-h2 -->
+		<dependency>
+			<groupId>io.r2dbc</groupId>
+			<artifactId>r2dbc-h2</artifactId>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.github.spotbugs/spotbugs -->
 		<dependency>
 			<groupId>com.github.spotbugs</groupId>

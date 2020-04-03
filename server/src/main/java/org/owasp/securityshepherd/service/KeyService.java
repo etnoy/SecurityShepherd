@@ -3,7 +3,7 @@ package org.owasp.securityshepherd.service;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-
+import java.util.Base64;
 import org.owasp.securityshepherd.exception.RNGException;
 import org.springframework.stereotype.Service;
 
@@ -23,9 +23,15 @@ public final class KeyService {
   }
 
   public String convertByteKeyToString(final byte[] keyBytes) {
-
     return new String(keyBytes, StandardCharsets.US_ASCII);
+  }
 
+  public String base64Encode(final byte[] bytes) {
+    return Base64.getUrlEncoder().encodeToString(bytes);
+  }
+
+  public byte[] base64Decode(final String string) {
+    return Base64.getUrlDecoder().decode(string);
   }
 
   public byte[] convertStringKeyToBytes(final String keyString) {

@@ -108,7 +108,7 @@ public final class ModuleService {
 
     return keyMono.zipWith(baseFlag)
         .flatMap(tuple -> cryptoService.hmac(tuple.getT1(), tuple.getT2()))
-        .map(keyService::convertByteKeyToString);
+        .map(keyService::base64Encode);
   }
 
   private Exception moduleIdMustBePositive() {
