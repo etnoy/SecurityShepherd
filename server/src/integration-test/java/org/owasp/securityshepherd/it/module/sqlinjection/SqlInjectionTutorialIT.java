@@ -1,4 +1,4 @@
-package org.owasp.securityshepherd.it.module;
+package org.owasp.securityshepherd.it.module.sqlinjection;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +18,7 @@ import reactor.test.StepVerifier;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @DisplayName("SqlInjectionTutorial integration test")
-public class SqlModuleIT {
+public class SqlInjectionTutorialIT {
 
   @Autowired
   SqlInjectionTutorial sqlInjectionTutorial;
@@ -47,11 +47,14 @@ public class SqlModuleIT {
 
     moduleService.setDynamicFlag(moduleId).block();
 
-    StepVerifier.create(sqlInjectionTutorial.submitSql(userId1, moduleId, "OR 1=1")).expectNextCount(1)
-        .expectComplete().verify();
+    StepVerifier.create(sqlInjectionTutorial.submitSql(userId1, moduleId, "test")).expectComplete()
+        .verify();
 
-    StepVerifier.create(sqlInjectionTutorial.submitSql(userId2, moduleId, "' OR '1' = '1")).expectNextCount(6)
-        .expectComplete().verify();
+    StepVerifier.create(sqlInjectionTutorial.submitSql(userId1, moduleId, "OR 1=1"))
+        .expectNextCount(1).expectComplete().verify();
+
+    StepVerifier.create(sqlInjectionTutorial.submitSql(userId2, moduleId, "' OR '1' = '1"))
+        .expectNextCount(6).expectComplete().verify();
   }
 
   @BeforeEach
