@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
 @SpringBootApplication
 @EnableWebFluxSecurity
 public class SecurityShepherdApplication {
-
   public static void main(String[] args) throws Throwable {
     SpringApplication.run(SecurityShepherdApplication.class, args);
   }
@@ -18,5 +17,4 @@ public class SecurityShepherdApplication {
   public Clock clock() {
       return Clock.systemDefaultZone();
   }
-  
 }

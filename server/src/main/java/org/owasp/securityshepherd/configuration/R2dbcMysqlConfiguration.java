@@ -23,7 +23,6 @@ public class R2dbcMysqlConfiguration {
   @Bean
   @Primary
   public ConnectionFactoryInitializer mySqlInitializer(ConnectionFactory connectionFactory) {
-
     ConnectionFactoryInitializer initializer = new ConnectionFactoryInitializer();
     initializer.setConnectionFactory(connectionFactory);
 
