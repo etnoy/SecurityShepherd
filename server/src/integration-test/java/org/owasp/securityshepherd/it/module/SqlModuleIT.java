@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.owasp.securityshepherd.module.SqlModule;
+import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorial;
 import org.owasp.securityshepherd.service.ModuleService;
 import org.owasp.securityshepherd.service.UserService;
 import org.owasp.securityshepherd.test.util.TestUtils;
@@ -17,10 +17,11 @@ import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@DisplayName("SqlModule integration test")
+@DisplayName("SqlInjectionTutorial integration test")
 public class SqlModuleIT {
 
-  SqlModule sqlModule;
+  @Autowired
+  SqlInjectionTutorial sqlInjectionTutorial;
 
   @Autowired
   TestUtils testUtils;
@@ -38,7 +39,7 @@ public class SqlModuleIT {
   }
 
   @Test
-  public void testSqlModule() {
+  public void test() {
     final Long userId1 = userService.create("TestUser1").block();
     final Long userId2 = userService.create("TestUser2").block();
 
@@ -46,12 +47,10 @@ public class SqlModuleIT {
 
     moduleService.setDynamicFlag(moduleId).block();
 
-    sqlModule = new SqlModule(moduleService);
-
-    StepVerifier.create(sqlModule.submitSql(userId2, moduleId, "OR 1=1")).expectNextCount(1)
+    StepVerifier.create(sqlInjectionTutorial.submitSql(userId1, moduleId, "OR 1=1")).expectNextCount(1)
         .expectComplete().verify();
 
-    StepVerifier.create(sqlModule.submitSql(userId2, moduleId, "' OR '1' = '1")).expectNextCount(6)
+    StepVerifier.create(sqlInjectionTutorial.submitSql(userId2, moduleId, "' OR '1' = '1")).expectNextCount(6)
         .expectComplete().verify();
   }
 

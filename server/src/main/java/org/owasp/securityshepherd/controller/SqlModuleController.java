@@ -1,7 +1,7 @@
 package org.owasp.securityshepherd.controller;
 
 import java.util.Map;
-import org.owasp.securityshepherd.module.SqlModule;
+import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorial;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,7 +14,7 @@ import reactor.core.publisher.Flux;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/")
 public class SqlModuleController {
-  private final SqlModule sqlModule;
+  private final SqlInjectionTutorial sqlModule;
 
   @PostMapping(path = "challenge/sql/submit")
   @PreAuthorize("hasRole('ROLE_USER')")

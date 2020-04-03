@@ -1,18 +1,17 @@
-package org.owasp.securityshepherd.module;
+package org.owasp.securityshepherd.module.sqlinjection;
 
 import java.util.Map;
 import org.owasp.securityshepherd.service.ModuleService;
 import org.springframework.data.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Service;
 import io.r2dbc.spi.ConnectionFactories;
-import io.r2dbc.spi.ConnectionFactory;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
-public class SqlModule {
+public class SqlInjectionTutorial {
 
   private final ModuleService moduleService;
 
@@ -24,18 +23,18 @@ public class SqlModule {
             + flag + "')");
 
     final Mono<String> connectionUrlMono =
-        insertedFlag.map(flag -> "r2dbc:h2:mem:///sql-injection-lesson-for-uid"
+        insertedFlag.map(flag -> "r2dbc:h2:mem:///sql-injection-tutorial-for-uid"
             + Long.toString(userId) + ";INIT=RUNSCRIPT FROM 'classpath:module/sql-injection.sql'"
             // The following inserts URL encoded backslash and semicolon, i.e. "\;"
             + "%5C%3B" + flag);
 
-    final Mono<ConnectionFactory> connectionFactoryMono =
-        connectionUrlMono.map(url -> ConnectionFactories.get(url.replaceAll(" ", "%20")));
+    final Mono<DatabaseClient> databaseClientMono =
+        connectionUrlMono.map(url -> ConnectionFactories.get(url.replaceAll(" ", "%20")))
+            .map(DatabaseClient::create);
 
-    Mono<DatabaseClient> databaseClientMono = connectionFactoryMono.map(DatabaseClient::create);
+    final String injectionQuery =
+        "SELECT * FROM sqlinjection.users WHERE name = '" + usernameQuery + "'";
 
-    return databaseClientMono.flatMapMany(client -> client
-        .execute("SELECT * FROM sqlinjection.users WHERE name = '" + usernameQuery + "'").fetch()
-        .all());
+    return databaseClientMono.flatMapMany(client -> client.execute(injectionQuery).fetch().all());
   }
 }
