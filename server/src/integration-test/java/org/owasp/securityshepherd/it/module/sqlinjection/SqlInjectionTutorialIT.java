@@ -111,7 +111,7 @@ public class SqlInjectionTutorialIT {
         .flatMap(flag -> submissionService.submit(userId, moduleId, flag + "wrong"))
         .map(Submission::isValid)).expectNext(false).expectComplete().verify();
   }
-
+  
   @BeforeEach
   private void clear() {
     testUtils.deleteAll().block();

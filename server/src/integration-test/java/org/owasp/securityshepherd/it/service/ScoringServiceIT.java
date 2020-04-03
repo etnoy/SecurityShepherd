@@ -170,7 +170,6 @@ public class ScoringServiceIT {
     submissionService.submitCorrection(userIds.get(2), -1000, "Penalty for cheating").block();
     initializeService(Clock.offset(correctionClock, Duration.ofHours(10)));
     submissionService.submitCorrection(userIds.get(1), 100, "Thanks for the bribe").block();
-    // scoringService.computeScoresFromSubmissions().blockLast();
 
     StepVerifier.create(scoringService.getScoreboard())
         .expectNext(Scoreboard.builder().rank(1L).userId(userIds.get(1)).score(251L).build())

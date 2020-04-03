@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.owasp.securityshepherd.exception.ModuleAlreadySolvedException;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.model.Submission;
 import org.owasp.securityshepherd.repository.CorrectionRepository;
@@ -71,11 +72,25 @@ public class SubmissionServiceIT {
         .flatMap(moduleId -> moduleService.setExactFlag(moduleId, flag)).map(Module::getId);
 
     StepVerifier
-        .create(Mono.zip(userIdMono, moduleIdMono).flatMap(tuple -> 
-        submissionService
-            .submit(tuple.getT1(), tuple.getT2(), flag)
-            .map(Submission::isValid)))
+        .create(Mono.zip(userIdMono, moduleIdMono).flatMap(tuple -> submissionService
+            .submit(tuple.getT1(), tuple.getT2(), flag).map(Submission::isValid)))
         .expectNext(true).expectComplete().verify();
+  }
+
+  @Test
+  public void submitFlag_DuplicateValidExactFlag_ReturnModuleAlreadySolvedException() {
+    final String flag = "thisisaflag";
+
+    final Mono<Long> userIdMono = userService.create("TestUser");
+
+    final Mono<Long> moduleIdMono = moduleService.create("Test Module").map(Module::getId)
+        .flatMap(moduleId -> moduleService.setExactFlag(moduleId, flag)).map(Module::getId);
+
+    StepVerifier
+        .create(Mono.zip(userIdMono, moduleIdMono)
+            .flatMapMany(tuple -> submissionService.submit(tuple.getT1(), tuple.getT2(), flag)
+                .repeat(2).map(Submission::isValid)))
+        .expectNext(true).expectError(ModuleAlreadySolvedException.class).verify();
   }
 
   private void initializeService(Clock injectedClock) {

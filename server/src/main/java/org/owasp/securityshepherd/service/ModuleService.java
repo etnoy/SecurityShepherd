@@ -174,11 +174,11 @@ public final class ModuleService {
     final Mono<Module> currentModule = findById(moduleId);
 
     final Mono<Boolean> isValid = currentModule
-        // If the module wasn't found, return error
+        // If the module wasn't found, return exception
         .switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
         // Check to see if flags are enabled
         .filter(Module::isFlagEnabled)
-        // If flag wasn't enabled, return error
+        // If flag wasn't enabled, return exception
         .switchIfEmpty(
             Mono.error(new InvalidFlagStateException("Cannot verify flag if flag is not enabled")))
         // Now check if the flag is valid
