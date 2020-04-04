@@ -29,6 +29,5 @@ public class Submission implements Serializable {
 
   private boolean isValid;
 
-  @NonNull
   private String flag;
 }

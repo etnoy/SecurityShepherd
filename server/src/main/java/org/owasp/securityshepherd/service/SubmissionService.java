@@ -56,6 +56,30 @@ public final class SubmissionService {
         // Otherwise, build a submission and save it in db
         .map(SubmissionBuilder::build).flatMap(submissionRepository::save);
   }
+  
+  public Mono<Submission> submitValid(final Long userId, final Long moduleId) {
+    if (userId <= 0) {
+      return Mono.error(new InvalidUserIdException());
+    }
+
+    if (moduleId <= 0) {
+      return Mono.error(new InvalidModuleIdException());
+    }
+
+    SubmissionBuilder submissionBuilder = Submission.builder();
+
+    submissionBuilder.userId(userId);
+    submissionBuilder.moduleId(moduleId);
+    submissionBuilder.isValid(true);
+    submissionBuilder.time(LocalDateTime.now(clock));
+
+    return Mono.just(submissionBuilder)
+        .filterWhen(u -> validSubmissionDoesNotExistByUserIdAndModuleId(userId, moduleId))
+        .switchIfEmpty(Mono.error(new ModuleAlreadySolvedException(
+            String.format("User %d has already finished module %d", userId, moduleId))))
+        // Otherwise, build a submission and save it in db
+        .map(SubmissionBuilder::build).flatMap(submissionRepository::save);
+  }
 
   private Mono<Boolean> validSubmissionDoesNotExistByUserIdAndModuleId(final long userId,
       final long moduleId) {
