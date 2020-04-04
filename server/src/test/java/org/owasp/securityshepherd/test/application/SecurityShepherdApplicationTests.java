@@ -17,6 +17,6 @@ class SecurityShepherdApplicationTest {
   @Tag("slow")
   @DisplayName("Application context loads")
   public void main_ApplicationStartup_ContextLoads() throws Throwable {
-     SecurityShepherdApplication.main(new String[] {});
+    SecurityShepherdApplication.main(new String[] {});
   }
 }
