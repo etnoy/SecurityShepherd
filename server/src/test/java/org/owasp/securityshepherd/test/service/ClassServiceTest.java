@@ -34,7 +34,7 @@ public class ClassServiceTest {
   private ClassService classService;
 
   private ClassRepository classRepository = Mockito.mock(ClassRepository.class);
-
+  
   @Test
   @DisplayName("Return the correct number of class entities in the repository")
   public void count_FiniteNumberOfClasses_ReturnsCount() {

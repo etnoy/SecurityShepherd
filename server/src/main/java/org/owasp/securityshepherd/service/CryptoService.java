@@ -15,19 +15,14 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @Service
 public final class CryptoService {
-
+  
   public Mono<byte[]> hmac(final byte[] key, final byte[] message) {
-
     if (key == null) {
-
-      return Mono.error(new NullPointerException());
-
+      return Mono.error(new NullPointerException("Key cannot be null"));
     }
 
     if (message == null) {
-
-      return Mono.error(new NullPointerException());
-
+      return Mono.error(new NullPointerException("Message cannot be null"));
     }
 
     final Mac hmac512;
@@ -38,7 +33,7 @@ public final class CryptoService {
       throw new CryptographicException("Could not initialize HMAC-SHA512", e);
     }
 
-    SecretKeySpec keySpec = new SecretKeySpec(key, "HmacSHA512");
+    final SecretKeySpec keySpec = new SecretKeySpec(key, "HmacSHA512");
 
     try {
       hmac512.init(keySpec);
@@ -48,5 +43,4 @@ public final class CryptoService {
 
     return Mono.just(hmac512.doFinal(message));
   }
-
 }
