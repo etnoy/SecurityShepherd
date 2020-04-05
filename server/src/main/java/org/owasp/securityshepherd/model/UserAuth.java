@@ -36,8 +36,6 @@ public final class UserAuth implements Serializable {
 
   private String suspensionMessage;
 
-  private LocalDateTime accountCreated;
-
   private LocalDateTime lastLogin;
 
   private String lastLoginMethod;

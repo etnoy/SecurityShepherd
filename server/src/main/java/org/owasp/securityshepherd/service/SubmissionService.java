@@ -56,7 +56,7 @@ public final class SubmissionService {
         // Otherwise, build a submission and save it in db
         .map(SubmissionBuilder::build).flatMap(submissionRepository::save);
   }
-  
+
   public Mono<Submission> submitValid(final Long userId, final Long moduleId) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());

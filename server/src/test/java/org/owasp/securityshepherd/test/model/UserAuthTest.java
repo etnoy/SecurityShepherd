@@ -20,23 +20,7 @@ import org.owasp.securityshepherd.test.util.TestUtils;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 @DisplayName("UserAuth unit test")
-public class UserAuthTest {
-  @Test
-  public void buildAccountCreated_ValidTime_Builds() {
-    final int[] timesToTest = {0, 1, 2, 1000, 4000, 1581806000, 42};
-
-    final UserAuthBuilder userAuthBuilder = UserAuth.builder().userId(5L);
-
-    for (final int accountCreated : timesToTest) {
-      final LocalDateTime time =
-          LocalDateTime.ofInstant(Instant.ofEpochMilli(accountCreated), ZoneId.systemDefault());
-
-      userAuthBuilder.accountCreated(time);
-
-      assertThat(userAuthBuilder.build(), instanceOf(UserAuth.class));
-      assertThat(userAuthBuilder.build().getAccountCreated(), is(time));
-    }
-  }
+public class UserAuthTest {  
 
   @Test
   public void buildBadLoginCount_ValidBadLoginCount_Builds() {
@@ -57,7 +41,9 @@ public class UserAuthTest {
     final UserAuthBuilder builder = UserAuth.builder();
 
     assertThat(builder.toString(), is(
-        "UserAuth.UserAuthBuilder(id=null, userId=null, isEnabled=false, badLoginCount=0, isAdmin=false, suspendedUntil=null, suspensionMessage=null, accountCreated=null, lastLogin=null, lastLoginMethod=null)"));
+        "UserAuth.UserAuthBuilder(id=null, userId=null, isEnabled=false, "
+        + "badLoginCount=0, isAdmin=false, suspendedUntil=null, suspensionMessage=null, "
+        + "lastLogin=null, lastLoginMethod=null)"));
   }
 
   @Test
@@ -164,28 +150,9 @@ public class UserAuthTest {
     final UserAuth testAuth = UserAuth.builder().userId(14L).build();
 
     assertThat(testAuth.toString(), is(
-        "UserAuth(id=null, userId=14, isEnabled=false, badLoginCount=0, isAdmin=false, suspendedUntil=null, suspensionMessage=null, accountCreated=null, lastLogin=null, lastLoginMethod=null)"));
-  }
-
-  @Test
-  public void withAccountCreated_ValidTime_ChangesAccountCreationTime() {
-    final long originalTime = 0L;
-
-    final List<Long> timesToTest =
-        Arrays.asList(originalTime, 1L, 2L, 1000L, 5000L, 9000990909L, 12398234987345983L);
-
-    final List<LocalDateTime> dateTimesToTest = timesToTest.stream()
-        .map(epoch -> LocalDateTime.ofInstant(Instant.ofEpochMilli(epoch), ZoneId.systemDefault()))
-        .collect(Collectors.toCollection(ArrayList::new));
-
-    final UserAuth testAuth =
-        UserAuth.builder().userId(19L).accountCreated(dateTimesToTest.get(0)).build();
-
-    for (final LocalDateTime time : dateTimesToTest) {
-      final UserAuth changedAuth = testAuth.withAccountCreated(time);
-      assertThat(changedAuth, instanceOf(UserAuth.class));
-      assertThat(changedAuth.getAccountCreated(), is(time));
-    }
+        "UserAuth(id=null, userId=14, isEnabled=false, badLoginCount=0, "
+        + "isAdmin=false, suspendedUntil=null, suspensionMessage=null, "
+        + "lastLogin=null, lastLoginMethod=null)"));
   }
 
   @Test

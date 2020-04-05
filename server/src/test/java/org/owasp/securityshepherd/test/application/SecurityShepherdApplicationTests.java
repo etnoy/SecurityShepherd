@@ -12,7 +12,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @SpringBootTest
 @DisplayName("Application unit test")
 class SecurityShepherdApplicationTest {
-
   @Test
   @Tag("slow")
   @DisplayName("Application context loads")

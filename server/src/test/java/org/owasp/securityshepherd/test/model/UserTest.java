@@ -4,10 +4,20 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.owasp.securityshepherd.model.User;
+import org.owasp.securityshepherd.model.UserAuth;
 import org.owasp.securityshepherd.model.User.UserBuilder;
+import org.owasp.securityshepherd.model.UserAuth.UserAuthBuilder;
+import org.owasp.securityshepherd.test.util.TestUtils;
 import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
@@ -15,17 +25,49 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 public class UserTest {
 
   @Test
-  public void build_NoArguments_ThrowsException() {
-    assertThrows(NullPointerException.class, () -> User.builder().build());
+  public void withAccountCreated_ValidTime_ChangesAccountCreationTime() {
+    final long originalTime = 0L;
+
+    final List<Long> timesToTest =
+        Arrays.asList(originalTime, 1L, 2L, 1000L, 5000L, 9000990909L, 12398234987345983L);
+
+    final List<LocalDateTime> dateTimesToTest = timesToTest.stream()
+        .map(epoch -> LocalDateTime.ofInstant(Instant.ofEpochMilli(epoch), ZoneId.systemDefault()))
+        .collect(Collectors.toCollection(ArrayList::new));
+
+    final User user =
+        User.builder().displayName("TestUser").accountCreated(dateTimesToTest.get(0)).build();
+
+    for (final LocalDateTime time : dateTimesToTest) {
+      final User changedUser = user.withAccountCreated(time);
+      assertThat(changedUser, instanceOf(User.class));
+      assertThat(changedUser.getAccountCreated(), is(time));
+    }
   }
 
   @Test
-  public void PersistenceConstructor_NullDisplayName_ThrowsNullPointerException() {
-    assertThrows(NullPointerException.class, () -> new User(1L, null, 2L, "me@example.com", null));
+  public void buildAccountCreated_ValidTime_Builds() {
+    final int[] timesToTest = {0, 1, 2, 1000, 4000, 1581806000, 42};
+
+    final UserBuilder userBuilder = User.builder().displayName("TestUser");
+
+    for (final int accountCreated : timesToTest) {
+      final LocalDateTime time =
+          LocalDateTime.ofInstant(Instant.ofEpochMilli(accountCreated), ZoneId.systemDefault());
+
+      userBuilder.accountCreated(time);
+      assertThat(userBuilder.build(), instanceOf(User.class));
+      assertThat(userBuilder.build().getAccountCreated(), is(time));
+    }
+  }
+
+  public void AllArgsConstructor_NullDisplayName_ThrowsNullPointerException() {
+    assertThrows(NullPointerException.class,
+        () -> new User(1L, null, 2L, "me@example.com", false, null, null));
   }
 
   @Test
-  public void build_ValidDisplayName_ReturnsUser() {
+  public void buildDisplayName_ValidDisplayName_ReturnsUser() {
     final String validDisplayName = "build_ValidDisplayName";
     final User build_ValidDisplayNameLengthUser =
         User.builder().displayName(validDisplayName).build();
@@ -82,15 +124,39 @@ public class UserTest {
     final User testUser = User.builder().displayName("TestUser").build();
 
     assertThat(testUser.toString(),
-        is("User(id=null, displayName=TestUser, classId=null, email=null, key=null)"));
+        is("User(id=null, displayName=TestUser, classId=null, email=null, "
+            + "isNotBanned=false, accountCreated=null, key=null)"));
+  }
+
+  @Test
+  public void buildIsNotBannedAdmin_TrueOrFalse_MatchesBuild() {
+    final UserBuilder userBuilder = User.builder().displayName("TestUser");
+
+    for (final boolean isNotBanned : TestUtils.BOOLEANS) {
+      userBuilder.isNotBanned(isNotBanned);
+
+      assertThat(userBuilder.build(), instanceOf(User.class));
+      assertThat(userBuilder.build().isNotBanned(), is(isNotBanned));
+    }
+  }
+
+  @Test
+  public void withNotBanned_ValidBoolean_ChangesIsAdmin() {
+    final User testUser = User.builder().displayName("TestUser").build();
+
+    for (final boolean isNotBanned : TestUtils.BOOLEANS) {
+      final User changedUser = testUser.withNotBanned(isNotBanned);
+      assertThat(changedUser, instanceOf(User.class));
+      assertThat(changedUser.isNotBanned(), is(isNotBanned));
+    }
   }
 
   @Test
   public void userBuilderToString_ValidData_AsExpected() {
     final UserBuilder builder = User.builder();
 
-    assertThat(builder.toString(),
-        is("User.UserBuilder(id=null, displayName=null, classId=null, email=null, key=null)"));
+    assertThat(builder.toString(), is("User.UserBuilder(id=null, displayName=null, classId=null, "
+        + "email=null, isNotBanned=false, accountCreated=null, key=null)"));
   }
 
   @Test
