@@ -4,9 +4,11 @@ import java.io.Serializable;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
+import lombok.With;
 
 @Value
 @Builder
+@With
 public class Scoreboard implements Serializable {
 
   private static final long serialVersionUID = 902640084501001329L;

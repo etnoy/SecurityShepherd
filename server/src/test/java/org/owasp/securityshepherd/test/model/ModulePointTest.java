@@ -18,12 +18,7 @@ public class ModulePointTest {
   public void build_ModuleIdNotGiven_ThrowsException() {
     assertThrows(NullPointerException.class, () -> ModulePoint.builder().rank(1).points(2).build());
   }
-
-  @Test
-  public void build_NoArguments_ThrowsException() {
-    assertThrows(NullPointerException.class, () -> ModulePoint.builder().build());
-  }
-
+  
   @Test
   public void build_RankNotGiven_ThrowsException() {
     assertThrows(NullPointerException.class,
