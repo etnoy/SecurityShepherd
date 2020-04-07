@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.SecurityShepherdApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -15,7 +16,8 @@ class SecurityShepherdApplicationTest {
   @Test
   @Tag("slow")
   @DisplayName("Application context loads")
-  public void main_ApplicationStartup_ContextLoads() throws Throwable {
-    SecurityShepherdApplication.main(new String[] {});
+  public void main_ApplicationStartup_ContextLoads() {
+    // We just test that no exception is thrown
+    assertDoesNotThrow(() -> SecurityShepherdApplication.main(new String[] {}));;
   }
 }
