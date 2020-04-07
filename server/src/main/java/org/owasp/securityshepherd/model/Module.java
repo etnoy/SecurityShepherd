@@ -32,4 +32,21 @@ public class Module implements Serializable {
   private String flag;
 
   private boolean isOpen;
+  
+  @java.beans.ConstructorProperties({"id", "name", "description", "isFlagEnabled", "isFlagExact", "flag", "isOpen"})
+  @java.lang.SuppressWarnings("all")
+  @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(justification = "generated code")
+  Module(final Long id, @NonNull final String name, final String description, @JsonProperty("isFlagEnabled") final boolean isFlagEnabled, @JsonProperty("isFlagExact") final boolean isFlagExact, final String flag, final boolean isOpen) {
+    if (name == null) {
+      throw new java.lang.NullPointerException("name is marked non-null but is null");
+    }
+    this.id = id;
+    this.name = name;
+    this.description = description;
+    this.isFlagEnabled = isFlagEnabled;
+    this.isFlagExact = isFlagExact;
+    this.flag = flag;
+    this.isOpen = isOpen;
+  }
+
 }

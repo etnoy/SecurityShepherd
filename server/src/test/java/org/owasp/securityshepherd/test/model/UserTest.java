@@ -14,15 +14,106 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.owasp.securityshepherd.model.User;
-import org.owasp.securityshepherd.model.UserAuth;
 import org.owasp.securityshepherd.model.User.UserBuilder;
-import org.owasp.securityshepherd.model.UserAuth.UserAuthBuilder;
 import org.owasp.securityshepherd.test.util.TestUtils;
 import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 @DisplayName("User unit test")
 public class UserTest {
+
+  @Test
+  public void build_DisplayNameNotGiven_ThrowsNullPointerException() {
+    assertThrows(NullPointerException.class, () -> User.builder().build());
+  }
+
+  @Test
+  public void buildAccountCreated_ValidTime_Builds() {
+    final int[] timesToTest = {0, 1, 2, 1000, 4000, 1581806000, 42};
+
+    final UserBuilder userBuilder = User.builder().displayName("TestUser");
+
+    for (final int accountCreated : timesToTest) {
+      final LocalDateTime time =
+          LocalDateTime.ofInstant(Instant.ofEpochMilli(accountCreated), ZoneId.systemDefault());
+
+      userBuilder.accountCreated(time);
+      assertThat(userBuilder.build(), instanceOf(User.class));
+      assertThat(userBuilder.build().getAccountCreated(), is(time));
+    }
+  }
+
+  @Test
+  public void buildClassId_ValidClassId_Builds() {
+    final UserBuilder userBuilder = User.builder().displayName("TestUser");
+    userBuilder.classId(1L);
+    final User user = userBuilder.build();
+    assertThat(user, is(instanceOf(User.class)));
+    assertThat(user.getClassId(), is(1L));
+  }
+
+  @Test
+  public void buildDisplayName_NullDisplayName_ThrowsNullPointerException() {
+    final UserBuilder userBuilder = User.builder();
+    assertThrows(NullPointerException.class, () -> userBuilder.displayName(null));
+  }
+
+  @Test
+  public void buildDisplayName_ValidDisplayName_ReturnsUser() {
+    final String validDisplayName = "build_ValidDisplayName";
+    final User build_ValidDisplayNameLengthUser =
+        User.builder().displayName(validDisplayName).build();
+    assertThat(build_ValidDisplayNameLengthUser, instanceOf(User.class));
+    assertThat(build_ValidDisplayNameLengthUser.getDisplayName(), is(validDisplayName));
+  }
+
+  @Test
+  public void buildUserId_ValidModuleId_Builds() {
+    final UserBuilder userBuilder = User.builder().id(12345L).displayName("TestUser");
+
+    for (final long id : TestUtils.LONGS) {
+      userBuilder.id(id);
+
+      final User user = userBuilder.build();
+      assertThat(user, instanceOf(User.class));
+      assertThat(user.getId(), is(id));
+    }
+  }
+
+
+  @Test
+  public void buildIsNotBannedAdmin_TrueOrFalse_MatchesBuild() {
+    final UserBuilder userBuilder = User.builder().displayName("TestUser");
+
+    for (final boolean isNotBanned : TestUtils.BOOLEANS) {
+      userBuilder.isNotBanned(isNotBanned);
+
+      assertThat(userBuilder.build(), instanceOf(User.class));
+      assertThat(userBuilder.build().isNotBanned(), is(isNotBanned));
+    }
+  }
+
+  @Test
+  public void equals_AutomaticTesting() {
+    EqualsVerifier.forClass(User.class).withIgnoredAnnotations(NonNull.class).verify();
+  }
+
+  @Test
+  public void toString_ValidData_AsExpected() {
+    final User testUser = User.builder().displayName("TestUser").build();
+
+    assertThat(testUser.toString(),
+        is("User(id=null, displayName=TestUser, classId=null, email=null, "
+            + "isNotBanned=false, accountCreated=null, key=null)"));
+  }
+
+  @Test
+  public void userBuilderToString_ValidData_AsExpected() {
+    final UserBuilder builder = User.builder();
+
+    assertThat(builder.toString(), is("User.UserBuilder(id=null, displayName=null, classId=null, "
+        + "email=null, isNotBanned=false, accountCreated=null, key=null)"));
+  }
 
   @Test
   public void withAccountCreated_ValidTime_ChangesAccountCreationTime() {
@@ -46,120 +137,6 @@ public class UserTest {
   }
 
   @Test
-  public void buildAccountCreated_ValidTime_Builds() {
-    final int[] timesToTest = {0, 1, 2, 1000, 4000, 1581806000, 42};
-
-    final UserBuilder userBuilder = User.builder().displayName("TestUser");
-
-    for (final int accountCreated : timesToTest) {
-      final LocalDateTime time =
-          LocalDateTime.ofInstant(Instant.ofEpochMilli(accountCreated), ZoneId.systemDefault());
-
-      userBuilder.accountCreated(time);
-      assertThat(userBuilder.build(), instanceOf(User.class));
-      assertThat(userBuilder.build().getAccountCreated(), is(time));
-    }
-  }
-
-  public void AllArgsConstructor_NullDisplayName_ThrowsNullPointerException() {
-    assertThrows(NullPointerException.class,
-        () -> new User(1L, null, 2L, "me@example.com", false, null, null));
-  }
-
-  @Test
-  public void buildDisplayName_ValidDisplayName_ReturnsUser() {
-    final String validDisplayName = "build_ValidDisplayName";
-    final User build_ValidDisplayNameLengthUser =
-        User.builder().displayName(validDisplayName).build();
-    assertThat(build_ValidDisplayNameLengthUser, instanceOf(User.class));
-    assertThat(build_ValidDisplayNameLengthUser.getDisplayName(), is(validDisplayName));
-  }
-
-  @Test
-  public void buildClassId_ValidClassId_Builds() {
-    final UserBuilder userBuilder = User.builder().displayName("TestUser");
-    userBuilder.classId(1L);
-    final User user = userBuilder.build();
-    assertThat(user, is(instanceOf(User.class)));
-    assertThat(user.getClassId(), is(1L));
-  }
-
-  @Test
-  public void buildDisplayName_NullDisplayName_ThrowsException() {
-    assertThrows(NullPointerException.class, () -> User.builder().displayName(null));
-  }
-
-  @Test
-  public void buildDisplayName_ValidDisplayName_Builds() {
-    final String displayName = "buildDisplayName_ValidDisplayName";
-
-    final UserBuilder builder = User.builder();
-    builder.displayName(displayName);
-
-    assertThat(builder.build(), instanceOf(User.class));
-
-    assertThat(builder.build().getDisplayName(), is(displayName));
-  }
-
-  @Test
-  public void buildId_ValidId_Builds() {
-    final UserBuilder userBuilder = User.builder();
-
-    userBuilder.id(12345L);
-    userBuilder.displayName("TestUser");
-
-    final User user = userBuilder.build();
-
-    assertThat(user, instanceOf(User.class));
-    assertThat(user.getId(), is(12345L));
-  }
-
-  @Test
-  public void equals_AutomaticTesting() {
-    EqualsVerifier.forClass(User.class).withIgnoredAnnotations(NonNull.class).verify();
-  }
-
-  @Test
-  public void toString_ValidData_AsExpected() {
-    final User testUser = User.builder().displayName("TestUser").build();
-
-    assertThat(testUser.toString(),
-        is("User(id=null, displayName=TestUser, classId=null, email=null, "
-            + "isNotBanned=false, accountCreated=null, key=null)"));
-  }
-
-  @Test
-  public void buildIsNotBannedAdmin_TrueOrFalse_MatchesBuild() {
-    final UserBuilder userBuilder = User.builder().displayName("TestUser");
-
-    for (final boolean isNotBanned : TestUtils.BOOLEANS) {
-      userBuilder.isNotBanned(isNotBanned);
-
-      assertThat(userBuilder.build(), instanceOf(User.class));
-      assertThat(userBuilder.build().isNotBanned(), is(isNotBanned));
-    }
-  }
-
-  @Test
-  public void withNotBanned_ValidBoolean_ChangesIsAdmin() {
-    final User testUser = User.builder().displayName("TestUser").build();
-
-    for (final boolean isNotBanned : TestUtils.BOOLEANS) {
-      final User changedUser = testUser.withNotBanned(isNotBanned);
-      assertThat(changedUser, instanceOf(User.class));
-      assertThat(changedUser.isNotBanned(), is(isNotBanned));
-    }
-  }
-
-  @Test
-  public void userBuilderToString_ValidData_AsExpected() {
-    final UserBuilder builder = User.builder();
-
-    assertThat(builder.toString(), is("User.UserBuilder(id=null, displayName=null, classId=null, "
-        + "email=null, isNotBanned=false, accountCreated=null, key=null)"));
-  }
-
-  @Test
   public void withClassId_ValidClassId_ChangesClassId() {
     final String displayName = "withClassId_ValidClassId";
     final Long originalClassId = 17L;
@@ -174,9 +151,9 @@ public class UserTest {
   }
 
   @Test
-  public void withDisplayName_NullDisplayName_ThrowsException() {
-    assertThrows(NullPointerException.class,
-        () -> User.builder().displayName("TestUser").build().withDisplayName(null));
+  public void withDisplayName_NullDisplayName_ThrowsNullPointerException() {
+    final User user = User.builder().displayName("TestUser").build();
+    assertThrows(NullPointerException.class, () -> user.withDisplayName(null));
   }
 
   @Test
@@ -243,6 +220,17 @@ public class UserTest {
     for (byte[] newKey : testedKeys) {
       final User changedUser = newUser.withKey(newKey);
       assertThat(changedUser.getKey(), is(newKey));
+    }
+  }
+
+  @Test
+  public void withNotBanned_ValidBoolean_ChangesIsAdmin() {
+    final User testUser = User.builder().displayName("TestUser").build();
+
+    for (final boolean isNotBanned : TestUtils.BOOLEANS) {
+      final User changedUser = testUser.withNotBanned(isNotBanned);
+      assertThat(changedUser, instanceOf(User.class));
+      assertThat(changedUser.isNotBanned(), is(isNotBanned));
     }
   }
 }

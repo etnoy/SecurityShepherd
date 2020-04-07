@@ -11,7 +11,7 @@ import org.owasp.securityshepherd.model.ClassEntity.ClassBuilder;
 import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-@DisplayName("Class unit test")
+@DisplayName("ClassEntity unit test")
 public class ClassTest {
   @Test
   public void build_NullName_ThrowsNullPointerException() {

@@ -84,7 +84,7 @@ public class ModuleTest {
 
   @Test
   public void buildName_NullName_ThrowsNullPointerException() {
-    assertThrows(NullPointerException.class, () -> Module.builder().name(null).build());
+    assertThrows(NullPointerException.class, () -> Module.builder().name(null));
   }
 
   @Test

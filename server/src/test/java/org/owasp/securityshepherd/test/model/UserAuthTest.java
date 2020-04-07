@@ -4,7 +4,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -17,10 +17,16 @@ import org.junit.jupiter.api.Test;
 import org.owasp.securityshepherd.model.UserAuth;
 import org.owasp.securityshepherd.model.UserAuth.UserAuthBuilder;
 import org.owasp.securityshepherd.test.util.TestUtils;
+import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 @DisplayName("UserAuth unit test")
-public class UserAuthTest {  
+public class UserAuthTest {
+
+  @Test
+  public void build_UserIdNotGiven_ThrowsNullPointerException() {
+    assertThrows(NullPointerException.class, () -> UserAuth.builder().build());
+  }
 
   @Test
   public void buildBadLoginCount_ValidBadLoginCount_Builds() {
@@ -40,10 +46,10 @@ public class UserAuthTest {
   public void builderToString_ValidData_AsExpected() {
     final UserAuthBuilder builder = UserAuth.builder();
 
-    assertThat(builder.toString(), is(
-        "UserAuth.UserAuthBuilder(id=null, userId=null, isEnabled=false, "
-        + "badLoginCount=0, isAdmin=false, suspendedUntil=null, suspensionMessage=null, "
-        + "lastLogin=null, lastLoginMethod=null)"));
+    assertThat(builder.toString(),
+        is("UserAuth.UserAuthBuilder(id=null, userId=null, isEnabled=false, "
+            + "badLoginCount=0, isAdmin=false, suspendedUntil=null, suspensionMessage=null, "
+            + "lastLogin=null, lastLoginMethod=null)"));
   }
 
   @Test
@@ -141,18 +147,40 @@ public class UserAuthTest {
   }
 
   @Test
+  public void buildUserId_NullUserId_ThrowsNullPointerException() {
+    final UserAuthBuilder userAuthBuilder = UserAuth.builder();
+    assertThrows(NullPointerException.class, () -> userAuthBuilder.userId(null));
+  }
+
+  @Test
+  public void buildUserId_ValidUserId_Builds() {
+    final long[] idsToTest = {0, 1, -1, 1000, -1000, 1234567, -1234567, 42};
+
+    for (final long userId : idsToTest) {
+      final UserAuthBuilder userAuthBuilder = UserAuth.builder();
+
+      userAuthBuilder.userId(userId);
+
+      final UserAuth userAuth = userAuthBuilder.build();
+
+      assertThat(userAuth, instanceOf(UserAuth.class));
+      assertThat(userAuth.getUserId(), is(userId));
+    }
+  }
+
+  @Test
   public void equals_AutomaticTesting() {
-    EqualsVerifier.forClass(UserAuth.class).verify();
+    EqualsVerifier.forClass(UserAuth.class).withIgnoredAnnotations(NonNull.class).verify();
   }
 
   @Test
   public void toString_ValidData_AsExpected() {
     final UserAuth testAuth = UserAuth.builder().userId(14L).build();
 
-    assertThat(testAuth.toString(), is(
-        "UserAuth(id=null, userId=14, isEnabled=false, badLoginCount=0, "
-        + "isAdmin=false, suspendedUntil=null, suspensionMessage=null, "
-        + "lastLogin=null, lastLoginMethod=null)"));
+    assertThat(testAuth.toString(),
+        is("UserAuth(id=null, userId=14, isEnabled=false, badLoginCount=0, "
+            + "isAdmin=false, suspendedUntil=null, suspensionMessage=null, "
+            + "lastLogin=null, lastLoginMethod=null)"));
   }
 
   @Test
@@ -283,15 +311,19 @@ public class UserAuthTest {
   }
 
   @Test
-  public void withUserId_ValidUser_ChangesUser() {
-    final long originalUserId = 1;
-    final long[] testedUserIds = {originalUserId, 0, -1, 1000, -1000, 123456789};
+  public void withUserId_NullUserId_ThrowsNullPointerException() {
+    final UserAuth userAuth = UserAuth.builder().userId(1L).build();
+    assertThrows(NullPointerException.class, () -> userAuth.withUserId(null));
+  }
 
-    final UserAuth newAuth = UserAuth.builder().userId(originalUserId).build();
+  @Test
+  public void withUserId_ValidUserId_ChangesUserId() {
+    final UserAuth userAuth = UserAuth.builder().userId(TestUtils.INITIAL_LONG).build();
 
-    for (final long newUserId : testedUserIds) {
-      final UserAuth changedAuth = newAuth.withUserId(newUserId);
-      assertThat(changedAuth.getUserId(), is(newUserId));
+    for (final Long userId : TestUtils.LONGS) {
+      final UserAuth newUserAuth = userAuth.withUserId(userId);
+      assertThat(newUserAuth, is(instanceOf(UserAuth.class)));
+      assertThat(newUserAuth.getUserId(), is(userId));
     }
   }
 }

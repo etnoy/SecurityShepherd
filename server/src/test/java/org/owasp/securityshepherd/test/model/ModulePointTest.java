@@ -11,8 +11,8 @@ import org.owasp.securityshepherd.model.ModulePoint.ModulePointBuilder;
 import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-@DisplayName("ModuleScore unit test")
-public class ModuleScoreTest {
+@DisplayName("ModulePoint unit test")
+public class ModulePointTest {
 
   @Test
   public void build_ModuleIdNotGiven_ThrowsException() {
@@ -52,7 +52,8 @@ public class ModuleScoreTest {
 
   @Test
   public void buildModuleId_NullModuleId_ThrowsException() {
-    assertThrows(NullPointerException.class, () -> ModulePoint.builder().moduleId(null));
+    final ModulePointBuilder modulePointBuilder = ModulePoint.builder();
+    assertThrows(NullPointerException.class, () -> modulePointBuilder.moduleId(null));
   }
 
   @Test

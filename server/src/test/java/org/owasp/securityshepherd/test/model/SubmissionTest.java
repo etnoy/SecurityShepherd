@@ -18,8 +18,24 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 @DisplayName("Submission unit test")
 public class SubmissionTest {
   @Test
-  public void build_NoArguments_ThrowsException() {
-    assertThrows(NullPointerException.class, () -> Submission.builder().build());
+  public void build_ModuleIdNotGiven_ThrowsNullPointerException() {
+    final SubmissionBuilder submissionBuilder =
+        Submission.builder().userId(1L).time(LocalDateTime.MIN);
+    assertThrows(NullPointerException.class, () -> submissionBuilder.build());
+  }
+
+  @Test
+  public void build_timeNotGiven_ThrowsNullPointerException() {
+    final SubmissionBuilder submissionBuilder =
+        Submission.builder().moduleId(1L).userId(1L).flag("TestFlag");
+    assertThrows(NullPointerException.class, () -> submissionBuilder.build());
+  }
+
+  @Test
+  public void build_UserIdNotGiven_ThrowsNullPointerException() {
+    final SubmissionBuilder submissionBuilder =
+        Submission.builder().moduleId(1L).time(LocalDateTime.MIN);
+    assertThrows(NullPointerException.class, () -> submissionBuilder.build());
   }
 
   @Test
@@ -73,13 +89,17 @@ public class SubmissionTest {
   }
 
   @Test
-  public void buildModuleId_ValidModuleId_Builds() {
-    final long[] moduleIdsToTest = {0, 1, -1, 1000, -1000, 1234567, -1234567, 42};
+  public void buildModuleId_NullModuleId_ThrowsNullPointerException() {
+    final SubmissionBuilder submissionBuilder = Submission.builder();
+    assertThrows(NullPointerException.class, () -> submissionBuilder.moduleId(null));
+  }
 
+  @Test
+  public void buildModuleId_ValidModuleId_Builds() {
     final SubmissionBuilder submissionBuilder =
         Submission.builder().flag("flag").userId(456L).time(LocalDateTime.MIN);
 
-    for (final long moduleId : moduleIdsToTest) {
+    for (final long moduleId : TestUtils.LONGS) {
       submissionBuilder.moduleId(moduleId);
 
       final Submission submission = submissionBuilder.build();
@@ -90,8 +110,8 @@ public class SubmissionTest {
 
   @Test
   public void buildTime_NullTime_ThrowsException() {
-    assertThrows(NullPointerException.class,
-        () -> Submission.builder().userId(23L).moduleId(56L).time(null));
+    final SubmissionBuilder submissionBuilder = Submission.builder();
+    assertThrows(NullPointerException.class, () -> submissionBuilder.time(null));
   }
 
   @Test
@@ -108,6 +128,12 @@ public class SubmissionTest {
       assertThat(submissionBuilder.build(), instanceOf(Submission.class));
       assertThat(submissionBuilder.build().getTime(), is(localTime));
     }
+  }
+
+  @Test
+  public void buildUserId_NullUserId_ThrowsNullPointerException() {
+    final SubmissionBuilder submissionBuilder = Submission.builder();
+    assertThrows(NullPointerException.class, () -> submissionBuilder.userId(null));
   }
 
   @Test
@@ -142,8 +168,9 @@ public class SubmissionTest {
     final Submission testSubmission = Submission.builder().moduleId(11234L).flag("flag")
         .userId(67898L).time(LocalDateTime.MIN).build();
 
-    assertThat(testSubmission.toString(), is("Submission(id=null, userId=67898, moduleId=11234, time="
-        + LocalDateTime.MIN + ", isValid=false, flag=flag)"));
+    assertThat(testSubmission.toString(),
+        is("Submission(id=null, userId=67898, moduleId=11234, time=" + LocalDateTime.MIN
+            + ", isValid=false, flag=flag)"));
   }
 
   @Test
@@ -173,6 +200,13 @@ public class SubmissionTest {
       final Submission changedSubmission = testSubmission.withId(newSubmissionId);
       assertThat(changedSubmission.getId(), is(newSubmissionId));
     }
+  }
+
+  @Test
+  public void withModuleId_NullModuleId_ThrowsNullPointerException() {
+    final Submission submission = Submission.builder().userId(1L).flag("flag")
+        .time(LocalDateTime.MIN).moduleId(TestUtils.INITIAL_LONG).build();
+    assertThrows(NullPointerException.class, () -> submission.withModuleId(null));
   }
 
   @Test
@@ -214,16 +248,21 @@ public class SubmissionTest {
   }
 
   @Test
+  public void withUserId_NullUserId_ThrowsNullPointerException() {
+    final Submission submission = Submission.builder().userId(TestUtils.INITIAL_LONG).flag("flag")
+        .time(LocalDateTime.MIN).moduleId(1L).build();
+    assertThrows(NullPointerException.class, () -> submission.withUserId(null));
+  }
+
+  @Test
   public void withUserId_ValidUserId_ChangesUserId() {
-    final long originalId = 1;
-    final long[] testedIds = {originalId, 0, -1, 1000, -1000, 123456789, -12346789};
+    final Submission submission = Submission.builder().userId(TestUtils.INITIAL_LONG).flag("flag")
+        .time(LocalDateTime.MIN).moduleId(1L).build();
 
-    final Submission testSubmission = Submission.builder().flag("flag").userId(originalId)
-        .moduleId(66789L).time(LocalDateTime.MIN).build();
-
-    for (final long newId : testedIds) {
-      final Submission changedSubmission = testSubmission.withUserId(newId);
-      assertThat(changedSubmission.getUserId(), is(newId));
+    for (final Long userId : TestUtils.LONGS) {
+      final Submission newSubmission = submission.withUserId(userId);
+      assertThat(newSubmission, is(instanceOf(Submission.class)));
+      assertThat(newSubmission.getUserId(), is(userId));
     }
   }
 
