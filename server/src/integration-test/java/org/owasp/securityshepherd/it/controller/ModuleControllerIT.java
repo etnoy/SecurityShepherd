@@ -38,7 +38,7 @@ public class ModuleControllerIT {
     // Tell Reactor to print verbose error messages
     Hooks.onOperatorDebug();
   }
-  
+
   @Autowired
   UserService userService;
 
@@ -52,6 +52,7 @@ public class ModuleControllerIT {
   private WebTestClient webTestClient;
 
   @Test
+  @DisplayName("Submitting a valid exact flag should return true")
   public void submitModule_ValidExactFlag_Success() throws Exception {
     final String loginName = "testUser";
     final String password = "paLswOrdha17£@£sh";
@@ -81,12 +82,11 @@ public class ModuleControllerIT {
             .contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(new SubmissionDto(moduleId, flag))).exchange()
             .expectStatus().isOk().returnResult(Boolean.class).getResponseBody())
-        .assertNext(correctFlag -> {
-          assertThat(correctFlag, is(true));
-        }).expectComplete().verify();
+        .expectNext(true).expectComplete().verify();
   }
 
   @Test
+  @DisplayName("Submitting an invalid exact flag should return false")
   public void submitModule_InvalidExactFlag_Success() throws Exception {
     final String loginName = "testUser";
     final String password = "paLswOrdha17£@£sh";
@@ -116,9 +116,7 @@ public class ModuleControllerIT {
             .contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(new SubmissionDto(moduleId, flag + "invalid"))).exchange()
             .expectStatus().isOk().returnResult(Boolean.class).getResponseBody())
-        .assertNext(correctFlag -> {
-          assertThat(correctFlag, is(false));
-        }).expectComplete().verify();
+        .expectNext(false).expectComplete().verify();
   }
 
   @BeforeEach

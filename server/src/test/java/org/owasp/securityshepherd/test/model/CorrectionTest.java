@@ -163,7 +163,7 @@ public class CorrectionTest {
   }
 
   @Test
-  public void withTime_NullTime_ThrowsException() {
+  public void withTime_NullTime_ThrowsNullPointerException() {
     final Correction correction =
         Correction.builder().time(LocalDateTime.MIN).userId(1L).amount(1L).build();
     assertThrows(NullPointerException.class, () -> correction.withTime(null));

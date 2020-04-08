@@ -47,6 +47,7 @@ public class LoginControllerIT {
   TestUtils testService;
 
   @Test
+  @DisplayName("Logging in with correct credentials should return a valid token")
   public void login_CorrectCredentials_ReturnsJWS() {
     final String loginName = "test";
     final String hashedPassword = "$2y$12$53B6QcsGwF3Os1GVFUFSQOhIPXnWFfuEkRJdbknFWnkXfUBMUKhaW";
@@ -77,6 +78,7 @@ public class LoginControllerIT {
   }
 
   @Test
+  @DisplayName("Logging in with an incorrect password should return HTTP Unauthorized")
   public void login_WrongPassword_ReturnsUnauthorized() {
     final String loginName = "test";
     final String hashedPassword = "$2y$12$53B6QcsGwF3Os1GVFUFSQOhIPXnWFfuEkRJdbknFWnkXfUBMUKhaW";
@@ -88,10 +90,10 @@ public class LoginControllerIT {
             Mono.just("{\"userName\": \"" + loginName + "\", \"password\": \"wrong\"}"),
             String.class))
         .exchange().expectStatus().isUnauthorized();
-
   }
 
   @Test
+  @DisplayName("Logging in with an incorrect username should return HTTP Unauthorized")
   public void login_WrongUserName_ReturnsUnauthorized() {
 
     final String loginName = "test";
@@ -103,12 +105,10 @@ public class LoginControllerIT {
         .body(BodyInserters.fromPublisher(
             Mono.just("{\"userName\": \"doesnotexist\", \"password\": \"wrong\"}"), String.class))
         .exchange().expectStatus().isUnauthorized();
-
   }
 
   @BeforeEach
   private void setUp() {
     testService.deleteAll().block();
   }
-
 }

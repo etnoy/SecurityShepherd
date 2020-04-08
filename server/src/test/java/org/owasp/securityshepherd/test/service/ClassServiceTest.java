@@ -49,7 +49,7 @@ public class ClassServiceTest {
 
   @Test
   @DisplayName("Throw DuplicateClassNameException when creating class entity with name that already exists")
-  public void create_DuplicateName_ThrowsDuplicateClassNameException() {
+  public void create_DuplicateName_ReturnsDuplicateClassNameException() {
     final String mockClassName = "TestClass";
     final ClassEntity mockClass = mock(ClassEntity.class);
 
@@ -61,14 +61,14 @@ public class ClassServiceTest {
 
   @Test
   @DisplayName("Throw IllegalArgumentException when creating class entity with empty name")
-  public void create_EmptyArgument_ThrowsIllegalArgumentException() {
+  public void create_EmptyArgument_ReturnsIllegalArgumentException() {
     StepVerifier.create(classService.create("")).expectError(IllegalArgumentException.class)
         .verify();
   }
 
   @Test
   @DisplayName("Throw NullPointerException when creating class entity with null name")
-  public void create_NullArgument_ThrowsNullPointerException() {
+  public void create_NullArgument_ReturnsNullPointerException() {
     StepVerifier.create(classService.create(null)).expectError(NullPointerException.class).verify();
   }
 
@@ -119,7 +119,7 @@ public class ClassServiceTest {
 
   @Test
   @DisplayName("Throw InvalidClassIdException when trying to retrieve a class entity that does not exist")
-  public void getById_InvalidClassId_ThrowsInvalidClassIdException() {
+  public void getById_InvalidClassId_ReturnsInvalidClassIdException() {
     StepVerifier.create(classService.getById(-1)).expectError(InvalidClassIdException.class)
         .verify();
     StepVerifier.create(classService.getById(0)).expectError(InvalidClassIdException.class)
@@ -148,7 +148,7 @@ public class ClassServiceTest {
 
   @Test
   @DisplayName("Throw exception when setting a class entity name to a name that already exists")
-  public void setName_DuplicateName_ThrowsDuplicateClassNameException() {
+  public void setName_DuplicateName_ReturnsDuplicateClassNameException() {
     final ClassEntity mockClass = mock(ClassEntity.class);
     final String newName = "newTestClass";
 
@@ -165,7 +165,7 @@ public class ClassServiceTest {
 
   @Test
   @DisplayName("Throw exception when setting name of an invalid class id")
-  public void setName_InvalidClassId_ThrowsInvalidClassIdException() {
+  public void setName_InvalidClassId_ReturnsInvalidClassIdException() {
     final String newName = "newName";
     final long[] idsToTest = {0, -1, -1000, -99999};
 
@@ -177,7 +177,7 @@ public class ClassServiceTest {
 
   @Test
   @DisplayName("Throw exception when setting name of a nonexistent class id")
-  public void setName_NonExistentId_ThrowsClassIdNotFoundException() {
+  public void setName_NonExistentId_ReturnsClassIdNotFoundException() {
     final ClassEntity mockClass = mock(ClassEntity.class);
     final String newName = "newTestClass";
 
@@ -194,7 +194,7 @@ public class ClassServiceTest {
 
   @Test
   @DisplayName("Throw exception when setting the name of a class entity to null")
-  public void setName_NullName_ThrowsIllegalArgumentException() {
+  public void setName_NullName_ReturnsIllegalArgumentException() {
     StepVerifier.create(classService.setName(1, null)).expectError(IllegalArgumentException.class)
         .verify();
   }
