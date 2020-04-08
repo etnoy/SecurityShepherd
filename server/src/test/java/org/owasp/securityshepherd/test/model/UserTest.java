@@ -1,16 +1,9 @@
 package org.owasp.securityshepherd.test.model;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.owasp.securityshepherd.model.User;
@@ -24,77 +17,72 @@ public class UserTest {
 
   @Test
   public void build_DisplayNameNotGiven_ThrowsNullPointerException() {
-    assertThrows(NullPointerException.class, () -> User.builder().build());
+    final UserBuilder userBuilder = User.builder();
+    final Exception thrownException =
+        assertThrows(NullPointerException.class, () -> userBuilder.build());
+    assertThat(thrownException.getMessage(), is("displayName is marked non-null but is null"));
   }
 
   @Test
-  public void buildAccountCreated_ValidTime_Builds() {
-    final int[] timesToTest = {0, 1, 2, 1000, 4000, 1581806000, 42};
-
+  public void buildAccountCreated_ValidTime_BuildsUser() {
     final UserBuilder userBuilder = User.builder().displayName("TestUser");
 
-    for (final int accountCreated : timesToTest) {
-      final LocalDateTime time =
-          LocalDateTime.ofInstant(Instant.ofEpochMilli(accountCreated), ZoneId.systemDefault());
-
-      userBuilder.accountCreated(time);
-      assertThat(userBuilder.build(), instanceOf(User.class));
-      assertThat(userBuilder.build().getAccountCreated(), is(time));
+    for (final LocalDateTime accountCreated : TestUtils.LOCALDATETIMES_WITH_NULL) {
+      final User user = userBuilder.accountCreated(accountCreated).build();
+      assertThat(user.getAccountCreated(), is(accountCreated));
     }
   }
 
   @Test
-  public void buildClassId_ValidClassId_Builds() {
-    final UserBuilder userBuilder = User.builder().displayName("TestUser");
-    userBuilder.classId(1L);
-    final User user = userBuilder.build();
-    assertThat(user, is(instanceOf(User.class)));
-    assertThat(user.getClassId(), is(1L));
+  public void buildClassId_ValidClassId_BuildsUser() {
+    final UserBuilder userBuilder = User.builder().classId(1L).displayName("TestUser");
+
+    for (final Long classId : TestUtils.LONGS_WITH_NULL) {
+      final User user = userBuilder.classId(classId).build();
+      assertThat(user.getClassId(), is(classId));
+    }
   }
 
   @Test
   public void buildDisplayName_NullDisplayName_ThrowsNullPointerException() {
     final UserBuilder userBuilder = User.builder();
-    assertThrows(NullPointerException.class, () -> userBuilder.displayName(null));
+    final Exception thrownException =
+        assertThrows(NullPointerException.class, () -> userBuilder.displayName(null));
+    assertThat(thrownException.getMessage(), is("displayName is marked non-null but is null"));
   }
 
   @Test
-  public void buildDisplayName_ValidDisplayName_ReturnsUser() {
-    final String validDisplayName = "build_ValidDisplayName";
-    final User build_ValidDisplayNameLengthUser =
-        User.builder().displayName(validDisplayName).build();
-    assertThat(build_ValidDisplayNameLengthUser, instanceOf(User.class));
-    assertThat(build_ValidDisplayNameLengthUser.getDisplayName(), is(validDisplayName));
+  public void buildDisplayName_ValidDisplayName_BuildsUser() {
+    final UserBuilder userBuilder = User.builder();
+
+    for (final String displayName : TestUtils.STRINGS) {
+      final User user = userBuilder.displayName(displayName).build();
+      assertThat(user.getDisplayName(), is(displayName));
+    }
   }
 
   @Test
-  public void buildUserId_ValidModuleId_Builds() {
+  public void buildId_ValidId_BuildsUser() {
     final UserBuilder userBuilder = User.builder().id(12345L).displayName("TestUser");
 
-    for (final long id : TestUtils.LONGS) {
-      userBuilder.id(id);
-
-      final User user = userBuilder.build();
-      assertThat(user, instanceOf(User.class));
+    for (final Long id : TestUtils.LONGS_WITH_NULL) {
+      final User user = userBuilder.id(id).build();
       assertThat(user.getId(), is(id));
     }
   }
 
-
   @Test
-  public void buildIsNotBannedAdmin_TrueOrFalse_MatchesBuild() {
+  public void buildIsNotBanned_ValidBoolean_BuildsUser() {
     final UserBuilder userBuilder = User.builder().displayName("TestUser");
 
     for (final boolean isNotBanned : TestUtils.BOOLEANS) {
-      userBuilder.isNotBanned(isNotBanned);
-
-      assertThat(userBuilder.build(), instanceOf(User.class));
-      assertThat(userBuilder.build().isNotBanned(), is(isNotBanned));
+      final User user = userBuilder.isNotBanned(isNotBanned).build();
+      assertThat(user.isNotBanned(), is(isNotBanned));
     }
   }
 
   @Test
-  public void equals_AutomaticTesting() {
+  public void equals_EqualsVerifier_AsExpected() {
     EqualsVerifier.forClass(User.class).withIgnoredAnnotations(NonNull.class).verify();
   }
 
@@ -117,120 +105,84 @@ public class UserTest {
 
   @Test
   public void withAccountCreated_ValidTime_ChangesAccountCreationTime() {
-    final long originalTime = 0L;
+    final User user = User.builder().displayName("TestUser")
+        .accountCreated(TestUtils.INITIAL_LOCALDATETIME).build();
 
-    final List<Long> timesToTest =
-        Arrays.asList(originalTime, 1L, 2L, 1000L, 5000L, 9000990909L, 12398234987345983L);
-
-    final List<LocalDateTime> dateTimesToTest = timesToTest.stream()
-        .map(epoch -> LocalDateTime.ofInstant(Instant.ofEpochMilli(epoch), ZoneId.systemDefault()))
-        .collect(Collectors.toCollection(ArrayList::new));
-
-    final User user =
-        User.builder().displayName("TestUser").accountCreated(dateTimesToTest.get(0)).build();
-
-    for (final LocalDateTime time : dateTimesToTest) {
-      final User changedUser = user.withAccountCreated(time);
-      assertThat(changedUser, instanceOf(User.class));
-      assertThat(changedUser.getAccountCreated(), is(time));
+    for (final LocalDateTime accountCreated : TestUtils.LOCALDATETIMES_WITH_NULL) {
+      final User withUser = user.withAccountCreated(accountCreated);
+      assertThat(withUser.getAccountCreated(), is(accountCreated));
     }
   }
 
   @Test
   public void withClassId_ValidClassId_ChangesClassId() {
-    final String displayName = "withClassId_ValidClassId";
-    final Long originalClassId = 17L;
-    final Long[] testedClassIds = {originalClassId, 0L, 1L, null, -1L, 1000L, -1000L, 123456789L};
-    final User newUser = User.builder().displayName(displayName).classId(originalClassId).build();
+    final User user =
+        User.builder().displayName("TestUser").classId(TestUtils.INITIAL_LONG).build();
 
-    for (Long classId : testedClassIds) {
-      final User changedUser = newUser.withClassId(classId);
-      assertThat(changedUser, is(instanceOf(User.class)));
-      assertThat(changedUser.getClassId(), is(classId));
+    for (final Long classId : TestUtils.LONGS_WITH_NULL) {
+      final User withUser = user.withClassId(classId);
+      assertThat(withUser.getClassId(), is(classId));
     }
   }
 
   @Test
   public void withDisplayName_NullDisplayName_ThrowsNullPointerException() {
     final User user = User.builder().displayName("TestUser").build();
-    assertThrows(NullPointerException.class, () -> user.withDisplayName(null));
+    final Exception thrownException =
+        assertThrows(NullPointerException.class, () -> user.withDisplayName(null));
+    assertThat(thrownException.getMessage(), is("displayName is marked non-null but is null"));
   }
 
   @Test
   public void withDisplayName_ValidDisplayName_ChangesDisplayName() {
-    final String displayName = "withDisplayName_ValidDisplayName";
+    final User user = User.builder().displayName(TestUtils.INITIAL_STRING).build();
 
-    final User newUser = User.builder().displayName(displayName).build();
-
-    assertThat(newUser.getDisplayName(), is(displayName));
-
-    final String[] testedDisplayNames =
-        {displayName, "", "newUser", "Long  With     Whitespace", "12345"};
-
-    User changedUser;
-    for (String newDisplayName : testedDisplayNames) {
-      changedUser = newUser.withDisplayName(newDisplayName);
-      assertThat(changedUser.getDisplayName(), is(newDisplayName));
+    for (final String displayName : TestUtils.STRINGS) {
+      final User withUser = user.withDisplayName(displayName);
+      assertThat(withUser.getDisplayName(), is(displayName));
     }
   }
 
   @Test
   public void withEmail_ValidEmail_ChangesEmail() {
-    final String displayName = "withEmail_ValidEmail";
+    final User user =
+        User.builder().displayName("TestUser").email(TestUtils.INITIAL_STRING).build();
 
-    final String originalEmail = "validEmail@example.com";
-
-    final String[] testedStrings =
-        {originalEmail, null, "", "newEmail@example.com", "e@e", "a", "alongemail@example.com"};
-
-    final User newUser = User.builder().displayName(displayName).email(originalEmail).build();
-
-    assertThat(newUser.getEmail(), is(originalEmail));
-
-    User changedUser;
-
-    for (String newEmail : testedStrings) {
-      changedUser = newUser.withEmail(newEmail);
-      assertThat(changedUser.getEmail(), is(newEmail));
+    for (final String email : TestUtils.STRINGS) {
+      final User withUser = user.withEmail(email);
+      assertThat(withUser.getEmail(), is(email));
     }
   }
 
   @Test
   public void withId_ValidId_ChangesId() {
-    final Long originalId = 1L;
-    final Long[] testedIds = {originalId, null, 0L, -1L, 1000L, -1000L, 123456789L};
+    final User user = User.builder().id(TestUtils.INITIAL_LONG).displayName("Test User").build();
 
-    final User newUser = User.builder().id(originalId).displayName("Test User").build();
-
-    for (Long newId : testedIds) {
-      final User changedUser = newUser.withId(newId);
-      assertThat(changedUser.getId(), is(newId));
+    for (final Long id : TestUtils.LONGS_WITH_NULL) {
+      final User withUser = user.withId(id);
+      assertThat(withUser.getId(), is(id));
     }
   }
 
   @Test
   public void withKey_ValidKey_ChangesKey() {
-    final String displayName = "withKey_ValidKey";
-    final byte[] key = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    final byte[][] testedKeys = {key, null, {}, {1}, {19, 26, 127, -128}};
-    final User newUser = User.builder().displayName(displayName).key(key).build();
+    final User user =
+        User.builder().displayName("TestUser").key(TestUtils.INITIAL_BYTE_ARRAY).build();
 
-    assertThat(newUser.getKey(), is(key));
-
-    for (byte[] newKey : testedKeys) {
-      final User changedUser = newUser.withKey(newKey);
-      assertThat(changedUser.getKey(), is(newKey));
+    for (byte[] key : TestUtils.BYTE_ARRAYS_WITH_NULL) {
+      final User withUser = user.withKey(key);
+      assertThat(withUser.getKey(), is(key));
     }
   }
 
   @Test
   public void withNotBanned_ValidBoolean_ChangesIsAdmin() {
-    final User testUser = User.builder().displayName("TestUser").build();
+    final User user =
+        User.builder().isNotBanned(TestUtils.INITIAL_BOOLEAN).displayName("TestUser").build();
 
     for (final boolean isNotBanned : TestUtils.BOOLEANS) {
-      final User changedUser = testUser.withNotBanned(isNotBanned);
-      assertThat(changedUser, instanceOf(User.class));
-      assertThat(changedUser.isNotBanned(), is(isNotBanned));
+      final User withUser = user.withNotBanned(isNotBanned);
+      assertThat(withUser.isNotBanned(), is(isNotBanned));
     }
   }
 }

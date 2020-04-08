@@ -56,6 +56,19 @@ public class CorrectionTest {
   }
 
   @Test
+  public void buildDescription_ValidDescription_BuildsCorrection() {
+    final CorrectionBuilder correctionBuilder =
+        Correction.builder().time(LocalDateTime.MIN).userId(1L).amount(1L);
+
+    for (final String description : TestUtils.STRINGS_WITH_NULL) {
+      final Correction correction = correctionBuilder.description(description).build();
+
+      assertThat(correction, is(instanceOf(Correction.class)));
+      assertThat(correction.getDescription(), is(description));
+    }
+  }
+
+  @Test
   public void buildId_ValidId_BuildsCorrection() {
     final CorrectionBuilder correctionBuilder =
         Correction.builder().amount(1L).userId(1L).time(LocalDateTime.MIN);

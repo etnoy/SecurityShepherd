@@ -21,6 +21,8 @@ public final class TestUtils {
 
   public static final long[] INVALID_IDS = {-1, -1000, 0, -1234567, -500};
 
+  public static final boolean INITIAL_BOOLEAN = false;
+
   public static final boolean[] BOOLEANS = {false, true};
 
   public static final Long INITIAL_LONG = 0L;
@@ -47,8 +49,8 @@ public final class TestUtils {
   public static final String INITIAL_STRING = "";
 
   public static final String[] STRINGS =
-      {INITIAL_STRING, "Test String", "åäö", "1;DROP TABLE users", " ", "%", "_", "-", "--",
-          "జ్ఞ‌ా", "Ｔｈｅ ｑｕｉｃｋ ｂｒｏｗｎ ｆｏｘ ｊｕｍｐｓ ｏｖｅｒ ｔｈｅ ｌａｚｙ ｄｏｇ",
+      {INITIAL_STRING, "Test String", "åäö", "me@example.com", "1;DROP TABLE users", " ", "%", "_",
+          "-", "--", "జ్ఞ‌ా", "Ｔｈｅ ｑｕｉｃｋ ｂｒｏｗｎ ｆｏｘ ｊｕｍｐｓ ｏｖｅｒ ｔｈｅ ｌａｚｙ ｄｏｇ",
           "𝐓𝐡𝐞 𝐪𝐮𝐢𝐜𝐤 𝐛𝐫𝐨𝐰𝐧 𝐟𝐨𝐱 𝐣𝐮𝐦𝐩𝐬 𝐨𝐯𝐞𝐫 𝐭𝐡𝐞 𝐥𝐚𝐳𝐲 𝐝𝐨𝐠",
           "𝕿𝖍𝖊 𝖖𝖚𝖎𝖈𝖐 𝖇𝖗𝖔𝖜𝖓 𝖋𝖔𝖝 𝖏𝖚𝖒𝖕𝖘 𝖔𝖛𝖊𝖗 𝖙𝖍𝖊 𝖑𝖆𝖟𝖞 𝖉𝖔𝖌",
           "𝑻𝒉𝒆 𝒒𝒖𝒊𝒄𝒌 𝒃𝒓𝒐𝒘𝒏 𝒇𝒐𝒙 𝒋𝒖𝒎𝒑𝒔 𝒐𝒗𝒆𝒓 𝒕𝒉𝒆 𝒍𝒂𝒛𝒚 𝒅𝒐𝒈",
@@ -58,6 +60,13 @@ public final class TestUtils {
 
   public static final String[] STRINGS_WITH_NULL =
       (String[]) ArrayUtils.addAll(STRINGS, (String) null);
+
+  public static final byte[] INITIAL_BYTE_ARRAY = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+  public static final byte[][] BYTE_ARRAYS = {INITIAL_BYTE_ARRAY, {}, {1}, {19, 26, 127, -128}};
+
+  public static final byte[][] BYTE_ARRAYS_WITH_NULL =
+      (byte[][]) ArrayUtils.addAll(BYTE_ARRAYS, (byte[]) null);
 
   private final UserRepository userRepository;
 
