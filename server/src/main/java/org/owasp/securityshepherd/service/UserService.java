@@ -1,5 +1,6 @@
 package org.owasp.securityshepherd.service;
 
+import java.util.List;
 import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
 import org.owasp.securityshepherd.exception.DuplicateClassNameException;
 import org.owasp.securityshepherd.exception.DuplicateUserDisplayNameException;
@@ -14,7 +15,8 @@ import org.owasp.securityshepherd.model.UserAuth;
 import org.owasp.securityshepherd.repository.UserAuthRepository;
 import org.owasp.securityshepherd.repository.PasswordAuthRepository;
 import org.owasp.securityshepherd.repository.UserRepository;
-import org.owasp.securityshepherd.security.ShepherdUserDetails;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +40,29 @@ public final class UserService {
 
   public Mono<Long> count() {
     return userRepository.count();
+  }
+
+  public Mono<Boolean> authenticate(final String loginName, final String password) {
+    // Initialize the encoder
+    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
+
+    return
+    // Find the password auth
+    findPasswordAuthByLoginName(loginName)
+        // Extract the password hash
+        .map(PasswordAuth::getHashedPassword)
+        // Check if hash matches
+        .map(hashedPassword -> encoder.matches(password, hashedPassword));
+  }
+
+  public Mono<List<SimpleGrantedAuthority>> getAuthoritiesById(final long userId) {
+    final Mono<UserAuth> userAuthMono = findUserAuthByUserId(userId);
+
+    Flux<SimpleGrantedAuthority> authoritiesFlux = userAuthMono.filter(UserAuth::isAdmin)
+        .map(userAuth -> new SimpleGrantedAuthority("ROLE_ADMIN")).flux()
+        .concatWithValues(new SimpleGrantedAuthority("ROLE_USER"));
+
+    return authoritiesFlux.collectList();
   }
 
   public Mono<Long> create(final String displayName) {
@@ -108,34 +133,6 @@ public final class UserService {
     });
   }
 
-  public Mono<ShepherdUserDetails> createUserDetailsFromLoginName(final String loginName) {
-    if (loginName == null) {
-      return Mono.error(new NullPointerException());
-    }
-    if (loginName.isEmpty()) {
-      return Mono.error(new IllegalArgumentException());
-    }
-
-    final Mono<PasswordAuth> passwordAuthMono = passwordAuthRepository.findByLoginName(loginName);
-
-    final Mono<UserAuth> userAuthMono =
-        passwordAuthMono.map(PasswordAuth::getUserId).flatMap(this::findUserAuthByUserId);
-
-    return Mono.zip(userAuthMono, passwordAuthMono, ShepherdUserDetails::new);
-  }
-
-  public Mono<ShepherdUserDetails> createUserDetailsFromUserId(final long userId) {
-    if (userId <= 0) {
-      return Mono.error(new InvalidUserIdException());
-    }
-
-    final Mono<UserAuth> userAuthMono = Mono.just(userId).flatMap(this::findUserAuthByUserId);
-    final Mono<PasswordAuth> passwordAuthMono =
-        Mono.just(userId).flatMap(this::findPasswordAuthByUserId);
-
-    return Mono.zip(userAuthMono, passwordAuthMono, ShepherdUserDetails::new);
-  }
-
   public Mono<Void> deleteById(final long userId) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
@@ -202,6 +199,12 @@ public final class UserService {
           }
           return Mono.just(key);
         });
+  }
+
+  public Mono<PasswordAuth> findPasswordAuthByLoginName(final String loginName) {
+    // TOOD: validate not null
+
+    return passwordAuthRepository.findByLoginName(loginName);
   }
 
   public Mono<PasswordAuth> findPasswordAuthByUserId(final long userId) {

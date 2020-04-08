@@ -8,7 +8,6 @@ import org.owasp.securityshepherd.service.UserService;
 import org.owasp.securityshepherd.service.WebTokenService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,10 +30,9 @@ public class LoginController {
 
   @PostMapping(value = "/login")
   public Mono<ResponseEntity<AuthResponse>> login(@RequestBody @Valid PasswordLoginDto loginDto) {
-    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
-
-    return userService.createUserDetailsFromLoginName(loginDto.getUserName())
-        .filter(userDetails -> encoder.matches(loginDto.getPassword(), userDetails.getPassword()))
+    return userService.findUserIdByLoginName(loginDto.getUserName())
+        .filterWhen(
+            userId -> userService.authenticate(loginDto.getUserName(), loginDto.getPassword()))
         .map(webTokenService::generateToken).map(AuthResponse::new)
         .map(authResponse -> new ResponseEntity<>(authResponse, HttpStatus.OK))
         .defaultIfEmpty(new ResponseEntity<>(HttpStatus.UNAUTHORIZED));

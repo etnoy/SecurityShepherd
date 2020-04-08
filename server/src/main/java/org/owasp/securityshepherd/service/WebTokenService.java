@@ -3,14 +3,12 @@ package org.owasp.securityshepherd.service;
 import java.security.Key;
 import java.time.Clock;
 import java.util.Date;
-import org.owasp.securityshepherd.security.ShepherdUserDetails;
 import org.springframework.stereotype.Service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
-import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
 @Service
@@ -22,15 +20,12 @@ public class WebTokenService {
 
   private final Clock clock;
   
-  private final UserService userService;
-
   public Claims getAllClaimsFromToken(String token) {
     return Jwts.parserBuilder().setSigningKey(JWT_KEY).build().parseClaimsJws(token).getBody();
   }
 
-  public Mono<ShepherdUserDetails> getUserDetailsFromToken(final String token) {
-    final int userId = Integer.parseInt(getAllClaimsFromToken(token).getSubject());
-    return userService.createUserDetailsFromUserId(userId);
+  public long getUserIdFromToken(final String token) {
+    return Long.parseLong(getAllClaimsFromToken(token).getSubject());
   }
 
   public Date getExpirationDateFromToken(final String token) {
@@ -42,11 +37,11 @@ public class WebTokenService {
     return expiration.before(new Date());
   }
 
-  public String generateToken(final ShepherdUserDetails userDetails) {
+  public String generateToken(final long userId) {
     final Date creationTime = new Date(clock.millis());
     final Date expirationTime = new Date(clock.millis() + 1000*EXPIRATION_TIME);
     
-    return Jwts.builder().setSubject(Long.toString(userDetails.getUserId()))
+    return Jwts.builder().setSubject(Long.toString(userId))
         .setIssuedAt(creationTime).setExpiration(expirationTime).signWith(JWT_KEY).compact();
   }
 

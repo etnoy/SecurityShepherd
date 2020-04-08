@@ -4,7 +4,6 @@ import javax.validation.Valid;
 import org.owasp.securityshepherd.dto.SubmissionDto;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.model.Submission;
-import org.owasp.securityshepherd.security.ShepherdUserDetails;
 import org.owasp.securityshepherd.service.ModuleService;
 import org.owasp.securityshepherd.service.SubmissionService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,8 +44,7 @@ public class ModuleController {
   @PreAuthorize("hasRole('ROLE_USER')")
   public Mono<Boolean> submitById(@RequestBody @Valid SubmissionDto submissionDto) {
     return ReactiveSecurityContextHolder.getContext().map(SecurityContext::getAuthentication)
-        .map(Authentication::getPrincipal).cast(ShepherdUserDetails.class)
-        .map(ShepherdUserDetails::getUserId).flatMap(
+        .map(Authentication::getPrincipal).cast(Long.class).flatMap(
             id -> submissionService.submit(id, submissionDto.getModuleId(), submissionDto.getFlag())
                 .map(Submission::isValid));
   }

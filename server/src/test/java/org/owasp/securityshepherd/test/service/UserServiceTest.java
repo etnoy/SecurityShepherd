@@ -238,91 +238,6 @@ public class UserServiceTest {
   }
 
   @Test
-  public void createUserDetailsByLoginName_EmptyLoginName_ReturnsIllegalArgumentException() {
-    StepVerifier.create(userService.createUserDetailsFromLoginName(""))
-        .expectError(IllegalArgumentException.class).verify();
-  }
-
-  @Test
-  public void createUserDetailsByLoginName_ExistingLoginName_CreatesUserDetails() {
-    final PasswordAuth mockPasswordAuth = mock(PasswordAuth.class);
-    final UserAuth mockUserAuth = mock(UserAuth.class);
-
-    final String mockLoginName = "loginName";
-    final Long mockUserId = 301L;
-
-    when(passwordAuthRepository.findByLoginName(mockLoginName))
-        .thenReturn(Mono.just(mockPasswordAuth));
-    when(userAuthRepository.findByUserId(mockUserId)).thenReturn(Mono.just(mockUserAuth));
-
-    when(mockPasswordAuth.getUserId()).thenReturn(mockUserId);
-
-    StepVerifier.create(userService.createUserDetailsFromLoginName(mockLoginName))
-        .assertNext(userDetails -> {
-          assertThat(userDetails.getUserAuth(), is(mockUserAuth));
-          assertThat(userDetails.getPasswordAuth(), is(mockPasswordAuth));
-        }).expectComplete().verify();
-
-    verify(passwordAuthRepository, times(1)).findByLoginName(mockLoginName);
-  }
-
-  @Test
-  public void createUserDetailsByLoginName_NonExistentLoginName_ReturnsEmpty() {
-    final String mockLoginName = "loginName";
-    when(passwordAuthRepository.findByLoginName(mockLoginName)).thenReturn(Mono.empty());
-    StepVerifier.create(userService.createUserDetailsFromLoginName(mockLoginName)).expectComplete()
-        .verify();
-    verify(passwordAuthRepository, times(1)).findByLoginName(mockLoginName);
-  }
-
-  @Test
-  public void createUserDetailsByLoginName_NullLoginName_ReturnsNullPointerException() {
-    StepVerifier.create(userService.createUserDetailsFromLoginName(null))
-        .expectError(NullPointerException.class).verify();
-  }
-
-  @Test
-  public void createUserDetailsByUserId_ExistingUserId_CreatesUserDetails() {
-    final PasswordAuth mockPasswordAuth = mock(PasswordAuth.class);
-    final UserAuth mockUserAuth = mock(UserAuth.class);
-    final long mockUserId = 301;
-
-    when(passwordAuthRepository.findByUserId(mockUserId)).thenReturn(Mono.just(mockPasswordAuth));
-    when(userAuthRepository.findByUserId(mockUserId)).thenReturn(Mono.just(mockUserAuth));
-
-    StepVerifier.create(userService.createUserDetailsFromUserId(mockUserId))
-        .assertNext(userDetails -> {
-          assertThat(userDetails.getUserAuth(), is(mockUserAuth));
-          assertThat(userDetails.getPasswordAuth(), is(mockPasswordAuth));
-        }).expectComplete().verify();
-
-    verify(passwordAuthRepository, times(1)).findByUserId(mockUserId);
-    verify(userAuthRepository, times(1)).findByUserId(mockUserId);
-  }
-
-  @Test
-  public void createUserDetailsByUserId_InvalidUserId_ReturnsInvalidUserIdException() {
-    for (final Long userId : TestUtils.INVALID_IDS) {
-      StepVerifier.create(userService.createUserDetailsFromUserId(userId))
-          .expectError(InvalidUserIdException.class).verify();
-    }
-  }
-
-  @Test
-  public void createUserDetailsByUserId_NonExistentUserId_ReturnsEmpty() {
-    final long mockUserId = 301;
-
-    when(passwordAuthRepository.findByUserId(mockUserId)).thenReturn(Mono.empty());
-    when(userAuthRepository.findByUserId(mockUserId)).thenReturn(Mono.empty());
-
-    StepVerifier.create(userService.createUserDetailsFromUserId(mockUserId)).expectComplete()
-        .verify();
-
-    verify(passwordAuthRepository, times(1)).findByUserId(mockUserId);
-    verify(userAuthRepository, times(1)).findByUserId(mockUserId);
-  }
-
-  @Test
   public void deleteById_InvalidUserId_ReturnsInvalidUserIdException() {
     for (final Long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.deleteById(userId)).expectError(InvalidUserIdException.class)
@@ -847,7 +762,7 @@ public class UserServiceTest {
     verify(userRepository, times(1)).save(any(User.class));
     verify(mockUser, times(1)).getDisplayName();
   }
-  
+
   @BeforeEach
   private void setUp() {
     // Set up the system under test
