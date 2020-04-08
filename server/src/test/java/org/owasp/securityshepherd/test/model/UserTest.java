@@ -54,7 +54,6 @@ public class UserTest {
   @Test
   public void buildDisplayName_ValidDisplayName_BuildsUser() {
     final UserBuilder userBuilder = User.builder();
-
     for (final String displayName : TestUtils.STRINGS) {
       final User user = userBuilder.displayName(displayName).build();
       assertThat(user.getDisplayName(), is(displayName));
@@ -64,7 +63,6 @@ public class UserTest {
   @Test
   public void buildId_ValidId_BuildsUser() {
     final UserBuilder userBuilder = User.builder().id(12345L).displayName("TestUser");
-
     for (final Long id : TestUtils.LONGS_WITH_NULL) {
       final User user = userBuilder.id(id).build();
       assertThat(user.getId(), is(id));
@@ -74,7 +72,6 @@ public class UserTest {
   @Test
   public void buildIsNotBanned_ValidBoolean_BuildsUser() {
     final UserBuilder userBuilder = User.builder().displayName("TestUser");
-
     for (final boolean isNotBanned : TestUtils.BOOLEANS) {
       final User user = userBuilder.isNotBanned(isNotBanned).build();
       assertThat(user.isNotBanned(), is(isNotBanned));
