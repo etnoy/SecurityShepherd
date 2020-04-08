@@ -36,7 +36,7 @@ public class UserController {
   }
 
   @GetMapping(path = "user/{id}")
-  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @PreAuthorize("hasRole('ROLE_USER')")
   public Mono<User> getById(@PathVariable final int id) {
     return userService.findById(id);
   }

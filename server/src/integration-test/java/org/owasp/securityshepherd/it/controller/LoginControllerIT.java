@@ -48,7 +48,7 @@ public class LoginControllerIT {
 
   @Test
   @DisplayName("Logging in with correct credentials should return a valid token")
-  public void login_CorrectCredentials_ReturnsJWS() {
+  public void login_CorrectCredentials_ReturnsToken() {
     final String loginName = "test";
     final String hashedPassword = "$2y$12$53B6QcsGwF3Os1GVFUFSQOhIPXnWFfuEkRJdbknFWnkXfUBMUKhaW";
 

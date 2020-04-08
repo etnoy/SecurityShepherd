@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 })
 
 export class AuthService {
-  endpoint: string = 'http://localhost:8080/api/v1';
+  endpoint = 'http://localhost:8080/api/v1';
   headers = new HttpHeaders().set('Content-Type', 'application/json');
   currentUser = {};
 
@@ -22,23 +22,23 @@ export class AuthService {
 
   // Sign-up
   signUp(user: User): Observable<any> {
-    let api = `${this.endpoint}/register-user`;
+    const api = `${this.endpoint}/register`;
     return this.http.post(api, user)
       .pipe(
         catchError(this.handleError)
-      )
+      );
   }
 
   // Sign-in
   signIn(user: User) {
     return this.http.post<any>(`${this.endpoint}/login`, user)
       .subscribe((res: any) => {
-        localStorage.setItem('access_token', res.token)
-        this.getUserProfile(res._id).subscribe((res) => {
-          this.currentUser = res;
-          this.router.navigate(['user-profile/' + res.msg._id]);
-        })
-      })
+        localStorage.setItem('access_token', res.token);
+        this.getModules().subscribe((resource) => {
+          this.currentUser = resource;
+          this.router.navigate(['modules/']);
+        });
+      });
   }
 
   getToken() {
@@ -46,26 +46,25 @@ export class AuthService {
   }
 
   get isLoggedIn(): boolean {
-    let authToken = localStorage.getItem('access_token');
+    const authToken = localStorage.getItem('access_token');
     return (authToken !== null) ? true : false;
   }
 
   doLogout() {
-    let removeToken = localStorage.removeItem('access_token');
+    const removeToken = localStorage.removeItem('access_token');
     if (removeToken == null) {
-      this.router.navigate(['log-in']);
+      this.router.navigate(['login']);
     }
   }
 
-  // User profile
-  getUserProfile(id): Observable<any> {
-    let api = `${this.endpoint}/user-profile/${id}`;
+  getModules(): Observable<any> {
+    const api = `${this.endpoint}/modules/`;
     return this.http.get(api, { headers: this.headers }).pipe(
       map((res: Response) => {
-        return res || {}
+        return res || {};
       }),
       catchError(this.handleError)
-    )
+    );
   }
 
   // Error

@@ -1,5 +1,7 @@
 import { TestBed, async } from '@angular/core/testing';
 import { AppComponent } from './app.component';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 
 describe('AppComponent', () => {
   beforeEach(async(() => {
@@ -7,6 +9,7 @@ describe('AppComponent', () => {
       declarations: [
         AppComponent
       ],
+      imports: [ HttpClientTestingModule ]
     }).compileComponents();
   }));
 
@@ -14,12 +17,6 @@ describe('AppComponent', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
     expect(app).toBeTruthy();
-  });
-
-  it(`should have as title 'shepherd'`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('shepherd');
   });
 
   it('should render title', () => {

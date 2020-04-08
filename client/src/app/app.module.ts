@@ -5,21 +5,32 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { SigninComponent } from './components/signin/signin.component';
 import { SignupComponent } from './components/signup/signup.component';
-import { UserProfileComponent } from './components/user-profile/user-profile.component';
-import { HttpClientModule } from '@angular/common/http';
+import { ModulesComponent } from './components/modules/modules.component';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './shared/authconfig.interceptor';
+import { AppRoutingModule } from './app-routing.module';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
     AppComponent,
     SigninComponent,
     SignupComponent,
-    UserProfileComponent
+    ModulesComponent
   ],
   imports: [
     BrowserModule,
-    HttpClientModule
+    HttpClientModule,
+    AppRoutingModule,
+    ReactiveFormsModule,
+    FormsModule
   ],
-  providers: [],
-  bootstrap: [AppComponent]
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
+  ],  bootstrap: [AppComponent]
 })
 export class AppModule { }
