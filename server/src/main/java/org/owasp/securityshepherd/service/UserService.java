@@ -1,6 +1,5 @@
 package org.owasp.securityshepherd.service;
 
-import java.util.List;
 import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
 import org.owasp.securityshepherd.exception.DuplicateClassNameException;
 import org.owasp.securityshepherd.exception.DuplicateUserDisplayNameException;
@@ -55,14 +54,10 @@ public final class UserService {
         .map(hashedPassword -> encoder.matches(password, hashedPassword));
   }
 
-  public Mono<List<SimpleGrantedAuthority>> getAuthoritiesById(final long userId) {
-    final Mono<UserAuth> userAuthMono = findUserAuthByUserId(userId);
-
-    Flux<SimpleGrantedAuthority> authoritiesFlux = userAuthMono.filter(UserAuth::isAdmin)
+  public Flux<SimpleGrantedAuthority> getAuthoritiesByUserId(final long userId) {
+    return findUserAuthByUserId(userId).filter(UserAuth::isAdmin)
         .map(userAuth -> new SimpleGrantedAuthority("ROLE_ADMIN")).flux()
         .concatWithValues(new SimpleGrantedAuthority("ROLE_USER"));
-
-    return authoritiesFlux.collectList();
   }
 
   public Mono<Long> create(final String displayName) {
