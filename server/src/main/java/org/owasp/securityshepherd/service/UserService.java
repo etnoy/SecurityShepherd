@@ -41,20 +41,35 @@ public final class UserService {
     return userRepository.count();
   }
 
-  public Mono<Boolean> authenticate(final String loginName, final String password) {
+  public Mono<Boolean> authenticate(final String username, final String password) {
+    if (username == null) {
+      return Mono.error(new NullPointerException());
+    }
+    if (password == null) {
+      return Mono.error(new NullPointerException());
+    }
+    if (username.isEmpty()) {
+      return Mono.error(new IllegalArgumentException());
+    }
+    if (password.isEmpty()) {
+      return Mono.error(new IllegalArgumentException());
+    }
     // Initialize the encoder
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
 
     return
     // Find the password auth
-    findPasswordAuthByLoginName(loginName)
+    findPasswordAuthByLoginName(username)
         // Extract the password hash
         .map(PasswordAuth::getHashedPassword)
         // Check if hash matches
-        .map(hashedPassword -> encoder.matches(password, hashedPassword));
+        .map(hashedPassword -> encoder.matches(password, hashedPassword)).defaultIfEmpty(false);
   }
 
   public Flux<SimpleGrantedAuthority> getAuthoritiesByUserId(final long userId) {
+    if (userId <= 0) {
+      return Flux.error(new InvalidUserIdException());
+    }
     return findUserAuthByUserId(userId).filter(UserAuth::isAdmin)
         .map(userAuth -> new SimpleGrantedAuthority("ROLE_ADMIN")).flux()
         .concatWithValues(new SimpleGrantedAuthority("ROLE_USER"));
@@ -197,8 +212,12 @@ public final class UserService {
   }
 
   public Mono<PasswordAuth> findPasswordAuthByLoginName(final String loginName) {
-    // TOOD: validate not null
-
+    if (loginName == null) {
+      return Mono.error(new NullPointerException());
+    }
+    if (loginName.isEmpty()) {
+      return Mono.error(new IllegalArgumentException());
+    }
     return passwordAuthRepository.findByLoginName(loginName);
   }
 

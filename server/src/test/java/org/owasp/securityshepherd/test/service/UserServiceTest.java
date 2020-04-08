@@ -33,6 +33,8 @@ import org.owasp.securityshepherd.service.ClassService;
 import org.owasp.securityshepherd.service.KeyService;
 import org.owasp.securityshepherd.service.UserService;
 import org.owasp.securityshepherd.test.util.TestUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
@@ -59,6 +61,74 @@ public class UserServiceTest {
   private ClassService classService = Mockito.mock(ClassService.class);
 
   private KeyService keyService = Mockito.mock(KeyService.class);
+
+  @Test
+  public void authenticate_EmptyPassword_ReturnsIllegalArgumentException() {
+    StepVerifier.create(userService.authenticate("username", ""))
+        .expectError(IllegalArgumentException.class).verify();
+  }
+
+  @Test
+  public void authenticate_EmptyUsername_ReturnsIllegalArgumentException() {
+    StepVerifier.create(userService.authenticate("", "password"))
+        .expectError(IllegalArgumentException.class).verify();
+  }
+
+  @Test
+  public void authenticate_InvalidUsername_ReturnsFalse() {
+    final String mockedLoginName = "MockUser";
+    final String mockedPassword = "MockPassword";
+
+    when(passwordAuthRepository.findByLoginName(mockedLoginName)).thenReturn(Mono.empty());
+    StepVerifier.create(userService.authenticate(mockedLoginName, mockedPassword)).expectNext(false)
+        .expectComplete().verify();
+    verify(passwordAuthRepository, times(1)).findByLoginName(mockedLoginName);
+  }
+
+  @Test
+  public void authenticate_NullPassword_ReturnsNullPointerException() {
+    StepVerifier.create(userService.authenticate("username", null))
+        .expectError(NullPointerException.class).verify();
+  }
+
+  @Test
+  public void authenticate_NullUsername_ReturnsNullPointerException() {
+    StepVerifier.create(userService.authenticate(null, "password"))
+        .expectError(NullPointerException.class).verify();
+  }
+
+  @Test
+  public void authenticate_ValidUsernameAndPassword_ReturnsTrue() {
+    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
+    final String mockedLoginName = "MockUser";
+    final String mockedPassword = "MockPassword";
+    final String mockedPasswordHash = encoder.encode(mockedPassword);
+    final PasswordAuth mockedPasswordAuth = mock(PasswordAuth.class);
+
+    when(passwordAuthRepository.findByLoginName(mockedLoginName))
+        .thenReturn(Mono.just(mockedPasswordAuth));
+    when(mockedPasswordAuth.getHashedPassword()).thenReturn(mockedPasswordHash);
+    StepVerifier.create(userService.authenticate(mockedLoginName, mockedPassword)).expectNext(true)
+        .expectComplete().verify();
+    verify(passwordAuthRepository, times(1)).findByLoginName(mockedLoginName);
+  }
+
+  @Test
+  public void authenticate_ValidUsernameButInvalidPassword_ReturnsTrue() {
+    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
+    final String mockedLoginName = "MockUser";
+    final String wrongPassword = "WrongPassword";
+    final String mockedPassword = "MockPassword";
+    final String mockedPasswordHash = encoder.encode(mockedPassword);
+    final PasswordAuth mockedPasswordAuth = mock(PasswordAuth.class);
+
+    when(passwordAuthRepository.findByLoginName(mockedLoginName))
+        .thenReturn(Mono.just(mockedPasswordAuth));
+    when(mockedPasswordAuth.getHashedPassword()).thenReturn(mockedPasswordHash);
+    StepVerifier.create(userService.authenticate(mockedLoginName, wrongPassword)).expectNext(false)
+        .expectComplete().verify();
+    verify(passwordAuthRepository, times(1)).findByLoginName(mockedLoginName);
+  }
 
   @Test
   @DisplayName("count() should call repository and return user count")
@@ -238,6 +308,12 @@ public class UserServiceTest {
   }
 
   @Test
+  public void findPasswordAuthByLoginName_NullLoginName_ReturnsNullPointerException() {
+    StepVerifier.create(userService.findPasswordAuthByLoginName(null))
+        .expectError(NullPointerException.class).verify();
+  }
+
+  @Test
   public void deleteById_InvalidUserId_ReturnsInvalidUserIdException() {
     for (final Long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.deleteById(userId)).expectError(InvalidUserIdException.class)
@@ -379,6 +455,14 @@ public class UserServiceTest {
   }
 
   @Test
+  public void getAuthoritiesByUserId_InvalidUserId_ReturnsInvalidUserIdException() {
+    for (final long userId : TestUtils.INVALID_IDS) {
+      StepVerifier.create(userService.getAuthoritiesByUserId(userId))
+          .expectError(InvalidUserIdException.class).verify();
+    }
+  }
+
+  @Test
   public void findById_InvalidUserId_ReturnsInvalidUserIdException() {
     for (final long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.findById(userId)).expectError(InvalidUserIdException.class)
@@ -462,6 +546,39 @@ public class UserServiceTest {
   }
 
   @Test
+  public void findPasswordAuthByLoginName_EmptyLoginName_ReturnsIllegalArgumentException() {
+    StepVerifier.create(userService.findPasswordAuthByLoginName(""))
+        .expectError(IllegalArgumentException.class).verify();
+  }
+
+  @Test
+  public void findPasswordAuthByLoginName_ExistingLoginName_ReturnsPasswordAuth() {
+    final PasswordAuth mockPasswordAuth = mock(PasswordAuth.class);
+
+    final String mockLoginName = "loginName";
+    final Long mockUserId = 301L;
+
+    when(passwordAuthRepository.findByLoginName(mockLoginName))
+        .thenReturn(Mono.just(mockPasswordAuth));
+
+    when(mockPasswordAuth.getUserId()).thenReturn(mockUserId);
+
+    StepVerifier.create(userService.findPasswordAuthByLoginName(mockLoginName))
+        .expectNext(mockPasswordAuth).expectComplete().verify();
+
+    verify(passwordAuthRepository, times(1)).findByLoginName(mockLoginName);
+  }
+
+  @Test
+  public void findPasswordAuthByLoginName_NonExistentLoginName_ReturnsEmpty() {
+    final String mockLoginName = "loginName";
+    when(passwordAuthRepository.findByLoginName(mockLoginName)).thenReturn(Mono.empty());
+    StepVerifier.create(userService.findPasswordAuthByLoginName(mockLoginName)).expectComplete()
+        .verify();
+    verify(passwordAuthRepository, times(1)).findByLoginName(mockLoginName);
+  }
+
+  @Test
   public void findPasswordAuthByUserId_InvalidUserId_ReturnsInvalidUserIdException() {
     for (final long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.findPasswordAuthByUserId(userId))
@@ -524,6 +641,29 @@ public class UserServiceTest {
     StepVerifier.create(userService.findUserAuthByUserId(nonExistentUserId)).expectComplete()
         .verify();
     verify(userAuthRepository, times(1)).findByUserId(nonExistentUserId);
+  }
+
+  @Test
+  public void getAuthoritiesByUserId_UserIsAdmin_ReturnsAdminAuthority() {
+    final long mockedUserId = 158L;
+    final UserAuth mockedUserAuth = mock(UserAuth.class);
+    when(userAuthRepository.findByUserId(mockedUserId)).thenReturn(Mono.just(mockedUserAuth));
+    when(mockedUserAuth.isAdmin()).thenReturn(true);
+    StepVerifier.create(userService.getAuthoritiesByUserId(mockedUserId))
+        .expectNext(new SimpleGrantedAuthority("ROLE_ADMIN"))
+        .expectNext(new SimpleGrantedAuthority("ROLE_USER")).expectComplete().verify();
+    verify(userAuthRepository, times(1)).findByUserId(mockedUserId);
+  }
+
+  @Test
+  public void getAuthoritiesByUserId_UserIsNotAdmin_ReturnsUserAuthority() {
+    final long mockedUserId = 158L;
+    final UserAuth mockedUserAuth = mock(UserAuth.class);
+    when(userAuthRepository.findByUserId(mockedUserId)).thenReturn(Mono.just(mockedUserAuth));
+    when(mockedUserAuth.isAdmin()).thenReturn(false);
+    StepVerifier.create(userService.getAuthoritiesByUserId(mockedUserId))
+        .expectNext(new SimpleGrantedAuthority("ROLE_USER")).expectComplete().verify();
+    verify(userAuthRepository, times(1)).findByUserId(mockedUserId);
   }
 
   @Test
