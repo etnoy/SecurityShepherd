@@ -47,7 +47,7 @@ public class ConfigurationTest {
   }
 
   @Test
-  public void buildKey_NullKey_ThrowsException() {
+  public void buildKey_NullKey_ThrowsNullPointerException() {
     assertThrows(NullPointerException.class, () -> Configuration.builder().key(null));
   }
 
@@ -67,7 +67,7 @@ public class ConfigurationTest {
   }
 
   @Test
-  public void buildValue_NullValue_ThrowsException() {
+  public void buildValue_NullValue_ThrowsNullPointerException() {
     assertThrows(NullPointerException.class, () -> Configuration.builder().value(null));
   }
 
@@ -113,7 +113,7 @@ public class ConfigurationTest {
   }
 
   @Test
-  public void withKey_NullKey_ThrowsException() {
+  public void withKey_NullKey_ThrowsNullPointerException() {
     assertThrows(NullPointerException.class,
         () -> Configuration.builder().key("serverKey").value("secret123").build().withKey(null));
   }
@@ -134,7 +134,7 @@ public class ConfigurationTest {
   }
 
   @Test
-  public void withValue_NullValue_ThrowsException() {
+  public void withValue_NullValue_ThrowsNullPointerException() {
     assertThrows(NullPointerException.class,
         () -> Configuration.builder().key("serverKey").value("secret123").build().withValue(null));
   }

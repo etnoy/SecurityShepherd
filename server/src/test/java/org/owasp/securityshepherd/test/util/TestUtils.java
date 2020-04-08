@@ -1,5 +1,7 @@
 package org.owasp.securityshepherd.test.util;
 
+import java.time.LocalDateTime;
+import org.apache.commons.lang3.ArrayUtils;
 import org.owasp.securityshepherd.repository.ClassRepository;
 import org.owasp.securityshepherd.repository.ConfigurationRepository;
 import org.owasp.securityshepherd.repository.CorrectionRepository;
@@ -27,9 +29,35 @@ public final class TestUtils {
       Long.valueOf(Integer.MAX_VALUE) + 1, Long.valueOf(Integer.MIN_VALUE - 1), 123456789L,
       -12346789L, Long.MAX_VALUE, Long.MIN_VALUE};
 
-  public static final Long[] LONGS_WITH_NULL = {null, INITIAL_LONG, 1L, -1L, 100L, -100L, 1000L,
-      -1000L, Long.valueOf(Integer.MAX_VALUE) + 1, Long.valueOf(Integer.MIN_VALUE - 1), 123456789L,
-      -12346789L, Long.MAX_VALUE, Long.MIN_VALUE};
+  public static final Long[] LONGS_WITH_NULL = (Long[]) ArrayUtils.addAll(LONGS, (Long) null);
+
+  public static final LocalDateTime INITIAL_LOCALDATETIME = LocalDateTime.MIN;
+
+  public static final LocalDateTime[] LOCALDATETIMES =
+      {INITIAL_LOCALDATETIME, INITIAL_LOCALDATETIME.plusNanos(1),
+          INITIAL_LOCALDATETIME.plusSeconds(1), INITIAL_LOCALDATETIME.plusMinutes(1),
+          INITIAL_LOCALDATETIME.plusHours(1), INITIAL_LOCALDATETIME.plusDays(1),
+          INITIAL_LOCALDATETIME.plusWeeks(1), INITIAL_LOCALDATETIME.plusMonths(1),
+          INITIAL_LOCALDATETIME.plusYears(1), INITIAL_LOCALDATETIME.plusYears(1000),
+          INITIAL_LOCALDATETIME.plusYears(100000), LocalDateTime.MAX};
+
+  public static final LocalDateTime[] LOCALDATETIMES_WITH_NULL =
+      (LocalDateTime[]) ArrayUtils.addAll(LOCALDATETIMES, (LocalDateTime) null);
+
+  public static final String INITIAL_STRING = "";
+
+  public static final String[] STRINGS =
+      {INITIAL_STRING, "Test String", "åäö", "1;DROP TABLE users", " ", "%", "_", "-", "--",
+          "జ్ఞ‌ా", "Ｔｈｅ ｑｕｉｃｋ ｂｒｏｗｎ ｆｏｘ ｊｕｍｐｓ ｏｖｅｒ ｔｈｅ ｌａｚｙ ｄｏｇ",
+          "𝐓𝐡𝐞 𝐪𝐮𝐢𝐜𝐤 𝐛𝐫𝐨𝐰𝐧 𝐟𝐨𝐱 𝐣𝐮𝐦𝐩𝐬 𝐨𝐯𝐞𝐫 𝐭𝐡𝐞 𝐥𝐚𝐳𝐲 𝐝𝐨𝐠",
+          "𝕿𝖍𝖊 𝖖𝖚𝖎𝖈𝖐 𝖇𝖗𝖔𝖜𝖓 𝖋𝖔𝖝 𝖏𝖚𝖒𝖕𝖘 𝖔𝖛𝖊𝖗 𝖙𝖍𝖊 𝖑𝖆𝖟𝖞 𝖉𝖔𝖌",
+          "𝑻𝒉𝒆 𝒒𝒖𝒊𝒄𝒌 𝒃𝒓𝒐𝒘𝒏 𝒇𝒐𝒙 𝒋𝒖𝒎𝒑𝒔 𝒐𝒗𝒆𝒓 𝒕𝒉𝒆 𝒍𝒂𝒛𝒚 𝒅𝒐𝒈",
+          "𝓣𝓱𝓮 𝓺𝓾𝓲𝓬𝓴 𝓫𝓻𝓸𝔀𝓷 𝓯𝓸𝔁 𝓳𝓾𝓶𝓹𝓼 𝓸𝓿𝓮𝓻 𝓽𝓱𝓮 𝓵𝓪𝔃𝔂 𝓭𝓸𝓰",
+          "𝕋𝕙𝕖 𝕢𝕦𝕚𝕔𝕜 𝕓𝕣𝕠𝕨𝕟 𝕗𝕠𝕩 𝕛𝕦𝕞𝕡𝕤 𝕠𝕧𝕖𝕣 𝕥𝕙𝕖 𝕝𝕒𝕫𝕪 𝕕𝕠𝕘",
+          "𝚃𝚑𝚎 𝚚𝚞𝚒𝚌𝚔 𝚋𝚛𝚘𝚠𝚗 𝚏𝚘𝚡 𝚓𝚞𝚖𝚙𝚜 𝚘𝚟𝚎𝚛 𝚝𝚑𝚎 𝚕𝚊𝚣𝚢 𝚍𝚘𝚐"};
+
+  public static final String[] STRINGS_WITH_NULL =
+      (String[]) ArrayUtils.addAll(STRINGS, (String) null);
 
   private final UserRepository userRepository;
 

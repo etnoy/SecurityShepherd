@@ -90,7 +90,7 @@ public class PasswordAuthTest {
   }
 
   @Test
-  public void buildLoginName_NullLoginName_ThrowsException() {
+  public void buildLoginName_NullLoginName_ThrowsNullPointerException() {
     assertThrows(NullPointerException.class, () -> PasswordAuth.builder().loginName(null));
   }
 

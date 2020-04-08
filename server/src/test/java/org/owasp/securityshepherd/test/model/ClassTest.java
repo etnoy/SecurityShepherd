@@ -75,7 +75,7 @@ public class ClassTest {
   }
 
   @Test
-  public void withName_NullName_ThrowsException() {
+  public void withName_NullName_ThrowsNullPointerException() {
     final String name = "withName_NullName";
     final ClassEntity testClass = ClassEntity.builder().name(name).build();
     assertThrows(NullPointerException.class, () -> testClass.withName(null));

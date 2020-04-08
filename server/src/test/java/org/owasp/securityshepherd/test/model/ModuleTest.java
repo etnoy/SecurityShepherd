@@ -15,7 +15,7 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 @DisplayName("Module unit test")
 public class ModuleTest {
   @Test
-  public void build_NoArguments_ThrowsException() {
+  public void build_NoArguments_ThrowsNullPointerException() {
     assertThrows(NullPointerException.class, () -> Module.builder().build());
   }
 
@@ -194,7 +194,7 @@ public class ModuleTest {
   }
 
   @Test
-  public void withName_NullName_ThrowsException() {
+  public void withName_NullName_ThrowsNullPointerException() {
     assertThrows(NullPointerException.class,
         () -> Module.builder().name("TestModule").build().withName(null));
   }

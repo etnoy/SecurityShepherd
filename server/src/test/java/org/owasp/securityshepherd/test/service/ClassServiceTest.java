@@ -119,7 +119,7 @@ public class ClassServiceTest {
 
   @Test
   @DisplayName("Throw InvalidClassIdException when trying to retrieve a class entity that does not exist")
-  public void getById_InvalidClassId_ThrowsException() {
+  public void getById_InvalidClassId_ThrowsInvalidClassIdException() {
     StepVerifier.create(classService.getById(-1)).expectError(InvalidClassIdException.class)
         .verify();
     StepVerifier.create(classService.getById(0)).expectError(InvalidClassIdException.class)

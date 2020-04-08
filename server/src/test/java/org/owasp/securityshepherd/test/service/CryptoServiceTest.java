@@ -23,7 +23,7 @@ public class CryptoServiceTest {
   CryptoService cryptoService;
 
   @Test
-  public void hmac_NullKey_ThrowsException() {
+  public void hmac_NullKey_ThrowsNullPointerException() {
     final byte[] message = {120, 56, 111, -98, -118, 44, -65, -127, 39, 35};
 
     StepVerifier.create(cryptoService.hmac(null, message)).expectError(NullPointerException.class)

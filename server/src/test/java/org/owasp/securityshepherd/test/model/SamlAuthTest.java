@@ -14,12 +14,12 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 @DisplayName("SamlAuth unit test")
 public class SamlAuthTest {
   @Test
-  public void build_SamlIdNotGiven_ThrowsException() {
+  public void build_SamlIdNotGiven_ThrowsNullPointerException() {
     assertThrows(NullPointerException.class, () -> SamlAuth.builder().userId(3).build());
   }
 
   @Test
-  public void build_UserIdNotGiven_ThrowsException() {
+  public void build_UserIdNotGiven_ThrowsNullPointerException() {
     assertThrows(NullPointerException.class,
         () -> SamlAuth.builder().samlId("me@example.com").build());
   }
@@ -31,7 +31,7 @@ public class SamlAuthTest {
   }
 
   @Test
-  public void buildSamlid_NullSamlId_ThrowsException() {
+  public void buildSamlid_NullSamlId_ThrowsNullPointerException() {
     assertThrows(NullPointerException.class, () -> SamlAuth.builder().samlId(null));
   }
 
@@ -95,7 +95,7 @@ public class SamlAuthTest {
   }
 
   @Test
-  public void withSamlid_NullSamlId_ThrowsException() {
+  public void withSamlid_NullSamlId_ThrowsNullPointerException() {
     final SamlAuth samlAuth = SamlAuth.builder().userId(1).samlId("me@example.com").build();
     assertThrows(NullPointerException.class, () -> samlAuth.withSamlId(null));
   }
@@ -115,7 +115,7 @@ public class SamlAuthTest {
   }
 
   @Test
-  public void withUserId_NullUserId_ThrowsException() {
+  public void withUserId_NullUserId_ThrowsNullPointerException() {
     final SamlAuth samlAuth = SamlAuth.builder().userId(1).samlId("me@example.com").build();
     assertThrows(NullPointerException.class, () -> samlAuth.withUserId(null));
   }

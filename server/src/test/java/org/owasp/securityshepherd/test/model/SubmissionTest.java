@@ -109,7 +109,7 @@ public class SubmissionTest {
   }
 
   @Test
-  public void buildTime_NullTime_ThrowsException() {
+  public void buildTime_NullTime_ThrowsNullPointerException() {
     final SubmissionBuilder submissionBuilder = Submission.builder();
     assertThrows(NullPointerException.class, () -> submissionBuilder.time(null));
   }
@@ -224,23 +224,18 @@ public class SubmissionTest {
   }
 
   @Test
-  public void withTime_NullTime_ThrowsException() {
-    assertThrows(NullPointerException.class, () -> Submission.builder().userId(143723L)
-        .moduleId(7189L).time(LocalDateTime.MIN).build().withTime(null));
+  public void withTime_NullTime_ThrowsNullPointerException() {
+    final Submission submission = Submission.builder().userId(TestUtils.INITIAL_LONG).flag("flag")
+        .time(LocalDateTime.MIN).moduleId(1L).build();
+    assertThrows(NullPointerException.class, () -> submission.withTime(null));
   }
 
   @Test
   public void withTime_ValidTime_ChangesTime() {
-    final LocalDateTime originalTime = LocalDateTime.MIN;
+    final Submission testSubmission = Submission.builder().userId(4L).moduleId(716789L).flag("flag")
+        .time(TestUtils.INITIAL_LOCALDATETIME).build();
 
-    final LocalDateTime[] timesToTest = {originalTime, originalTime.plusHours(1),
-        originalTime.plusHours(2), originalTime.plusHours(100), originalTime.plusHours(1000),
-        originalTime.plusHours(5), originalTime.plusYears(70), originalTime.plusHours(9)};
-
-    final Submission testSubmission =
-        Submission.builder().userId(4L).moduleId(716789L).flag("flag").time(originalTime).build();
-
-    for (LocalDateTime time : timesToTest) {
+    for (LocalDateTime time : TestUtils.LOCALDATETIMES) {
       final Submission changedSubmission = testSubmission.withTime(time);
 
       assertThat(changedSubmission.getTime(), is(time));

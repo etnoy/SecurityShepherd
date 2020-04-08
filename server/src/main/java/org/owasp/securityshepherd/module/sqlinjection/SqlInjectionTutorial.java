@@ -30,7 +30,7 @@ public class SqlInjectionTutorial {
         .map(query -> String.format("r2dbc:h2:mem:///sql-injection-tutorial-for-uid%d;"
             // Load the initial sql file
             + "INIT=RUNSCRIPT FROM 'classpath:module/sql-injection-tutorial.sql'" +
-            // %5C%3B is a backslash and semicolon URL-formatted
+            // %5C%3B is a backslash and semicolon URL-formatted    
             "%s%s", userId, "%5C%3B", query));
 
     // Create a DatabaseClient that allows us to manually interact with the database

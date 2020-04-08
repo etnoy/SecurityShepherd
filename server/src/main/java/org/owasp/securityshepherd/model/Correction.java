@@ -22,10 +22,11 @@ public class Correction implements Serializable {
   private Long userId;
 
   @NonNull
-  private Integer amount;
+  private Long amount;
   
   @NonNull
   private LocalDateTime time;
   
   private String description;
+
 }

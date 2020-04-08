@@ -87,7 +87,7 @@ public final class SubmissionService {
         .map(u -> false).defaultIfEmpty(true);
   }
 
-  public Mono<Correction> submitCorrection(final Long userId, final int amount,
+  public Mono<Correction> submitCorrection(final Long userId, final long amount,
       final String description) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
