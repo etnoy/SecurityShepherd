@@ -29,7 +29,6 @@ public class PasswordAuthTest {
     final Exception thrownException =
         assertThrows(NullPointerException.class, () -> passwordAuthBuilder.build());
     assertThat(thrownException.getMessage(), is("loginName is marked non-null but is null"));
-
   }
 
   @Test
@@ -39,7 +38,6 @@ public class PasswordAuthTest {
     final Exception thrownException =
         assertThrows(NullPointerException.class, () -> passwordAuthBuilder.build());
     assertThat(thrownException.getMessage(), is("userId is marked non-null but is null"));
-
   }
 
   @Test
@@ -108,7 +106,6 @@ public class PasswordAuthTest {
       assertThat(changedPasswordAuth.getLoginName(), is(loginName));
     }
   }
-
 
   @Test
   public void buildUserId_NullUserId_ThrowsNullPointerException() {
