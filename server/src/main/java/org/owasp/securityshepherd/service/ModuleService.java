@@ -170,12 +170,16 @@ public final class ModuleService {
       return Mono.error(new NullPointerException("Submitted flag cannot be null"));
     }
 
+    log.trace("Verifying flag " + submittedFlag + " submitted by userId " + userId + " to moduleId "
+        + moduleId);
+
     // Get the module from the repository
     final Mono<Module> currentModule = findById(moduleId);
 
     final Mono<Boolean> isValid = currentModule
         // If the module wasn't found, return exception
-        .switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
+        .switchIfEmpty(
+            Mono.error(new ModuleIdNotFoundException("Module id " + moduleId + " was not found")))
         // Check to see if flags are enabled
         .filter(Module::isFlagEnabled)
         // If flag wasn't enabled, return exception
