@@ -1,7 +1,6 @@
-package org.owasp.securityshepherd.test.application;
+package org.owasp.securityshepherd.it.application;
 
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.owasp.securityshepherd.SecurityShepherdApplication;
@@ -11,10 +10,9 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@DisplayName("Application unit test")
+@DisplayName("Application integration test")
 class SecurityShepherdApplicationTest {
   @Test
-  @Tag("slow")
   @DisplayName("Application context loads")
   public void main_ApplicationStartup_ContextLoads() {
     // We just test that no exception is thrown

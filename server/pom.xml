@@ -21,6 +21,9 @@
 		<skipTests>false</skipTests>
 		<skipITs>${skipTests}</skipITs>
 		<skipUTs>${skipTests}</skipUTs>
+		<sonar.exclusions>
+			**/SecurityShepherdApplication.java
+		</sonar.exclusions>
 	</properties>
 
 	<dependencies>
