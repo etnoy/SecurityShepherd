@@ -8,7 +8,10 @@ import {
 } from 'rxjs/operators';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
-type State = { id: number; name: string };
+interface State {
+  id: number;
+  name: string;
+}
 
 const states: State[] = [
   { id: 0, name: 'Alabama' },
