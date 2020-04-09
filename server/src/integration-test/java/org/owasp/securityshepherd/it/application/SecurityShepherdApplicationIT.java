@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @DisplayName("Application integration test")
-class SecurityShepherdApplicationTest {
+class SecurityShepherdApplicationIT {
   @Test
   @DisplayName("Application context loads")
   public void main_ApplicationStartup_ContextLoads() {
