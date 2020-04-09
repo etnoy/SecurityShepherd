@@ -46,6 +46,18 @@ The backend is written in Java and uses Maven and Spring Boot. Backend code is l
 
 The frontend code uses Angular and can be found in the /client folder. We recommend Visual Studio Code for frontend development.
 
+The frontend code was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.0.3.
+
+Run `ng serve` for a frontend dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+
+Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+
+Run `ng build` to build the frontend. The build artifacts will be stored in the `client/dist/` directory. Use the `--prod` flag for a production build.
+
+Run `ng test` to execute the frontend unit tests via [Karma](https://karma-runner.github.io).
+
+Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+
 ## Continuous integration
 
 We use Travis CI for continuous integration. Sonarcloud is used as a static code analysis tool for the backend.

@@ -235,6 +235,7 @@
 					<excludes>
 						<exclude>**/*IT*</exclude>
 					</excludes>
+					<trimStackTrace>false</trimStackTrace>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -246,6 +247,7 @@
 					<excludes>
 						<exclude>**/*Test*</exclude>
 					</excludes>
+					<trimStackTrace>false</trimStackTrace>
 				</configuration>
 				<executions>
 					<execution>
