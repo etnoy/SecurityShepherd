@@ -1,9 +1,11 @@
+os: linux
+dist: xenial
+language: java
 jobs:
   include:
     - stage: test
       name: Backend unit tests and coverage
       services: mysql
-      language: java
       before_install:
         - cd server
         - git fetch --unshallow
@@ -20,7 +22,6 @@ jobs:
     - stage: test
       name: Backend integration tests
       services: mysql
-      language: java
       before_install:
         - cd server
         - git fetch --unshallow
@@ -36,7 +37,7 @@ jobs:
         - mvn verify -DskipUTs=true
     - stage: test
       name: Angular lint
-      language: nodejs
+      language: node_js
       before_install:
         - cd client
         - nvm install 12
@@ -46,7 +47,7 @@ jobs:
       script:
         - ng lint
     - stage: test
-      language: nodejs
+      language: node_js
       services: xvfb
       name: Angular unit tests
       before_install:
