@@ -1,0 +1,21 @@
+<form class="form" [formGroup]="queryForm" (ngSubmit)="submitQuery()">
+  <h3 class="h3 mb-3 font-weight-normal text-center">
+    Please search our database
+  </h3>
+  <div class="form-group">
+    <label>Query</label>
+    <input
+      type="text"
+      class="form-control"
+      formControlName="query"
+      placeholder="Enter query"
+      required
+    />
+  </div>
+  <button type="submit" class="btn btn-block btn-primary">Query</button>
+</form>
+<ul>
+  <li *ngFor="let result of queryResult">
+    <p>{{ result | json }}</p>
+  </li>
+</ul>

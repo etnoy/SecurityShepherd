@@ -15,7 +15,7 @@ public class SqlInjectionTutorial {
 
   private final ModuleService moduleService;
 
-  public Flux<Map<String, Object>> submitSql(final long userId, final long moduleId,
+  public Flux<Map<String, Object>> submitQuery(final long userId, final long moduleId,
       final String usernameQuery) {
     // Generate a dynamic flag and add it as a row to the database creation script. The flag is
     // different for every user to prevent copying flags

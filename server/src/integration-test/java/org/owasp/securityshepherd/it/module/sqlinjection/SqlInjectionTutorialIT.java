@@ -65,7 +65,7 @@ public class SqlInjectionTutorialIT {
 
     moduleService.setDynamicFlag(moduleId).block();
 
-    StepVerifier.create(sqlInjectionTutorial.submitSql(userId, moduleId, "test")).expectComplete()
+    StepVerifier.create(sqlInjectionTutorial.submitQuery(userId, moduleId, "test")).expectComplete()
         .verify();
   }
 
@@ -77,7 +77,7 @@ public class SqlInjectionTutorialIT {
 
     moduleService.setDynamicFlag(moduleId).block();
 
-    StepVerifier.create(sqlInjectionTutorial.submitSql(userId, moduleId, "' OR '1' = '1"))
+    StepVerifier.create(sqlInjectionTutorial.submitQuery(userId, moduleId, "' OR '1' = '1"))
         .expectNextCount(6).expectComplete().verify();
   }
 
@@ -90,7 +90,7 @@ public class SqlInjectionTutorialIT {
     moduleService.setDynamicFlag(moduleId).block();
 
     final Mono<String> flagVerificationMono = sqlInjectionTutorial
-        .submitSql(userId, moduleId, "' OR '1' = '1").skip(5).next().map(this::extractFlagFromRow);
+        .submitQuery(userId, moduleId, "' OR '1' = '1").skip(5).next().map(this::extractFlagFromRow);
 
     // Submit the flag we got from the sql injection and make sure it validates
     StepVerifier.create(flagVerificationMono
@@ -107,7 +107,7 @@ public class SqlInjectionTutorialIT {
     moduleService.setDynamicFlag(moduleId).block();
 
     final Mono<String> flagVerificationMono = sqlInjectionTutorial
-        .submitSql(userId, moduleId, "' OR '1' = '1").skip(5).next().map(this::extractFlagFromRow);
+        .submitQuery(userId, moduleId, "' OR '1' = '1").skip(5).next().map(this::extractFlagFromRow);
 
     // Take the flag we got from the tutorial, modify it, and expect validation to fail
     StepVerifier.create(flagVerificationMono

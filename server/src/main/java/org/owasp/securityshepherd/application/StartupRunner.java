@@ -21,10 +21,9 @@ public class StartupRunner implements ApplicationRunner {
     userService.createPasswordUser("Admin", "admin",
         "$2y$08$WpfUVZLcXNNpmM2VwSWlbe25dae.eEC99AOAVUiU5RaJmfFsE9B5G").block();
     
-    moduleService.create("Sql Injection").block();
-    moduleService.create("XSS").block();
-    moduleService.create("Poor Data Validation").block();
-
+    final long moduleId = moduleService.create("Sql Injection").block().getId();
+    
+    moduleService.setDynamicFlag(moduleId).block();
 
   }
 }

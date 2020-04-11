@@ -10,6 +10,7 @@ import { AuthInterceptor } from './shared/authconfig.interceptor';
 import { AppRoutingModule } from './app-routing.module';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { SearchbarModule } from './searchbar/searchbar.module';
+import { SqlInjectionTutorialComponent } from './sql-injection-tutorial/sql-injection-tutorial.component';
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import { SearchbarModule } from './searchbar/searchbar.module';
     SigninComponent,
     SignupComponent,
     ModulesComponent,
+    SqlInjectionTutorialComponent,
   ],
   imports: [
     BrowserModule,
