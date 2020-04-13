@@ -54,10 +54,12 @@ public class ModuleControllerIT {
   public void submitModule_ValidExactFlag_Success() throws Exception {
     final String loginName = "testUser";
     final String password = "paLswOrdha17£@£sh";
+    final String moduleName = "test-module";
+    final String moduleUrl = "test-module";
 
     final String flag = "thisisaflag";
 
-    final long moduleId = moduleService.create("Test Module").block().getId();
+    final long moduleId = moduleService.create(moduleName, moduleUrl).block().getId();
 
     moduleService.setExactFlag(moduleId, flag).block();
 
@@ -88,10 +90,12 @@ public class ModuleControllerIT {
   public void submitModule_InvalidExactFlag_Success() throws Exception {
     final String loginName = "testUser";
     final String password = "paLswOrdha17£@£sh";
+    final String moduleName = "test-module";
+    final String moduleUrl = "test-module";
 
     final String flag = "thisisaflag";
 
-    final long moduleId = moduleService.create("Test Module").block().getId();
+    final long moduleId = moduleService.create(moduleName, moduleUrl).block().getId();
 
     moduleService.setExactFlag(moduleId, flag).block();
 

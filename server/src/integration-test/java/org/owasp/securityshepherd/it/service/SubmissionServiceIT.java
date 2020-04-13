@@ -69,7 +69,7 @@ public class SubmissionServiceIT {
 
     final Mono<Long> userIdMono = userService.create("TestUser");
 
-    final Mono<Long> moduleIdMono = moduleService.create("Test Module").map(Module::getId)
+    final Mono<Long> moduleIdMono = moduleService.create("Test Module", "url").map(Module::getId)
         .flatMap(moduleId -> moduleService.setExactFlag(moduleId, flag)).map(Module::getId);
 
     StepVerifier
@@ -84,7 +84,7 @@ public class SubmissionServiceIT {
 
     final Mono<Long> userIdMono = userService.create("TestUser");
 
-    final Mono<Long> moduleIdMono = moduleService.create("Test Module").map(Module::getId)
+    final Mono<Long> moduleIdMono = moduleService.create("Test Module", "url").map(Module::getId)
         .flatMap(moduleId -> moduleService.setExactFlag(moduleId, flag)).map(Module::getId);
 
     StepVerifier

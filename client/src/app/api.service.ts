@@ -18,9 +18,23 @@ export class ApiService {
 
   constructor(private http: HttpClient, public router: Router) {}
 
+  modulePostRequest(resource: string, request: string): Observable<any> {
+    const api = `${this.endpoint}/module/1/` + resource;
+    return this.http.post<any>(api, request).pipe(
+      map((res: Response) => {
+        return res || {};
+      }),
+      catchError(this.handleError)
+    );
+  }
+
   submitSqlInjectionTutorialQuery(query: string): Observable<any> {
-    const api = `${this.endpoint}/module/sql-injection-tutorial/query`;
-    return this.http.post<any>(api, query).pipe(
+    return this.modulePostRequest('query', query);
+  }
+
+  getModules(): Observable<any> {
+    const api = `${this.endpoint}/modules/`;
+    return this.http.get(api, { headers: this.headers }).pipe(
       map((res: Response) => {
         return res || {};
       }),

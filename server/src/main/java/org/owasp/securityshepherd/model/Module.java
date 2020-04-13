@@ -22,6 +22,8 @@ public class Module implements Serializable {
 
   @NonNull
   private String name;
+  
+  private String url;
 
   private String description;
 
@@ -34,5 +36,4 @@ public class Module implements Serializable {
   private String flag;
 
   private boolean isOpen;
-
 }

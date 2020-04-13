@@ -1,5 +1,6 @@
 package org.owasp.securityshepherd.application;
 
+import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorial;
 import org.owasp.securityshepherd.service.ModuleService;
 import org.owasp.securityshepherd.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +17,15 @@ public class StartupRunner implements ApplicationRunner {
   @Autowired
   ModuleService moduleService;
   
+  @Autowired
+  SqlInjectionTutorial sqlInjectionTutorial;
+  
   @Override
-  public void run(ApplicationArguments args) throws Exception {
+  public void run(ApplicationArguments args) {
+    // Create a default admin account
     userService.createPasswordUser("Admin", "admin",
         "$2y$08$WpfUVZLcXNNpmM2VwSWlbe25dae.eEC99AOAVUiU5RaJmfFsE9B5G").block();
     
-    final long moduleId = moduleService.create("Sql Injection").block().getId();
-    
-    moduleService.setDynamicFlag(moduleId).block();
-
+    sqlInjectionTutorial.initialize().block();
   }
 }

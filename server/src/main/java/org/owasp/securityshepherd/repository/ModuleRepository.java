@@ -20,4 +20,7 @@ public interface ModuleRepository extends ReactiveCrudRepository<Module, Long> {
 
   @Query("select * from module where name = :name")
   public Mono<Module> findByName(@Param("name") final String name);
+
+  @Query("select * from module where url = :url")
+  public Mono<Module> findByUrl(@Param("url") final String url);
 }

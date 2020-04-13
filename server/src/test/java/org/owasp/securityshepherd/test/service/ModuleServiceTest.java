@@ -71,31 +71,35 @@ public class ModuleServiceTest {
   @Test
   public void create_DuplicateName_ReturnsDuplicateModuleNameException() {
     final String name = "TestModule";
+    final String url = "test-module";
+
     final Module mockModule = mock(Module.class);
 
     when(moduleRepository.findByName(name)).thenReturn(Mono.just(mockModule));
 
-    StepVerifier.create(moduleService.create(name)).expectError(DuplicateModuleNameException.class)
-        .verify();
+    StepVerifier.create(moduleService.create(name, url))
+        .expectError(DuplicateModuleNameException.class).verify();
 
     verify(moduleRepository, times(1)).findByName(name);
   }
 
   @Test
   public void create_EmptyName_ReturnsIllegalArgumentException() {
-    StepVerifier.create(moduleService.create("")).expectError(IllegalArgumentException.class)
+    StepVerifier.create(moduleService.create("", "url")).expectError(IllegalArgumentException.class)
         .verify();
   }
 
   @Test
   public void create_NullName_ReturnsNullPointerException() {
-    StepVerifier.create(moduleService.create(null)).expectError(NullPointerException.class)
+    StepVerifier.create(moduleService.create(null, "url")).expectError(NullPointerException.class)
         .verify();
   }
 
   @Test
   public void create_ValidData_Succeeds() {
     final String name = "TestModule";
+    final String url = "test-module";
+
     final long mockModuleId = 390;
 
     when(moduleRepository.save(any(Module.class)))
@@ -103,7 +107,7 @@ public class ModuleServiceTest {
 
     when(moduleRepository.findByName(name)).thenReturn(Mono.empty());
 
-    StepVerifier.create(moduleService.create(name)).assertNext(module -> {
+    StepVerifier.create(moduleService.create(name, url)).assertNext(module -> {
       assertThat(module.getName(), is(name));
     }).expectComplete().verify();
 
@@ -252,7 +256,7 @@ public class ModuleServiceTest {
         .thenReturn(Mono.just(mockedHmacOutput));
     when(keyService.convertByteKeyToString(mockedHmacOutput)).thenReturn(correctFlag);
     when(keyService.byteFlagToString(mockedHmacOutput)).thenReturn(correctFlag);
-    
+
     StepVerifier.create(moduleService.getDynamicFlag(mockUserId, mockModuleId))
         .expectNext(correctFlag).expectComplete().verify();
 
@@ -827,7 +831,7 @@ public class ModuleServiceTest {
     when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
 
     when(keyService.byteFlagToString(mockedHmacOutput)).thenReturn(validFlag);
-    
+
     StepVerifier.create(moduleService.verifyFlag(mockUserId, mockModuleId, "invalidFlag"))
         //
         .expectNext(false)

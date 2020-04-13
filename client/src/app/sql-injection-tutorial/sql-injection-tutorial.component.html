@@ -14,8 +14,13 @@
   </div>
   <button type="submit" class="btn btn-block btn-primary">Query</button>
 </form>
-<ul>
-  <li *ngFor="let result of queryResult">
-    <p>{{ result | json }}</p>
-  </li>
-</ul>
+<div *ngIf="queryResult?.length > 0">
+  <h3 class="h3 mb-3 font-weight-normal text-center">
+    Search results
+  </h3>
+  <ul>
+    <li *ngFor="let result of queryResult">
+      <p>{{ result | json }}</p>
+    </li>
+  </ul>
+</div>

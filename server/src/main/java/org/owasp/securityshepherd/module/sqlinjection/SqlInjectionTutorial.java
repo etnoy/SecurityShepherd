@@ -1,25 +1,45 @@
 package org.owasp.securityshepherd.module.sqlinjection;
 
 import java.util.Map;
+import javax.annotation.PostConstruct;
+import org.owasp.securityshepherd.model.Module;
+import org.owasp.securityshepherd.module.SubmittableModule;
 import org.owasp.securityshepherd.service.ModuleService;
 import org.springframework.data.r2dbc.core.DatabaseClient;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import io.r2dbc.spi.ConnectionFactories;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-@Service
+@Component
+@Slf4j
 @RequiredArgsConstructor
-public class SqlInjectionTutorial {
+public class SqlInjectionTutorial { // extends SubmittableModule {
 
   private final ModuleService moduleService;
 
-  public Flux<Map<String, Object>> submitQuery(final long userId, final long moduleId,
-      final String usernameQuery) {
+  public Long moduleId;
+
+  public static final String MODULE_IDENTIFIER = "sql-injection-tutorial";
+  
+  @PostConstruct
+  public Mono<Void> initialize() {
+    log.info("Creating sql tutorial module");
+    final Mono<Module> moduleMono =
+        moduleService.create("Sql Injection Tutorial", MODULE_IDENTIFIER);
+
+    return moduleMono.flatMap(module -> {
+      this.moduleId = module.getId();
+      return Mono.when(moduleService.setDynamicFlag(moduleId));
+    });
+  }
+
+  public Flux<Map<String, Object>> submitQuery(final long userId, final String usernameQuery) {
     // Generate a dynamic flag and add it as a row to the database creation script. The flag is
     // different for every user to prevent copying flags
-    final Mono<String> insertionQuery = moduleService.getDynamicFlag(userId, moduleId)
+    final Mono<String> insertionQuery = moduleService.getDynamicFlag(userId, this.moduleId)
         .map(flag -> String.format(
             "INSERT INTO sqlinjection.users values ('666', 'Union Jack', 'Well done, flag is %s')",
             flag));
@@ -30,7 +50,7 @@ public class SqlInjectionTutorial {
         .map(query -> String.format("r2dbc:h2:mem:///sql-injection-tutorial-for-uid%d;"
             // Load the initial sql file
             + "INIT=RUNSCRIPT FROM 'classpath:module/sql-injection-tutorial.sql'" +
-            // %5C%3B is a backslash and semicolon URL-formatted    
+            // %5C%3B is a backslash and semicolon URL-formatted
             "%s%s", userId, "%5C%3B", query));
 
     // Create a DatabaseClient that allows us to manually interact with the database
