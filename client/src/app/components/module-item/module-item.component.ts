@@ -13,7 +13,7 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Module } from '../../model/module';
 import { XssTutorialComponent } from '../xss-tutorial/xss-tutorial.component';
-import { throwError } from 'rxjs';
+import { throwError, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-module-item',
@@ -44,36 +44,32 @@ export class ModuleItemComponent implements OnInit {
       const moduleId = params.get('id');
       this.apiService.getModuleById(moduleId).subscribe((module: Module) => {
         this.module = module;
-        this.loadComponent();
+        let currentModule;
+        switch (this.module.url) {
+          case 'sql-injection-tutorial': {
+            currentModule = SqlInjectionTutorialComponent;
+            break;
+          }
+          case 'xss-tutorial': {
+            currentModule = XssTutorialComponent;
+            break;
+          }
+          default: {
+            throwError('url cannot be resolved');
+            break;
+          }
+        }
+        const componentFactory = this.componentFactoryResolver.resolveComponentFactory(
+          currentModule
+        );
+
+        const viewContainerRef = this.moduleDirective.viewContainerRef;
+        viewContainerRef.clear();
+        const componentRef = viewContainerRef.createComponent(componentFactory);
+
+        (componentRef.instance as typeof currentModule).module = this.module;
       });
     });
-  }
-
-  loadComponent() {
-    let currentModule;
-    switch (this.module.url) {
-      case 'sql-injection-tutorial': {
-        currentModule = SqlInjectionTutorialComponent;
-        break;
-      }
-      case 'xss-tutorial': {
-        currentModule = XssTutorialComponent;
-        break;
-      }
-      default: {
-        throwError('url cannot be resolved');
-        break;
-      }
-    }
-    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(
-      currentModule
-    );
-
-    const viewContainerRef = this.moduleDirective.viewContainerRef;
-    viewContainerRef.clear();
-    const componentRef = viewContainerRef.createComponent(componentFactory);
-
-    (componentRef.instance as typeof currentModule).module = currentModule;
   }
 
   submitFlag() {}
