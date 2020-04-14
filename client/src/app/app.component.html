@@ -5,7 +5,7 @@
 
   <nav class="my-2 my-md-0 mr-md-3">
     <a
-      *ngIf="this.authService.isLoggedIn"
+      *ngIf="this.apiService.isLoggedIn"
       class="p-2 text-dark"
       routerLinkActive="active"
       routerLink="/scoreboard"
@@ -13,7 +13,7 @@
     >
 
     <a
-      *ngIf="!this.authService.isLoggedIn"
+      *ngIf="!this.apiService.isLoggedIn"
       class="p-2 text-dark"
       routerLinkActive="active"
       routerLink="/login"
@@ -22,7 +22,7 @@
   </nav>
 
   <a
-    *ngIf="!this.authService.isLoggedIn"
+    *ngIf="!this.apiService.isLoggedIn"
     class="btn btn-outline-primary"
     routerLinkActive="active"
     routerLinkActive="active"
@@ -30,8 +30,8 @@
     >Register</a
   >
   <button
-    (click)="logout()"
-    *ngIf="this.authService.isLoggedIn"
+    (click)="this.apiService.doLogout()"
+    *ngIf="this.apiService.isLoggedIn"
     type="button"
     class="btn btn-danger"
   >

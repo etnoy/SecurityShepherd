@@ -1,21 +1,21 @@
-import { Module } from './../../shared/module';
+import { Module } from '../../model/module';
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from './../../shared/auth.service';
 import { Router } from '@angular/router';
+import { ApiService } from 'src/app/service/api.service';
 
 @Component({
   selector: 'app-modules',
-  templateUrl: './modules.component.html',
-  styleUrls: ['./modules.component.css'],
+  templateUrl: './module-list.component.html',
+  styleUrls: ['./module-list.component.css']
 })
 export class ModulesComponent implements OnInit {
   modules: Module[];
 
-  constructor(public authService: AuthService, public router: Router) {
+  constructor(public apiService: ApiService, public router: Router) {
     this.modules = [];
   }
   ngOnInit(): void {
-    this.authService.getModules().subscribe((modules: Module[]) => {
+    this.apiService.getModules().subscribe((modules: Module[]) => {
       this.modules = modules;
     });
   }

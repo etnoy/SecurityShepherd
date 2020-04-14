@@ -1,24 +1,24 @@
-import { ModuleDirective } from './../module.directive';
-import { SqlInjectionTutorialComponent } from './../sql-injection-tutorial/sql-injection-tutorial.component';
-import { AuthService } from './../shared/auth.service';
+import { ModuleDirective } from '../../module.directive';
+import { SqlInjectionTutorialComponent } from '../sql-injection-tutorial/sql-injection-tutorial.component';
+import { ApiService } from '../../service/api.service';
 import {
   Component,
   OnInit,
   Input,
   ViewChild,
   ComponentFactoryResolver,
-  ViewContainerRef,
+  ViewContainerRef
 } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { Module } from '../shared/module';
+import { Module } from '../../model/module';
 import { XssTutorialComponent } from '../xss-tutorial/xss-tutorial.component';
 import { throwError } from 'rxjs';
 
 @Component({
   selector: 'app-module-item',
   templateUrl: './module-item.component.html',
-  styleUrls: ['./module-item.component.css'],
+  styleUrls: ['./module-item.component.css']
 })
 export class ModuleItemComponent implements OnInit {
   flagForm: FormGroup;
@@ -33,16 +33,16 @@ export class ModuleItemComponent implements OnInit {
     public fb: FormBuilder,
     private route: ActivatedRoute,
     private componentFactoryResolver: ComponentFactoryResolver,
-    public authService: AuthService
+    public apiService: ApiService
   ) {
     this.flagForm = this.fb.group({
-      flag: [''],
+      flag: ['']
     });
   }
   ngOnInit() {
-    this.route.paramMap.subscribe((params) => {
+    this.route.paramMap.subscribe(params => {
       const moduleId = params.get('id');
-      this.authService.getModuleById(moduleId).subscribe((module: Module) => {
+      this.apiService.getModuleById(moduleId).subscribe((module: Module) => {
         this.module = module;
         this.loadComponent();
       });
@@ -73,7 +73,7 @@ export class ModuleItemComponent implements OnInit {
     viewContainerRef.clear();
     const componentRef = viewContainerRef.createComponent(componentFactory);
 
-    (componentRef.instance as typeof currentModule).moduleId = currentModule.id;
+    (componentRef.instance as typeof currentModule).module = currentModule;
   }
 
   submitFlag() {}

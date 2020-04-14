@@ -73,7 +73,8 @@ public class ModuleController {
               });
 
         default:
-          throw new RuntimeException("Module could not be identified");
+          throw new RuntimeException(
+              String.format("Module %s could not be identified", module.getUrl()));
       }
     });
   }
