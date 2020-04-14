@@ -19,4 +19,7 @@ export class ModulesComponent implements OnInit {
       this.modules = modules;
     });
   }
+  getUrlById(id: number): string {
+    return 'sql-injection-tutorial';
+  }
 }

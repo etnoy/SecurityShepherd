@@ -5,7 +5,8 @@
       <ul>
         <li *ngFor="let module of modules">
           <p>
-            <a href="module/{{ module.url }}">{{ module.name }}</a>
+            {{ module.id }}:
+            <a href="module/{{ module.id }}">{{ module.name }}</a>
           </p>
         </li>
       </ul>

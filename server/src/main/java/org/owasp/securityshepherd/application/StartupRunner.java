@@ -1,6 +1,7 @@
 package org.owasp.securityshepherd.application;
 
 import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorial;
+import org.owasp.securityshepherd.module.xss.XssTutorial;
 import org.owasp.securityshepherd.service.ModuleService;
 import org.owasp.securityshepherd.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,9 @@ public class StartupRunner implements ApplicationRunner {
   ModuleService moduleService;
   
   @Autowired
+  XssTutorial xssTutorial;
+  
+  @Autowired
   SqlInjectionTutorial sqlInjectionTutorial;
   
   @Override
@@ -26,6 +30,7 @@ public class StartupRunner implements ApplicationRunner {
     userService.createPasswordUser("Admin", "admin",
         "$2y$08$WpfUVZLcXNNpmM2VwSWlbe25dae.eEC99AOAVUiU5RaJmfFsE9B5G").block();
     
+    xssTutorial.initialize().block();
     sqlInjectionTutorial.initialize().block();
   }
 }

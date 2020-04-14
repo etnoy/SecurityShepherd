@@ -2,36 +2,33 @@ import { Injectable } from '@angular/core';
 import { User } from './user';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpHeaders,
+  HttpErrorResponse,
+} from '@angular/common/http';
 import { Router } from '@angular/router';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-
 export class AuthService {
   endpoint = 'http://localhost:8080/api/v1';
   headers = new HttpHeaders().set('Content-Type', 'application/json');
   currentUser = {};
 
-  constructor(
-    private http: HttpClient,
-    public router: Router
-  ) {
-  }
+  constructor(private http: HttpClient, public router: Router) {}
 
   // Sign-up
   signUp(user: User): Observable<any> {
     const api = `${this.endpoint}/register`;
-    return this.http.post(api, user)
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http.post(api, user).pipe(catchError(this.handleError));
   }
 
   // Sign-in
   signIn(user: User) {
-    return this.http.post<any>(`${this.endpoint}/login`, user)
+    return this.http
+      .post<any>(`${this.endpoint}/login`, user)
       .subscribe((res: any) => {
         localStorage.setItem('access_token', res.token);
         this.getModules().subscribe((resource) => {
@@ -47,7 +44,7 @@ export class AuthService {
 
   get isLoggedIn(): boolean {
     const authToken = localStorage.getItem('access_token');
-    return (authToken !== null) ? true : false;
+    return authToken !== null ? true : false;
   }
 
   doLogout() {
@@ -59,6 +56,16 @@ export class AuthService {
 
   getModules(): Observable<any> {
     const api = `${this.endpoint}/modules/`;
+    return this.http.get(api, { headers: this.headers }).pipe(
+      map((res: Response) => {
+        return res || {};
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  getModuleById(moduleId: string): Observable<any> {
+    const api = `${this.endpoint}/module/${moduleId}`;
     return this.http.get(api, { headers: this.headers }).pipe(
       map((res: Response) => {
         return res || {};

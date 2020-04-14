@@ -1,3 +1,4 @@
+import { ModuleItemComponent } from './module-item/module-item.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
@@ -14,8 +15,8 @@ const routes: Routes = [
   { path: 'register', component: SignupComponent },
   { path: 'modules', component: ModulesComponent, canActivate: [AuthGuard] },
   {
-    path: 'module/sql-injection-tutorial',
-    component: SqlInjectionTutorialComponent,
+    path: 'module/:id',
+    component: ModuleItemComponent,
     canActivate: [AuthGuard],
   },
 ];

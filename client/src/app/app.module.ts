@@ -1,3 +1,4 @@
+import { ModuleDirective } from './module.directive';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
@@ -11,6 +12,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { SearchbarModule } from './searchbar/searchbar.module';
 import { SqlInjectionTutorialComponent } from './sql-injection-tutorial/sql-injection-tutorial.component';
+import { ModuleItemComponent } from './module-item/module-item.component';
+import { XssTutorialComponent } from './xss-tutorial/xss-tutorial.component';
 
 @NgModule({
   declarations: [
@@ -19,6 +22,9 @@ import { SqlInjectionTutorialComponent } from './sql-injection-tutorial/sql-inje
     SignupComponent,
     ModulesComponent,
     SqlInjectionTutorialComponent,
+    ModuleItemComponent,
+    XssTutorialComponent,
+    ModuleDirective,
   ],
   imports: [
     BrowserModule,

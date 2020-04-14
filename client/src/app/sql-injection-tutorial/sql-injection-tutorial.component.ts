@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { ApiService } from '../api.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
@@ -10,6 +10,8 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 export class SqlInjectionTutorialComponent implements OnInit {
   queryForm: FormGroup;
   queryResult: string[];
+
+  @Input() moduleId: number;
 
   constructor(private api: ApiService, public fb: FormBuilder) {
     this.queryForm = this.fb.group({

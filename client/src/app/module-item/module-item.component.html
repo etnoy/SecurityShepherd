@@ -1,0 +1,16 @@
+<div class="auth-wrapper">
+  <form class="form-signin" [formGroup]="flagForm" (ngSubmit)="submitFlag()">
+    <div class="form-group">
+      <label>Flag</label>
+      <input
+        type="text"
+        class="form-control"
+        formControlName="flag"
+        placeholder="Enter flag"
+        required
+      />
+    </div>
+    <button type="submit" class="btn btn-block btn-primary">Submit flag</button>
+  </form>
+</div>
+<ng-template appModuleUrl></ng-template>
