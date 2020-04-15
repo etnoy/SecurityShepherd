@@ -1,16 +1,11 @@
 package org.owasp.securityshepherd.module.xss;
 
-import java.util.Map;
 import javax.annotation.PostConstruct;
 import org.owasp.securityshepherd.model.Module;
-import org.owasp.securityshepherd.module.SubmittableModule;
 import org.owasp.securityshepherd.service.ModuleService;
-import org.springframework.data.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Component;
-import io.r2dbc.spi.ConnectionFactories;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Component

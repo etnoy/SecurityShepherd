@@ -3,7 +3,6 @@ package org.owasp.securityshepherd.module.sqlinjection;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import org.owasp.securityshepherd.model.Module;
-import org.owasp.securityshepherd.module.SubmittableModule;
 import org.owasp.securityshepherd.service.ModuleService;
 import org.springframework.data.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Component;
@@ -25,18 +24,21 @@ public class SqlInjectionTutorial { // extends SubmittableModule {
   public static final String MODULE_IDENTIFIER = "sql-injection-tutorial";
   
   @PostConstruct
-  public Mono<Void> initialize() {
+  public Mono<Long> initialize() {
     log.info("Creating sql tutorial module");
     final Mono<Module> moduleMono =
         moduleService.create("Sql Injection Tutorial", MODULE_IDENTIFIER);
 
     return moduleMono.flatMap(module -> {
       this.moduleId = module.getId();
-      return Mono.when(moduleService.setDynamicFlag(moduleId));
+      return moduleService.setDynamicFlag(moduleId).then(Mono.just(this.moduleId));
     });
   }
 
   public Flux<Map<String, Object>> submitQuery(final long userId, final String usernameQuery) {
+    if(this.moduleId == null) {
+      return Flux.error(new RuntimeException("Must initialize module before submitting to it"));
+    }
     // Generate a dynamic flag and add it as a row to the database creation script. The flag is
     // different for every user to prevent copying flags
     final Mono<String> insertionQuery = moduleService.getDynamicFlag(userId, this.moduleId)
