@@ -1,8 +1,6 @@
 package org.owasp.securityshepherd.module.xss;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import javax.annotation.PostConstruct;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.module.SubmittableModule;
@@ -10,7 +8,6 @@ import org.owasp.securityshepherd.service.ModuleService;
 import org.owasp.securityshepherd.service.XssService;
 import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,10 +42,12 @@ public class XssTutorial implements SubmittableModule {
   }
 
   public Mono<String> submitQuery(final long userId, final String query) {
-    List<String> xssList = new ArrayList<String>();
+    String alert = null;
+    final String htmlTarget = String.format(
+        "<html><head><title>Alert</title></head><body><p>Result: %s</p></body></html>", query);
+
     try {
-      xssList = xssService.doXss("<html><head><title>Alert</title></head><body><p>Result: " + query
-          + "</p></body></html>");
+      alert = xssService.doXss(htmlTarget);
     } catch (IOException e) {
       return Mono.error(e);
     }
@@ -56,15 +55,15 @@ public class XssTutorial implements SubmittableModule {
     ObjectMapper mapper = new ObjectMapper();
     ObjectNode rootNode = mapper.createObjectNode();
 
-    if (!xssList.isEmpty()) {
-      ArrayNode alerts = mapper.valueToTree(xssList);
-      rootNode.putArray("alerts").addAll(alerts);
+    rootNode.put("result", String.format("Sorry, found no result for %s", query));
+
+    if (alert != null) {
+      rootNode.put("alert", alert);
 
       return moduleService.getDynamicFlag(userId, this.moduleId)
           .map(flag -> String.format("Congratulations, flag is %s", flag))
-          .map(result -> rootNode.put("result", result)).map(node -> node.toString());
+          .map(result -> rootNode.put("flag", result)).map(node -> node.toString());
     }
-    return Mono.just(rootNode.put("result", "Sorry, found no result for " + query))
-        .map(node -> node.toString());
+    return Mono.just(rootNode.toString());
   }
 }

@@ -19,11 +19,7 @@
     Search results
   </h3>
   <ul>
+    <p *ngIf="flag">{{ flag }}</p>
     <p *ngIf="result">{{ result }}</p>
-    <span *ngIf="alerts?.length > 0">
-      <span *ngFor="let alert of alerts">
-        <input type="button" (click)="alertfun()" />
-      </span>
-    </span>
   </ul>
 </div>

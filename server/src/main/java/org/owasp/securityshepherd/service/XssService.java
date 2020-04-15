@@ -1,7 +1,6 @@
 package org.owasp.securityshepherd.service;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.springframework.stereotype.Component;
@@ -49,17 +48,17 @@ public class XssService {
     return alertHandler.getCollectedAlerts();
   }
 
-  public List<String> doXss(final String htmlPage) throws IOException {
+  public String doXss(final String htmlPage) throws IOException {
     final BrowserVersion[] browserVersions = {BrowserVersion.FIREFOX, BrowserVersion.CHROME,
         BrowserVersion.INTERNET_EXPLORER, BrowserVersion.BEST_SUPPORTED};
 
     for (final BrowserVersion browserVersion : browserVersions) {
       final List<String> alertList = doXssWithBrowserVersion(htmlPage, browserVersion);
       if (!alertList.isEmpty()) {
-        return alertList;
+        return alertList.get(0);
       }
     }
-    return new ArrayList<String>();
+    return null;
   }
 
   private <T extends DomElement> void interactWithElements(Iterable<T> domElements)

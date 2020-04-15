@@ -10,8 +10,8 @@ import { Module } from 'src/app/model/module';
 })
 export class XssTutorialComponent implements OnInit {
   queryForm: FormGroup;
-  alerts: string[];
   result: string;
+  flag: string;
   alertFunction: any;
 
   @Input() module: Module;
@@ -21,15 +21,10 @@ export class XssTutorialComponent implements OnInit {
       query: [''],
     });
     this.result = '';
-    this.alerts = [];
-    this.alertFunction = window.alert;
+    this.flag = '';
   }
 
   ngOnInit(): void {}
-
-  public alertfun() {
-    window.alert('hello');
-  }
 
   submitQuery() {
     return this.apiService
@@ -37,9 +32,11 @@ export class XssTutorialComponent implements OnInit {
       .subscribe((data) => {
         data = JSON.parse(data);
         this.result = data['result'];
-        this.alerts = data['alerts'];
-
-        console.log(data);
+        this.flag = data['flag'];
+        const alert = data['alert'];
+        if (alert) {
+          window.alert(alert);
+        }
       });
   }
 }

@@ -1,11 +1,8 @@
 package org.owasp.securityshepherd.it.service;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
 import java.io.IOException;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,43 +24,41 @@ public class XssServiceIT {
 
   @Test
   public void scriptAlert_ShouldShowAlert() throws Exception {
-    assertThat(executeQuery("<script>alert('XSS')</script>"), is(not(empty())));
+    assertThat(executeQuery("<script>alert('XSS')</script>"), is("XSS"));
   }
 
   @Test
   public void imgOnLoad_ShouldShowAlert() throws Exception {
-    assertThat(executeQuery("<img src=\"#\" onload=\"alert('XSS')\" />"), is(not(empty())));
+    assertThat(executeQuery("<img src=\"#\" onload=\"alert('XSS')\" />"), is("XSS"));
   }
 
   @Test
   public void submitButtonOnMouseOver_ShouldShowAlert() throws Exception {
-    assertThat(executeQuery("<input type=\"submit\" onmouseover=\"alert('XSS')\"/>"),
-        is(not(empty())));
+    assertThat(executeQuery("<input type=\"submit\" onmouseover=\"alert('XSS')\"/>"), is("XSS"));
   }
 
   @Test
   public void submitButtonOnMouseDown_ShouldShowAlert() throws Exception {
-    assertThat(executeQuery("<input type=\"submit\" onmousedown=\"alert('XSS')\"/>"),
-        is(not(empty())));
+    assertThat(executeQuery("<input type=\"submit\" onmousedown=\"alert('XSS')\"/>"), is("XSS"));
   }
 
   @Test
   public void aOnBlur_ShouldShowAlert() throws Exception {
     assertThat(executeQuery("<a onblur=alert('XSS') tabindex=1 id=x></a><input autofocus>"),
-        is(not(empty())));
+        is("XSS"));
   }
 
   @Test
   public void submitButtonOnclick_ShouldShowAlert() throws Exception {
-    assertThat(executeQuery("<input type=\"submit\" onclick=\"alert('XSS')\"/>"), is(not(empty())));
+    assertThat(executeQuery("<input type=\"submit\" onclick=\"alert('XSS')\"/>"), is("XSS"));
   }
 
   @Test
   public void inputButtonOnclick_ShouldShowAlert() throws Exception {
-    assertThat(executeQuery("<input type=\"button\" onclick=\"alert('XSS')\"/>"), is(not(empty())));
+    assertThat(executeQuery("<input type=\"button\" onclick=\"alert('XSS')\"/>"), is("XSS"));
   }
 
-  private List<String> executeQuery(final String query) throws IOException {
+  private String executeQuery(final String query) throws IOException {
     return xssService.doXss(
         "<html><head><title>Alert</title></head><body><p>Result: " + query + "</p></body></html>");
   }
