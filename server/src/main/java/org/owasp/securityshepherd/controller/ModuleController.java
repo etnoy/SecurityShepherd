@@ -5,6 +5,7 @@ import org.owasp.securityshepherd.dto.SubmissionDto;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.model.Submission;
 import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorial;
+import org.owasp.securityshepherd.module.xss.XssTutorial;
 import org.owasp.securityshepherd.service.ModuleService;
 import org.owasp.securityshepherd.service.SubmissionService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,6 +36,14 @@ public class ModuleController {
 
   private final SqlInjectionTutorial sqlInjectionTutorial;
 
+  private final XssTutorial xssTutorial;
+
+  @GetMapping(path = "module/{id}")
+  @PreAuthorize("hasRole('ROLE_USER')")
+  public Mono<Module> getById(@PathVariable final int id) {
+    return moduleService.findById(id);
+  }
+
   @GetMapping(path = "modules")
   @PreAuthorize("hasRole('ROLE_USER')")
   public Flux<Module> findAll() {
@@ -57,6 +66,15 @@ public class ModuleController {
                   return Flux.error(e);
                 }
               });
+        case (XssTutorial.MODULE_URL):
+          return ReactiveSecurityContextHolder.getContext().map(SecurityContext::getAuthentication)
+              .map(Authentication::getPrincipal).cast(Long.class).flatMapMany(userId -> {
+                try {
+                  return this.xssTutorial.submitQuery(userId, readQueryFromRequestBody(request));
+                } catch (JsonProcessingException e) {
+                  return Flux.error(e);
+                }
+              });
 
         default:
           throw new RuntimeException(
@@ -75,9 +93,7 @@ public class ModuleController {
             .map(Submission::isValid));
   }
 
-  private String readQueryFromRequestBody(final String body)
-      throws JsonProcessingException {
-
+  private String readQueryFromRequestBody(final String body) throws JsonProcessingException {
     ObjectMapper jsonObjectMapper = new ObjectMapper();
     return jsonObjectMapper.readTree(body).get("query").asText();
   }

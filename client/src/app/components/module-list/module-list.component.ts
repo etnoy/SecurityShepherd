@@ -6,7 +6,7 @@ import { ApiService } from 'src/app/service/api.service';
 @Component({
   selector: 'app-modules',
   templateUrl: './module-list.component.html',
-  styleUrls: ['./module-list.component.css']
+  styleUrls: ['./module-list.component.css'],
 })
 export class ModulesComponent implements OnInit {
   modules: Module[];
@@ -18,8 +18,5 @@ export class ModulesComponent implements OnInit {
     this.apiService.getModules().subscribe((modules: Module[]) => {
       this.modules = modules;
     });
-  }
-  getUrlById(id: number): string {
-    return 'sql-injection-tutorial';
   }
 }

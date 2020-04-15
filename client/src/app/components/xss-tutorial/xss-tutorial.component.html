@@ -1,3 +1,29 @@
-<h3 class="h3 mb-3 font-weight-normal text-center">
-  XSS
-</h3>
+<form class="form" [formGroup]="queryForm" (ngSubmit)="submitQuery()">
+  <h3 class="h3 mb-3 font-weight-normal text-center">
+    Please search our database
+  </h3>
+  <div class="form-group">
+    <label>Query</label>
+    <input
+      type="text"
+      class="form-control"
+      formControlName="query"
+      placeholder="Enter query"
+      required
+    />
+  </div>
+  <button type="submit" class="btn btn-block btn-primary">Query</button>
+</form>
+<div *ngIf="result">
+  <h3 class="h3 mb-3 font-weight-normal text-center">
+    Search results
+  </h3>
+  <ul>
+    <p *ngIf="result">{{ result }}</p>
+    <span *ngIf="alerts?.length > 0">
+      <span *ngFor="let alert of alerts">
+        <input type="button" (click)="alertfun()" />
+      </span>
+    </span>
+  </ul>
+</div>

@@ -1,6 +1,7 @@
 package org.owasp.securityshepherd.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.springframework.stereotype.Component;
@@ -18,9 +19,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class XssService {
 
-  public boolean doXssWithBrowserVersion(final String htmlPage, final BrowserVersion browserVersion)
-      throws IOException {
-    WebClient webClient = new WebClient(BrowserVersion.FIREFOX);
+  public List<String> doXssWithBrowserVersion(final String htmlPage,
+      final BrowserVersion browserVersion) throws IOException {
+    WebClient webClient = new WebClient(browserVersion);
     MockWebConnection mockWebConnection = new MockWebConnection();
     final CollectingAlertHandler alertHandler = new CollectingAlertHandler();
 
@@ -29,9 +30,9 @@ public class XssService {
     webClient.setAlertHandler(alertHandler);
 
     HtmlPage page = null;
-    // We make a dummy call to our mocked url
     webClient.setAjaxController(new NicelyResynchronizingAjaxController());
     try {
+      // We make a dummy call to our mocked url
       page = webClient.getPage("http://www.example.com/");
     } catch (FailingHttpStatusCodeException | IOException e) {
       throw new RuntimeException(e);
@@ -45,22 +46,20 @@ public class XssService {
 
     webClient.waitForBackgroundJavaScript(60000);
 
-    List<String> alerts = alertHandler.getCollectedAlerts();
-
-    return !alerts.isEmpty();
+    return alertHandler.getCollectedAlerts();
   }
 
-  public boolean doXss(final String htmlPage) throws IOException {
+  public List<String> doXss(final String htmlPage) throws IOException {
     final BrowserVersion[] browserVersions = {BrowserVersion.FIREFOX, BrowserVersion.CHROME,
         BrowserVersion.INTERNET_EXPLORER, BrowserVersion.BEST_SUPPORTED};
 
     for (final BrowserVersion browserVersion : browserVersions) {
-      final boolean xssFound = doXssWithBrowserVersion(htmlPage, browserVersion);
-      if (xssFound) {
-        return true;
+      final List<String> alertList = doXssWithBrowserVersion(htmlPage, browserVersion);
+      if (!alertList.isEmpty()) {
+        return alertList;
       }
     }
-    return false;
+    return new ArrayList<String>();
   }
 
   private <T extends DomElement> void interactWithElements(Iterable<T> domElements)
