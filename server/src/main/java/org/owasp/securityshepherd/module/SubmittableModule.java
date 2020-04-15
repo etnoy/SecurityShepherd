@@ -4,10 +4,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 @Service
-public abstract class SubmittableModule {
-  public Long moduleId = null;
-  public static final String MODULE_IDENTIFIER = null;
-  public Mono<Void> initialize() {
-    return null;
-  }
+public interface SubmittableModule {
+  public Long getModuleId();
+  public Mono<Long> initialize();
 }

@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
@@ -60,8 +59,7 @@ public class ModuleController {
       @PathVariable("resource") final String resource, @RequestBody final String request) {
     return moduleService.findById(id).flatMapMany(module -> {
       switch (module.getUrl()) {
-        case (SqlInjectionTutorial.MODULE_IDENTIFIER):
-
+        case (SqlInjectionTutorial.MODULE_URL):
           return ReactiveSecurityContextHolder.getContext().map(SecurityContext::getAuthentication)
               .map(Authentication::getPrincipal).cast(Long.class).flatMapMany(userId -> {
                 try {
@@ -90,9 +88,9 @@ public class ModuleController {
   }
 
   private String readQueryFromRequestBody(final String body)
-      throws JsonMappingException, JsonProcessingException {
+      throws JsonProcessingException {
 
-    ObjectMapper JSON = new ObjectMapper();
-    return JSON.readTree(body).get("query").asText();
+    ObjectMapper jsonObjectMapper = new ObjectMapper();
+    return jsonObjectMapper.readTree(body).get("query").asText();
   }
 }

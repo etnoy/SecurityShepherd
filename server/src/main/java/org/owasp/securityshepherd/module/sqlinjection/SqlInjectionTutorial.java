@@ -3,6 +3,7 @@ package org.owasp.securityshepherd.module.sqlinjection;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import org.owasp.securityshepherd.model.Module;
+import org.owasp.securityshepherd.module.SubmittableModule;
 import org.owasp.securityshepherd.service.ModuleService;
 import org.springframework.data.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Component;
@@ -15,19 +16,19 @@ import reactor.core.publisher.Mono;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class SqlInjectionTutorial { // extends SubmittableModule {
+public class SqlInjectionTutorial implements SubmittableModule {
 
   private final ModuleService moduleService;
 
-  public Long moduleId;
+  private Long moduleId;
 
-  public static final String MODULE_IDENTIFIER = "sql-injection-tutorial";
+  public static final String MODULE_URL = "sql-injection-tutorial";
   
   @PostConstruct
   public Mono<Long> initialize() {
     log.info("Creating sql tutorial module");
     final Mono<Module> moduleMono =
-        moduleService.create("Sql Injection Tutorial", MODULE_IDENTIFIER);
+        moduleService.create("Sql Injection Tutorial", MODULE_URL);
 
     return moduleMono.flatMap(module -> {
       this.moduleId = module.getId();
@@ -70,5 +71,10 @@ public class SqlInjectionTutorial { // extends SubmittableModule {
 
     // Return all rows that match
     return databaseClientMono.flatMapMany(client -> client.execute(injectionQuery).fetch().all());
+  }
+
+  @Override
+  public Long getModuleId() {
+    return this.moduleId;
   }
 }
