@@ -41,18 +41,6 @@ public class ModuleController {
     return moduleService.findAll();
   }
 
-  @GetMapping(path = "module/{id}")
-  @PreAuthorize("hasRole('ROLE_USER')")
-  public Mono<Module> getById(@PathVariable final int id) {
-    return moduleService.findById(id);
-  }
-
-  @GetMapping(path = "module-url/{url}")
-  @PreAuthorize("hasRole('ROLE_USER')")
-  public Mono<Module> getById(@PathVariable final String url) {
-    return moduleService.findByUrl(url);
-  }
-
   @PostMapping(path = "module/{id}/{resource}")
   @PreAuthorize("hasRole('ROLE_USER')")
   public Flux<Object> postResourceById(@PathVariable("id") final int id,

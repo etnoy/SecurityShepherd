@@ -16,7 +16,7 @@ public class XssTutorial implements SubmittableModule {
 
   private final ModuleService moduleService;
 
-  public Long moduleId;
+  private Long moduleId;
 
   public static final String MODULE_URL = "xss-tutorial";
 
