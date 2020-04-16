@@ -2,24 +2,32 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ApiService } from '../../service/api.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Module } from 'src/app/model/module';
+import { AlertService } from 'src/app/service/alert.service';
 
 @Component({
   selector: 'app-sql-injection-tutorial',
   templateUrl: './sql-injection-tutorial.component.html',
-  styleUrls: ['./sql-injection-tutorial.component.css']
+  styleUrls: ['./sql-injection-tutorial.component.css'],
 })
 export class SqlInjectionTutorialComponent implements OnInit {
   queryForm: FormGroup;
   queryResult: string[];
+  errorResult: string;
+  submitted = false;
   loading = false;
 
   @Input() module: Module;
 
-  constructor(private apiService: ApiService, public fb: FormBuilder) {
+  constructor(
+    private apiService: ApiService,
+    public fb: FormBuilder,
+    private alertService: AlertService
+  ) {
     this.queryForm = this.fb.group({
-      query: ['']
+      query: [''],
     });
     this.queryResult = [];
+    this.errorResult = '';
   }
 
   ngOnInit(): void {}
@@ -29,15 +37,29 @@ export class SqlInjectionTutorialComponent implements OnInit {
 
     return this.apiService
       .modulePostRequest(this.module.id, 'query', this.queryForm.value)
-      .subscribe((queryResult: string[]) => {
-        this.loading = false;
-        if (queryResult.length > 0) {
-          this.queryResult = queryResult;
-        } else {
-          this.queryResult = [
-            `Sorry, no results were found for ${this.queryForm.value.query}`
-          ];
+      .subscribe(
+        (data) => {
+          this.alertService.clear();
+          this.loading = false;
+          this.submitted = true;
+          data = JSON.parse(data);
+          this.queryResult = data['result'];
+          this.errorResult = data['error'];
+        },
+        (error) => {
+          this.loading = false;
+          this.submitted = false;
+          this.queryResult = [];
+          this.errorResult = '';
+          let msg = '';
+          if (error.error instanceof ErrorEvent) {
+            // client-side error
+            msg = error.error.message;
+          } else {
+            msg = `An error occurred`;
+          }
+          this.alertService.error(msg);
         }
-      });
+      );
   }
 }

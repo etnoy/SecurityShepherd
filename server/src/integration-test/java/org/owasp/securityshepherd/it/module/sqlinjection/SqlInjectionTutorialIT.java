@@ -73,36 +73,36 @@ public class SqlInjectionTutorialIT {
         .expectNextCount(6).expectComplete().verify();
   }
 
-  @Test
-  public void submitSql_CorrectAttackQuery_ReturnedFlagIsCorrect() {
-    final Long userId = userService.create("TestUser1").block();
-    final Long moduleId = sqlInjectionTutorial.initialize().block();
+//  @Test
+//  public void submitSql_CorrectAttackQuery_ReturnedFlagIsCorrect() {
+//    final Long userId = userService.create("TestUser1").block();
+//    final Long moduleId = sqlInjectionTutorial.initialize().block();
+//
+//    final Mono<String> flagVerificationMono = sqlInjectionTutorial
+//        .submitQuery(userId, "' OR '1' = '1").skip(5).next().map(this::extractFlagFromRow);
+//
+//    // Submit the flag we got from the sql injection and make sure it validates
+//    StepVerifier.create(flagVerificationMono
+//        .flatMap(flag -> submissionService.submit(userId, moduleId, flag)).map(Submission::isValid))
+//        .expectNext(true).expectComplete().verify();
+//  }
 
-    final Mono<String> flagVerificationMono = sqlInjectionTutorial
-        .submitQuery(userId, "' OR '1' = '1").skip(5).next().map(this::extractFlagFromRow);
-
-    // Submit the flag we got from the sql injection and make sure it validates
-    StepVerifier.create(flagVerificationMono
-        .flatMap(flag -> submissionService.submit(userId, moduleId, flag)).map(Submission::isValid))
-        .expectNext(true).expectComplete().verify();
-  }
-
-  @Test
-  public void submitSql_CorrectAttackQuery_ModifiedFlagIsWrong() {
-    final Long userId = userService.create("TestUser1").block();
-    final Long moduleId = sqlInjectionTutorial.initialize().block();
-
-    moduleService.setDynamicFlag(moduleId).block();
-
-    final Mono<String> flagVerificationMono =
-        sqlInjectionTutorial.submitQuery(userId, "' OR '1' = '1").skip(5).next()
-            .map(this::extractFlagFromRow);
-
-    // Take the flag we got from the tutorial, modify it, and expect validation to fail
-    StepVerifier.create(flagVerificationMono
-        .flatMap(flag -> submissionService.submit(userId, moduleId, flag + "wrong"))
-        .map(Submission::isValid)).expectNext(false).expectComplete().verify();
-  }
+//  @Test
+//  public void submitSql_CorrectAttackQuery_ModifiedFlagIsWrong() {
+//    final Long userId = userService.create("TestUser1").block();
+//    final Long moduleId = sqlInjectionTutorial.initialize().block();
+//
+//    moduleService.setDynamicFlag(moduleId).block();
+//
+//    final Mono<String> flagVerificationMono =
+//        sqlInjectionTutorial.submitQuery(userId, "' OR '1' = '1").skip(5).next()
+//            .map(this::extractFlagFromRow);
+//
+//    // Take the flag we got from the tutorial, modify it, and expect validation to fail
+//    StepVerifier.create(flagVerificationMono
+//        .flatMap(flag -> submissionService.submit(userId, moduleId, flag + "wrong"))
+//        .map(Submission::isValid)).expectNext(false).expectComplete().verify();
+//  }
 
   @BeforeEach
   private void clear() {

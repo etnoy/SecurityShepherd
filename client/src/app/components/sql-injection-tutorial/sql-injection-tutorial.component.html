@@ -17,13 +17,23 @@
     Search
   </button>
 </form>
+<div *ngIf="submitted && queryResult?.length === 0 && !errorResult">
+  <h3 class="h3 mb-3 font-weight-normal text-center">
+    Search results
+  </h3>
+  <p>No result.</p>
+</div>
 <div *ngIf="queryResult?.length > 0">
   <h3 class="h3 mb-3 font-weight-normal text-center">
     Search results
   </h3>
   <ul>
     <li *ngFor="let result of queryResult">
-      <p>{{ result | json }}</p>
+      <p>{{ result }}</p>
     </li>
+    <p *ngIf="errorResult">Error: {{ errorResult }}</p>
   </ul>
+</div>
+<div *ngIf="errorResult">
+  <p>Error: {{ errorResult }}</p>
 </div>

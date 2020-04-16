@@ -5,9 +5,14 @@ import javax.annotation.PostConstruct;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.module.SubmittableModule;
 import org.owasp.securityshepherd.service.ModuleService;
+import org.springframework.data.r2dbc.BadSqlGrammarException;
 import org.springframework.data.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Component;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.r2dbc.spi.ConnectionFactories;
+import io.r2dbc.spi.R2dbcBadGrammarException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
@@ -23,12 +28,11 @@ public class SqlInjectionTutorial implements SubmittableModule {
   private Long moduleId;
 
   public static final String MODULE_URL = "sql-injection-tutorial";
-  
+
   @PostConstruct
   public Mono<Long> initialize() {
     log.info("Creating sql tutorial module");
-    final Mono<Module> moduleMono =
-        moduleService.create("Sql Injection Tutorial", MODULE_URL);
+    final Mono<Module> moduleMono = moduleService.create("Sql Injection Tutorial", MODULE_URL);
 
     return moduleMono.flatMap(module -> {
       this.moduleId = module.getId();
@@ -36,9 +40,9 @@ public class SqlInjectionTutorial implements SubmittableModule {
     });
   }
 
-  public Flux<Map<String, Object>> submitQuery(final long userId, final String usernameQuery) {
-    if(this.moduleId == null) {
-      return Flux.error(new RuntimeException("Must initialize module before submitting to it"));
+  public Mono<String> submitQuery(final long userId, final String usernameQuery) {
+    if (this.moduleId == null) {
+      return Mono.error(new RuntimeException("Must initialize module before submitting to it"));
     }
     // Generate a dynamic flag and add it as a row to the database creation script. The flag is
     // different for every user to prevent copying flags
@@ -69,8 +73,31 @@ public class SqlInjectionTutorial implements SubmittableModule {
     final String injectionQuery =
         String.format("SELECT * FROM sqlinjection.users WHERE name = '%s'", usernameQuery);
 
-    // Return all rows that match
-    return databaseClientMono.flatMapMany(client -> client.execute(injectionQuery).fetch().all());
+    ObjectMapper mapper = new ObjectMapper();
+    ObjectNode rootNode = mapper.createObjectNode();
+
+    // Find all rows that match
+    return databaseClientMono
+        .flatMapMany(databaseClient -> databaseClient.execute(injectionQuery).fetch().all())
+        .map(Map::toString).collectList()
+        //
+        .map(rows -> {
+          ArrayNode arrayNode = rootNode.putArray("result");
+          for (final String row : rows) {
+            arrayNode.add(row);
+          }
+          return rootNode.toString();
+        })
+        //
+        .onErrorResume(exception -> {
+          if (exception instanceof BadSqlGrammarException && exception.getCause() != null
+              && exception.getCause() instanceof R2dbcBadGrammarException) {
+            rootNode.put("error", exception.getCause().toString());
+            return Mono.just(rootNode.toString());
+          } else {
+            return Mono.error(exception);
+          }
+        });
   }
 
   @Override
