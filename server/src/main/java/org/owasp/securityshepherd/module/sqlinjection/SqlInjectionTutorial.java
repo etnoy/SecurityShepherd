@@ -15,7 +15,6 @@ import io.r2dbc.spi.ConnectionFactories;
 import io.r2dbc.spi.R2dbcBadGrammarException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -32,7 +31,8 @@ public class SqlInjectionTutorial implements SubmittableModule {
   @PostConstruct
   public Mono<Long> initialize() {
     log.info("Creating sql tutorial module");
-    final Mono<Module> moduleMono = moduleService.create("Sql Injection Tutorial", MODULE_URL);
+    final Mono<Module> moduleMono = moduleService.create("Sql Injection Tutorial", MODULE_URL,
+        "Tutorial for making sql injections");
 
     return moduleMono.flatMap(module -> {
       this.moduleId = module.getId();
@@ -73,28 +73,37 @@ public class SqlInjectionTutorial implements SubmittableModule {
     final String injectionQuery =
         String.format("SELECT * FROM sqlinjection.users WHERE name = '%s'", usernameQuery);
 
+    // Initialize json mapper and root node
     ObjectMapper mapper = new ObjectMapper();
     ObjectNode rootNode = mapper.createObjectNode();
 
-    // Find all rows that match
     return databaseClientMono
+        // Execute database query
         .flatMapMany(databaseClient -> databaseClient.execute(injectionQuery).fetch().all())
-        .map(Map::toString).collectList()
-        //
+        // Convert rows to string
+        .map(Map::toString)
+        // Collect all rows to a list
+        .collectList()
+        // Handle the happy path
         .map(rows -> {
+          // Covert results to json
           ArrayNode arrayNode = rootNode.putArray("result");
           for (final String row : rows) {
             arrayNode.add(row);
           }
+          // Convert json to string
           return rootNode.toString();
         })
-        //
+        // Handle errors
         .onErrorResume(exception -> {
+          // We want to forward database syntax errors to the user
           if (exception instanceof BadSqlGrammarException && exception.getCause() != null
               && exception.getCause() instanceof R2dbcBadGrammarException) {
+            // We extract the nested R2dbcBadGrammarException and return it as json
             rootNode.put("error", exception.getCause().toString());
             return Mono.just(rootNode.toString());
           } else {
+            // All other errors are handled in the usual way
             return Mono.error(exception);
           }
         });

@@ -29,7 +29,8 @@ public class XssTutorial implements SubmittableModule {
   @PostConstruct
   public Mono<Long> initialize() {
     log.info("Creating xss tutorial module");
-    final Mono<Module> moduleMono = moduleService.create("XSS Tutorial", MODULE_URL);
+    final Mono<Module> moduleMono = moduleService.create("XSS Tutorial", MODULE_URL,
+        "Tutorial for making cross site scripting");
     return moduleMono.flatMap(module -> {
       this.moduleId = module.getId();
       return moduleService.setDynamicFlag(moduleId).then(Mono.just(this.moduleId));

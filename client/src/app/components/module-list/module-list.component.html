@@ -4,8 +4,9 @@
       <ul>
         <li *ngFor="let module of modules">
           <p>
-            {{ module.id }}:
-            <a href="module/{{ module.id }}">{{ module.name }}</a>
+            <a href="module/{{ module.id }}">{{ module.name }}</a
+            >&nbsp;
+            <span *ngIf="module.description">{{ module.description }}</span>
           </p>
         </li>
       </ul>

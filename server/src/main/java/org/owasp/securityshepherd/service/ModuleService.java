@@ -35,6 +35,10 @@ public final class ModuleService {
   }
 
   public Mono<Module> create(final String moduleName, final String url) {
+    return this.create(moduleName, url, null);
+  }
+
+  public Mono<Module> create(final String moduleName, final String url, final String description) {
     if (moduleName == null) {
       return Mono.error(new NullPointerException("Module name cannot be null"));
     }
@@ -47,7 +51,8 @@ public final class ModuleService {
 
     return Mono.just(moduleName).filterWhen(this::doesNotExistByName)
         .switchIfEmpty(Mono.error(new DuplicateModuleNameException("Module name already exists")))
-        .map(name -> Module.builder().name(name).url(url).build()).flatMap(moduleRepository::save);
+        .map(name -> Module.builder().name(name).description(description).url(url).build())
+        .flatMap(moduleRepository::save);
   }
 
   private Mono<Boolean> doesNotExistByName(final String moduleName) {
@@ -68,7 +73,7 @@ public final class ModuleService {
   public Mono<Module> findByUrl(final String url) {
     return moduleRepository.findByUrl(url);
   }
-  
+
   public Mono<String> findNameById(final long moduleId) {
     if (moduleId <= 0) {
       return Mono.error(new InvalidModuleIdException());

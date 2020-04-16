@@ -1,6 +1,5 @@
 package org.owasp.securityshepherd.it.module.sqlinjection;
 
-import java.util.Map;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -8,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.owasp.securityshepherd.model.Submission;
 import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorial;
 import org.owasp.securityshepherd.service.ModuleService;
 import org.owasp.securityshepherd.service.ScoreService;
@@ -19,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Hooks;
-import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
@@ -36,7 +33,7 @@ public class SqlInjectionTutorialIT {
 
   @Autowired
   UserService userService;
-
+  
   @Autowired
   ModuleService moduleService;
 
@@ -52,9 +49,9 @@ public class SqlInjectionTutorialIT {
     Hooks.onOperatorDebug();
   }
 
-  private String extractFlagFromRow(final Map<String, Object> row) {
-    return row.get("COMMENT").toString().replaceAll("Well done, flag is ", "");
-  }
+//  private String extractFlagFromRow(final Map<String, Object> row) {
+//    return row.get("COMMENT").toString().replaceAll("Well done, flag is ", "");
+//  }
 
   @Test
   public void submitSql_QueryWithNoMatches_EmptyResultSet() {
