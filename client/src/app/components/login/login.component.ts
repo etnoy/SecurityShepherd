@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ApiService } from './../../service/api.service';
+import { ApiService } from '../../service/api.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AlertService } from 'src/app/service/alert.service';
 import { first } from 'rxjs/operators';
@@ -8,10 +8,10 @@ import { throwError } from 'rxjs';
 
 @Component({
   selector: 'app-signin',
-  templateUrl: './signin.component.html',
-  styleUrls: ['./signin.component.css']
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css'],
 })
-export class SigninComponent implements OnInit {
+export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   returnUrl: string;
   submitted = false;
@@ -32,7 +32,7 @@ export class SigninComponent implements OnInit {
   ngOnInit() {
     this.loginForm = this.formBuilder.group({
       userName: ['', Validators.required],
-      password: ['', Validators.required]
+      password: ['', Validators.required],
     });
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }
@@ -53,10 +53,10 @@ export class SigninComponent implements OnInit {
       .login(this.loginForm.value)
       .pipe(first())
       .subscribe(
-        data => {
+        (data) => {
           this.router.navigate([this.returnUrl]);
         },
-        error => {
+        (error) => {
           this.loading = false;
           let msg = '';
           if (error.error instanceof ErrorEvent) {

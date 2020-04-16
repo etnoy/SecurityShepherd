@@ -2,7 +2,7 @@ import { ModuleItemComponent } from './components/module-item/module-item.compon
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { SigninComponent } from './components/signin/signin.component';
+import { LoginComponent } from './components/login/login.component';
 import { SignupComponent } from './components/signup/signup.component';
 import { ModuleListComponent } from './components/module-list/module-list.component';
 
@@ -11,18 +11,18 @@ import { HomeComponent } from './components/home/home.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent, canActivate: [AuthGuard] },
-  { path: 'login', component: SigninComponent },
+  { path: 'login', component: LoginComponent },
   { path: 'register', component: SignupComponent },
   { path: 'modules', component: ModuleListComponent, canActivate: [AuthGuard] },
   {
     path: 'module/:id',
     component: ModuleItemComponent,
-    canActivate: [AuthGuard]
-  }
+    canActivate: [AuthGuard],
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class AppRoutingModule {}

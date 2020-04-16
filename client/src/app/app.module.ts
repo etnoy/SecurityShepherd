@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
-import { SigninComponent } from './components/signin/signin.component';
+import { LoginComponent } from './components/login/login.component';
 import { SignupComponent } from './components/signup/signup.component';
 import { ModuleListComponent } from './components/module-list/module-list.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -20,7 +20,7 @@ import { AlertComponent } from './components/alert/alert.component';
 @NgModule({
   declarations: [
     AppComponent,
-    SigninComponent,
+    LoginComponent,
     SignupComponent,
     HomeComponent,
     ModuleListComponent,
@@ -28,7 +28,7 @@ import { AlertComponent } from './components/alert/alert.component';
     SqlInjectionTutorialComponent,
     ModuleItemComponent,
     XssTutorialComponent,
-    ModuleDirective
+    ModuleDirective,
   ],
   imports: [
     BrowserModule,
@@ -36,15 +36,15 @@ import { AlertComponent } from './components/alert/alert.component';
     AppRoutingModule,
     ReactiveFormsModule,
     FormsModule,
-    SearchbarModule
+    SearchbarModule,
   ],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
-      multi: true
-    }
+      multi: true,
+    },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {}
