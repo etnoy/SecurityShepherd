@@ -35,7 +35,7 @@ public class LoginController {
     return userService.findUserIdByLoginName(loginDto.getUserName())
         .filterWhen(
             userId -> userService.authenticate(loginDto.getUserName(), loginDto.getPassword()))
-        .map(webTokenService::generateToken).map(AuthResponse::new)
+        .map(webTokenService::generateToken).map(token -> new AuthResponse(token, loginDto.getUserName()))
         .map(authResponse -> new ResponseEntity<>(authResponse, HttpStatus.OK))
         .defaultIfEmpty(new ResponseEntity<>(HttpStatus.UNAUTHORIZED));
   }

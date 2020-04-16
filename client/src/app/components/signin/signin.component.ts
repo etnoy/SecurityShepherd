@@ -59,17 +59,17 @@ export class SigninComponent implements OnInit {
         error => {
           this.loading = false;
           let msg = '';
-
           if (error.error instanceof ErrorEvent) {
             // client-side error
             msg = error.error.message;
           } else {
+            // HTTP error
             if (error.status === 401) {
               // HTTP Unauthorized
               msg = 'Incorrect username or password';
             } else {
-              // server-side error
-              msg = `Error Code: ${error.status}\nMessage: ${error.message}`;
+              // We don't want to tell the user about any other error.
+              msg = `An error occurred`;
             }
           }
           this.alertService.error(msg);

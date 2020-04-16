@@ -5,10 +5,10 @@ import { User } from 'src/app/model/user';
 @Component({ templateUrl: 'home.component.html' })
 export class HomeComponent implements OnInit {
   currentUser: User;
-  users = [];
 
   constructor(private apiService: ApiService) {
     this.currentUser = this.apiService.currentUserValue;
+    console.log(this.currentUser);
   }
 
   ngOnInit() {}
