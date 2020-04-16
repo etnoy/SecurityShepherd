@@ -15,14 +15,15 @@ import { ApiService } from '../service/api.service';
 export class AuthGuard implements CanActivate {
   constructor(public apiService: ApiService, public router: Router) {}
 
-  canActivate(
-    next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): Observable<boolean> | Promise<boolean> | boolean {
-    if (this.apiService.isLoggedIn !== true) {
-      window.alert('Access not allowed!');
-      this.router.navigate(['log-in']);
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+    const currentUser = this.apiService.currentUserValue;
+    if (currentUser) {
+      // authorised so return true
+      return true;
     }
-    return true;
+
+    // not logged in so redirect to login page with the return url
+    this.router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
+    return false;
   }
 }

@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ApiService } from './../../service/api.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
+import { AlertService } from 'src/app/service/alert.service';
+import { first } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 
 @Component({
   selector: 'app-signin',
@@ -9,22 +12,68 @@ import { Router } from '@angular/router';
   styleUrls: ['./signin.component.css']
 })
 export class SigninComponent implements OnInit {
-  signinForm: FormGroup;
+  loginForm: FormGroup;
+  returnUrl: string;
+  submitted = false;
+  loading = false;
 
   constructor(
-    public fb: FormBuilder,
-    public apiService: ApiService,
-    public router: Router
+    private formBuilder: FormBuilder,
+    private route: ActivatedRoute,
+    private router: Router,
+    private apiService: ApiService,
+    private alertService: AlertService
   ) {
-    this.signinForm = this.fb.group({
-      userName: [''],
-      password: ['']
-    });
+    if (this.apiService.currentUserValue) {
+      this.router.navigate(['/']);
+    }
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.loginForm = this.formBuilder.group({
+      userName: ['', Validators.required],
+      password: ['', Validators.required]
+    });
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+  }
 
-  loginUser() {
-    this.apiService.signIn(this.signinForm.value);
+  onSubmit() {
+    this.submitted = true;
+
+    // reset alerts on submit
+    this.alertService.clear();
+
+    // stop here if form is invalid
+    if (this.loginForm.invalid) {
+      return;
+    }
+
+    this.loading = true;
+    this.apiService
+      .login(this.loginForm.value)
+      .pipe(first())
+      .subscribe(
+        data => {
+          this.router.navigate([this.returnUrl]);
+        },
+        error => {
+          this.loading = false;
+          let msg = '';
+
+          if (error.error instanceof ErrorEvent) {
+            // client-side error
+            msg = error.error.message;
+          } else {
+            if (error.status === 401) {
+              // HTTP Unauthorized
+              msg = 'Incorrect username or password';
+            } else {
+              // server-side error
+              msg = `Error Code: ${error.status}\nMessage: ${error.message}`;
+            }
+          }
+          this.alertService.error(msg);
+        }
+      );
   }
 }

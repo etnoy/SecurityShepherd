@@ -6,7 +6,7 @@ import {
   OnInit,
   Input,
   ViewChild,
-  ComponentFactoryResolver,
+  ComponentFactoryResolver
 } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -17,7 +17,7 @@ import { throwError } from 'rxjs';
 @Component({
   selector: 'app-module-item',
   templateUrl: './module-item.component.html',
-  styleUrls: ['./module-item.component.css'],
+  styleUrls: ['./module-item.component.css']
 })
 export class ModuleItemComponent implements OnInit {
   flagForm: FormGroup;
@@ -35,11 +35,11 @@ export class ModuleItemComponent implements OnInit {
     public apiService: ApiService
   ) {
     this.flagForm = this.fb.group({
-      flag: [''],
+      flag: ['']
     });
   }
   ngOnInit() {
-    this.route.paramMap.subscribe((params) => {
+    this.route.paramMap.subscribe(params => {
       const moduleId = params.get('id');
       this.apiService.getModuleById(moduleId).subscribe((module: Module) => {
         this.module = module;

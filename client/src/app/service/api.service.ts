@@ -1,4 +1,4 @@
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { Injectable } from '@angular/core';
 import {
   HttpClient,
@@ -15,9 +15,15 @@ import { User } from '../model/user';
 export class ApiService {
   endpoint = 'http://localhost:8080/api/v1';
   headers = new HttpHeaders().set('Content-Type', 'application/json');
-  currentUser = {};
+  private currentUserSubject: BehaviorSubject<User>;
+  public currentUser: Observable<User>;
 
-  constructor(private http: HttpClient, public router: Router) {}
+  constructor(private http: HttpClient, public router: Router) {
+    this.currentUserSubject = new BehaviorSubject<User>(
+      JSON.parse(localStorage.getItem('currentUser'))
+    );
+    this.currentUser = this.currentUserSubject.asObservable();
+  }
 
   modulePostRequest(
     moduleId: string,
@@ -25,12 +31,17 @@ export class ApiService {
     request: string
   ): Observable<any> {
     const api = `${this.endpoint}/module/${moduleId}/${resource}`;
+    console.log(request);
     return this.http.post<any>(api, request).pipe(
       map((res: Response) => {
         return res || {};
       }),
       catchError(this.handleError)
     );
+  }
+
+  public get currentUserValue(): User {
+    return this.currentUserSubject.value;
   }
 
   // Sign-up
@@ -40,16 +51,15 @@ export class ApiService {
   }
 
   // Sign-in
-  signIn(user: User) {
-    return this.http
-      .post<any>(`${this.endpoint}/login`, user)
-      .subscribe((res: any) => {
-        localStorage.setItem('access_token', res.token);
-        this.getModules().subscribe(resource => {
-          this.currentUser = resource;
-          this.router.navigate(['modules/']);
-        });
-      });
+  login(user: User) {
+    return this.http.post<any>(`${this.endpoint}/login`, user).pipe(
+      map(returnedUser => {
+        // store user details and jwt token in local storage to keep user logged in between page refreshes
+        localStorage.setItem('currentUser', JSON.stringify(returnedUser));
+        this.currentUserSubject.next(returnedUser);
+        return returnedUser;
+      })
+    );
   }
 
   getToken() {
@@ -61,11 +71,10 @@ export class ApiService {
     return authToken !== null ? true : false;
   }
 
-  doLogout() {
-    const removeToken = localStorage.removeItem('access_token');
-    if (removeToken == null) {
-      this.router.navigate(['login']);
-    }
+  logout() {
+    // remove user from local storage and set current user to null
+    localStorage.removeItem('currentUser');
+    this.currentUserSubject.next(null);
   }
 
   getModuleById(moduleId: string): Observable<any> {

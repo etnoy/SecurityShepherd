@@ -4,11 +4,11 @@ import { Router } from '@angular/router';
 import { ApiService } from 'src/app/service/api.service';
 
 @Component({
-  selector: 'app-modules',
+  selector: 'app-module-list',
   templateUrl: './module-list.component.html',
-  styleUrls: ['./module-list.component.css'],
+  styleUrls: ['./module-list.component.css']
 })
-export class ModulesComponent implements OnInit {
+export class ModuleListComponent implements OnInit {
   modules: Module[];
 
   constructor(public apiService: ApiService, public router: Router) {
