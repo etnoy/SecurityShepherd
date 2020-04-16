@@ -10,7 +10,13 @@
         required
       />
     </div>
-    <button type="submit" class="btn btn-primary">Submit flag</button>
+    <button [disabled]="loading" class="btn btn-primary">
+      <span
+        *ngIf="loading"
+        class="spinner-border spinner-border-sm mr-1"
+      ></span>
+      Submit
+    </button>
   </form>
 </div>
 <ng-template appModuleUrl></ng-template>

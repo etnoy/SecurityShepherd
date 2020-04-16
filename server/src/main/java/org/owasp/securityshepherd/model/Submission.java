@@ -3,7 +3,8 @@ package org.owasp.securityshepherd.model;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import org.springframework.data.annotation.Id;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 import lombok.NonNull;
@@ -11,6 +12,7 @@ import lombok.With;
 
 @Value
 @Builder
+@AllArgsConstructor
 @With
 public class Submission implements Serializable {
   private static final long serialVersionUID = -5485881248601955741L;
@@ -27,6 +29,7 @@ public class Submission implements Serializable {
   @NonNull
   private LocalDateTime time;
 
+  @JsonProperty("isValid")
   private boolean isValid;
 
   private String flag;

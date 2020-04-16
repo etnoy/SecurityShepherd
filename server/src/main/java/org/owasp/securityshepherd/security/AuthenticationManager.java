@@ -24,8 +24,8 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
     if (webTokenService.validateToken(authToken)) {
       final long userId = webTokenService.getUserIdFromToken(authToken);
 
-      return userService.getAuthoritiesByUserId(userId).collectList()
-          .map(authorities -> new UsernamePasswordAuthenticationToken(userId, null, authorities));
+      return userService.getAuthoritiesByUserId(userId).collectList().map(
+          authorities -> new UsernamePasswordAuthenticationToken(userId, null, authorities));
     } else {
       return Mono.empty();
     }

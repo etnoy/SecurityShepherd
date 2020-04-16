@@ -9,6 +9,7 @@ import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.owasp.securityshepherd.dto.PasswordRegistrationDto;
 import org.owasp.securityshepherd.dto.SubmissionDto;
+import org.owasp.securityshepherd.model.Submission;
 import org.owasp.securityshepherd.service.ModuleService;
 import org.owasp.securityshepherd.service.UserService;
 import org.owasp.securityshepherd.test.util.TestUtils;
@@ -20,6 +21,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
@@ -76,12 +79,14 @@ public class ModuleControllerIT {
         .exchange().expectStatus().isOk().expectBody().returnResult().getResponseBody()))
         .read("$.token");
 
-    StepVerifier
-        .create(webTestClient.post().uri("/api/v1/module/submit")
-            .header("Authorization", "Bearer " + token).accept(MediaType.APPLICATION_JSON)
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(new SubmissionDto(moduleId, flag))).exchange()
-            .expectStatus().isOk().returnResult(Boolean.class).getResponseBody())
+    ObjectMapper mapper = new ObjectMapper();
+
+    StepVerifier.create(webTestClient.post()
+        .uri(String.format("/api/v1/module/%d/submit", moduleId))
+        .header("Authorization", "Bearer " + token).accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(BodyInserters.fromValue(new SubmissionDto(moduleId, flag))).exchange().expectStatus()
+        .isOk().returnResult(Submission.class).getResponseBody().map(Submission::isValid))
         .expectNext(true).expectComplete().verify();
   }
 
@@ -113,7 +118,7 @@ public class ModuleControllerIT {
         .read("$.token");
 
     StepVerifier
-        .create(webTestClient.post().uri("/api/v1/module/submit")
+        .create(webTestClient.post().uri(String.format("/api/v1/module/%d/submit", moduleId))
             .header("Authorization", "Bearer " + token).accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(new SubmissionDto(moduleId, flag + "invalid"))).exchange()

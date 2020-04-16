@@ -8,6 +8,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -19,7 +20,7 @@ public class WebTokenService {
   public static final Key JWT_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
   private final Clock clock;
-  
+
   public Claims getAllClaimsFromToken(String token) {
     return Jwts.parserBuilder().setSigningKey(JWT_KEY).build().parseClaimsJws(token).getBody();
   }
@@ -39,13 +40,17 @@ public class WebTokenService {
 
   public String generateToken(final long userId) {
     final Date creationTime = new Date(clock.millis());
-    final Date expirationTime = new Date(clock.millis() + 1000*EXPIRATION_TIME);
-    
-    return Jwts.builder().setSubject(Long.toString(userId))
-        .setIssuedAt(creationTime).setExpiration(expirationTime).signWith(JWT_KEY).compact();
+    final Date expirationTime = new Date(clock.millis() + 1000 * EXPIRATION_TIME);
+
+    return Jwts.builder().setSubject(Long.toString(userId)).setIssuedAt(creationTime)
+        .setExpiration(expirationTime).signWith(JWT_KEY).compact();
   }
 
   public boolean validateToken(String token) {
-    return !isTokenExpired(token);
+    try {
+      return !isTokenExpired(token);
+    } catch (SignatureException e) {
+      return false;
+    }
   }
 }

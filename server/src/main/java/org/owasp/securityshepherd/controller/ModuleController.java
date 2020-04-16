@@ -52,38 +52,52 @@ public class ModuleController {
 
   @PostMapping(path = "module/{id}/{resource}")
   @PreAuthorize("hasRole('ROLE_USER')")
-  public Flux<Object> postResourceById(@PathVariable("id") final int id,
+  public Flux<Object> postResourceById(@PathVariable("id") final Long moduleId,
       @PathVariable("resource") final String resource, @RequestBody final String request) {
-    return moduleService.findById(id).flatMapMany(module -> {
-      switch (module.getUrl()) {
-        case (SqlInjectionTutorial.MODULE_URL):
-          return ReactiveSecurityContextHolder.getContext().map(SecurityContext::getAuthentication)
-              .map(Authentication::getPrincipal).cast(Long.class).flatMapMany(userId -> {
-                try {
-                  return this.sqlInjectionTutorial.submitQuery(userId,
-                      readQueryFromRequestBody(request));
-                } catch (JsonProcessingException e) {
-                  return Flux.error(e);
-                }
-              });
-        case (XssTutorial.MODULE_URL):
-          return ReactiveSecurityContextHolder.getContext().map(SecurityContext::getAuthentication)
-              .map(Authentication::getPrincipal).cast(Long.class).flatMapMany(userId -> {
-                try {
-                  return this.xssTutorial.submitQuery(userId, readQueryFromRequestBody(request));
-                } catch (JsonProcessingException e) {
-                  return Flux.error(e);
-                }
-              });
-
-        default:
-          throw new RuntimeException(
-              String.format("Module %s could not be identified", module.getUrl()));
-      }
-    });
+    final ObjectMapper jsonObjectMapper = new ObjectMapper();
+    return ReactiveSecurityContextHolder.getContext().map(SecurityContext::getAuthentication)
+        .map(Authentication::getPrincipal).cast(Long.class).flatMapMany(userId -> {
+          if (resource.equals("submit")) {
+            try {
+              return submissionService
+                  .submit(userId, moduleId, jsonObjectMapper.readTree(request).get("flag").asText())
+                  .map(submission -> {
+                    try {
+                      return jsonObjectMapper.writeValueAsString(submission);
+                    } catch (JsonProcessingException e) {
+                      return Mono.error(e);
+                    }
+                  });
+            } catch (JsonProcessingException e) {
+              return Mono.error(e);
+            }
+          } else {
+            return moduleService.findById(moduleId).flatMapMany(module -> {
+              switch (module.getUrl()) {
+                case (SqlInjectionTutorial.MODULE_URL):
+                  try {
+                    return this.sqlInjectionTutorial.submitQuery(userId,
+                        jsonObjectMapper.readTree(request).get("query").asText());
+                  } catch (JsonProcessingException e) {
+                    return Mono.error(e);
+                  }
+                case (XssTutorial.MODULE_URL):
+                  try {
+                    return this.xssTutorial.submitQuery(userId,
+                        jsonObjectMapper.readTree(request).get("query").asText());
+                  } catch (JsonProcessingException e) {
+                    return Mono.error(e);
+                  }
+                default:
+                  throw new RuntimeException(
+                      String.format("Module %s could not be identified", module.getUrl()));
+              }
+            });
+          }
+        });
   }
 
-  @PostMapping(path = "module/submit")
+  @PostMapping(path = "module/")
   @PreAuthorize("hasRole('ROLE_USER')")
   public Mono<Boolean> submitById(@RequestBody @Valid SubmissionDto submissionDto) {
     return ReactiveSecurityContextHolder.getContext().map(SecurityContext::getAuthentication)
@@ -91,10 +105,5 @@ public class ModuleController {
         .flatMap(userId -> submissionService
             .submit(userId, submissionDto.getModuleId(), submissionDto.getFlag())
             .map(Submission::isValid));
-  }
-
-  private String readQueryFromRequestBody(final String body) throws JsonProcessingException {
-    ObjectMapper jsonObjectMapper = new ObjectMapper();
-    return jsonObjectMapper.readTree(body).get("query").asText();
   }
 }
