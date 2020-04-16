@@ -12,14 +12,14 @@
       required
     />
   </div>
-  <button type="submit" class="btn btn-block btn-primary">Query</button>
+
+  <button [disabled]="loading" class="btn btn-primary">
+    <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+    Search
+  </button>
 </form>
 <div *ngIf="result">
-  <h3 class="h3 mb-3 font-weight-normal text-center">
-    Search results
-  </h3>
   <ul>
-    <p *ngIf="flag">{{ flag }}</p>
     <p *ngIf="result">{{ result }}</p>
   </ul>
 </div>

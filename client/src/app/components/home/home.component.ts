@@ -8,7 +8,6 @@ export class HomeComponent implements OnInit {
 
   constructor(private apiService: ApiService) {
     this.currentUser = this.apiService.currentUserValue;
-    console.log(this.currentUser);
   }
 
   ngOnInit() {}

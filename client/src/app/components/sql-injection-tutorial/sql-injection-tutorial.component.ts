@@ -11,6 +11,7 @@ import { Module } from 'src/app/model/module';
 export class SqlInjectionTutorialComponent implements OnInit {
   queryForm: FormGroup;
   queryResult: string[];
+  loading = false;
 
   @Input() module: Module;
 
@@ -24,11 +25,19 @@ export class SqlInjectionTutorialComponent implements OnInit {
   ngOnInit(): void {}
 
   submitQuery() {
+    this.loading = true;
+
     return this.apiService
       .modulePostRequest(this.module.id, 'query', this.queryForm.value)
       .subscribe((queryResult: string[]) => {
-        console.log(queryResult);
-        this.queryResult = queryResult;
+        this.loading = false;
+        if (queryResult.length > 0) {
+          this.queryResult = queryResult;
+        } else {
+          this.queryResult = [
+            `Sorry, no results were found for ${this.queryForm.value.query}`
+          ];
+        }
       });
   }
 }

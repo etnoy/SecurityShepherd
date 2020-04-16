@@ -31,7 +31,6 @@ export class ApiService {
     request: string
   ): Observable<any> {
     const api = `${this.endpoint}/module/${moduleId}/${resource}`;
-    console.log(request);
     return this.http.post<any>(api, request).pipe(
       map((res: Response) => {
         return res || {};
