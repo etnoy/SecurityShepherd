@@ -6,7 +6,7 @@ import { ApiService } from 'src/app/service/api.service';
 @Component({
   selector: 'app-module-list',
   templateUrl: './module-list.component.html',
-  styleUrls: ['./module-list.component.css']
+  styleUrls: ['./module-list.component.css'],
 })
 export class ModuleListComponent implements OnInit {
   modules: Module[];
@@ -17,6 +17,7 @@ export class ModuleListComponent implements OnInit {
   ngOnInit(): void {
     this.apiService.getModules().subscribe((modules: Module[]) => {
       this.modules = modules;
+      console.log(modules);
     });
   }
 }

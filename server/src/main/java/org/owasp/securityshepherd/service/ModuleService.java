@@ -34,6 +34,10 @@ public final class ModuleService {
     return moduleRepository.count();
   }
 
+  public Mono<Module> create(final String moduleName) {
+    return this.create(moduleName, null, null);
+  }
+  
   public Mono<Module> create(final String moduleName, final String url) {
     return this.create(moduleName, url, null);
   }
