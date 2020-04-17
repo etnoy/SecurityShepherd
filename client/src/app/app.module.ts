@@ -16,6 +16,7 @@ import { ModuleItemComponent } from './components/module-item/module-item.compon
 import { XssTutorialComponent } from './components/xss-tutorial/xss-tutorial.component';
 import { HomeComponent } from './components/home/home.component';
 import { AlertComponent } from './components/alert/alert.component';
+import { ErrorInterceptor } from './shared/error.interceptor';
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import { AlertComponent } from './components/alert/alert.component';
       useClass: AuthInterceptor,
       multi: true,
     },
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
   ],
   bootstrap: [AppComponent],
 })
