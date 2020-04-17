@@ -1,11 +1,7 @@
 <div class="auth-wrapper">
   <div class="row">
     <div class="inner-main">
-      <ul *ngIf="submissions.length > 0">
-        Submissions for
-        {{
-          userId
-        }}:
+      <ul>
         <ng-container *ngFor="let submission of submissions">
           <li>
             <p>
