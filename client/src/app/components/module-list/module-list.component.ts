@@ -17,7 +17,6 @@ export class ModuleListComponent implements OnInit {
   ngOnInit(): void {
     this.apiService.getModules().subscribe((modules: Module[]) => {
       this.modules = modules;
-      console.log(modules);
     });
   }
 }

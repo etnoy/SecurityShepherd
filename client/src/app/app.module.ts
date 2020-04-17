@@ -17,6 +17,8 @@ import { XssTutorialComponent } from './components/xss-tutorial/xss-tutorial.com
 import { HomeComponent } from './components/home/home.component';
 import { AlertComponent } from './components/alert/alert.component';
 import { ErrorInterceptor } from './shared/error.interceptor';
+import { ScoreboardComponent } from './components/scoreboard/scoreboard.component';
+import { UserScoreComponent } from './components/user-score/user-score.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +32,8 @@ import { ErrorInterceptor } from './shared/error.interceptor';
     ModuleItemComponent,
     XssTutorialComponent,
     ModuleDirective,
+    ScoreboardComponent,
+    UserScoreComponent,
   ],
   imports: [
     BrowserModule,

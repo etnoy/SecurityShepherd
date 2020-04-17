@@ -10,5 +10,5 @@ import reactor.core.publisher.Flux;
 @Repository
 public interface CorrectionRepository extends ReactiveCrudRepository<Correction, Long> {
   @Query("SELECT * from correction WHERE user_id = :user_id")
-  public Flux<Correction> findAllByUserId(@Param("user_id") final int userId);
+  public Flux<Correction> findAllByUserId(@Param("user_id") final long userId);
 }

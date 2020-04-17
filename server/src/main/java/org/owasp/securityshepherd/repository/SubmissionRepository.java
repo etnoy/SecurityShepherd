@@ -12,6 +12,9 @@ public interface SubmissionRepository extends ReactiveCrudRepository<Submission,
   @Query("SELECT * from submission WHERE module_id = :module_id")
   public Flux<Submission> findAllByModuleId(@Param("module_id") final long moduleId);
   
+  @Query("SELECT * from submission WHERE user_id = :user_id and is_valid = 1")
+  public Flux<Submission> findAllValidByUserId(@Param("user_id") final long userId);
+  
   @Query("SELECT * from submission WHERE user_id = :user_id AND module_id = :module_id and is_valid = 1")
   public Flux<Submission> findValidByUserIdAndModuleId(@Param("user_id") final long userId, @Param("module_id") final long moduleId);
 }

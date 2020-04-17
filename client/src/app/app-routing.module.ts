@@ -8,15 +8,27 @@ import { ModuleListComponent } from './components/module-list/module-list.compon
 
 import { AuthGuard } from './shared/auth.guard';
 import { HomeComponent } from './components/home/home.component';
+import { ScoreboardComponent } from './components/scoreboard/scoreboard.component';
+import { UserScoreComponent } from './components/user-score/user-score.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent, canActivate: [AuthGuard] },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: SignupComponent },
+  {
+    path: 'scoreboard',
+    component: ScoreboardComponent,
+    canActivate: [AuthGuard],
+  },
   { path: 'modules', component: ModuleListComponent, canActivate: [AuthGuard] },
   {
     path: 'module/:id',
     component: ModuleItemComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'submission/:id',
+    component: UserScoreComponent,
     canActivate: [AuthGuard],
   },
   { path: '**', redirectTo: '' },

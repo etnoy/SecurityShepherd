@@ -32,10 +32,10 @@ export class ModuleItemComponent implements OnInit {
   module: Module;
 
   constructor(
-    public fb: FormBuilder,
+    private fb: FormBuilder,
     private route: ActivatedRoute,
     private componentFactoryResolver: ComponentFactoryResolver,
-    public apiService: ApiService,
+    private apiService: ApiService,
     private alertService: AlertService
   ) {
     this.flagForm = this.fb.group({

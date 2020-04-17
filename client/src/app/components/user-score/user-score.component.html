@@ -1,0 +1,21 @@
+<div class="auth-wrapper">
+  <div class="row">
+    <div class="inner-main">
+      <ul *ngIf="submissions.length > 0">
+        Submissions for
+        {{
+          userId
+        }}:
+        <ng-container *ngFor="let submission of submissions">
+          <li>
+            <p>
+              Module {{ submission.moduleId }}: at {{ submission.time }} with
+              valid flag {{ submission.flag }}
+            </p>
+          </li>
+        </ng-container>
+      </ul>
+      <p *ngIf="submissions.length === 0">No submissions for {{ userId }}</p>
+    </div>
+  </div>
+</div>

@@ -6,6 +6,7 @@ import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.ModuleAlreadySolvedException;
 import org.owasp.securityshepherd.model.Correction;
+import org.owasp.securityshepherd.model.Scoreboard;
 import org.owasp.securityshepherd.model.Correction.CorrectionBuilder;
 import org.owasp.securityshepherd.model.Submission;
 import org.owasp.securityshepherd.model.Submission.SubmissionBuilder;
@@ -103,11 +104,20 @@ public final class SubmissionService {
     return correctionRepository.save(correctionBuilder.build());
   }
 
-  public Flux<Submission> findAllByModuleId(final Long moduleId) {
+  public Flux<Submission> findAllByModuleId(final long moduleId) {
     if (moduleId <= 0) {
       return Flux.error(new InvalidModuleIdException());
     }
 
     return submissionRepository.findAllByModuleId(moduleId);
+  }
+ 
+
+  public Flux<Submission> findAllValidByUserId(final long userId) {
+    if (userId <= 0) {
+      return Flux.error(new InvalidUserIdException());
+    }
+
+    return submissionRepository.findAllValidByUserId(userId);
   }
 }
