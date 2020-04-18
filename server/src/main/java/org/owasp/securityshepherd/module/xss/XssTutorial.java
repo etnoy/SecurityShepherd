@@ -25,6 +25,8 @@ public class XssTutorial implements SubmittableModule {
   private Long moduleId;
 
   public static final String MODULE_URL = "xss-tutorial";
+  
+  private final ObjectMapper objectMapper;
 
   @PostConstruct
   public Mono<Long> initialize() {
@@ -53,8 +55,7 @@ public class XssTutorial implements SubmittableModule {
       return Mono.error(e);
     }
 
-    ObjectMapper mapper = new ObjectMapper();
-    ObjectNode rootNode = mapper.createObjectNode();
+    ObjectNode rootNode = objectMapper.createObjectNode();
 
     rootNode.put("result", String.format("Sorry, found no result for %s", query));
 

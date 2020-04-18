@@ -36,6 +36,8 @@ public class ModuleController {
 
   private final XssTutorial xssTutorial;
 
+  private final ObjectMapper objectMapper;
+
   @GetMapping(path = "module/{id}")
   @PreAuthorize("hasRole('ROLE_USER')")
   public Mono<Module> getById(@PathVariable final int id) {
@@ -52,20 +54,12 @@ public class ModuleController {
   @PreAuthorize("hasRole('ROLE_USER')")
   public Flux<Object> postResourceById(@PathVariable("id") final Long moduleId,
       @PathVariable("resource") final String resource, @RequestBody final String request) {
-    final ObjectMapper jsonObjectMapper = new ObjectMapper();
     return ReactiveSecurityContextHolder.getContext().map(SecurityContext::getAuthentication)
         .map(Authentication::getPrincipal).cast(Long.class).flatMapMany(userId -> {
           if (resource.equals("submit")) {
             try {
-              return submissionService
-                  .submit(userId, moduleId, jsonObjectMapper.readTree(request).get("flag").asText())
-                  .map(submission -> {
-                    try {
-                      return jsonObjectMapper.writeValueAsString(submission);
-                    } catch (JsonProcessingException e) {
-                      return Mono.error(e);
-                    }
-                  });
+              return submissionService.submit(userId, moduleId,
+                  objectMapper.readTree(request).get("flag").asText());
             } catch (JsonProcessingException e) {
               return Mono.error(e);
             }
@@ -75,14 +69,14 @@ public class ModuleController {
                 case (SqlInjectionTutorial.MODULE_URL):
                   try {
                     return this.sqlInjectionTutorial.submitQuery(userId,
-                        jsonObjectMapper.readTree(request).get("query").asText());
+                        objectMapper.readTree(request).get("query").asText());
                   } catch (JsonProcessingException e) {
                     return Mono.error(e);
                   }
                 case (XssTutorial.MODULE_URL):
                   try {
                     return this.xssTutorial.submitQuery(userId,
-                        jsonObjectMapper.readTree(request).get("query").asText());
+                        objectMapper.readTree(request).get("query").asText());
                   } catch (JsonProcessingException e) {
                     return Mono.error(e);
                   }

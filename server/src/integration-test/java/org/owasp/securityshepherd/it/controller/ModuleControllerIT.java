@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.owasp.securityshepherd.controller.ModuleController;
 import org.owasp.securityshepherd.dto.PasswordRegistrationDto;
 import org.owasp.securityshepherd.dto.SubmissionDto;
 import org.owasp.securityshepherd.model.Submission;
@@ -18,11 +19,14 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
+import org.springframework.http.ReactiveHttpOutputMessage;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.reactive.function.BodyInserter;
 import org.springframework.web.reactive.function.BodyInserters;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -49,7 +53,13 @@ public class ModuleControllerIT {
   TestUtils testService;
 
   @Autowired
-  private WebTestClient webTestClient;
+  WebTestClient webTestClient;
+
+  @Autowired
+  ObjectMapper objectMapper;
+
+  @Autowired
+  ModuleController moduleController;
 
   @Test
   @DisplayName("Submitting a valid exact flag should return true")
@@ -78,15 +88,21 @@ public class ModuleControllerIT {
         .exchange().expectStatus().isOk().expectBody().returnResult().getResponseBody()))
         .read("$.token");
 
-    ObjectMapper mapper = new ObjectMapper();
+    final String endpoint = String.format("/api/v1/module/%d/submit", moduleId);
 
-    StepVerifier.create(webTestClient.post()
-        .uri(String.format("/api/v1/module/%d/submit", moduleId))
+    final BodyInserter<SubmissionDto, ReactiveHttpOutputMessage> submissionBody =
+        BodyInserters.fromValue(new SubmissionDto(moduleId, flag));
+
+    final Flux<Submission> moduleSubmissionFlux = webTestClient.post().uri(endpoint)
         .header("Authorization", "Bearer " + token).accept(MediaType.APPLICATION_JSON)
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromValue(new SubmissionDto(moduleId, flag))).exchange().expectStatus()
-        .isOk().returnResult(Submission.class).getResponseBody().map(Submission::isValid))
-        .expectNext(true).expectComplete().verify();
+        .contentType(MediaType.APPLICATION_JSON).body(submissionBody).exchange().expectStatus()
+        .isOk().returnResult(Submission.class).getResponseBody();
+
+    StepVerifier.create(moduleSubmissionFlux.map(Submission::isValid))
+        // We expect the submission to be valid
+        .expectNext(true)
+        // We're done
+        .expectComplete().verify();
   }
 
   @Test
@@ -121,12 +137,14 @@ public class ModuleControllerIT {
             .header("Authorization", "Bearer " + token).accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(new SubmissionDto(moduleId, flag + "invalid"))).exchange()
-            .expectStatus().isOk().returnResult(Boolean.class).getResponseBody())
+            .expectStatus().isOk().returnResult(Submission.class).getResponseBody()
+            .map(Submission::isValid))
         .expectNext(false).expectComplete().verify();
   }
 
   @BeforeEach
   private void setUp() {
     testService.deleteAll().block();
+
   }
 }

@@ -1,6 +1,5 @@
 package org.owasp.securityshepherd.module.sqlinjection;
 
-import java.util.Map;
 import javax.annotation.PostConstruct;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.module.SubmittableModule;
@@ -8,13 +7,11 @@ import org.owasp.securityshepherd.service.ModuleService;
 import org.springframework.data.r2dbc.BadSqlGrammarException;
 import org.springframework.data.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Component;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.r2dbc.spi.ConnectionFactories;
 import io.r2dbc.spi.R2dbcBadGrammarException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -40,16 +37,17 @@ public class SqlInjectionTutorial implements SubmittableModule {
     });
   }
 
-  public Mono<String> submitQuery(final long userId, final String usernameQuery) {
+  public Flux<SqlInjectionTutorialRow> submitQuery(final long userId, final String usernameQuery) {
     if (this.moduleId == null) {
-      return Mono.error(new RuntimeException("Must initialize module before submitting to it"));
+      return Flux.error(new RuntimeException("Must initialize module before submitting to it"));
     }
     // Generate a dynamic flag and add it as a row to the database creation script. The flag is
     // different for every user to prevent copying flags
-    final Mono<String> insertionQuery = moduleService.getDynamicFlag(userId, this.moduleId)
-        .map(flag -> String.format(
-            "INSERT INTO sqlinjection.users values ('666', 'Union Jack', 'Well done, flag is %s')",
-            flag));
+    final Mono<String> insertionQuery =
+        moduleService.getDynamicFlag(userId, this.moduleId)
+            .map(flag -> String.format(
+                "INSERT INTO sqlinjection.users values ('Union Jack', 'Well done, flag is %s')",
+                flag));
 
     // Create a connection URL to a H2SQL in-memory database. Each submission call creates a
     // completely new instance of this database.
@@ -73,35 +71,17 @@ public class SqlInjectionTutorial implements SubmittableModule {
     final String injectionQuery =
         String.format("SELECT * FROM sqlinjection.users WHERE name = '%s'", usernameQuery);
 
-    // Initialize json mapper and root node
-    ObjectMapper mapper = new ObjectMapper();
-    ObjectNode rootNode = mapper.createObjectNode();
-
     return databaseClientMono
         // Execute database query
-        .flatMapMany(databaseClient -> databaseClient.execute(injectionQuery).fetch().all())
-        // Convert rows to string
-        .map(Map::toString)
-        // Collect all rows to a list
-        .collectList()
-        // Handle the happy path
-        .map(rows -> {
-          // Covert results to json
-          ArrayNode arrayNode = rootNode.putArray("result");
-          for (final String row : rows) {
-            arrayNode.add(row);
-          }
-          // Convert json to string
-          return rootNode.toString();
-        })
+        .flatMapMany(databaseClient -> databaseClient.execute(injectionQuery)
+            .as(SqlInjectionTutorialRow.class).fetch().all())
         // Handle errors
         .onErrorResume(exception -> {
           // We want to forward database syntax errors to the user
           if (exception instanceof BadSqlGrammarException && exception.getCause() != null
               && exception.getCause() instanceof R2dbcBadGrammarException) {
-            // We extract the nested R2dbcBadGrammarException and return it as json
-            rootNode.put("error", exception.getCause().toString());
-            return Mono.just(rootNode.toString());
+            return Flux.just(
+                SqlInjectionTutorialRow.builder().error(exception.getCause().toString()).build());
           } else {
             // All other errors are handled in the usual way
             return Mono.error(exception);

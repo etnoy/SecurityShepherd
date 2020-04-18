@@ -4,6 +4,7 @@ import org.owasp.securityshepherd.repository.SecurityContextRepository;
 import org.owasp.securityshepherd.security.AuthenticationManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
@@ -15,19 +16,20 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import reactor.core.publisher.Mono;
 
 @Configuration
 @EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
 public class ShepherdSecurityConfiguration {
+
   @Bean
   public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity serverHttpSecurity,
       AuthenticationManager authenticationManager,
       SecurityContextRepository securityContextRepository) {
     return serverHttpSecurity
-        // Enable cors globally
-        //.cors().and()
         //
         .exceptionHandling()
         //
@@ -67,6 +69,15 @@ public class ShepherdSecurityConfiguration {
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", config);
     return source;
+  }
+
+  @Bean
+  @Primary
+  public ObjectMapper buildObjectMapper() {
+    ObjectMapper objectMapper = new ObjectMapper();
+    // Required for parsing LocalDateTime
+    objectMapper.registerModule(new JavaTimeModule());
+    return objectMapper;
   }
 
   @Bean
