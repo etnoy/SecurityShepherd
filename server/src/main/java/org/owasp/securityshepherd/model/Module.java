@@ -23,7 +23,8 @@ public class Module implements Serializable {
   @NonNull
   private String name;
   
-  private String url;
+  @NonNull
+  private String shortName;
 
   private String description;
 

@@ -25,7 +25,7 @@ public class ModuleTest {
 
     for (final String description : descriptionsToTest) {
 
-      final ModuleBuilder builder = Module.builder().name("TestModule");
+      final ModuleBuilder builder = Module.builder().name("TestModule").shortName("test-module");
 
       builder.description(description);
 
@@ -36,7 +36,7 @@ public class ModuleTest {
 
   @Test
   public void buildId_ValidId_Builds() {
-    final ModuleBuilder builder = Module.builder();
+    final ModuleBuilder builder = Module.builder().shortName("test-module");
 
     builder.id(123456L);
     builder.name("TestModule");
@@ -48,7 +48,7 @@ public class ModuleTest {
   @Test
   public void buildIsExactFlag_TrueOrFalse_MatchesBuild() {
     for (final boolean isFlagExact : TestUtils.BOOLEANS) {
-      final ModuleBuilder builder = Module.builder().name("TestModule");
+      final ModuleBuilder builder = Module.builder().name("TestModule").shortName("test-module");
 
       builder.isFlagExact(isFlagExact);
 
@@ -60,7 +60,7 @@ public class ModuleTest {
   @Test
   public void buildIsFlagEnabled_TrueOrFalse_MatchesBuild() {
     for (final boolean isFlagEnabled : TestUtils.BOOLEANS) {
-      final ModuleBuilder builder = Module.builder().name("TestModule");
+      final ModuleBuilder builder = Module.builder().name("TestModule").shortName("test-module");
 
       builder.isFlagEnabled(isFlagEnabled);
 
@@ -73,7 +73,7 @@ public class ModuleTest {
   public void buildIsOpen_TrueOrFalse_MatchesBuild() {
     for (final boolean isOpen : TestUtils.BOOLEANS) {
 
-      final ModuleBuilder builder = Module.builder().name("TestModule");
+      final ModuleBuilder builder = Module.builder().name("TestModule").shortName("test-module");
 
       builder.isOpen(isOpen);
 
@@ -93,7 +93,7 @@ public class ModuleTest {
 
     for (final String name : namesToTest) {
 
-      final ModuleBuilder builder = Module.builder();
+      final ModuleBuilder builder = Module.builder().shortName("test-module");
 
       builder.name(name);
 
@@ -112,17 +112,17 @@ public class ModuleTest {
     final ModuleBuilder builder = Module.builder();
 
     assertThat(builder.toString(), is(
-        "Module.ModuleBuilder(id=null, name=null, url=null, description=null, isFlagEnabled=false, "
-        + "isFlagExact=false, flag=null, isOpen=false)"));
+        "Module.ModuleBuilder(id=null, name=null, shortName=null, description=null, isFlagEnabled=false, "
+            + "isFlagExact=false, flag=null, isOpen=false)"));
   }
 
   @Test
   public void toString_ValidData_AsExpected() {
-    final Module testModule = Module.builder().name("TestModule").build();
+    final Module testModule = Module.builder().name("TestModule").shortName("test-module").build();
 
     assertThat(testModule.toString(), is(
-        "Module(id=null, name=TestModule, url=null, description=null, isFlagEnabled=false, isFlagExact=false, "
-        + "flag=null, isOpen=false)"));
+        "Module(id=null, name=TestModule, shortName=test-module, description=null, isFlagEnabled=false, isFlagExact=false, "
+            + "flag=null, isOpen=false)"));
   }
 
   @Test
@@ -130,8 +130,8 @@ public class ModuleTest {
     final String[] testedDescriptions =
         {"Description", null, "", "a", "Long Description With Spaces", "12345"};
 
-    final Module testModule =
-        Module.builder().name("TestModule").description("Description").build();
+    final Module testModule = Module.builder().name("TestModule").shortName("test-module")
+        .description("Description").build();
 
     assertThat(testModule.getDescription(), is("Description"));
 
@@ -145,7 +145,8 @@ public class ModuleTest {
     final String originalFlag = "abc123xyz789";
     final String[] testedFlags = {originalFlag, null, "", "a", "Long Flag With Spaces", "12345"};
 
-    final Module module = Module.builder().name("TestModule").flag("abc123xyz789").build();
+    final Module module =
+        Module.builder().name("TestModule").shortName("test-module").flag("abc123xyz789").build();
 
     assertThat(module.getFlag(), is(originalFlag));
 
@@ -156,7 +157,7 @@ public class ModuleTest {
 
   @Test
   public void withFlagEnabled_ValidBoolean_ChangesIsFlagEnabled() {
-    final Module testModule = Module.builder().name("TestModule").build();
+    final Module testModule = Module.builder().name("TestModule").shortName("test-module").build();
 
     assertThat(testModule.isFlagEnabled(), is(false));
 
@@ -168,7 +169,7 @@ public class ModuleTest {
 
   @Test
   public void withFlagExact_ValidBoolean_ChangesIsExactFlag() {
-    final Module testModule = Module.builder().name("TestModule").build();
+    final Module testModule = Module.builder().name("TestModule").shortName("test-module").build();
 
     assertThat(testModule.isFlagExact(), is(false));
 
@@ -183,7 +184,8 @@ public class ModuleTest {
     final long originalId = 1;
     final long[] testedIds = {originalId, 0, -1, 1000, -1000, 123456789, -12346789};
 
-    final Module testModule = Module.builder().id(originalId).name("TestModule").build();
+    final Module testModule =
+        Module.builder().id(originalId).name("TestModule").shortName("test-module").build();
 
     assertThat(testModule.getId(), is(originalId));
 
@@ -205,7 +207,7 @@ public class ModuleTest {
   public void withName_ValidName_ChangesName() {
     final String[] testedNames = {"TestModule", "", "name", "Long Name With Spaces", "12345"};
 
-    final Module testModule = Module.builder().name("TestModule").build();
+    final Module testModule = Module.builder().name("TestModule").shortName("test-module").build();
 
     assertThat(testModule.getName(), is("TestModule"));
 
@@ -219,7 +221,7 @@ public class ModuleTest {
 
   @Test
   public void withOpen_ValidBoolean_ChangesOpen() {
-    final Module testModule = Module.builder().name("TestModule").build();
+    final Module testModule = Module.builder().name("TestModule").shortName("test-module").build();
 
     assertThat(testModule.isOpen(), is(false));
 

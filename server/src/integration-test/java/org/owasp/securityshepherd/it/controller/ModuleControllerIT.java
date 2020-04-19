@@ -67,11 +67,11 @@ public class ModuleControllerIT {
     final String loginName = "testUser";
     final String password = "paLswOrdha17£@£sh";
     final String moduleName = "test-module";
-    final String moduleUrl = "test-module";
+    final String moduleShortName = "test-module";
 
     final String flag = "thisisaflag";
 
-    final long moduleId = moduleService.create(moduleName, moduleUrl).block().getId();
+    final long moduleId = moduleService.create(moduleName, moduleShortName).block().getId();
 
     moduleService.setExactFlag(moduleId, flag).block();
 
@@ -111,11 +111,11 @@ public class ModuleControllerIT {
     final String loginName = "testUser";
     final String password = "paLswOrdha17£@£sh";
     final String moduleName = "test-module";
-    final String moduleUrl = "test-module";
+    final String moduleShortName = "test-module";
 
     final String flag = "thisisaflag";
 
-    final long moduleId = moduleService.create(moduleName, moduleUrl).block().getId();
+    final long moduleId = moduleService.create(moduleName, moduleShortName).block().getId();
 
     moduleService.setExactFlag(moduleId, flag).block();
 

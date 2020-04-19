@@ -34,15 +34,11 @@ public final class ModuleService {
     return moduleRepository.count();
   }
 
-  public Mono<Module> create(final String moduleName) {
-    return this.create(moduleName, null, null);
-  }
-  
   public Mono<Module> create(final String moduleName, final String url) {
     return this.create(moduleName, url, null);
   }
 
-  public Mono<Module> create(final String moduleName, final String url, final String description) {
+  public Mono<Module> create(final String moduleName, final String shortName, final String description) {
     if (moduleName == null) {
       return Mono.error(new NullPointerException("Module name cannot be null"));
     }
@@ -51,11 +47,11 @@ public final class ModuleService {
       return Mono.error(new IllegalArgumentException("Module name cannot be empty"));
     }
 
-    log.info("Creating new module with name " + moduleName + " and url " + url);
+    log.info("Creating new module with name " + moduleName + " and url " + shortName);
 
     return Mono.just(moduleName).filterWhen(this::doesNotExistByName)
         .switchIfEmpty(Mono.error(new DuplicateModuleNameException("Module name already exists")))
-        .map(name -> Module.builder().name(name).description(description).url(url).build())
+        .map(name -> Module.builder().name(name).description(description).shortName(shortName).build())
         .flatMap(moduleRepository::save);
   }
 

@@ -1,5 +1,6 @@
 package org.owasp.securityshepherd.it.module.sqlinjection;
 
+import static org.hamcrest.CoreMatchers.is;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,6 +22,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -73,21 +76,21 @@ public class SqlInjectionTutorialIT {
         .expectNextCount(6).expectComplete().verify();
   }
 
-//  @Test
-//  public void submitSql_SqlSyntaxError_ReturnsError() {
-//    final Long userId = userService.create("TestUser1").block();
-//    sqlInjectionTutorial.initialize().block();
-//
-//    StepVerifier
-//        .create(
-//            sqlInjectionTutorial.submitQuery(userId, "'").map(SqlInjectionTutorialRow::getError))
-//        .expectNext(
-//            "io.r2dbc.spi.R2dbcBadGrammarException: [42000] [42000] "
-//            + "Syntax error in SQL statement \"SELECT * FROM sqlinjection.users "
-//            + "WHERE name = ''[*]'\"; SQL statement:\r\n"
-//                + "SELECT * FROM sqlinjection.users WHERE name = ''' [42000-200])")
-//        .expectComplete().verify();
-//  }
+  @Test
+  public void submitSql_SqlSyntaxError_ReturnsError() {
+    final Long userId = userService.create("TestUser1").block();
+    sqlInjectionTutorial.initialize().block();
+
+    final String errorMessage = "io.r2dbc.spi.R2dbcBadGrammarException: [42000] [42000] "
+        + "Syntax error in SQL statement \"SELECT * FROM sqlinjection.users "
+        + "WHERE name = ''[*]'\"; SQL statement:\n"
+        + "SELECT * FROM sqlinjection.users WHERE name = ''' [42000-200]";
+
+    StepVerifier
+        .create(
+            sqlInjectionTutorial.submitQuery(userId, "'").map(SqlInjectionTutorialRow::getError))
+        .expectNext(errorMessage).expectComplete().verify();
+  }
 
   @Test
   public void submitSql_CorrectAttackQuery_ReturnedFlagIsCorrect() {

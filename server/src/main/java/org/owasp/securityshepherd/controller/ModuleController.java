@@ -65,7 +65,7 @@ public class ModuleController {
             }
           } else {
             return moduleService.findById(moduleId).flatMapMany(module -> {
-              switch (module.getUrl()) {
+              switch (module.getShortName()) {
                 case (SqlInjectionTutorial.MODULE_URL):
                   try {
                     return this.sqlInjectionTutorial.submitQuery(userId,
@@ -82,7 +82,7 @@ public class ModuleController {
                   }
                 default:
                   throw new RuntimeException(
-                      String.format("Module %s could not be identified", module.getUrl()));
+                      String.format("Module %s could not be identified", module.getShortName()));
               }
             });
           }
