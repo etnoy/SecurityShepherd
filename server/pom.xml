@@ -179,7 +179,6 @@
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-jsr310</artifactId>
 		</dependency>
-
 	</dependencies>
 
 	<repositories>
@@ -207,13 +206,6 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-<!-- 			<dependency> -->
-<!-- 				<groupId>com.fasterxml.jackson</groupId> -->
-<!-- 				<artifactId>jackson-bom</artifactId> -->
-<!-- 				<version>2.11.0</version> -->
-<!-- 				<scope>import</scope> -->
-<!-- 				<type>import</type> -->
-<!-- 			</dependency> -->
 		</dependencies>
 	</dependencyManagement>
 
