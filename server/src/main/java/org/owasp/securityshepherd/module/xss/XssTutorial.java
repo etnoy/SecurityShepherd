@@ -25,7 +25,7 @@ public class XssTutorial implements SubmittableModule {
   private Long moduleId;
 
   public static final String MODULE_URL = "xss-tutorial";
-  
+
   private final ObjectMapper objectMapper;
 
   @PostConstruct
@@ -64,7 +64,7 @@ public class XssTutorial implements SubmittableModule {
 
       return moduleService.getDynamicFlag(userId, this.moduleId)
           .map(flag -> String.format("Congratulations, flag is %s", flag))
-          .map(result -> rootNode.put("flag", result)).map(node -> node.toString());
+          .map(result -> rootNode.put("flag", result)).map(ObjectNode::toString);
     }
     return Mono.just(rootNode.toString());
   }
