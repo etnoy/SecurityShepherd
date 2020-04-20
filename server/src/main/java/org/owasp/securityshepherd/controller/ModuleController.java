@@ -4,8 +4,6 @@ import javax.validation.Valid;
 import org.owasp.securityshepherd.dto.SubmissionDto;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.model.Submission;
-import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorial;
-import org.owasp.securityshepherd.module.xss.XssTutorial;
 import org.owasp.securityshepherd.service.ModuleService;
 import org.owasp.securityshepherd.service.SubmissionService;
 import org.springframework.security.access.prepost.PreAuthorize;

@@ -45,6 +45,9 @@ public class XssTutorial implements SubmittableModule {
   }
 
   public Mono<String> submitQuery(final long userId, final String query) {
+    if (this.moduleId == null) {
+      return Mono.error(new RuntimeException("Must initialize module before submitting to it"));
+    }
     String alert = null;
     final String htmlTarget = String.format(
         "<html><head><title>Alert</title></head><body><p>Result: %s</p></body></html>", query);

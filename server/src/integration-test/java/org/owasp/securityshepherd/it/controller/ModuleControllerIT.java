@@ -88,7 +88,7 @@ public class ModuleControllerIT {
         .exchange().expectStatus().isOk().expectBody().returnResult().getResponseBody()))
         .read("$.token");
 
-    final String endpoint = String.format("/api/v1/module/%d/submit", moduleId);
+    final String endpoint = String.format("/api/v1/module/submit/%d", moduleId);
 
     final BodyInserter<SubmissionDto, ReactiveHttpOutputMessage> submissionBody =
         BodyInserters.fromValue(new SubmissionDto(moduleId, flag));
@@ -133,7 +133,7 @@ public class ModuleControllerIT {
         .read("$.token");
 
     StepVerifier
-        .create(webTestClient.post().uri(String.format("/api/v1/module/%d/submit", moduleId))
+        .create(webTestClient.post().uri(String.format("/api/v1/module/submit/%d", moduleId))
             .header("Authorization", "Bearer " + token).accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(new SubmissionDto(moduleId, flag + "invalid"))).exchange()

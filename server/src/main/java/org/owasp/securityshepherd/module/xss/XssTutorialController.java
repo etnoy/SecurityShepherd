@@ -11,22 +11,21 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path="/api/v1/module/" + XssTutorial.MODULE_URL)
+@RequestMapping(path = "/api/v1/module/" + XssTutorial.MODULE_URL)
 public class XssTutorialController {
   private final XssTutorial xssTutorial;
 
   private final ObjectMapper objectMapper;
 
-  @PostMapping(path = "module/{id}/{resource}")
+  @PostMapping(path = "search")
   @PreAuthorize("hasRole('ROLE_USER')")
-  public Flux<Object> search(@RequestBody final String request) {
+  public Mono<String> search(@RequestBody final String request) {
     return ReactiveSecurityContextHolder.getContext().map(SecurityContext::getAuthentication)
-        .map(Authentication::getPrincipal).cast(Long.class).flatMapMany(userId -> {
+        .map(Authentication::getPrincipal).cast(Long.class).flatMap(userId -> {
           try {
             return this.xssTutorial.submitQuery(userId,
                 objectMapper.readTree(request).get("query").asText());
@@ -35,5 +34,4 @@ public class XssTutorialController {
           }
         });
   }
-
 }

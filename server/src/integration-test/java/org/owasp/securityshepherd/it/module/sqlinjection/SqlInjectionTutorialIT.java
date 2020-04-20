@@ -1,6 +1,5 @@
 package org.owasp.securityshepherd.it.module.sqlinjection;
 
-import static org.hamcrest.CoreMatchers.is;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,7 +21,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 
 @ExtendWith(SpringExtension.class)
