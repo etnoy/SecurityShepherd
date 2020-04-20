@@ -70,8 +70,8 @@ public final class ModuleService {
     return moduleRepository.findById(moduleId);
   }
 
-  public Mono<Module> findByUrl(final String url) {
-    return moduleRepository.findByUrl(url);
+  public Mono<Module> findByShortName(final String shortName) {
+    return moduleRepository.findByShortName(shortName);
   }
 
   public Mono<String> findNameById(final long moduleId) {

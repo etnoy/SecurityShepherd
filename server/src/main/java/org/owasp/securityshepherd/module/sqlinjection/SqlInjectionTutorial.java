@@ -41,6 +41,7 @@ public class SqlInjectionTutorial implements SubmittableModule {
     if (this.moduleId == null) {
       return Flux.error(new RuntimeException("Must initialize module before submitting to it"));
     }
+    log.trace("Processing query " + usernameQuery);
     // Generate a dynamic flag and add it as a row to the database creation script. The flag is
     // different for every user to prevent copying flags
     final Mono<String> insertionQuery =

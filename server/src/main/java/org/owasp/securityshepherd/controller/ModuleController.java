@@ -32,59 +32,37 @@ public class ModuleController {
 
   private final ModuleService moduleService;
 
-  private final SqlInjectionTutorial sqlInjectionTutorial;
-
-  private final XssTutorial xssTutorial;
-
   private final ObjectMapper objectMapper;
 
   @GetMapping(path = "module/{id}")
   @PreAuthorize("hasRole('ROLE_USER')")
-  public Mono<Module> getById(@PathVariable final int id) {
+  public Mono<Module> getModuleById(@PathVariable final long id) {
     return moduleService.findById(id);
   }
 
+  @GetMapping(path = "module/by-name/{shortName}")
+  @PreAuthorize("hasRole('ROLE_USER')")
+  public Mono<Module> getModuleByShortName(@PathVariable final String shortName) {
+    return moduleService.findByShortName(shortName);
+  }
+  
   @GetMapping(path = "modules")
   @PreAuthorize("hasRole('ROLE_USER')")
   public Flux<Module> findAll() {
     return moduleService.findAll();
   }
 
-  @PostMapping(path = "module/{id}/{resource}")
+  @PostMapping(path = "module/submit/{id}")
   @PreAuthorize("hasRole('ROLE_USER')")
-  public Flux<Object> postResourceById(@PathVariable("id") final Long moduleId,
-      @PathVariable("resource") final String resource, @RequestBody final String request) {
+  public Flux<Object> submitFlag(@PathVariable("id") final Long moduleId,
+      @RequestBody final String request) {
     return ReactiveSecurityContextHolder.getContext().map(SecurityContext::getAuthentication)
         .map(Authentication::getPrincipal).cast(Long.class).flatMapMany(userId -> {
-          if (resource.equals("submit")) {
-            try {
-              return submissionService.submit(userId, moduleId,
-                  objectMapper.readTree(request).get("flag").asText());
-            } catch (JsonProcessingException e) {
-              return Mono.error(e);
-            }
-          } else {
-            return moduleService.findById(moduleId).flatMapMany(module -> {
-              switch (module.getShortName()) {
-                case (SqlInjectionTutorial.MODULE_URL):
-                  try {
-                    return this.sqlInjectionTutorial.submitQuery(userId,
-                        objectMapper.readTree(request).get("query").asText());
-                  } catch (JsonProcessingException e) {
-                    return Mono.error(e);
-                  }
-                case (XssTutorial.MODULE_URL):
-                  try {
-                    return this.xssTutorial.submitQuery(userId,
-                        objectMapper.readTree(request).get("query").asText());
-                  } catch (JsonProcessingException e) {
-                    return Mono.error(e);
-                  }
-                default:
-                  throw new RuntimeException(
-                      String.format("Module %s could not be identified", module.getShortName()));
-              }
-            });
+          try {
+            return submissionService.submit(userId, moduleId,
+                objectMapper.readTree(request).get("flag").asText());
+          } catch (JsonProcessingException e) {
+            return Mono.error(e);
           }
         });
   }

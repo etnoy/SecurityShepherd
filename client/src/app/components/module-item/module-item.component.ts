@@ -44,34 +44,41 @@ export class ModuleItemComponent implements OnInit {
   }
   ngOnInit() {
     this.route.paramMap.subscribe((params) => {
-      const moduleId = params.get('id');
-      this.apiService.getModuleById(moduleId).subscribe((module: Module) => {
-        this.module = module;
-        let currentModule;
-        switch (this.module.url) {
-          case 'sql-injection-tutorial': {
-            currentModule = SqlInjectionTutorialComponent;
-            break;
-          }
-          case 'xss-tutorial': {
-            currentModule = XssTutorialComponent;
-            break;
-          }
-          default: {
-            throwError('url cannot be resolved');
-            break;
-          }
-        }
-        const componentFactory = this.componentFactoryResolver.resolveComponentFactory(
-          currentModule
-        );
+      const shortName = params.get('shortName');
+      console.log(shortName);
+      this.apiService
+        .getModuleByShortName(shortName)
+        .subscribe((module: Module) => {
+          this.module = module;
+          console.log(module);
 
-        const viewContainerRef = this.moduleDirective.viewContainerRef;
-        viewContainerRef.clear();
-        const componentRef = viewContainerRef.createComponent(componentFactory);
+          let currentModule;
+          switch (this.module.shortName) {
+            case 'sql-injection-tutorial': {
+              currentModule = SqlInjectionTutorialComponent;
+              break;
+            }
+            case 'xss-tutorial': {
+              currentModule = XssTutorialComponent;
+              break;
+            }
+            default: {
+              throwError('url cannot be resolved');
+              break;
+            }
+          }
+          const componentFactory = this.componentFactoryResolver.resolveComponentFactory(
+            currentModule
+          );
 
-        (componentRef.instance as typeof currentModule).module = this.module;
-      });
+          const viewContainerRef = this.moduleDirective.viewContainerRef;
+          viewContainerRef.clear();
+          const componentRef = viewContainerRef.createComponent(
+            componentFactory
+          );
+
+          (componentRef.instance as typeof currentModule).module = this.module;
+        });
     });
   }
 

@@ -3,6 +3,7 @@ import { ApiService } from '../../service/api.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Module } from 'src/app/model/module';
 import { AlertService } from 'src/app/service/alert.service';
+import { SqlInjectionTutorialResult } from 'src/app/model/sql-injection-tutorial-result';
 
 @Component({
   selector: 'app-sql-injection-tutorial',
@@ -11,7 +12,7 @@ import { AlertService } from 'src/app/service/alert.service';
 })
 export class SqlInjectionTutorialComponent implements OnInit {
   queryForm: FormGroup;
-  queryResult: string[];
+  result: SqlInjectionTutorialResult[];
   errorResult: string;
   submitted = false;
   loading = false;
@@ -26,7 +27,7 @@ export class SqlInjectionTutorialComponent implements OnInit {
     this.queryForm = this.fb.group({
       query: [''],
     });
-    this.queryResult = [];
+    this.result = [];
     this.errorResult = '';
   }
 
@@ -34,22 +35,19 @@ export class SqlInjectionTutorialComponent implements OnInit {
 
   submitQuery() {
     this.loading = true;
-
     return this.apiService
-      .modulePostRequest(this.module.id, 'query', this.queryForm.value)
+      .modulePostRequest(this.module.shortName, 'search', this.queryForm.value)
       .subscribe(
         (data) => {
           this.alertService.clear();
           this.loading = false;
           this.submitted = true;
-          data = JSON.parse(data);
-          this.queryResult = data['result'];
-          this.errorResult = data['error'];
+          this.result = data;
         },
         (error) => {
           this.loading = false;
           this.submitted = false;
-          this.queryResult = [];
+          this.result = [];
           this.errorResult = '';
           let msg = '';
           if (error.error instanceof ErrorEvent) {

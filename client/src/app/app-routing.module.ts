@@ -22,7 +22,7 @@ const routes: Routes = [
   },
   { path: 'modules', component: ModuleListComponent, canActivate: [AuthGuard] },
   {
-    path: 'module/:id',
+    path: 'module/:shortName',
     component: ModuleItemComponent,
     canActivate: [AuthGuard],
   },

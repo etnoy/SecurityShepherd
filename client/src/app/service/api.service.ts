@@ -26,11 +26,11 @@ export class ApiService {
   }
 
   modulePostRequest(
-    moduleId: string,
+    shortName: string,
     resource: string,
     request: string
   ): Observable<any> {
-    const api = `${this.endpoint}/module/${moduleId}/${resource}`;
+    const api = `${this.endpoint}/module/${shortName}/${resource}`;
     return this.http.post<any>(api, request).pipe(
       map((res: Response) => {
         return res || {};
@@ -86,8 +86,18 @@ export class ApiService {
     );
   }
 
+  getModuleByShortName(shortName: string): Observable<any> {
+    const api = `${this.endpoint}/module/by-name/${shortName}`;
+    return this.http.get(api, { headers: this.headers }).pipe(
+      map((res: Response) => {
+        return res || {};
+      }),
+      catchError(this.handleError)
+    );
+  }
+
   getModuleById(moduleId: string): Observable<any> {
-    const api = `${this.endpoint}/module/${moduleId}`;
+    const api = `${this.endpoint}/module/by-id/${moduleId}`;
     return this.http.get(api, { headers: this.headers }).pipe(
       map((res: Response) => {
         return res || {};
