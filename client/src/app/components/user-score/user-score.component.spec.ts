@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { UserScoreComponent } from './user-score.component';
+import { RouterModule } from '@angular/router';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('UserScoreComponent', () => {
   let component: UserScoreComponent;
@@ -8,9 +10,9 @@ describe('UserScoreComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ UserScoreComponent ]
-    })
-    .compileComponents();
+      declarations: [UserScoreComponent],
+      imports: [RouterModule.forRoot([]), HttpClientTestingModule],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

@@ -3,13 +3,14 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { ApiService } from './api.service';
 import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('ApiService', () => {
   let service: ApiService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientModule, RouterTestingModule],
+      imports: [HttpClientModule, RouterTestingModule, HttpClientTestingModule],
     });
     service = TestBed.inject(ApiService);
   });
