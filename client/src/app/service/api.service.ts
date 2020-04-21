@@ -25,6 +25,16 @@ export class ApiService {
     this.currentUser = this.currentUserSubject.asObservable();
   }
 
+  submitFlag(moduleId: string, flag: string): Observable<any> {
+    const api = `${this.endpoint}/module/submit/${moduleId}`;
+    return this.http.post<any>(api, flag).pipe(
+      map((res: Response) => {
+        return res || {};
+      }),
+      catchError(this.handleError)
+    );
+  }
+
   modulePostRequest(
     shortName: string,
     resource: string,
@@ -108,7 +118,6 @@ export class ApiService {
 
   getValidSubmissionsByUserId(userId: string): Observable<any> {
     const api = `${this.endpoint}/submissions/${userId}`;
-    console.log(api);
     return this.http.get(api, { headers: this.headers }).pipe(
       map((res: Response) => {
         return res || {};

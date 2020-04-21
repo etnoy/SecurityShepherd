@@ -7,7 +7,9 @@
             <p>
               <a href="module/{{ module.shortName }}">{{ module.name }}</a
               >&nbsp;
-              <span *ngIf="module.description">{{ module.description }}</span>
+              <span *ngIf="module.description">{{ module.description }}</span
+              >&nbsp;
+              <span *ngIf="module.isSolved">Solved</span>
             </p>
           </li>
         </ng-container>

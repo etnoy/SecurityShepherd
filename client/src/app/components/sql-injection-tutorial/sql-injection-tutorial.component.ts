@@ -36,7 +36,11 @@ export class SqlInjectionTutorialComponent implements OnInit {
   submitQuery() {
     this.loading = true;
     return this.apiService
-      .modulePostRequest(this.module.shortName, 'search', this.queryForm.value)
+      .modulePostRequest(
+        this.module.shortName,
+        'search',
+        this.queryForm.controls.query.value
+      )
       .subscribe(
         (data) => {
           this.alertService.clear();

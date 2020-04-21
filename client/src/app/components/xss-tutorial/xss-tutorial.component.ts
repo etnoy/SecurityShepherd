@@ -7,7 +7,7 @@ import { AlertService } from 'src/app/service/alert.service';
 @Component({
   selector: 'app-xss-tutorial',
   templateUrl: './xss-tutorial.component.html',
-  styleUrls: ['./xss-tutorial.component.css']
+  styleUrls: ['./xss-tutorial.component.css'],
 })
 export class XssTutorialComponent implements OnInit {
   queryForm: FormGroup;
@@ -22,7 +22,7 @@ export class XssTutorialComponent implements OnInit {
     private alertService: AlertService
   ) {
     this.queryForm = this.fb.group({
-      query: ['']
+      query: [''],
     });
     this.result = '';
   }
@@ -37,8 +37,12 @@ export class XssTutorialComponent implements OnInit {
     this.loading = true;
 
     return this.apiService
-      .modulePostRequest(this.module.id, 'query', this.queryForm.value)
-      .subscribe(data => {
+      .modulePostRequest(
+        this.module.id,
+        'query',
+        this.queryForm.controls.query.value
+      )
+      .subscribe((data) => {
         data = JSON.parse(data);
         this.result = data['result'];
         const flag = data['flag'];

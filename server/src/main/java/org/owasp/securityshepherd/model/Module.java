@@ -36,5 +36,6 @@ public class Module implements Serializable {
 
   private String flag;
 
+  @JsonProperty("isOpen")
   private boolean isOpen;
 }

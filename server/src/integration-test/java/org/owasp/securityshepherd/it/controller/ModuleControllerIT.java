@@ -9,7 +9,6 @@ import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.owasp.securityshepherd.controller.ModuleController;
 import org.owasp.securityshepherd.dto.PasswordRegistrationDto;
-import org.owasp.securityshepherd.dto.SubmissionDto;
 import org.owasp.securityshepherd.model.Submission;
 import org.owasp.securityshepherd.service.ModuleService;
 import org.owasp.securityshepherd.service.UserService;
@@ -63,7 +62,7 @@ public class ModuleControllerIT {
 
   @Test
   @DisplayName("Submitting a valid exact flag should return true")
-  public void submitModule_ValidExactFlag_Success() throws Exception {
+  public void submitFlag_ValidExactFlag_Success() throws Exception {
     final String loginName = "testUser";
     final String password = "paLswOrdha17£@£sh";
     final String moduleName = "test-module";
@@ -90,8 +89,8 @@ public class ModuleControllerIT {
 
     final String endpoint = String.format("/api/v1/module/submit/%d", moduleId);
 
-    final BodyInserter<SubmissionDto, ReactiveHttpOutputMessage> submissionBody =
-        BodyInserters.fromValue(new SubmissionDto(moduleId, flag));
+    final BodyInserter<String, ReactiveHttpOutputMessage> submissionBody =
+        BodyInserters.fromValue(flag);
 
     final Flux<Submission> moduleSubmissionFlux = webTestClient.post().uri(endpoint)
         .header("Authorization", "Bearer " + token).accept(MediaType.APPLICATION_JSON)
@@ -107,7 +106,7 @@ public class ModuleControllerIT {
 
   @Test
   @DisplayName("Submitting an invalid exact flag should return false")
-  public void submitModule_InvalidExactFlag_Success() throws Exception {
+  public void submitFlag_InvalidExactFlag_Success() throws Exception {
     final String loginName = "testUser";
     final String password = "paLswOrdha17£@£sh";
     final String moduleName = "test-module";
@@ -135,9 +134,8 @@ public class ModuleControllerIT {
     StepVerifier
         .create(webTestClient.post().uri(String.format("/api/v1/module/submit/%d", moduleId))
             .header("Authorization", "Bearer " + token).accept(MediaType.APPLICATION_JSON)
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(new SubmissionDto(moduleId, flag + "invalid"))).exchange()
-            .expectStatus().isOk().returnResult(Submission.class).getResponseBody()
+            .contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromValue(flag + "invalid"))
+            .exchange().expectStatus().isOk().returnResult(Submission.class).getResponseBody()
             .map(Submission::isValid))
         .expectNext(false).expectComplete().verify();
   }
@@ -145,6 +143,5 @@ public class ModuleControllerIT {
   @BeforeEach
   private void setUp() {
     testService.deleteAll().block();
-
   }
 }

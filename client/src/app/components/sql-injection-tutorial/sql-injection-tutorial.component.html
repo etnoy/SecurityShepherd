@@ -29,7 +29,9 @@
   </h3>
   <ul>
     <li *ngFor="let result of result">
-      <p *ngIf="!result.error">{{ result.name }}: {{ result.comment }}</p>
+      <p *ngIf="!result.error">
+        NAME={{ result.name }}, COMMENT={{ result.comment }}
+      </p>
       <p *ngIf="result.error">Error: {{ result.error }}</p>
     </li>
   </ul>

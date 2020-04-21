@@ -8,12 +8,13 @@ import {
   ViewChild,
   ComponentFactoryResolver,
 } from '@angular/core';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Module } from '../../model/module';
 import { XssTutorialComponent } from '../xss-tutorial/xss-tutorial.component';
 import { throwError } from 'rxjs';
 import { AlertService } from 'src/app/service/alert.service';
+import { Submission } from 'src/app/model/submission';
 
 @Component({
   selector: 'app-module-item',
@@ -24,6 +25,8 @@ export class ModuleItemComponent implements OnInit {
   flagForm: FormGroup;
   loading = false;
   submitted = false;
+  userId: string;
+  solved = false;
 
   @Input() modules: Module[];
 
@@ -39,19 +42,22 @@ export class ModuleItemComponent implements OnInit {
     private alertService: AlertService
   ) {
     this.flagForm = this.fb.group({
-      flag: [''],
+      flag: ['', Validators.required],
     });
+    this.flagForm.enable();
   }
+
   ngOnInit() {
     this.route.paramMap.subscribe((params) => {
       const shortName = params.get('shortName');
-      console.log(shortName);
       this.apiService
         .getModuleByShortName(shortName)
         .subscribe((module: Module) => {
           this.module = module;
-          console.log(module);
-
+          this.solved = this.module.isSolved;
+          if (this.solved) {
+            this.flagForm.disable();
+          }
           let currentModule;
           switch (this.module.shortName) {
             case 'sql-injection-tutorial': {
@@ -63,7 +69,7 @@ export class ModuleItemComponent implements OnInit {
               break;
             }
             default: {
-              throwError('url cannot be resolved');
+              throwError('shortName cannot be resolved');
               break;
             }
           }
@@ -83,22 +89,31 @@ export class ModuleItemComponent implements OnInit {
   }
 
   submitFlag() {
-    this.loading = true;
     this.submitted = true;
-    return this.apiService
-      .modulePostRequest(this.module.id, 'submit', this.flagForm.value)
-      .subscribe((data) => {
-        this.loading = false;
-        data = JSON.parse(data);
-        const validSubmission = data['isValid'];
-        const flag = data['flag'];
 
-        if (validSubmission) {
-          this.alertService.success(`Well done, flag ${flag} was correct.`);
-        } else {
-          this.alertService.error(`Invalid flag.`);
+    // stop here if form is invalid
+    if (this.flagForm.invalid) {
+      return;
+    }
+    this.loading = true;
+
+    return this.apiService
+      .submitFlag(this.module.id, this.flagForm.controls.flag.value)
+      .subscribe(
+        (submission: Submission) => {
+          this.loading = false;
+          if (submission.isValid) {
+            this.alertService.success(`Well done, module complete`);
+            this.flagForm = this.fb.group({
+              flag: [''],
+            });
+          } else {
+            this.alertService.error(`Invalid flag`);
+          }
+        },
+        (error) => {
+          this.alertService.error(`An error occurred`);
         }
-        console.log(data);
-      });
+      );
   }
 }

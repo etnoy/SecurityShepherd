@@ -3,4 +3,5 @@ export class Module {
   name: string;
   shortName: string;
   description: string;
+  isSolved: boolean;
 }

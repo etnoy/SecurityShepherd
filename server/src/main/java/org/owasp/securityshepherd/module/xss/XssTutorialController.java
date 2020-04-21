@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
@@ -19,19 +17,11 @@ import reactor.core.publisher.Mono;
 public class XssTutorialController {
   private final XssTutorial xssTutorial;
 
-  private final ObjectMapper objectMapper;
-
   @PostMapping(path = "search")
   @PreAuthorize("hasRole('ROLE_USER')")
-  public Mono<String> search(@RequestBody final String request) {
+  public Mono<String> search(@RequestBody final String query) {
     return ReactiveSecurityContextHolder.getContext().map(SecurityContext::getAuthentication)
-        .map(Authentication::getPrincipal).cast(Long.class).flatMap(userId -> {
-          try {
-            return this.xssTutorial.submitQuery(userId,
-                objectMapper.readTree(request).get("query").asText());
-          } catch (JsonProcessingException e) {
-            return Mono.error(e);
-          }
-        });
+        .map(Authentication::getPrincipal).cast(Long.class)
+        .flatMap(userId -> xssTutorial.submitQuery(userId, query));
   }
 }

@@ -17,6 +17,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.owasp.securityshepherd.exception.DuplicateModuleNameException;
 import org.owasp.securityshepherd.exception.InvalidFlagException;
@@ -25,6 +26,7 @@ import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.repository.ModuleRepository;
+import org.owasp.securityshepherd.repository.SubmissionRepository;
 import org.owasp.securityshepherd.service.ConfigurationService;
 import org.owasp.securityshepherd.service.CryptoService;
 import org.owasp.securityshepherd.service.KeyService;
@@ -47,7 +49,8 @@ public class ModuleServiceTest {
 
   private ModuleService moduleService;
 
-  private UserService userService = Mockito.mock(UserService.class);
+  @Mock
+  private UserService userService;
 
   private ModuleRepository moduleRepository = Mockito.mock(ModuleRepository.class);
 
@@ -56,6 +59,9 @@ public class ModuleServiceTest {
   private KeyService keyService = Mockito.mock(KeyService.class);
 
   private CryptoService cryptoService = Mockito.mock(CryptoService.class);
+  
+  @Mock
+  private SubmissionRepository submissionRepository;
 
   @Test
   public void count_NoArgument_ReturnsCount() {
@@ -539,7 +545,7 @@ public class ModuleServiceTest {
   private void setUp() {
     // Set up the system under test
     moduleService = new ModuleService(moduleRepository, userService, configurationService,
-        keyService, cryptoService);
+        keyService, cryptoService, submissionRepository);
   }
 
   @Test

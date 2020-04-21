@@ -6,7 +6,7 @@ import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
-
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Repository
@@ -23,4 +23,7 @@ public interface ModuleRepository extends ReactiveCrudRepository<Module, Long> {
 
   @Query("select * from module where short_name = :short_name")
   public Mono<Module> findByShortName(@Param("url") final String short_name);
+  
+  @Query("select * from module where is_open = true")
+  public Flux<Module> findAllOpen();
 }
