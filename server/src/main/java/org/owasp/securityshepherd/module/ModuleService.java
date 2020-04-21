@@ -17,6 +17,7 @@
 package org.owasp.securityshepherd.module;
 
 import org.owasp.securityshepherd.exception.DuplicateModuleNameException;
+import org.owasp.securityshepherd.exception.EmptyModuleNameException;
 import org.owasp.securityshepherd.exception.InvalidFlagException;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
@@ -51,13 +52,14 @@ public final class ModuleService {
     }
 
     if (moduleName.isEmpty()) {
-      return Mono.error(new IllegalArgumentException("Module name cannot be empty"));
+      return Mono.error(new EmptyModuleNameException("Module name cannot be empty"));
     }
 
     log.info("Creating new module with name " + moduleName + " and url " + shortName);
 
     return Mono.just(moduleName).filterWhen(this::doesNotExistByName)
-        .switchIfEmpty(Mono.error(new DuplicateModuleNameException("Module name already exists")))
+        .switchIfEmpty(Mono.error(new DuplicateModuleNameException(
+            String.format("Module name %s already exists", moduleName))))
         .map(name -> Module.builder().name(name).description(description).shortName(shortName)
             .build())
         .flatMap(moduleRepository::save);
@@ -79,6 +81,9 @@ public final class ModuleService {
   }
 
   public Mono<Module> findByShortName(final String shortName) {
+    if (shortName == null) {
+      return Mono.error(new NullPointerException("shortName cannot be null"));
+    }
     return moduleRepository.findByShortName(shortName);
   }
 
@@ -114,7 +119,7 @@ public final class ModuleService {
     }
 
     if (exactFlag == null) {
-      return Mono.error(new InvalidFlagException("Flag cannot be null"));
+      return Mono.error(new NullPointerException("Flag cannot be null"));
     } else if (exactFlag.isEmpty()) {
       return Mono.error(new InvalidFlagException("Flag cannot be empty"));
     }
@@ -134,7 +139,7 @@ public final class ModuleService {
     }
 
     if (moduleName.isEmpty()) {
-      return Mono.error(new IllegalArgumentException("Module name cannot be empty"));
+      return Mono.error(new EmptyModuleNameException("Module name cannot be empty"));
     }
 
     log.info("Setting name of module with id " + moduleId + " to " + moduleName);

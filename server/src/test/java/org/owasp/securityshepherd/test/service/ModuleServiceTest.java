@@ -34,6 +34,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.owasp.securityshepherd.exception.DuplicateModuleNameException;
+import org.owasp.securityshepherd.exception.EmptyModuleNameException;
 import org.owasp.securityshepherd.exception.InvalidFlagException;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.module.Module;
@@ -82,14 +83,18 @@ public class ModuleServiceTest {
     when(moduleRepository.findByName(name)).thenReturn(Mono.just(mockModule));
 
     StepVerifier.create(moduleService.create(name, url))
-        .expectError(DuplicateModuleNameException.class).verify();
+        .expectErrorMatches(throwable -> throwable instanceof DuplicateModuleNameException
+            && throwable.getMessage().equals("Module name TestModule already exists"))
+        .verify();
 
     verify(moduleRepository, times(1)).findByName(name);
   }
 
   @Test
   public void create_EmptyName_ReturnsIllegalArgumentException() {
-    StepVerifier.create(moduleService.create("", "url")).expectError(IllegalArgumentException.class)
+    StepVerifier.create(moduleService.create("", "url"))
+        .expectErrorMatches(throwable -> throwable instanceof EmptyModuleNameException
+            && throwable.getMessage().equals("Module name cannot be empty"))
         .verify();
   }
 
@@ -150,6 +155,25 @@ public class ModuleServiceTest {
       StepVerifier.create(moduleService.findById(moduleId))
           .expectError(InvalidModuleIdException.class).verify();
     }
+  }
+
+  @Test
+  public void findByShortName_ExistingShortName_ReturnsModule() {
+    final String mockModuleShortName = "a-name";
+    final Module mockModule = mock(Module.class);
+    when(moduleRepository.findByShortName(mockModuleShortName)).thenReturn(Mono.just(mockModule));
+    StepVerifier.create(moduleService.findByShortName(mockModuleShortName)).expectNext(mockModule)
+        .expectComplete().verify();
+    verify(moduleRepository, times(1)).findByShortName(mockModuleShortName);
+  }
+
+  @Test
+  public void findByShortName_NonExistentShortName_ReturnsEmpty() {
+    final String mockModuleShortName = "a-name";
+    when(moduleRepository.findByShortName(mockModuleShortName)).thenReturn(Mono.empty());
+    StepVerifier.create(moduleService.findByShortName(mockModuleShortName)).expectComplete()
+        .verify();
+    verify(moduleRepository, times(1)).findByShortName(mockModuleShortName);
   }
 
   @Test
@@ -304,8 +328,18 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void setExactFlag_NullExactFlag_ReturnsInvalidFlagException() {
-    StepVerifier.create(moduleService.setExactFlag(1, null)).expectError(InvalidFlagException.class)
+  public void findByShortName_NullShortName_ReturnsNullPointerException() {
+    StepVerifier.create(moduleService.findByShortName(null))
+        .expectErrorMatches(throwable -> throwable instanceof NullPointerException
+            && throwable.getMessage().equals("shortName cannot be null"))
+        .verify();
+  }
+
+  @Test
+  public void setExactFlag_NullExactFlag_ReturnsNulPointerException() {
+    StepVerifier.create(moduleService.setExactFlag(1, null))
+        .expectErrorMatches(throwable -> throwable instanceof NullPointerException
+            && throwable.getMessage().equals("Flag cannot be null"))
         .verify();
   }
 
@@ -351,28 +385,37 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void setName_EmptyName_ReturnsIllegalArgumentException() {
-    StepVerifier.create(moduleService.setName(847L, "")).expectError(IllegalArgumentException.class)
+  public void setName_EmptyName_ReturnsEmptyModuleNameException() {
+    StepVerifier.create(moduleService.setName(847L, ""))
+        .expectErrorMatches(throwable -> throwable instanceof EmptyModuleNameException
+            && throwable.getMessage().equals("Module name cannot be empty"))
         .verify();
   }
 
   @Test
   public void setName_InvalidModuleId_ReturnsInvalidModuleIdException() {
-
     // TODO: make this a list
     StepVerifier.create(moduleService.setName(-1L, "name"))
-        .expectError(InvalidModuleIdException.class).verify();
+        .expectErrorMatches(throwable -> throwable instanceof InvalidModuleIdException
+            && throwable.getMessage().equals("Module id must be a strictly positive integer"))
+        .verify();
 
     StepVerifier.create(moduleService.setName(-1000L, "name"))
-        .expectError(InvalidModuleIdException.class).verify();
+        .expectErrorMatches(throwable -> throwable instanceof InvalidModuleIdException
+            && throwable.getMessage().equals("Module id must be a strictly positive integer"))
+        .verify();
 
     StepVerifier.create(moduleService.setName(0L, "name"))
-        .expectError(InvalidModuleIdException.class).verify();
+        .expectErrorMatches(throwable -> throwable instanceof InvalidModuleIdException
+            && throwable.getMessage().equals("Module id must be a strictly positive integer"))
+        .verify();
   }
 
   @Test
   public void setName_NullName_ReturnsNullPointerException() {
-    StepVerifier.create(moduleService.setName(204L, null)).expectError(NullPointerException.class)
+    StepVerifier.create(moduleService.setName(204L, null))
+        .expectErrorMatches(throwable -> throwable instanceof NullPointerException
+            && throwable.getMessage().equals("Module name cannot be null"))
         .verify();
   }
 
