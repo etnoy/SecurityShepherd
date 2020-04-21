@@ -19,11 +19,8 @@ package org.owasp.securityshepherd.exception;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public class ClassIdNotFoundException extends EntityIdNotFoundException {
+public class ClassIdNotFoundException extends RuntimeException {
 
-  /**
-   * 
-   */
   private static final long serialVersionUID = 848671651267142565L;
 
   public ClassIdNotFoundException(final String message) {

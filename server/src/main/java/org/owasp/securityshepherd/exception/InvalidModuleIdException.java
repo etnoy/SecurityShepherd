@@ -19,7 +19,7 @@ package org.owasp.securityshepherd.exception;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public class InvalidModuleIdException extends InvalidEntityIdException {
+public class InvalidModuleIdException extends RuntimeException {
   private static final long serialVersionUID = 3189695115052847549L;
 
   public InvalidModuleIdException(final String message) {

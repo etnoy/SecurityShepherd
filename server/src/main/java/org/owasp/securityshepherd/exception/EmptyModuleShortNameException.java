@@ -19,7 +19,7 @@ package org.owasp.securityshepherd.exception;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public class EmptyModuleShortNameException extends InvalidEntityIdException {
+public class EmptyModuleShortNameException extends RuntimeException {
 
   private static final long serialVersionUID = -505553415557894220L;
 
