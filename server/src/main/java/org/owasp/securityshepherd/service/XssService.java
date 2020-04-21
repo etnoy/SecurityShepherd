@@ -3,6 +3,7 @@ package org.owasp.securityshepherd.service;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import org.owasp.securityshepherd.exception.XssEvaluationException;
 import org.springframework.stereotype.Component;
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.CollectingAlertHandler;
@@ -19,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 public class XssService {
 
   public List<String> doXssWithBrowserVersion(final String htmlPage,
-      final BrowserVersion browserVersion) throws IOException {
+      final BrowserVersion browserVersion) {
     WebClient webClient = new WebClient(browserVersion);
     MockWebConnection mockWebConnection = new MockWebConnection();
     final CollectingAlertHandler alertHandler = new CollectingAlertHandler();
@@ -34,21 +35,25 @@ public class XssService {
       // We make a dummy call to our mocked url
       page = webClient.getPage("http://www.example.com/");
     } catch (FailingHttpStatusCodeException | IOException e) {
-      throw new RuntimeException(e);
+      throw new XssEvaluationException(e);
     } finally {
       webClient.close();
       mockWebConnection.close();
     }
-    page.initialize();
+    
+    try {
+      page.initialize();
+      interactWithElements(page.getDomElementDescendants());
+    } catch (FailingHttpStatusCodeException | IOException e) {
+      throw new XssEvaluationException(e);
+    }
 
-    interactWithElements(page.getDomElementDescendants());
-
-    webClient.waitForBackgroundJavaScript(60000);
+    webClient.waitForBackgroundJavaScript(1000);
 
     return alertHandler.getCollectedAlerts();
   }
 
-  public String doXss(final String htmlPage) throws IOException {
+  public String doXss(final String htmlPage) {
     final BrowserVersion[] browserVersions = {BrowserVersion.FIREFOX, BrowserVersion.CHROME,
         BrowserVersion.INTERNET_EXPLORER, BrowserVersion.BEST_SUPPORTED};
 

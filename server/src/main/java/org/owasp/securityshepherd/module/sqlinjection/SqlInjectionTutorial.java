@@ -23,12 +23,12 @@ public class SqlInjectionTutorial implements SubmittableModule {
 
   private Long moduleId;
 
-  public static final String MODULE_URL = "sql-injection-tutorial";
+  public static final String SHORT_NAME = "sql-injection-tutorial";
 
   @PostConstruct
   public Mono<Long> initialize() {
     log.info("Creating sql tutorial module");
-    final Mono<Module> moduleMono = moduleService.create("Sql Injection Tutorial", MODULE_URL,
+    final Mono<Module> moduleMono = moduleService.create("Sql Injection Tutorial", SHORT_NAME,
         "Tutorial for making sql injections");
 
     return moduleMono.flatMap(module -> {

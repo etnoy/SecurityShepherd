@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = "/api/v1/module/" + XssTutorial.MODULE_URL)
+@RequestMapping(path = "/api/v1/module/" + XssTutorial.SHORT_NAME)
 public class XssTutorialController {
   private final XssTutorial xssTutorial;
 

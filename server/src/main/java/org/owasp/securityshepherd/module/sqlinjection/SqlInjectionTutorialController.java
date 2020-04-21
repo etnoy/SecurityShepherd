@@ -13,7 +13,7 @@ import reactor.core.publisher.Flux;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = "/api/v1/module/" + SqlInjectionTutorial.MODULE_URL)
+@RequestMapping(path = "/api/v1/module/" + SqlInjectionTutorial.SHORT_NAME)
 public class SqlInjectionTutorialController {
   private final SqlInjectionTutorial sqlInjectionTutorial;
 

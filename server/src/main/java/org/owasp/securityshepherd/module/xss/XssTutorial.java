@@ -1,6 +1,5 @@
 package org.owasp.securityshepherd.module.xss;
 
-import java.io.IOException;
 import javax.annotation.PostConstruct;
 import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.module.SubmittableModule;
@@ -24,14 +23,14 @@ public class XssTutorial implements SubmittableModule {
 
   private Long moduleId;
 
-  public static final String MODULE_URL = "xss-tutorial";
+  public static final String SHORT_NAME = "xss-tutorial";
 
   private final ObjectMapper objectMapper;
 
   @PostConstruct
   public Mono<Long> initialize() {
     log.info("Creating xss tutorial module");
-    final Mono<Module> moduleMono = moduleService.create("XSS Tutorial", MODULE_URL,
+    final Mono<Module> moduleMono = moduleService.create("XSS Tutorial", SHORT_NAME,
         "Tutorial for making cross site scripting");
     return moduleMono.flatMap(module -> {
       this.moduleId = module.getId();
@@ -48,15 +47,10 @@ public class XssTutorial implements SubmittableModule {
     if (this.moduleId == null) {
       return Mono.error(new RuntimeException("Must initialize module before submitting to it"));
     }
-    String alert = null;
     final String htmlTarget = String.format(
         "<html><head><title>Alert</title></head><body><p>Result: %s</p></body></html>", query);
 
-    try {
-      alert = xssService.doXss(htmlTarget);
-    } catch (IOException e) {
-      return Mono.error(e);
-    }
+    final String alert = xssService.doXss(htmlTarget);
 
     ObjectNode rootNode = objectMapper.createObjectNode();
 
