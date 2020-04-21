@@ -26,7 +26,7 @@ import org.owasp.securityshepherd.model.Correction;
 import org.owasp.securityshepherd.model.Submission;
 import org.owasp.securityshepherd.model.Correction.CorrectionBuilder;
 import org.owasp.securityshepherd.model.Submission.SubmissionBuilder;
-import org.owasp.securityshepherd.module.FlagComponent;
+import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.repository.CorrectionRepository;
 import org.owasp.securityshepherd.repository.SubmissionRepository;
 import org.springframework.stereotype.Service;
@@ -42,7 +42,7 @@ public final class SubmissionService {
 
   private final CorrectionRepository correctionRepository;
   
-  private final FlagComponent flagComponent;
+  private final FlagHandler flagComponent;
 
   private final Clock clock;
 

@@ -17,7 +17,7 @@
 package org.owasp.securityshepherd.module.xss;
 
 import javax.annotation.PostConstruct;
-import org.owasp.securityshepherd.module.FlagComponent;
+import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.module.SubmittableModule;
@@ -44,7 +44,7 @@ public class XssTutorial implements SubmittableModule {
 
   private final ObjectMapper objectMapper;
   
-  private final FlagComponent flagComponent;
+  private final FlagHandler flagComponent;
 
   @PostConstruct
   public Mono<Long> initialize() {

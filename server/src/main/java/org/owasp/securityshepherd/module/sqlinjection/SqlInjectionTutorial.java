@@ -17,7 +17,7 @@
 package org.owasp.securityshepherd.module.sqlinjection;
 
 import javax.annotation.PostConstruct;
-import org.owasp.securityshepherd.module.FlagComponent;
+import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.module.SubmittableModule;
@@ -38,7 +38,7 @@ public class SqlInjectionTutorial implements SubmittableModule {
 
   private final ModuleService moduleService;
 
-  private final FlagComponent flagComponent;
+  private final FlagHandler flagComponent;
 
   private Long moduleId;
 

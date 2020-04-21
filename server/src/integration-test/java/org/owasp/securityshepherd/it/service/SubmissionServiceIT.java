@@ -26,7 +26,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.owasp.securityshepherd.exception.ModuleAlreadySolvedException;
 import org.owasp.securityshepherd.model.Submission;
-import org.owasp.securityshepherd.module.FlagComponent;
+import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleRepository;
 import org.owasp.securityshepherd.module.ModuleService;
@@ -81,7 +81,7 @@ public class SubmissionServiceIT {
   TestUtils testService;
 
   @Autowired
-  FlagComponent flagComponent;
+  FlagHandler flagComponent;
 
   @Test
   public void submitFlag_ValidExactFlag_Success() {

@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.owasp.securityshepherd.module.FlagComponent;
+import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.ModulePointRepository;
 import org.owasp.securityshepherd.module.ModuleRepository;
 import org.owasp.securityshepherd.module.ModuleService;
@@ -82,7 +82,7 @@ public class StartupRunner implements ApplicationRunner {
   ConfigurationService configurationService;
   
   @Autowired
-  FlagComponent flagComponent;
+  FlagHandler flagComponent;
 
   @Override
   public void run(ApplicationArguments args) {

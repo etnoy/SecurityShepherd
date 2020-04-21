@@ -33,7 +33,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public final class FlagComponent {
+public final class FlagHandler {
 
   private final ModuleService moduleService;
 
