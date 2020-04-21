@@ -49,8 +49,7 @@ public class ModuleServiceTest {
 
   private ModuleService moduleService;
 
-  @Mock
-  private UserService userService;
+  private UserService userService = Mockito.mock(UserService.class);
 
   private ModuleRepository moduleRepository = Mockito.mock(ModuleRepository.class);
 
@@ -60,8 +59,7 @@ public class ModuleServiceTest {
 
   private CryptoService cryptoService = Mockito.mock(CryptoService.class);
   
-  @Mock
-  private SubmissionRepository submissionRepository;
+  private SubmissionRepository submissionRepository = Mockito.mock(SubmissionRepository.class);
 
   @Test
   public void count_NoArgument_ReturnsCount() {
