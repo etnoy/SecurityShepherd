@@ -18,6 +18,7 @@ package org.owasp.securityshepherd.service;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.List;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.ModuleAlreadySolvedException;
@@ -98,9 +99,18 @@ public final class SubmissionService {
         .map(SubmissionBuilder::build).flatMap(submissionRepository::save);
   }
 
+  public Flux<Submission> findAllValidByUserIdAndModuleId(final long userId, final long moduleId) {
+    return submissionRepository.findAllValidByUserIdAndModuleId(userId, moduleId);
+  }
+
+  public Mono<List<Long>> findAllSolvedModulesByUserId(final long userId) {
+    return submissionRepository.findAllValidByUserId(userId).map(Submission::getModuleId)
+        .collectList();
+  }
+
   private Mono<Boolean> validSubmissionDoesNotExistByUserIdAndModuleId(final long userId,
       final long moduleId) {
-    return submissionRepository.findValidByUserIdAndModuleId(userId, moduleId).next()
+    return submissionRepository.findAllValidByUserIdAndModuleId(userId, moduleId).next()
         .map(u -> false).defaultIfEmpty(true);
   }
 
@@ -127,7 +137,7 @@ public final class SubmissionService {
 
     return submissionRepository.findAllByModuleId(moduleId);
   }
- 
+
 
   public Flux<Submission> findAllValidByUserId(final long userId) {
     if (userId <= 0) {

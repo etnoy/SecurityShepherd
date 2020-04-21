@@ -42,7 +42,6 @@ import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleRepository;
 import org.owasp.securityshepherd.module.ModuleService;
-import org.owasp.securityshepherd.repository.SubmissionRepository;
 import org.owasp.securityshepherd.service.ConfigurationService;
 import org.owasp.securityshepherd.service.CryptoService;
 import org.owasp.securityshepherd.service.KeyService;
@@ -74,8 +73,6 @@ public class ModuleServiceTest {
 
   private CryptoService cryptoService = Mockito.mock(CryptoService.class);
   
-  private SubmissionRepository submissionRepository = Mockito.mock(SubmissionRepository.class);
-
   @Test
   public void count_NoArgument_ReturnsCount() {
     final long mockedModuleCount = 75L;
@@ -558,7 +555,7 @@ public class ModuleServiceTest {
   private void setUp() {
     // Set up the system under test
     moduleService = new ModuleService(moduleRepository, userService, configurationService,
-        keyService, cryptoService, submissionRepository);
+        keyService, cryptoService);
   }
 
   @Test
