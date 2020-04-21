@@ -17,23 +17,23 @@
 package org.owasp.securityshepherd.module;
 
 import java.io.Serializable;
-import javax.validation.constraints.NotNull;
 import lombok.Builder;
+import lombok.NonNull;
 import lombok.Value;
 
 @Value
 @Builder
-public class ModuleListItemDto implements Serializable {
+public class ModuleListItem implements Serializable {
 
   private static final long serialVersionUID = -5011105798343266330L;
 
-  @NotNull
+  @NonNull
   private Long id;
   
-  @NotNull
+  @NonNull
   private String name;
 
-  @NotNull
+  @NonNull
   private String shortName;
   
   private String description;

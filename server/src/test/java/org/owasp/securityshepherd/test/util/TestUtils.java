@@ -40,6 +40,8 @@ public final class TestUtils {
   public static final boolean INITIAL_BOOLEAN = false;
 
   public static final boolean[] BOOLEANS = {false, true};
+  
+  public static final Boolean[] BOOLEANS_WITH_NULL = {null, false, true};
 
   public static final Long INITIAL_LONG = 0L;
 

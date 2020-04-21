@@ -17,7 +17,7 @@
 package org.owasp.securityshepherd.module;
 
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
-import org.owasp.securityshepherd.module.ModuleListItemDto.ModuleListItemDtoBuilder;
+import org.owasp.securityshepherd.module.ModuleListItem.ModuleListItemBuilder;
 import org.owasp.securityshepherd.service.SubmissionService;
 import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
@@ -32,12 +32,12 @@ public final class ModuleListingComponent {
 
   private final SubmissionService submissionService;
 
-  public Flux<ModuleListItemDto> findAllOpenByUserId(final long userId) {
+  public Flux<ModuleListItem> findAllOpenByUserId(final long userId) {
     if (userId <= 0) {
       return Flux.error(new InvalidUserIdException());
     }
 
-    final ModuleListItemDtoBuilder moduleListItemDtoBuilder = ModuleListItemDto.builder();
+    final ModuleListItemBuilder moduleListItemBuilder = ModuleListItem.builder();
     // TODO: Check if user id is valid and exists
     return submissionService
         // Find all valid submissions by this user
@@ -45,25 +45,25 @@ public final class ModuleListingComponent {
         // Get all modules
         moduleService.findAll().map(module -> {
           // For each module, construct a module list item
-          moduleListItemDtoBuilder.id(module.getId());
-          moduleListItemDtoBuilder.name(module.getName());
-          moduleListItemDtoBuilder.shortName(module.getShortName());
-          moduleListItemDtoBuilder.description(module.getDescription());
-          moduleListItemDtoBuilder.name(module.getName());
+          moduleListItemBuilder.id(module.getId());
+          moduleListItemBuilder.name(module.getName());
+          moduleListItemBuilder.shortName(module.getShortName());
+          moduleListItemBuilder.description(module.getDescription());
+          moduleListItemBuilder.name(module.getName());
           // Check if this module id is finished
-          moduleListItemDtoBuilder.isSolved(finishedModules.contains(module.getId()));
+          moduleListItemBuilder.isSolved(finishedModules.contains(module.getId()));
           // Build the module list item and return
-          return moduleListItemDtoBuilder.build();
+          return moduleListItemBuilder.build();
         }));
   }
 
-  public Mono<ModuleListItemDto> findByUserIdAndShortName(final long userId,
+  public Mono<ModuleListItem> findByUserIdAndShortName(final long userId,
       final String shortName) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
 
-    final ModuleListItemDtoBuilder moduleListItemDtoBuilder = ModuleListItemDto.builder();
+    final ModuleListItemBuilder moduleListItemBuilder = ModuleListItem.builder();
     // TODO: Check if user id is valid and exists
 
     final Mono<Module> moduleMono = moduleService.findByShortName(shortName);
@@ -74,14 +74,14 @@ public final class ModuleListingComponent {
         .defaultIfEmpty(false).zipWith(moduleMono).map(tuple -> {
           final Module module = tuple.getT2();
           // For each module, construct a module list item
-          moduleListItemDtoBuilder.id(module.getId());
-          moduleListItemDtoBuilder.name(module.getName());
-          moduleListItemDtoBuilder.shortName(module.getShortName());
-          moduleListItemDtoBuilder.description(module.getDescription());
-          moduleListItemDtoBuilder.name(module.getName());
-          moduleListItemDtoBuilder.isSolved(tuple.getT1());
+          moduleListItemBuilder.id(module.getId());
+          moduleListItemBuilder.name(module.getName());
+          moduleListItemBuilder.shortName(module.getShortName());
+          moduleListItemBuilder.description(module.getDescription());
+          moduleListItemBuilder.name(module.getName());
+          moduleListItemBuilder.isSolved(tuple.getT1());
           // Build the module list item and return
-          return moduleListItemDtoBuilder.build();
+          return moduleListItemBuilder.build();
         });
   }
 

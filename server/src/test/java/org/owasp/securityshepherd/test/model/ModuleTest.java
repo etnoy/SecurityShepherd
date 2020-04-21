@@ -55,16 +55,8 @@ public class ModuleTest {
   }
 
   @Test
-  public void buildId_NameAndShortNameGiven_Builds() {
-    final Module module = Module.builder().name("TestModule").shortName("test-module").build();
-
-    assertThat(module, instanceOf(Module.class));
-    assertThat(module.getName(), is("TestModule"));
-    assertThat(module.getShortName(), is("test-module"));
-  }
-
-  @Test
   public void buildIsExactFlag_TrueOrFalse_MatchesBuild() {
+    //TODO
     for (final boolean isFlagExact : TestUtils.BOOLEANS) {
       final ModuleBuilder builder = Module.builder().name("TestModule").shortName("test-module");
 

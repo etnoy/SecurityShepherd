@@ -52,7 +52,7 @@ public class ModuleController {
 
   @GetMapping(path = "module/by-name/{shortName}")
   @PreAuthorize("hasRole('ROLE_USER')")
-  public Mono<ModuleListItemDto> getModuleByShortName(@PathVariable final String shortName) {
+  public Mono<ModuleListItem> getModuleByShortName(@PathVariable final String shortName) {
     return ReactiveSecurityContextHolder.getContext().map(SecurityContext::getAuthentication)
         .map(Authentication::getPrincipal).cast(Long.class)
         .flatMap(userId -> moduleListingComponent.findByUserIdAndShortName(userId, shortName));
@@ -60,7 +60,7 @@ public class ModuleController {
 
   @GetMapping(path = "modules")
   @PreAuthorize("hasRole('ROLE_USER')")
-  public Flux<ModuleListItemDto> findAll() {
+  public Flux<ModuleListItem> findAll() {
     return ReactiveSecurityContextHolder.getContext().map(SecurityContext::getAuthentication)
         .map(Authentication::getPrincipal).cast(Long.class)
         .flatMapMany(moduleListingComponent::findAllOpenByUserId);
