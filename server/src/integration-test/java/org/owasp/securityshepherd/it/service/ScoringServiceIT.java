@@ -33,6 +33,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.owasp.securityshepherd.model.Scoreboard;
+import org.owasp.securityshepherd.module.FlagComponent;
 import org.owasp.securityshepherd.module.ModulePointRepository;
 import org.owasp.securityshepherd.module.ModuleRepository;
 import org.owasp.securityshepherd.module.ModuleService;
@@ -85,6 +86,9 @@ public class ScoringServiceIT {
 
   @Autowired
   ModulePointRepository modulePointRepository;
+  
+  @Autowired
+  FlagComponent flagComponent;
 
   @Autowired
   Clock clock;
@@ -201,8 +205,8 @@ public class ScoringServiceIT {
   }
 
   private void initializeService(Clock injectedClock) {
-    submissionService = new SubmissionService(moduleService, submissionRepository,
-        correctionRepository, injectedClock);
+    submissionService = new SubmissionService(submissionRepository,
+        correctionRepository, flagComponent, injectedClock);
   }
 
   @BeforeEach

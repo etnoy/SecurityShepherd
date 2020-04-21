@@ -17,6 +17,7 @@
 package org.owasp.securityshepherd.module.xss;
 
 import javax.annotation.PostConstruct;
+import org.owasp.securityshepherd.module.FlagComponent;
 import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.module.SubmittableModule;
@@ -42,6 +43,8 @@ public class XssTutorial implements SubmittableModule {
   public static final String SHORT_NAME = "xss-tutorial";
 
   private final ObjectMapper objectMapper;
+  
+  private final FlagComponent flagComponent;
 
   @PostConstruct
   public Mono<Long> initialize() {
@@ -75,7 +78,7 @@ public class XssTutorial implements SubmittableModule {
     if (alert != null) {
       rootNode.put("alert", alert);
 
-      return moduleService.getDynamicFlag(userId, this.moduleId)
+      return flagComponent.getDynamicFlag(userId, this.moduleId)
           .map(flag -> String.format("Congratulations, flag is %s", flag))
           .map(result -> rootNode.put("flag", result)).map(ObjectNode::toString);
     }

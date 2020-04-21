@@ -17,6 +17,7 @@
 package org.owasp.securityshepherd.module.sqlinjection;
 
 import javax.annotation.PostConstruct;
+import org.owasp.securityshepherd.module.FlagComponent;
 import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.module.SubmittableModule;
@@ -36,6 +37,8 @@ import reactor.core.publisher.Mono;
 public class SqlInjectionTutorial implements SubmittableModule {
 
   private final ModuleService moduleService;
+
+  private final FlagComponent flagComponent;
 
   private Long moduleId;
 
@@ -61,7 +64,7 @@ public class SqlInjectionTutorial implements SubmittableModule {
     // Generate a dynamic flag and add it as a row to the database creation script. The flag is
     // different for every user to prevent copying flags
     final Mono<String> insertionQuery =
-        moduleService.getDynamicFlag(userId, this.moduleId)
+        flagComponent.getDynamicFlag(userId, this.moduleId)
             .map(flag -> String.format(
                 "INSERT INTO sqlinjection.users values ('Union Jack', 'Well done, flag is %s')",
                 flag));

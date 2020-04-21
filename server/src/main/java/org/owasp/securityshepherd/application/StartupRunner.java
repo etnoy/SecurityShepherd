@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.owasp.securityshepherd.module.FlagComponent;
 import org.owasp.securityshepherd.module.ModulePointRepository;
 import org.owasp.securityshepherd.module.ModuleRepository;
 import org.owasp.securityshepherd.module.ModuleService;
@@ -79,6 +80,9 @@ public class StartupRunner implements ApplicationRunner {
 
   @Autowired
   ConfigurationService configurationService;
+  
+  @Autowired
+  FlagComponent flagComponent;
 
   @Override
   public void run(ApplicationArguments args) {
@@ -174,12 +178,10 @@ public class StartupRunner implements ApplicationRunner {
     initializeService(Clock.offset(correctionClock, Duration.ofHours(10)));
     submissionService.submitCorrection(userIds.get(1), 100, "Thanks for the bribe").block();
     initializeService(clock);
-
-
   }
 
   private void initializeService(Clock injectedClock) {
-    submissionService = new SubmissionService(moduleService, submissionRepository,
-        correctionRepository, injectedClock);
+    submissionService = new SubmissionService(submissionRepository,
+        correctionRepository, flagComponent, injectedClock);
   }
 }

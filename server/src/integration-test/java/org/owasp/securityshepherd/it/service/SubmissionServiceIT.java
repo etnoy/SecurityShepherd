@@ -26,6 +26,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.owasp.securityshepherd.exception.ModuleAlreadySolvedException;
 import org.owasp.securityshepherd.model.Submission;
+import org.owasp.securityshepherd.module.FlagComponent;
 import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleRepository;
 import org.owasp.securityshepherd.module.ModuleService;
@@ -79,6 +80,9 @@ public class SubmissionServiceIT {
   @Autowired
   TestUtils testService;
 
+  @Autowired
+  FlagComponent flagComponent;
+
   @Test
   public void submitFlag_ValidExactFlag_Success() {
     final String flag = "thisisaflag";
@@ -111,8 +115,8 @@ public class SubmissionServiceIT {
   }
 
   private void initializeService(Clock injectedClock) {
-    submissionService = new SubmissionService(moduleService, submissionRepository,
-        correctionRepository, injectedClock);
+    submissionService = new SubmissionService(submissionRepository,
+        correctionRepository, flagComponent, injectedClock);
   }
 
   @BeforeEach

@@ -26,7 +26,7 @@ import org.owasp.securityshepherd.model.Correction;
 import org.owasp.securityshepherd.model.Submission;
 import org.owasp.securityshepherd.model.Correction.CorrectionBuilder;
 import org.owasp.securityshepherd.model.Submission.SubmissionBuilder;
-import org.owasp.securityshepherd.module.ModuleService;
+import org.owasp.securityshepherd.module.FlagComponent;
 import org.owasp.securityshepherd.repository.CorrectionRepository;
 import org.owasp.securityshepherd.repository.SubmissionRepository;
 import org.springframework.stereotype.Service;
@@ -38,11 +38,11 @@ import reactor.core.publisher.Mono;
 @Service
 public final class SubmissionService {
 
-  private final ModuleService moduleService;
-
   private final SubmissionRepository submissionRepository;
 
   private final CorrectionRepository correctionRepository;
+  
+  private final FlagComponent flagComponent;
 
   private final Clock clock;
 
@@ -64,7 +64,7 @@ public final class SubmissionService {
 
     return
     // Check if flag is correct
-    moduleService.verifyFlag(userId, moduleId, flag)
+    flagComponent.verifyFlag(userId, moduleId, flag)
         // Get isValid field
         .map(submissionBuilder::isValid)
         // Has this module been solved by this user? In that case, throw exception.
