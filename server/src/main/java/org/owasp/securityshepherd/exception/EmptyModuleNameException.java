@@ -20,7 +20,8 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public class EmptyModuleNameException extends InvalidEntityIdException {
-  private static final long serialVersionUID = 3189695115052847549L;
+
+  private static final long serialVersionUID = 5129771913798107107L;
 
   public EmptyModuleNameException(final String message) {
     super(message);

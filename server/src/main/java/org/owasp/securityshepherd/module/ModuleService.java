@@ -18,6 +18,7 @@ package org.owasp.securityshepherd.module;
 
 import org.owasp.securityshepherd.exception.DuplicateModuleNameException;
 import org.owasp.securityshepherd.exception.EmptyModuleNameException;
+import org.owasp.securityshepherd.exception.EmptyModuleShortNameException;
 import org.owasp.securityshepherd.exception.InvalidFlagException;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
@@ -82,14 +83,17 @@ public final class ModuleService {
 
   public Mono<Module> findByShortName(final String shortName) {
     if (shortName == null) {
-      return Mono.error(new NullPointerException("shortName cannot be null"));
+      return Mono.error(new NullPointerException("Module short name cannot be null"));
+    }
+    if (shortName.isEmpty()) {
+      return Mono.error(new EmptyModuleShortNameException("Module short name cannot be empty"));
     }
     return moduleRepository.findByShortName(shortName);
   }
 
   public Mono<String> findNameById(final long moduleId) {
     if (moduleId <= 0) {
-      return Mono.error(new InvalidModuleIdException());
+      return Mono.error(new InvalidModuleIdException("Module id must be a strictly positive integer"));
     }
 
     return moduleRepository.findById(moduleId).map(Module::getName);

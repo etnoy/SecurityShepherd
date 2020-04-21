@@ -35,6 +35,7 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.owasp.securityshepherd.exception.DuplicateModuleNameException;
 import org.owasp.securityshepherd.exception.EmptyModuleNameException;
+import org.owasp.securityshepherd.exception.EmptyModuleShortNameException;
 import org.owasp.securityshepherd.exception.InvalidFlagException;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.module.Module;
@@ -158,6 +159,14 @@ public class ModuleServiceTest {
   }
 
   @Test
+  public void findById_NonExistentModuleId_ReturnsEmpty() {
+    final long mockModuleId = 286;
+    when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.empty());
+    StepVerifier.create(moduleService.findById(mockModuleId)).expectComplete().verify();
+    verify(moduleRepository, times(1)).findById(mockModuleId);
+  }
+
+  @Test
   public void findByShortName_ExistingShortName_ReturnsModule() {
     final String mockModuleShortName = "a-name";
     final Module mockModule = mock(Module.class);
@@ -177,11 +186,19 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void findById_NonExistentModuleId_ReturnsEmpty() {
-    final long mockModuleId = 286;
-    when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.empty());
-    StepVerifier.create(moduleService.findById(mockModuleId)).expectComplete().verify();
-    verify(moduleRepository, times(1)).findById(mockModuleId);
+  public void findByShortName_EmptyShortName_ReturnsInvalidShortNameException() {
+    StepVerifier.create(moduleService.findByShortName(""))
+        .expectErrorMatches(throwable -> throwable instanceof EmptyModuleShortNameException
+            && throwable.getMessage().equals("Module short name cannot be empty"))
+        .verify();
+  }
+
+  @Test
+  public void findByShortName_NullShortName_ReturnsNullPointerException() {
+    StepVerifier.create(moduleService.findByShortName(null))
+        .expectErrorMatches(throwable -> throwable instanceof NullPointerException
+            && throwable.getMessage().equals("Module short name cannot be null"))
+        .verify();
   }
 
   @Test
@@ -202,9 +219,11 @@ public class ModuleServiceTest {
 
   @Test
   public void findNameById_InvalidModuleId_ReturnsInvalidModuleIdException() {
-    for (final long moduleId : TestUtils.INVALID_IDS) {
-      StepVerifier.create(moduleService.findNameById(moduleId))
-          .expectError(InvalidModuleIdException.class).verify();
+    for (final long invalidId : TestUtils.INVALID_IDS) {
+      StepVerifier.create(moduleService.findNameById(invalidId))
+          .expectErrorMatches(throwable -> throwable instanceof InvalidModuleIdException
+              && throwable.getMessage().equals("Module id must be a strictly positive integer"))
+          .verify();
     }
   }
 
@@ -328,14 +347,6 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void findByShortName_NullShortName_ReturnsNullPointerException() {
-    StepVerifier.create(moduleService.findByShortName(null))
-        .expectErrorMatches(throwable -> throwable instanceof NullPointerException
-            && throwable.getMessage().equals("shortName cannot be null"))
-        .verify();
-  }
-
-  @Test
   public void setExactFlag_NullExactFlag_ReturnsNulPointerException() {
     StepVerifier.create(moduleService.setExactFlag(1, null))
         .expectErrorMatches(throwable -> throwable instanceof NullPointerException
@@ -395,20 +406,13 @@ public class ModuleServiceTest {
   @Test
   public void setName_InvalidModuleId_ReturnsInvalidModuleIdException() {
     // TODO: make this a list
-    StepVerifier.create(moduleService.setName(-1L, "name"))
-        .expectErrorMatches(throwable -> throwable instanceof InvalidModuleIdException
-            && throwable.getMessage().equals("Module id must be a strictly positive integer"))
-        .verify();
 
-    StepVerifier.create(moduleService.setName(-1000L, "name"))
-        .expectErrorMatches(throwable -> throwable instanceof InvalidModuleIdException
-            && throwable.getMessage().equals("Module id must be a strictly positive integer"))
-        .verify();
-
-    StepVerifier.create(moduleService.setName(0L, "name"))
-        .expectErrorMatches(throwable -> throwable instanceof InvalidModuleIdException
-            && throwable.getMessage().equals("Module id must be a strictly positive integer"))
-        .verify();
+    for (final long moduleId : TestUtils.INVALID_IDS) {
+      StepVerifier.create(moduleService.setName(moduleId, "name"))
+          .expectErrorMatches(throwable -> throwable instanceof InvalidModuleIdException
+              && throwable.getMessage().equals("Module id must be a strictly positive integer"))
+          .verify();
+    }
   }
 
   @Test
