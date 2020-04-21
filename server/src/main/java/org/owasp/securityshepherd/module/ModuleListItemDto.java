@@ -14,7 +14,7 @@
  * 
  */
 
-package org.owasp.securityshepherd.dto;
+package org.owasp.securityshepherd.module;
 
 import java.io.Serializable;
 import javax.validation.constraints.NotNull;

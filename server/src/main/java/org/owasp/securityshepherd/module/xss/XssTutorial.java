@@ -17,9 +17,9 @@
 package org.owasp.securityshepherd.module.xss;
 
 import javax.annotation.PostConstruct;
-import org.owasp.securityshepherd.model.Module;
+import org.owasp.securityshepherd.module.Module;
+import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.module.SubmittableModule;
-import org.owasp.securityshepherd.service.ModuleService;
 import org.owasp.securityshepherd.service.XssService;
 import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;

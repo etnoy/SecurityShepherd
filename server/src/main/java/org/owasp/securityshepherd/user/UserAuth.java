@@ -14,7 +14,7 @@
  * 
  */
 
-package org.owasp.securityshepherd.model;
+package org.owasp.securityshepherd.user;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

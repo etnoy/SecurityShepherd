@@ -14,20 +14,21 @@
  * 
  */
 
-package org.owasp.securityshepherd.service;
+package org.owasp.securityshepherd.module;
 
-import org.owasp.securityshepherd.dto.ModuleListItemDto;
-import org.owasp.securityshepherd.dto.ModuleListItemDto.ModuleListItemDtoBuilder;
 import org.owasp.securityshepherd.exception.DuplicateModuleNameException;
 import org.owasp.securityshepherd.exception.InvalidFlagException;
 import org.owasp.securityshepherd.exception.InvalidFlagStateException;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
-import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.model.Submission;
-import org.owasp.securityshepherd.repository.ModuleRepository;
+import org.owasp.securityshepherd.module.ModuleListItemDto.ModuleListItemDtoBuilder;
 import org.owasp.securityshepherd.repository.SubmissionRepository;
+import org.owasp.securityshepherd.service.ConfigurationService;
+import org.owasp.securityshepherd.service.CryptoService;
+import org.owasp.securityshepherd.service.KeyService;
+import org.owasp.securityshepherd.user.UserService;
 import org.springframework.stereotype.Service;
 import com.google.common.primitives.Bytes;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +56,6 @@ public final class ModuleService {
   public Mono<Long> count() {
     return moduleRepository.count();
   }
-
 
   public Mono<Module> create(final String moduleName, final String url) {
     return this.create(moduleName, url, null);
@@ -117,7 +117,6 @@ public final class ModuleService {
           // Build the module list item and return
           return moduleListItemDtoBuilder.build();
         }));
-
   }
 
   public Mono<Module> findById(final long moduleId) {

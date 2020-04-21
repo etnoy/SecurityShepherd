@@ -14,14 +14,11 @@
  * 
  */
 
-package org.owasp.securityshepherd.controller;
+package org.owasp.securityshepherd.module;
 
 import javax.validation.Valid;
-import org.owasp.securityshepherd.dto.ModuleListItemDto;
 import org.owasp.securityshepherd.dto.SubmissionDto;
-import org.owasp.securityshepherd.model.Module;
 import org.owasp.securityshepherd.model.Submission;
-import org.owasp.securityshepherd.service.ModuleService;
 import org.owasp.securityshepherd.service.SubmissionService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;

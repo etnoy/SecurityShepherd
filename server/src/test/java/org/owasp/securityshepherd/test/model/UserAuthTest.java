@@ -30,9 +30,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.owasp.securityshepherd.model.UserAuth;
-import org.owasp.securityshepherd.model.UserAuth.UserAuthBuilder;
 import org.owasp.securityshepherd.test.util.TestUtils;
+import org.owasp.securityshepherd.user.UserAuth;
+import org.owasp.securityshepherd.user.UserAuth.UserAuthBuilder;
 import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 

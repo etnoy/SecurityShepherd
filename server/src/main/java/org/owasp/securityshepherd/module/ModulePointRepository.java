@@ -14,23 +14,17 @@
  * 
  */
 
-package org.owasp.securityshepherd.repository;
+package org.owasp.securityshepherd.module;
 
-import org.owasp.securityshepherd.model.UserAuth;
-import org.springframework.data.r2dbc.repository.Modifying;
+import org.owasp.securityshepherd.model.ModulePoint;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
-
-import reactor.core.publisher.Mono;
+import reactor.core.publisher.Flux;
 
 @Repository
-public interface UserAuthRepository extends ReactiveCrudRepository<UserAuth, Long> {
-  @Query("SELECT * from user_auth WHERE user_id = :user_id")
-  public Mono<UserAuth> findByUserId(@Param("user_id") final long userId);
-
-  @Modifying
-  @Query("delete from user_auth WHERE user_id = :user_id")
-  public Mono<UserAuth> deleteByUserId(@Param("user_id") final long userId);
+public interface ModulePointRepository extends ReactiveCrudRepository<ModulePoint, Long> {
+  @Query("SELECT * from module_point WHERE module_id = :module")
+  public Flux<ModulePoint> findAllByModuleId(@Param("module") final int moduleId);
 }

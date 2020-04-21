@@ -14,44 +14,29 @@
  * 
  */
 
-package org.owasp.securityshepherd.model;
+package org.owasp.securityshepherd.user;
 
 import java.io.Serializable;
 
 import org.springframework.data.annotation.Id;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
+
 import lombok.Builder;
-import lombok.NonNull;
 import lombok.Value;
+import lombok.NonNull;
 import lombok.With;
 
 @Value
-@AllArgsConstructor
 @Builder
 @With
-public class Module implements Serializable {
-  private static final long serialVersionUID = 6391362512222766270L;
+public class SamlAuth implements Serializable {
+  private static final long serialVersionUID = 211951930649985921L;
 
   @Id
-  private Long id;
+  private Integer id;
 
   @NonNull
-  private String name;
-  
+  private Integer userId;
+
   @NonNull
-  private String shortName;
-
-  private String description;
-
-  @JsonProperty("isFlagEnabled")
-  private boolean isFlagEnabled;
-
-  @JsonProperty("isFlagExact")
-  private boolean isFlagExact;
-
-  private String flag;
-
-  @JsonProperty("isOpen")
-  private boolean isOpen;
+  private String samlId;
 }

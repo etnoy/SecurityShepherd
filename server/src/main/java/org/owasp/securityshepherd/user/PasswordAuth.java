@@ -14,17 +14,34 @@
  * 
  */
 
-package org.owasp.securityshepherd.repository;
+package org.owasp.securityshepherd.user;
 
-import org.owasp.securityshepherd.model.ModulePoint;
-import org.springframework.data.r2dbc.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.data.repository.reactive.ReactiveCrudRepository;
-import org.springframework.stereotype.Repository;
-import reactor.core.publisher.Flux;
+import java.io.Serializable;
+import org.springframework.data.annotation.Id;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.Value;
+import lombok.With;
 
-@Repository
-public interface ModulePointRepository extends ReactiveCrudRepository<ModulePoint, Long> {
-  @Query("SELECT * from module_point WHERE module_id = :module")
-  public Flux<ModulePoint> findAllByModuleId(@Param("module") final int moduleId);
+@Value
+@Builder
+@With
+public final class PasswordAuth implements Serializable {
+  private static final long serialVersionUID = 32553442956391684L;
+
+  @Id
+  private Long id;
+
+  @NonNull
+  private Long userId;
+
+  @NonNull
+  private String loginName;
+
+  @NonNull
+  private String hashedPassword;
+
+  @JsonProperty("isPasswordNonExpired")
+  private boolean isPasswordNonExpired;
 }

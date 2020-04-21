@@ -22,9 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.owasp.securityshepherd.model.User;
-import org.owasp.securityshepherd.model.User.UserBuilder;
 import org.owasp.securityshepherd.test.util.TestUtils;
+import org.owasp.securityshepherd.user.User;
+import org.owasp.securityshepherd.user.User.UserBuilder;
 import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 

@@ -14,7 +14,7 @@
  * 
  */
 
-package org.owasp.securityshepherd.service;
+package org.owasp.securityshepherd.user;
 
 import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
 import org.owasp.securityshepherd.exception.DuplicateClassNameException;
@@ -22,14 +22,11 @@ import org.owasp.securityshepherd.exception.DuplicateUserDisplayNameException;
 import org.owasp.securityshepherd.exception.InvalidClassIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.UserIdNotFoundException;
-import org.owasp.securityshepherd.model.PasswordAuth;
-import org.owasp.securityshepherd.model.PasswordAuth.PasswordAuthBuilder;
-import org.owasp.securityshepherd.model.User;
-import org.owasp.securityshepherd.model.User.UserBuilder;
-import org.owasp.securityshepherd.model.UserAuth;
-import org.owasp.securityshepherd.repository.UserAuthRepository;
 import org.owasp.securityshepherd.repository.PasswordAuthRepository;
-import org.owasp.securityshepherd.repository.UserRepository;
+import org.owasp.securityshepherd.service.ClassService;
+import org.owasp.securityshepherd.service.KeyService;
+import org.owasp.securityshepherd.user.PasswordAuth.PasswordAuthBuilder;
+import org.owasp.securityshepherd.user.User.UserBuilder;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;

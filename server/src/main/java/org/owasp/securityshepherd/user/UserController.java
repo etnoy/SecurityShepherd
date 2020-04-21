@@ -14,10 +14,8 @@
  * 
  */
 
-package org.owasp.securityshepherd.controller;
+package org.owasp.securityshepherd.user;
 
-import org.owasp.securityshepherd.model.User;
-import org.owasp.securityshepherd.service.UserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

@@ -14,32 +14,22 @@
  * 
  */
 
-package org.owasp.securityshepherd.repository;
+package org.owasp.securityshepherd.user;
 
-import org.owasp.securityshepherd.model.Module;
 import org.springframework.data.r2dbc.repository.Modifying;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
-import reactor.core.publisher.Flux;
+
 import reactor.core.publisher.Mono;
 
 @Repository
-public interface ModuleRepository extends ReactiveCrudRepository<Module, Long> {
+public interface UserAuthRepository extends ReactiveCrudRepository<UserAuth, Long> {
+  @Query("SELECT * from user_auth WHERE user_id = :user_id")
+  public Mono<UserAuth> findByUserId(@Param("user_id") final long userId);
+
   @Modifying
-  @Query("delete from module where name = :name")
-  public void deleteByName(@Param("name") final String name);
-
-  @Query("select count(1) from module where name = :name")
-  public Mono<Boolean> existsByName(@Param("name") final String name);
-
-  @Query("select * from module where name = :name")
-  public Mono<Module> findByName(@Param("name") final String name);
-
-  @Query("select * from module where short_name = :short_name")
-  public Mono<Module> findByShortName(@Param("url") final String short_name);
-  
-  @Query("select * from module where is_open = true")
-  public Flux<Module> findAllOpen();
+  @Query("delete from user_auth WHERE user_id = :user_id")
+  public Mono<UserAuth> deleteByUserId(@Param("user_id") final long userId);
 }

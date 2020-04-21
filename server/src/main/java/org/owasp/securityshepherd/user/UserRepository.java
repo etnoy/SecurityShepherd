@@ -14,34 +14,17 @@
  * 
  */
 
-package org.owasp.securityshepherd.model;
+package org.owasp.securityshepherd.user;
 
-import java.io.Serializable;
-import org.springframework.data.annotation.Id;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
-import lombok.With;
+import org.springframework.data.r2dbc.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import org.springframework.stereotype.Repository;
 
-@Value
-@Builder
-@With
-public final class PasswordAuth implements Serializable {
-  private static final long serialVersionUID = 32553442956391684L;
+import reactor.core.publisher.Mono;
 
-  @Id
-  private Long id;
-
-  @NonNull
-  private Long userId;
-
-  @NonNull
-  private String loginName;
-
-  @NonNull
-  private String hashedPassword;
-
-  @JsonProperty("isPasswordNonExpired")
-  private boolean isPasswordNonExpired;
+@Repository
+public interface UserRepository extends ReactiveCrudRepository<User, Long> {
+  @Query("SELECT * from user WHERE display_name = :display_name")
+  public Mono<User> findByDisplayName(@Param("display_name") final String displayName);
 }

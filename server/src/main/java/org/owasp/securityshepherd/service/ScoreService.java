@@ -17,9 +17,9 @@
 package org.owasp.securityshepherd.service;
 
 import org.owasp.securityshepherd.model.ModulePoint;
-import org.owasp.securityshepherd.model.ModulePoint.ModulePointBuilder;
 import org.owasp.securityshepherd.model.Scoreboard;
-import org.owasp.securityshepherd.repository.ModulePointRepository;
+import org.owasp.securityshepherd.model.ModulePoint.ModulePointBuilder;
+import org.owasp.securityshepherd.module.ModulePointRepository;
 import org.owasp.securityshepherd.repository.ScoreboardRepository;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;

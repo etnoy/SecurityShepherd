@@ -14,12 +14,11 @@
  * 
  */
 
-package org.owasp.securityshepherd.model;
+package org.owasp.securityshepherd.module;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+
 import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,25 +30,28 @@ import lombok.With;
 @AllArgsConstructor
 @Builder
 @With
-public final class User implements Serializable {
-
-  private static final long serialVersionUID = 3097353498257801154L;
+public class Module implements Serializable {
+  private static final long serialVersionUID = 6391362512222766270L;
 
   @Id
   private Long id;
 
   @NonNull
-  private String displayName;
+  private String name;
+  
+  @NonNull
+  private String shortName;
 
-  private Long classId;
+  private String description;
 
-  private String email;
+  @JsonProperty("isFlagEnabled")
+  private boolean isFlagEnabled;
 
-  @JsonProperty("isNotBanned")
-  private boolean isNotBanned;
+  @JsonProperty("isFlagExact")
+  private boolean isFlagExact;
 
-  private LocalDateTime accountCreated;
+  private String flag;
 
-  @Column("user_key")
-  private byte[] key;
+  @JsonProperty("isOpen")
+  private boolean isOpen;
 }
