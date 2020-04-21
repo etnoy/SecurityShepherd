@@ -41,72 +41,6 @@ public final class ModuleService {
   }
 
 
-  public Flux<ModuleListItemDto> findAllOpenByUserId(final long userId) {
-    if (userId <= 0) {
-      return Flux.error(new InvalidUserIdException());
-    }
-
-    final ModuleListItemDtoBuilder moduleListItemDtoBuilder = ModuleListItemDto.builder();
-    // TODO: Check if user id is valid and exists
-    return submissionRepository
-        // Find all valid submissions by this user
-        .findAllValidByUserId(userId)
-        // Extract the corresponding module ids
-        .map(Submission::getModuleId)
-        // Collect all finished modules into a list
-        .collectList()
-        //
-        .flatMapMany(finishedModules -> {
-          // Get all modules
-          return moduleRepository.findAll().map(module -> {
-            // For each module, construct a module list item
-            moduleListItemDtoBuilder.id(module.getId());
-            moduleListItemDtoBuilder.name(module.getName());
-            moduleListItemDtoBuilder.shortName(module.getShortName());
-            moduleListItemDtoBuilder.description(module.getDescription());
-            moduleListItemDtoBuilder.name(module.getName());
-            // Check if this module id is finished
-            moduleListItemDtoBuilder.isSolved(finishedModules.contains(module.getId()));
-            // Build the module list item and return
-            return moduleListItemDtoBuilder.build();
-          });
-        });
-  }
-
-  public Mono<ModuleListItemDto> findByUserIdAndShortName(final long userId,
-      final String shortName) {
-    if (userId <= 0) {
-      return Mono.error(new InvalidUserIdException());
-    }
-
-    final ModuleListItemDtoBuilder moduleListItemDtoBuilder = ModuleListItemDto.builder();
-    // TODO: Check if user id is valid and exists
-
-    final Mono<Module> moduleMono = findByShortName(shortName);
-
-    return moduleMono.map(Module::getId)
-        // Find all valid submissions by this user
-        .flatMap(moduleId -> validSubmissionExistsByUserIdAndModuleId(userId, moduleId))
-        .defaultIfEmpty(false).zipWith(moduleMono).map(tuple -> {
-          final Module module = tuple.getT2();
-          // For each module, construct a module list item
-          moduleListItemDtoBuilder.id(module.getId());
-          moduleListItemDtoBuilder.name(module.getName());
-          moduleListItemDtoBuilder.shortName(module.getShortName());
-          moduleListItemDtoBuilder.description(module.getDescription());
-          moduleListItemDtoBuilder.name(module.getName());
-          moduleListItemDtoBuilder.isSolved(tuple.getT1());
-          // Build the module list item and return
-          return moduleListItemDtoBuilder.build();
-        });
-  }
-
-  private Mono<Boolean> validSubmissionExistsByUserIdAndModuleId(final long userId,
-      final long moduleId) {
-    return submissionRepository.findValidByUserIdAndModuleId(userId, moduleId).map(u -> true)
-        .defaultIfEmpty(false).next();
-  }
-
   public Mono<Module> create(final String moduleName, final String url) {
     return this.create(moduleName, url, null);
   }
@@ -138,6 +72,38 @@ public final class ModuleService {
     return moduleRepository.findAll();
   }
 
+  public Flux<ModuleListItemDto> findAllOpenByUserId(final long userId) {
+    if (userId <= 0) {
+      return Flux.error(new InvalidUserIdException());
+    }
+
+    final ModuleListItemDtoBuilder moduleListItemDtoBuilder = ModuleListItemDto.builder();
+    // TODO: Check if user id is valid and exists
+    return submissionRepository
+        // Find all valid submissions by this user
+        .findAllValidByUserId(userId)
+        // Extract the corresponding module ids
+        .map(Submission::getModuleId)
+        // Collect all finished modules into a list
+        .collectList()
+        //
+        .flatMapMany(finishedModules ->
+        // Get all modules
+        moduleRepository.findAll().map(module -> {
+          // For each module, construct a module list item
+          moduleListItemDtoBuilder.id(module.getId());
+          moduleListItemDtoBuilder.name(module.getName());
+          moduleListItemDtoBuilder.shortName(module.getShortName());
+          moduleListItemDtoBuilder.description(module.getDescription());
+          moduleListItemDtoBuilder.name(module.getName());
+          // Check if this module id is finished
+          moduleListItemDtoBuilder.isSolved(finishedModules.contains(module.getId()));
+          // Build the module list item and return
+          return moduleListItemDtoBuilder.build();
+        }));
+
+  }
+
   public Mono<Module> findById(final long moduleId) {
     if (moduleId <= 0) {
       return Mono.error(new InvalidModuleIdException());
@@ -147,6 +113,34 @@ public final class ModuleService {
 
   public Mono<Module> findByShortName(final String shortName) {
     return moduleRepository.findByShortName(shortName);
+  }
+
+  public Mono<ModuleListItemDto> findByUserIdAndShortName(final long userId,
+      final String shortName) {
+    if (userId <= 0) {
+      return Mono.error(new InvalidUserIdException());
+    }
+
+    final ModuleListItemDtoBuilder moduleListItemDtoBuilder = ModuleListItemDto.builder();
+    // TODO: Check if user id is valid and exists
+
+    final Mono<Module> moduleMono = findByShortName(shortName);
+
+    return moduleMono.map(Module::getId)
+        // Find all valid submissions by this user
+        .flatMap(moduleId -> validSubmissionExistsByUserIdAndModuleId(userId, moduleId))
+        .defaultIfEmpty(false).zipWith(moduleMono).map(tuple -> {
+          final Module module = tuple.getT2();
+          // For each module, construct a module list item
+          moduleListItemDtoBuilder.id(module.getId());
+          moduleListItemDtoBuilder.name(module.getName());
+          moduleListItemDtoBuilder.shortName(module.getShortName());
+          moduleListItemDtoBuilder.description(module.getDescription());
+          moduleListItemDtoBuilder.name(module.getName());
+          moduleListItemDtoBuilder.isSolved(tuple.getT1());
+          // Build the module list item and return
+          return moduleListItemDtoBuilder.build();
+        });
   }
 
   public Mono<String> findNameById(final long moduleId) {
@@ -246,6 +240,12 @@ public final class ModuleService {
 
     return findById(moduleId).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
         .map(module -> module.withName(moduleName)).flatMap(moduleRepository::save);
+  }
+
+  private Mono<Boolean> validSubmissionExistsByUserIdAndModuleId(final long userId,
+      final long moduleId) {
+    return submissionRepository.findValidByUserIdAndModuleId(userId, moduleId).map(u -> true)
+        .defaultIfEmpty(false).next();
   }
 
   public Mono<Boolean> verifyFlag(final long userId, final long moduleId,

@@ -48,7 +48,7 @@ public class ModuleController {
   public Flux<ModuleListItemDto> findAll() {
     return ReactiveSecurityContextHolder.getContext().map(SecurityContext::getAuthentication)
         .map(Authentication::getPrincipal).cast(Long.class)
-        .flatMapMany(userId -> moduleService.findAllOpenByUserId(userId));
+        .flatMapMany(moduleService::findAllOpenByUserId);
   }
 
   @PostMapping(path = "module/submit/{id}")
