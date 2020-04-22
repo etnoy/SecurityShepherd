@@ -47,7 +47,8 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
+    properties = {"application.runner.enabled=false"})
 @AutoConfigureWebTestClient
 @Execution(ExecutionMode.SAME_THREAD)
 @DisplayName("FlagController integration test")
@@ -147,13 +148,11 @@ public class FlagControllerIT {
         .exchange().expectStatus().isOk().expectBody().returnResult().getResponseBody()))
         .read("$.token");
 
-    StepVerifier
-        .create(webTestClient.post().uri(String.format("/api/v1/flag/submit/%d", moduleId))
-            .header("Authorization", "Bearer " + token).accept(MediaType.APPLICATION_JSON)
-            .contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromValue(flag + "invalid"))
-            .exchange().expectStatus().isOk().returnResult(Submission.class).getResponseBody()
-            .map(Submission::isValid))
-        .expectNext(false).expectComplete().verify();
+    StepVerifier.create(webTestClient.post().uri(String.format("/api/v1/flag/submit/%d", moduleId))
+        .header("Authorization", "Bearer " + token).accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromValue(flag + "invalid"))
+        .exchange().expectStatus().isOk().returnResult(Submission.class).getResponseBody()
+        .map(Submission::isValid)).expectNext(false).expectComplete().verify();
   }
 
   @BeforeEach

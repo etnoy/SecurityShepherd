@@ -42,7 +42,8 @@ import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
+properties = {"application.runner.enabled=false"})
 @AutoConfigureWebTestClient
 @Execution(ExecutionMode.SAME_THREAD)
 @DisplayName("LoginController integration test")

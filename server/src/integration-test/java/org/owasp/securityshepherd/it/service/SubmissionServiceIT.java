@@ -44,7 +44,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
+@SpringBootTest(properties = {"application.runner.enabled=false"})
 @Execution(ExecutionMode.SAME_THREAD)
 @DisplayName("SubmissionService integration test")
 public class SubmissionServiceIT {
@@ -115,8 +115,8 @@ public class SubmissionServiceIT {
   }
 
   private void initializeService(Clock injectedClock) {
-    submissionService = new SubmissionService(submissionRepository,
-        correctionRepository, flagComponent, injectedClock);
+    submissionService = new SubmissionService(submissionRepository, correctionRepository,
+        flagComponent, injectedClock);
   }
 
   @BeforeEach

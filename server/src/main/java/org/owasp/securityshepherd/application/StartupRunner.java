@@ -40,9 +40,14 @@ import org.owasp.securityshepherd.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+import lombok.extern.slf4j.Slf4j;
 
+@ConditionalOnProperty(prefix = "application.runner", value = "enabled", havingValue = "true",
+    matchIfMissing = true)
 @Component
+@Slf4j
 public class StartupRunner implements ApplicationRunner {
 
   @Autowired
@@ -80,12 +85,13 @@ public class StartupRunner implements ApplicationRunner {
 
   @Autowired
   ConfigurationService configurationService;
-  
+
   @Autowired
   FlagHandler flagComponent;
 
   @Override
   public void run(ApplicationArguments args) {
+    log.info("Running StartupRunner");
     // Create a default admin account
     userService.createPasswordUser("Admin", "admin",
         "$2y$08$WpfUVZLcXNNpmM2VwSWlbe25dae.eEC99AOAVUiU5RaJmfFsE9B5G").block();
@@ -181,7 +187,7 @@ public class StartupRunner implements ApplicationRunner {
   }
 
   private void initializeService(Clock injectedClock) {
-    submissionService = new SubmissionService(submissionRepository,
-        correctionRepository, flagComponent, injectedClock);
+    submissionService = new SubmissionService(submissionRepository, correctionRepository,
+        flagComponent, injectedClock);
   }
 }

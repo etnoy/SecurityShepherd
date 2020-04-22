@@ -53,7 +53,7 @@ import reactor.core.publisher.Hooks;
 import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
+@SpringBootTest(properties = {"application.runner.enabled=false"})
 @Execution(ExecutionMode.SAME_THREAD)
 @DisplayName("ScoringService integration test")
 public class ScoringServiceIT {

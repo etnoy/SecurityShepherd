@@ -31,7 +31,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @Execution(ExecutionMode.SAME_THREAD)
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
+@SpringBootTest(properties = {"application.runner.enabled=false"})
 @DisplayName("XssService integration test")
 public class XssServiceIT {
 
