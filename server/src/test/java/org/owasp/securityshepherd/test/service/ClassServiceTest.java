@@ -28,7 +28,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
 import org.owasp.securityshepherd.exception.DuplicateClassNameException;
 import org.owasp.securityshepherd.exception.InvalidClassIdException;
@@ -50,7 +49,7 @@ public class ClassServiceTest {
 
   private ClassService classService;
 
-  private ClassRepository classRepository = Mockito.mock(ClassRepository.class);
+  private ClassRepository classRepository = mock(ClassRepository.class);
 
   @Test
   @DisplayName("count() call the count function of ClassRepository and return its same value")

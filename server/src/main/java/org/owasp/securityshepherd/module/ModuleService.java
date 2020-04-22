@@ -74,6 +74,10 @@ public final class ModuleService {
     return moduleRepository.findAll();
   }
 
+  public Flux<Module> findAllOpen() {
+    return moduleRepository.findAllOpen();
+  }
+  
   public Mono<Module> findById(final long moduleId) {
     if (moduleId <= 0) {
       return Mono.error(new InvalidModuleIdException());

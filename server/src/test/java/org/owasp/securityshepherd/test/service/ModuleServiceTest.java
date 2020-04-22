@@ -32,7 +32,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
-import org.mockito.Mockito;
 import org.owasp.securityshepherd.exception.DuplicateModuleNameException;
 import org.owasp.securityshepherd.exception.EmptyModuleNameException;
 import org.owasp.securityshepherd.exception.EmptyModuleShortNameException;
@@ -59,9 +58,9 @@ public class ModuleServiceTest {
 
   private ModuleService moduleService;
 
-  private ModuleRepository moduleRepository = Mockito.mock(ModuleRepository.class);
+  private ModuleRepository moduleRepository = mock(ModuleRepository.class);
 
-  private KeyService keyService = Mockito.mock(KeyService.class);
+  private KeyService keyService = mock(KeyService.class);
 
   @Test
   public void count_NoArgument_ReturnsCount() {
@@ -156,6 +155,17 @@ public class ModuleServiceTest {
       StepVerifier.create(moduleService.findById(moduleId))
           .expectError(InvalidModuleIdException.class).verify();
     }
+  }
+
+  @Test
+  public void findById_ModuleIdExists_ReturnsInvalidModuleIdException() {
+    final Module mockModule = mock(Module.class);
+    final long mockModuleId = 750L;
+
+    when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
+    StepVerifier.create(moduleService.findById(mockModuleId)).expectNext(mockModule)
+        .expectComplete().verify();
+    verify(moduleRepository, times(1)).findById(mockModuleId);
   }
 
   @Test

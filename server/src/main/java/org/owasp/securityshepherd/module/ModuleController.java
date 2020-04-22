@@ -42,7 +42,7 @@ public class ModuleController {
 
   private final ModuleService moduleService;
   
-  private final ModuleListingComponent moduleListingComponent;
+  private final ModuleSolutions moduleListingComponent;
 
   @GetMapping(path = "module/{id}")
   @PreAuthorize("hasRole('ROLE_USER')")
@@ -55,7 +55,7 @@ public class ModuleController {
   public Mono<ModuleListItem> getModuleByShortName(@PathVariable final String shortName) {
     return ReactiveSecurityContextHolder.getContext().map(SecurityContext::getAuthentication)
         .map(Authentication::getPrincipal).cast(Long.class)
-        .flatMap(userId -> moduleListingComponent.findByUserIdAndShortName(userId, shortName));
+        .flatMap(userId -> moduleListingComponent.findOpenModuleByShortNameWithSolutionStatus(userId, shortName));
   }
 
   @GetMapping(path = "modules")
@@ -63,7 +63,7 @@ public class ModuleController {
   public Flux<ModuleListItem> findAll() {
     return ReactiveSecurityContextHolder.getContext().map(SecurityContext::getAuthentication)
         .map(Authentication::getPrincipal).cast(Long.class)
-        .flatMapMany(moduleListingComponent::findAllOpenByUserId);
+        .flatMapMany(moduleListingComponent::findOpenModulesByUserIdWithSolutionStatus);
   }
 
   @PostMapping(path = "module/submit/{id}")

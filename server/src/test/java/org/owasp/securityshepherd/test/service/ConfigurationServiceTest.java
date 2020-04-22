@@ -31,7 +31,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 import org.owasp.securityshepherd.model.Configuration;
 import org.owasp.securityshepherd.repository.ConfigurationRepository;
 import org.owasp.securityshepherd.service.ConfigurationService;
@@ -52,9 +51,9 @@ public class ConfigurationServiceTest {
   private ConfigurationService configurationService;
 
   private ConfigurationRepository configurationRepository =
-      Mockito.mock(ConfigurationRepository.class);
+      mock(ConfigurationRepository.class);
 
-  private KeyService keyService = Mockito.mock(KeyService.class);
+  private KeyService keyService = mock(KeyService.class);
 
   @Test
   public void getServerKey_KeyExists_ReturnsExistingKey() throws Exception {

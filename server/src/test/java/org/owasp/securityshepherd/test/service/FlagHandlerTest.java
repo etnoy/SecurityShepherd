@@ -26,7 +26,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.owasp.securityshepherd.exception.InvalidFlagStateException;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
@@ -52,15 +51,15 @@ public class FlagHandlerTest {
 
   private FlagHandler flagHandler;
 
-  private ModuleService moduleService = Mockito.mock(ModuleService.class);
+  private ModuleService moduleService = mock(ModuleService.class);
 
-  private UserService userService = Mockito.mock(UserService.class);
+  private UserService userService = mock(UserService.class);
 
-  private ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
+  private ConfigurationService configurationService = mock(ConfigurationService.class);
 
-  private KeyService keyService = Mockito.mock(KeyService.class);
+  private KeyService keyService = mock(KeyService.class);
 
-  private CryptoService cryptoService = Mockito.mock(CryptoService.class);
+  private CryptoService cryptoService = mock(CryptoService.class);
 
   @Test
   public void getDynamicFlag_FlagIsExact_ReturnsInvalidFlagStateException() {

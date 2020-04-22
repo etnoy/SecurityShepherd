@@ -32,7 +32,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
-import org.mockito.Mockito;
 import org.owasp.securityshepherd.exception.DuplicateUserDisplayNameException;
 import org.owasp.securityshepherd.exception.InvalidClassIdException;
 import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
@@ -67,16 +66,16 @@ public class UserServiceTest {
 
   private UserService userService;
 
-  private UserRepository userRepository = Mockito.mock(UserRepository.class);
+  private UserRepository userRepository = mock(UserRepository.class);
 
-  private UserAuthRepository userAuthRepository = Mockito.mock(UserAuthRepository.class);
+  private UserAuthRepository userAuthRepository = mock(UserAuthRepository.class);
 
   private PasswordAuthRepository passwordAuthRepository =
-      Mockito.mock(PasswordAuthRepository.class);
+      mock(PasswordAuthRepository.class);
 
-  private ClassService classService = Mockito.mock(ClassService.class);
+  private ClassService classService = mock(ClassService.class);
 
-  private KeyService keyService = Mockito.mock(KeyService.class);
+  private KeyService keyService = mock(KeyService.class);
 
   @Test
   public void authenticate_EmptyPassword_ReturnsIllegalArgumentException() {

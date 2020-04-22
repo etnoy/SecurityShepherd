@@ -41,7 +41,7 @@ public final class SubmissionService {
   private final SubmissionRepository submissionRepository;
 
   private final CorrectionRepository correctionRepository;
-  
+
   private final FlagHandler flagComponent;
 
   private final Clock clock;
@@ -99,19 +99,19 @@ public final class SubmissionService {
         .map(SubmissionBuilder::build).flatMap(submissionRepository::save);
   }
 
-  public Flux<Submission> findAllValidByUserIdAndModuleId(final long userId, final long moduleId) {
+  public Mono<Submission> findAllValidByUserIdAndModuleId(final long userId, final long moduleId) {
     return submissionRepository.findAllValidByUserIdAndModuleId(userId, moduleId);
   }
 
-  public Mono<List<Long>> findAllSolvedModulesByUserId(final long userId) {
+  public Mono<List<Long>> findAllValidIdsByUserId(final long userId) {
     return submissionRepository.findAllValidByUserId(userId).map(Submission::getModuleId)
         .collectList();
   }
 
   private Mono<Boolean> validSubmissionDoesNotExistByUserIdAndModuleId(final long userId,
       final long moduleId) {
-    return submissionRepository.findAllValidByUserIdAndModuleId(userId, moduleId).next()
-        .map(u -> false).defaultIfEmpty(true);
+    return submissionRepository.findAllValidByUserIdAndModuleId(userId, moduleId).map(u -> false)
+        .defaultIfEmpty(true);
   }
 
   public Mono<Correction> submitCorrection(final Long userId, final long amount,
