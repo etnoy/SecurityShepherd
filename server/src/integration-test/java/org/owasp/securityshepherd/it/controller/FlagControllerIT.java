@@ -50,8 +50,8 @@ import reactor.test.StepVerifier;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
 @Execution(ExecutionMode.SAME_THREAD)
-@DisplayName("ModuleController integration test")
-public class ModuleControllerIT {
+@DisplayName("FlagController integration test")
+public class FlagControllerIT {
   @BeforeAll
   private static void reactorVerbose() {
     // Tell Reactor to print verbose error messages
@@ -103,7 +103,7 @@ public class ModuleControllerIT {
         .exchange().expectStatus().isOk().expectBody().returnResult().getResponseBody()))
         .read("$.token");
 
-    final String endpoint = String.format("/api/v1/module/submit/%d", moduleId);
+    final String endpoint = String.format("/api/v1/flag/submit/%d", moduleId);
 
     final BodyInserter<String, ReactiveHttpOutputMessage> submissionBody =
         BodyInserters.fromValue(flag);
@@ -148,7 +148,7 @@ public class ModuleControllerIT {
         .read("$.token");
 
     StepVerifier
-        .create(webTestClient.post().uri(String.format("/api/v1/module/submit/%d", moduleId))
+        .create(webTestClient.post().uri(String.format("/api/v1/flag/submit/%d", moduleId))
             .header("Authorization", "Bearer " + token).accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromValue(flag + "invalid"))
             .exchange().expectStatus().isOk().returnResult(Submission.class).getResponseBody()
