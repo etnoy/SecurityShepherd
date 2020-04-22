@@ -141,12 +141,33 @@ public class ModuleServiceTest {
 
     verify(moduleRepository, times(1)).findAll();
   }
-
+  
   @Test
   public void findAll_NoModulesExist_ReturnsEmpty() {
     when(moduleRepository.findAll()).thenReturn(Flux.empty());
     StepVerifier.create(moduleService.findAll()).expectComplete().verify();
     verify(moduleRepository, times(1)).findAll();
+  }
+
+  @Test
+  public void findAllOpen_NoModulesExist_ReturnsEmpty() {
+    when(moduleRepository.findAllOpen()).thenReturn(Flux.empty());
+    StepVerifier.create(moduleService.findAllOpen()).expectComplete().verify();
+    verify(moduleRepository, times(1)).findAllOpen();
+  }
+  
+  @Test
+  public void findAllOpen_OpenModulesExist_ReturnsOpenModules() {
+    final Module mockModule1 = mock(Module.class);
+    final Module mockModule2 = mock(Module.class);
+    final Module mockModule3 = mock(Module.class);
+
+    when(moduleRepository.findAllOpen()).thenReturn(Flux.just(mockModule1, mockModule2, mockModule3));
+
+    StepVerifier.create(moduleService.findAllOpen()).expectNext(mockModule1).expectNext(mockModule2)
+        .expectNext(mockModule3).expectComplete().verify();
+
+    verify(moduleRepository, times(1)).findAllOpen();
   }
 
   @Test
@@ -177,6 +198,14 @@ public class ModuleServiceTest {
   }
 
   @Test
+  public void findByShortName_EmptyShortName_ReturnsInvalidShortNameException() {
+    StepVerifier.create(moduleService.findByShortName(""))
+        .expectErrorMatches(throwable -> throwable instanceof EmptyModuleShortNameException
+            && throwable.getMessage().equals("Module short name cannot be empty"))
+        .verify();
+  }
+
+  @Test
   public void findByShortName_ExistingShortName_ReturnsModule() {
     final String mockModuleShortName = "a-name";
     final Module mockModule = mock(Module.class);
@@ -193,14 +222,6 @@ public class ModuleServiceTest {
     StepVerifier.create(moduleService.findByShortName(mockModuleShortName)).expectComplete()
         .verify();
     verify(moduleRepository, times(1)).findByShortName(mockModuleShortName);
-  }
-
-  @Test
-  public void findByShortName_EmptyShortName_ReturnsInvalidShortNameException() {
-    StepVerifier.create(moduleService.findByShortName(""))
-        .expectErrorMatches(throwable -> throwable instanceof EmptyModuleShortNameException
-            && throwable.getMessage().equals("Module short name cannot be empty"))
-        .verify();
   }
 
   @Test
