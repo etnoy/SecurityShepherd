@@ -22,18 +22,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import java.time.LocalDateTime;
 import java.time.Month;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.owasp.securityshepherd.exception.NotAuthenticatedException;
 import org.owasp.securityshepherd.model.Submission;
 import org.owasp.securityshepherd.module.FlagController;
+import org.owasp.securityshepherd.security.ControllerAuthentication;
 import org.owasp.securityshepherd.service.SubmissionService;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.test.context.TestSecurityContextHolder;
-import org.springframework.security.test.context.support.ReactorContextTestExecutionListener;
-import org.springframework.test.context.TestExecutionListener;
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -49,23 +46,28 @@ public class FlagControllerTest {
 
   private FlagController flagController;
 
+  private ControllerAuthentication controllerAuthentication = mock(ControllerAuthentication.class);
+
   private SubmissionService submissionService = mock(SubmissionService.class);
-
-  private Authentication authentication = mock(Authentication.class);
-
-  private TestExecutionListener reactorContextTestExecutionListener =
-      new ReactorContextTestExecutionListener();
-
-  private void authenticateUser(final Long userId) throws Exception {
-    when(authentication.getPrincipal()).thenReturn(userId);
-    TestSecurityContextHolder.setAuthentication(authentication);
-    reactorContextTestExecutionListener.beforeTestMethod(null);
-  }
 
   @BeforeEach
   private void setUp() throws Exception {
     // Set up the system under test
-    flagController = new FlagController(submissionService);
+    flagController = new FlagController(controllerAuthentication, submissionService);
+  }
+
+  @Test
+  public void submitFlag_UserNotAuthenticated_ReturnsException() throws Exception {
+    final long mockModuleId = 16L;
+    final String flag = "validflag";
+
+    when(controllerAuthentication.getUserId())
+        .thenReturn(Mono.error(new NotAuthenticatedException()));
+
+    StepVerifier.create(flagController.submitFlag(mockModuleId, flag))
+        .expectError(NotAuthenticatedException.class).verify();
+
+    verify(controllerAuthentication, times(1)).getUserId();
   }
 
   @Test
@@ -75,7 +77,7 @@ public class FlagControllerTest {
     final long mockModuleId = 16L;
     final String flag = "validflag";
 
-    authenticateUser(mockUserId);
+    when(controllerAuthentication.getUserId()).thenReturn(Mono.just(mockUserId));
 
     final Submission submission = Submission.builder().userId(mockUserId).moduleId(mockModuleId)
         .flag(flag).isValid(true).time(LocalDateTime.of(2000, Month.JULY, 1, 2, 3, 4)).build();
@@ -87,10 +89,5 @@ public class FlagControllerTest {
         .expectComplete().verify();
 
     verify(submissionService, times(1)).submit(mockUserId, mockModuleId, flag);
-  }
-
-  @AfterEach
-  public void tearDown() throws Exception {
-    reactorContextTestExecutionListener.afterTestMethod(null);
   }
 }

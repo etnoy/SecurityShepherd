@@ -17,11 +17,9 @@
 package org.owasp.securityshepherd.module;
 
 import org.owasp.securityshepherd.model.Submission;
+import org.owasp.securityshepherd.security.ControllerAuthentication;
 import org.owasp.securityshepherd.service.SubmissionService;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.ReactiveSecurityContextHolder;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,14 +32,15 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/")
 public class FlagController {
+  private final ControllerAuthentication controllerAuthentication;
+
   private final SubmissionService submissionService;
 
   @PostMapping(path = "flag/submit/{id}")
   @PreAuthorize("hasRole('ROLE_USER')")
   public Mono<Submission> submitFlag(@PathVariable("id") final Long moduleId,
       @RequestBody final String flag) {
-    return ReactiveSecurityContextHolder.getContext().map(SecurityContext::getAuthentication)
-        .map(Authentication::getPrincipal).cast(Long.class)
+    return controllerAuthentication.getUserId()
         .flatMap(userId -> submissionService.submit(userId, moduleId, flag));
   }
 }
