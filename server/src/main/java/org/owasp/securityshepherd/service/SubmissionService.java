@@ -46,22 +46,47 @@ public final class SubmissionService {
 
   private final Clock clock;
 
+  public Flux<Submission> findAllByModuleId(final long moduleId) {
+    if (moduleId <= 0) {
+      return Flux.error(new InvalidModuleIdException());
+    }
+    return submissionRepository.findAllByModuleId(moduleId);
+  }
+
+  public Flux<Submission> findAllValidByUserId(final long userId) {
+    if (userId <= 0) {
+      return Flux.error(new InvalidUserIdException());
+    }
+    return submissionRepository.findAllValidByUserId(userId);
+  }
+
+  public Mono<Submission> findAllValidByUserIdAndModuleId(final long userId, final long moduleId) {
+    if (userId <= 0) {
+      return Mono.error(new InvalidUserIdException());
+    }
+    if (moduleId <= 0) {
+      return Mono.error(new InvalidModuleIdException());
+    }
+    return submissionRepository.findAllValidByUserIdAndModuleId(userId, moduleId);
+  }
+
+  public Mono<List<Long>> findAllValidIdsByUserId(final long userId) {
+    return submissionRepository.findAllValidByUserId(userId).map(Submission::getModuleId)
+        .collectList();
+  }
+
   public Mono<Submission> submit(final Long userId, final Long moduleId, final String flag) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
-
     if (moduleId <= 0) {
       return Mono.error(new InvalidModuleIdException());
     }
-
     SubmissionBuilder submissionBuilder = Submission.builder();
-
     submissionBuilder.userId(userId);
     submissionBuilder.moduleId(moduleId);
     submissionBuilder.flag(flag);
     submissionBuilder.time(LocalDateTime.now(clock));
-
     return
     // Check if flag is correct
     flagComponent.verifyFlag(userId, moduleId, flag)
@@ -75,11 +100,26 @@ public final class SubmissionService {
         .map(SubmissionBuilder::build).flatMap(submissionRepository::save);
   }
 
-  public Mono<Submission> submitValid(final Long userId, final Long moduleId) {
+  public Mono<Correction> submitCorrection(final Long userId, final long amount,
+      final String description) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
 
+    final CorrectionBuilder correctionBuilder = Correction.builder();
+
+    correctionBuilder.userId(userId);
+    correctionBuilder.amount(amount);
+    correctionBuilder.description(description);
+    correctionBuilder.time(LocalDateTime.now(clock));
+
+    return correctionRepository.save(correctionBuilder.build());
+  }
+
+  public Mono<Submission> submitValid(final Long userId, final Long moduleId) {
+    if (userId <= 0) {
+      return Mono.error(new InvalidUserIdException());
+    }
     if (moduleId <= 0) {
       return Mono.error(new InvalidModuleIdException());
     }
@@ -99,51 +139,10 @@ public final class SubmissionService {
         .map(SubmissionBuilder::build).flatMap(submissionRepository::save);
   }
 
-  public Mono<Submission> findAllValidByUserIdAndModuleId(final long userId, final long moduleId) {
-    return submissionRepository.findAllValidByUserIdAndModuleId(userId, moduleId);
-  }
-
-  public Mono<List<Long>> findAllValidIdsByUserId(final long userId) {
-    return submissionRepository.findAllValidByUserId(userId).map(Submission::getModuleId)
-        .collectList();
-  }
 
   private Mono<Boolean> validSubmissionDoesNotExistByUserIdAndModuleId(final long userId,
       final long moduleId) {
     return submissionRepository.findAllValidByUserIdAndModuleId(userId, moduleId).map(u -> false)
         .defaultIfEmpty(true);
-  }
-
-  public Mono<Correction> submitCorrection(final Long userId, final long amount,
-      final String description) {
-    if (userId <= 0) {
-      return Mono.error(new InvalidUserIdException());
-    }
-
-    final CorrectionBuilder correctionBuilder = Correction.builder();
-
-    correctionBuilder.userId(userId);
-    correctionBuilder.amount(amount);
-    correctionBuilder.description(description);
-    correctionBuilder.time(LocalDateTime.now(clock));
-
-    return correctionRepository.save(correctionBuilder.build());
-  }
-
-  public Flux<Submission> findAllByModuleId(final long moduleId) {
-    if (moduleId <= 0) {
-      return Flux.error(new InvalidModuleIdException());
-    }
-
-    return submissionRepository.findAllByModuleId(moduleId);
-  }
-
-
-  public Flux<Submission> findAllValidByUserId(final long userId) {
-    if (userId <= 0) {
-      return Flux.error(new InvalidUserIdException());
-    }
-
-    return submissionRepository.findAllValidByUserId(userId);
   }
 }
