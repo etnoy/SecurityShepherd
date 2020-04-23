@@ -43,7 +43,7 @@ public class ModuleController {
 
   private final ModuleService moduleService;
 
-  private final ModuleSolutions moduleListingComponent;
+  private final ModuleSolutions moduleSolutions;
 
   private final ControllerAuthentication controllerAuthentication;
 
@@ -51,7 +51,7 @@ public class ModuleController {
   @PreAuthorize("hasRole('ROLE_USER')")
   public Flux<ModuleListItem> findAllByUserId() {
     return controllerAuthentication.getUserId()
-        .flatMapMany(moduleListingComponent::findOpenModulesByUserIdWithSolutionStatus);
+        .flatMapMany(moduleSolutions::findOpenModulesByUserIdWithSolutionStatus);
   }
 
   @GetMapping(path = "module/{id}")
@@ -63,16 +63,7 @@ public class ModuleController {
   @GetMapping(path = "module/by-name/{shortName}")
   @PreAuthorize("hasRole('ROLE_USER')")
   public Mono<ModuleListItem> getModuleByShortName(@PathVariable final String shortName) {
-    return controllerAuthentication.getUserId().flatMap(userId -> moduleListingComponent
+    return controllerAuthentication.getUserId().flatMap(userId -> moduleSolutions
         .findOpenModuleByShortNameWithSolutionStatus(userId, shortName));
-  }
-
-  @PostMapping(path = "module/")
-  @PreAuthorize("hasRole('ROLE_USER')")
-  public Mono<Boolean> submitById(@RequestBody @Valid SubmissionDto submissionDto) {
-    return controllerAuthentication.getUserId()
-        .flatMap(userId -> submissionService
-            .submit(userId, submissionDto.getModuleId(), submissionDto.getFlag())
-            .map(Submission::isValid));
   }
 }
