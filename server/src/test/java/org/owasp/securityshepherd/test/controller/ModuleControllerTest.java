@@ -14,17 +14,12 @@
  * 
  */
 
-package org.owasp.securityshepherd.test.service;
+package org.owasp.securityshepherd.test.controller;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import java.time.LocalDateTime;
-import java.time.Month;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,10 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.NotAuthenticatedException;
-import org.owasp.securityshepherd.model.Submission;
-import org.owasp.securityshepherd.module.FlagController;
 import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleController;
 import org.owasp.securityshepherd.module.ModuleListItem;
@@ -43,7 +35,6 @@ import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.module.ModuleSolutions;
 import org.owasp.securityshepherd.security.ControllerAuthentication;
 import org.owasp.securityshepherd.service.SubmissionService;
-import org.owasp.securityshepherd.test.util.TestUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
@@ -72,8 +63,6 @@ public class ModuleControllerTest {
 
   @Mock
   private ModuleSolutions moduleSolutions;
-
-  private Validator validator;
 
   @Test
   public void findAllByUserId_IdExists_ReturnsModule() throws Exception {
@@ -157,8 +146,8 @@ public class ModuleControllerTest {
   @BeforeEach
   private void setUp() throws Exception {
     // Set up the system under test
-    moduleController = new ModuleController(submissionService, moduleService, moduleSolutions,
-        controllerAuthentication);
+    moduleController =
+        new ModuleController(moduleService, moduleSolutions, controllerAuthentication);
   }
 
 }

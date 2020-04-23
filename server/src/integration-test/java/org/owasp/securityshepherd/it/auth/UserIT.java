@@ -48,9 +48,9 @@ public class UserIT {
 
   @Autowired
   TestUtils testService;
-  
+
   @Test
-  public void createPasswordUser_ValidData_RepositoryFindsCorrectUser() {
+  public void createPasswordUser_ValidData_ReturnsCorrectUser() {
     final long userId = userService.createPasswordUser("Test User", "user_login_name",
         "$2y$12$53B6QcsGwF3Os1GVFUFSQOhIPXnWFfuEkRJdbknFWnkXfUBMUKhaW").block();
 
@@ -58,9 +58,19 @@ public class UserIT {
         .expectComplete().verify();
   }
 
+  @Test
+  public void createUser_NaughtyUsernames_RepositoryFindsCorrectUser() {
+    for (final String displayName : TestUtils.STRINGS) {
+      if (!displayName.isEmpty()) {
+        StepVerifier.create(userService.create(displayName).flatMap(userService::findById)
+            .map(User::getDisplayName)).expectNext(displayName).expectComplete().verify();
+        testService.deleteAll().block();
+      }
+    }
+  }
+
   @BeforeEach
   private void setUp() {
     testService.deleteAll().block();
   }
-
 }

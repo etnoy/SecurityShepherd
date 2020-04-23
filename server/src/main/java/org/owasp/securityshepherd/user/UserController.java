@@ -37,7 +37,7 @@ public class UserController {
 
   @PostMapping(path = "user/delete/{id}")
   @PreAuthorize("hasRole('ROLE_ADMIN')")
-  public Mono<Void> deleteById(@PathVariable final int id) {
+  public Mono<Void> deleteById(@PathVariable final long id) {
     log.debug("Deleting user with id " + id);
     
     return userService.deleteById(id);
@@ -51,7 +51,7 @@ public class UserController {
 
   @GetMapping(path = "user/{id}")
   @PreAuthorize("hasRole('ROLE_USER')")
-  public Mono<User> getById(@PathVariable final int id) {
+  public Mono<User> findById(@PathVariable final long id) {
     return userService.findById(id);
   }
 

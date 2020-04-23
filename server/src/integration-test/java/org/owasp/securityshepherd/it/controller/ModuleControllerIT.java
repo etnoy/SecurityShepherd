@@ -16,13 +16,6 @@
 
 package org.owasp.securityshepherd.it.controller;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import java.util.Base64;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,8 +24,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.owasp.securityshepherd.dto.PasswordRegistrationDto;
-import org.owasp.securityshepherd.model.Submission;
-import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleController;
 import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.test.util.TestUtils;
@@ -47,11 +38,9 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.reactive.function.BodyInserters;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,

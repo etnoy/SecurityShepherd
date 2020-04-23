@@ -16,18 +16,12 @@
 
 package org.owasp.securityshepherd.module;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Min;
-import org.owasp.securityshepherd.dto.SubmissionDto;
-import org.owasp.securityshepherd.model.Submission;
 import org.owasp.securityshepherd.security.ControllerAuthentication;
-import org.owasp.securityshepherd.service.SubmissionService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
@@ -39,8 +33,6 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/")
 public class ModuleController {
-  private final SubmissionService submissionService;
-
   private final ModuleService moduleService;
 
   private final ModuleSolutions moduleSolutions;

@@ -14,7 +14,7 @@
  * 
  */
 
-package org.owasp.securityshepherd.test.service;
+package org.owasp.securityshepherd.test.controller;
 
 import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.BeforeAll;
