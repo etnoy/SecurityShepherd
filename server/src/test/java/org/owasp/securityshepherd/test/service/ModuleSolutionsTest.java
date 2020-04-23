@@ -28,6 +28,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.owasp.securityshepherd.exception.EmptyModuleShortNameException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.model.Submission;
@@ -43,6 +46,7 @@ import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+@ExtendWith(MockitoExtension.class)
 @DisplayName("ModuleSolutions unit test")
 public class ModuleSolutionsTest {
 
@@ -54,9 +58,11 @@ public class ModuleSolutionsTest {
 
   private ModuleSolutions moduleSolutions;
 
-  private ModuleService moduleService = mock(ModuleService.class);
+  @Mock
+  private ModuleService moduleService;
 
-  private SubmissionService submissionService = mock(SubmissionService.class);
+  @Mock
+  private SubmissionService submissionService;
 
   @Test
   public void findOpenModuleByShortNameWithSolutionStatus_EmptyShortName_ReturnsInvalidModuleShortNameException() {
@@ -83,23 +89,12 @@ public class ModuleSolutionsTest {
   @Test
   public void findOpenModuleByShortNameWithSolutionStatus_ModuleIsClosedAndHasSolution_ReturnsEmpty() {
     final long mockModuleId = 782L;
-    final String mockModuleName = "Test Module";
     final String mockModuleShortName = "test-module";
-    final String mockModuleDescription = "This is a closed module";
 
     final long mockUserId = 1000L;
     final Module mockModule = mock(Module.class);;
 
-    when(mockModule.getId()).thenReturn(mockModuleId);
-    when(mockModule.getName()).thenReturn(mockModuleName);
-    when(mockModule.getShortName()).thenReturn(mockModuleShortName);
-    when(mockModule.getDescription()).thenReturn(mockModuleDescription);
     when(mockModule.isOpen()).thenReturn(false);
-
-    final Submission mockedSubmission = mock(Submission.class);
-
-    when(submissionService.findAllValidByUserIdAndModuleId(mockUserId, mockModuleId))
-        .thenReturn(Mono.just(mockedSubmission));
 
     when(moduleService.findByShortName(mockModuleShortName)).thenReturn(Mono.just(mockModule));
 
@@ -219,7 +214,6 @@ public class ModuleSolutionsTest {
     final long mockUserId = 1000L;
 
     when(submissionService.findAllValidIdsByUserId(mockUserId)).thenReturn(Mono.empty());
-    when(moduleService.findAllOpen()).thenReturn(Flux.empty());
 
     StepVerifier.create(moduleSolutions.findOpenModulesByUserIdWithSolutionStatus(mockUserId))
         .expectComplete().verify();
@@ -241,14 +235,6 @@ public class ModuleSolutionsTest {
     final String mockModule2Description = "This is the second module";
 
     final long mockModule3Id = 245L;
-    final String mockModule3Name = "Module 3";
-    final String mockModule3ShortName = "module-3";
-    final String mockModule3Description = "This module isn't open";
-
-    final long mockModule4Id = 27L;
-    final String mockModule4Name = "Module 4";
-    final String mockModule4ShortName = "module-4";
-    final String mockModule4Description = "This module won't have solves";
 
     final long mockUserId = 1000L;
     final Module mockModule1 = mock(Module.class);
@@ -260,25 +246,11 @@ public class ModuleSolutionsTest {
     when(mockModule1.getName()).thenReturn(mockModule1Name);
     when(mockModule1.getShortName()).thenReturn(mockModule1ShortName);
     when(mockModule1.getDescription()).thenReturn(mockModule1Description);
-    when(mockModule1.isOpen()).thenReturn(true);
 
     when(mockModule2.getId()).thenReturn(mockModule2Id);
     when(mockModule2.getName()).thenReturn(mockModule2Name);
     when(mockModule2.getShortName()).thenReturn(mockModule2ShortName);
     when(mockModule2.getDescription()).thenReturn(mockModule2Description);
-    when(mockModule2.isOpen()).thenReturn(true);
-
-    when(mockModule3.getId()).thenReturn(mockModule3Id);
-    when(mockModule3.getName()).thenReturn(mockModule3Name);
-    when(mockModule3.getShortName()).thenReturn(mockModule3ShortName);
-    when(mockModule3.getDescription()).thenReturn(mockModule3Description);
-    when(mockModule3.isOpen()).thenReturn(false);
-
-    when(mockModule4.getId()).thenReturn(mockModule4Id);
-    when(mockModule4.getName()).thenReturn(mockModule4Name);
-    when(mockModule4.getShortName()).thenReturn(mockModule4ShortName);
-    when(mockModule4.getDescription()).thenReturn(mockModule4Description);
-    when(mockModule4.isOpen()).thenReturn(true);
 
     final Mono<List<Long>> mockedValidSolutionsList =
         Mono.just(new ArrayList<Long>(Arrays.asList(mockModule1Id, mockModule2Id, mockModule3Id)));

@@ -30,7 +30,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.owasp.securityshepherd.model.Configuration;
 import org.owasp.securityshepherd.repository.ConfigurationRepository;
 import org.owasp.securityshepherd.service.ConfigurationService;
@@ -39,6 +42,7 @@ import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+@ExtendWith(MockitoExtension.class)
 @DisplayName("ConfigurationService unit test")
 public class ConfigurationServiceTest {
 
@@ -49,11 +53,12 @@ public class ConfigurationServiceTest {
   }
 
   private ConfigurationService configurationService;
+  
+  @Mock
+  private ConfigurationRepository configurationRepository;
 
-  private ConfigurationRepository configurationRepository =
-      mock(ConfigurationRepository.class);
-
-  private KeyService keyService = mock(KeyService.class);
+  @Mock
+  private KeyService keyService;
 
   @Test
   public void getServerKey_KeyExists_ReturnsExistingKey() throws Exception {

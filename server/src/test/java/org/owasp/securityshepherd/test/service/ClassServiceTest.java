@@ -28,6 +28,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
 import org.owasp.securityshepherd.exception.DuplicateClassNameException;
 import org.owasp.securityshepherd.exception.InvalidClassIdException;
@@ -38,6 +41,7 @@ import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+@ExtendWith(MockitoExtension.class)
 @DisplayName("ClassService unit test")
 public class ClassServiceTest {
 
@@ -49,7 +53,8 @@ public class ClassServiceTest {
 
   private ClassService classService;
 
-  private ClassRepository classRepository = mock(ClassRepository.class);
+  @Mock
+  private ClassRepository classRepository;
 
   @Test
   @DisplayName("count() call the count function of ClassRepository and return its same value")
@@ -194,15 +199,11 @@ public class ClassServiceTest {
   @Test
   @DisplayName("Setting the name of a class that does not exist should return ClassIdNotFoundException")
   public void setName_NonExistentId_ReturnsClassIdNotFoundException() {
-    final ClassEntity mockClass = mock(ClassEntity.class);
     final String newName = "newTestClass";
 
     final long mockId = 1234567;
 
     when(classRepository.existsById(mockId)).thenReturn(Mono.just(false));
-
-    when(classRepository.findById(mockId)).thenReturn(Mono.just(mockClass));
-    when(classRepository.findByName(newName)).thenReturn(Mono.just(mockClass));
 
     StepVerifier.create(classService.setName(mockId, newName))
         .expectError(ClassIdNotFoundException.class).verify();

@@ -16,7 +16,6 @@
 
 package org.owasp.securityshepherd.test.controller;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -26,6 +25,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.owasp.securityshepherd.exception.NotAuthenticatedException;
 import org.owasp.securityshepherd.model.Submission;
 import org.owasp.securityshepherd.module.FlagController;
@@ -35,6 +37,7 @@ import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+@ExtendWith(MockitoExtension.class)
 @DisplayName("FlagController unit test")
 public class FlagControllerTest {
 
@@ -46,9 +49,11 @@ public class FlagControllerTest {
 
   private FlagController flagController;
 
-  private ControllerAuthentication controllerAuthentication = mock(ControllerAuthentication.class);
+  @Mock
+  private ControllerAuthentication controllerAuthentication;
 
-  private SubmissionService submissionService = mock(SubmissionService.class);
+  @Mock
+  private SubmissionService submissionService;
 
   @BeforeEach
   private void setUp() throws Exception {

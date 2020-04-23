@@ -50,8 +50,6 @@ public class UserControllerTest {
   @Mock
   private UserService userService;
 
-
-
   @Test
   public void deleteById_ValidId_CallsUserService() {
     final long mockUserId = 317L;

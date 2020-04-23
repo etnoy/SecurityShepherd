@@ -26,6 +26,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.owasp.securityshepherd.exception.InvalidFlagStateException;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
@@ -40,6 +43,7 @@ import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+@ExtendWith(MockitoExtension.class)
 @DisplayName("FlagHandler unit test")
 public class FlagHandlerTest {
 
@@ -51,15 +55,20 @@ public class FlagHandlerTest {
 
   private FlagHandler flagHandler;
 
-  private ModuleService moduleService = mock(ModuleService.class);
+  @Mock
+  private ModuleService moduleService;
 
-  private UserService userService = mock(UserService.class);
+  @Mock
+  private UserService userService;
 
-  private ConfigurationService configurationService = mock(ConfigurationService.class);
+  @Mock
+  private ConfigurationService configurationService;
 
-  private KeyService keyService = mock(KeyService.class);
+  @Mock
+  private KeyService keyService;
 
-  private CryptoService cryptoService = mock(CryptoService.class);
+  @Mock
+  private CryptoService cryptoService;
 
   @Test
   public void getDynamicFlag_FlagIsExact_ReturnsInvalidFlagStateException() {
@@ -72,26 +81,15 @@ public class FlagHandlerTest {
         {-108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62, 9, 19};
     final byte[] mockedServerKey =
         {-118, 9, -7, -35, 17, -116, -94, 0, -32, -117, 65, -127, 12, 82, 9, 29};
-    final byte[] mockedTotalKey = {-108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62,
-        9, 19, -118, 9, -7, -35, 17, -116, -94, 0, -32, -117, 65, -127, 12, 82, 9, 29};
-    final byte[] mockedHmacOutput =
-        {-128, 1, -7, -35, 15, -116, -94, 0, -32, -117, 115, -127, 12, 82, 97, 19};
-
-    final String mockedBaseFlag = "ZrLBRsS0QfL5TDz5";
 
     when(moduleService.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
 
     when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
     when(configurationService.getServerKey()).thenReturn(Mono.just(mockedServerKey));
-    when(mockModule.getFlag()).thenReturn(mockedBaseFlag);
     when(mockModule.isFlagExact()).thenReturn(true);
     when(mockModule.isFlagEnabled()).thenReturn(true);
 
     when(configurationService.getServerKey()).thenReturn(Mono.just(mockedServerKey));
-
-    when(cryptoService.hmac(mockedTotalKey, mockedBaseFlag.getBytes()))
-        .thenReturn(Mono.just(mockedHmacOutput));
-    when(keyService.convertByteKeyToString(mockedHmacOutput)).thenReturn("thisistheoutputtedflag");
 
     StepVerifier.create(flagHandler.getDynamicFlag(mockUserId, mockModuleId))
         .expectError(InvalidFlagStateException.class).verify();
@@ -127,7 +125,6 @@ public class FlagHandlerTest {
 
     when(cryptoService.hmac(mockedTotalKey, mockedBaseFlag.getBytes()))
         .thenReturn(Mono.just(mockedHmacOutput));
-    when(keyService.convertByteKeyToString(mockedHmacOutput)).thenReturn(correctFlag);
     when(keyService.byteFlagToString(mockedHmacOutput)).thenReturn(correctFlag);
 
     StepVerifier.create(flagHandler.getDynamicFlag(mockUserId, mockModuleId))
@@ -160,8 +157,6 @@ public class FlagHandlerTest {
     when(mockModule.isFlagEnabled()).thenReturn(true);
 
     when(moduleService.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
-
-    when(moduleService.findById(mockUserId)).thenReturn(Mono.just(mockModule));
 
     when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
     when(configurationService.getServerKey()).thenReturn(Mono.just(mockedServerKey));
@@ -239,7 +234,6 @@ public class FlagHandlerTest {
 
     when(cryptoService.hmac(mockedTotalKey, baseFlag.getBytes()))
         .thenReturn(Mono.just(mockedHmacOutput));
-    when(keyService.convertByteKeyToString(mockedHmacOutput)).thenReturn(validFlag);
 
     when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
     when(keyService.byteFlagToString(mockedHmacOutput)).thenReturn(validFlag);
@@ -372,7 +366,6 @@ public class FlagHandlerTest {
 
     when(cryptoService.hmac(mockedTotalKey, validFlag.getBytes()))
         .thenReturn(Mono.just(mockedHmacOutput));
-    when(keyService.convertByteKeyToString(mockedHmacOutput)).thenReturn("thisistheoutputtedflag");
 
     when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
 
@@ -491,7 +484,6 @@ public class FlagHandlerTest {
 
     when(cryptoService.hmac(mockedTotalKey, validFlag.getBytes()))
         .thenReturn(Mono.just(mockedHmacOutput));
-    when(keyService.convertByteKeyToString(mockedHmacOutput)).thenReturn("thisistheoutputtedflag");
 
     when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
 

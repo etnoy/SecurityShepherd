@@ -30,8 +30,11 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.owasp.securityshepherd.exception.DuplicateUserDisplayNameException;
 import org.owasp.securityshepherd.exception.InvalidClassIdException;
 import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
@@ -55,6 +58,7 @@ import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+@ExtendWith(MockitoExtension.class)
 @DisplayName("UserService unit test")
 public class UserServiceTest {
 
@@ -66,16 +70,20 @@ public class UserServiceTest {
 
   private UserService userService;
 
-  private UserRepository userRepository = mock(UserRepository.class);
+  @Mock
+  private UserRepository userRepository;
 
-  private UserAuthRepository userAuthRepository = mock(UserAuthRepository.class);
+  @Mock
+  private UserAuthRepository userAuthRepository;
 
-  private PasswordAuthRepository passwordAuthRepository =
-      mock(PasswordAuthRepository.class);
+  @Mock
+  private PasswordAuthRepository passwordAuthRepository;
 
-  private ClassService classService = mock(ClassService.class);
-
-  private KeyService keyService = mock(KeyService.class);
+  @Mock
+  private ClassService classService;
+  
+  @Mock
+  private KeyService keyService;
 
   @Test
   public void authenticate_EmptyPassword_ReturnsIllegalArgumentException() {
@@ -382,7 +390,6 @@ public class UserServiceTest {
     when(userAuthRepository.findByUserId(mockUserId)).thenReturn(Mono.just(mockAuth));
 
     when(mockAuth.withAdmin(false)).thenReturn(mockDemotedAuth);
-    when(mockDemotedAuth.isAdmin()).thenReturn(false);
 
     StepVerifier.create(userService.demote(mockUserId)).expectComplete().verify();
 
@@ -417,7 +424,6 @@ public class UserServiceTest {
     when(userAuthRepository.findByUserId(mockUserId)).thenReturn(Mono.just(mockAuth));
 
     when(mockAuth.withAdmin(false)).thenReturn(mockAuth);
-    when(mockAuth.isAdmin()).thenReturn(false);
 
     StepVerifier.create(userService.demote(mockUserId)).expectComplete().verify();
 
@@ -571,12 +577,8 @@ public class UserServiceTest {
     final PasswordAuth mockPasswordAuth = mock(PasswordAuth.class);
 
     final String mockLoginName = "loginName";
-    final Long mockUserId = 301L;
-
     when(passwordAuthRepository.findByLoginName(mockLoginName))
         .thenReturn(Mono.just(mockPasswordAuth));
-
-    when(mockPasswordAuth.getUserId()).thenReturn(mockUserId);
 
     StepVerifier.create(userService.findPasswordAuthByLoginName(mockLoginName))
         .expectNext(mockPasswordAuth).expectComplete().verify();

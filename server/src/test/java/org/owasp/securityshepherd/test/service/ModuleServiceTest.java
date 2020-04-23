@@ -30,8 +30,11 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.owasp.securityshepherd.exception.DuplicateModuleNameException;
 import org.owasp.securityshepherd.exception.EmptyModuleNameException;
 import org.owasp.securityshepherd.exception.EmptyModuleShortNameException;
@@ -47,6 +50,7 @@ import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+@ExtendWith(MockitoExtension.class)
 @DisplayName("ModuleService unit test")
 public class ModuleServiceTest {
 
@@ -58,9 +62,11 @@ public class ModuleServiceTest {
 
   private ModuleService moduleService;
 
-  private ModuleRepository moduleRepository = mock(ModuleRepository.class);
+  @Mock
+  private ModuleRepository moduleRepository;
 
-  private KeyService keyService = mock(KeyService.class);
+  @Mock
+  private KeyService keyService;
 
   @Test
   public void count_NoArgument_ReturnsCount() {
@@ -270,7 +276,6 @@ public class ModuleServiceTest {
   public void setDynamicFlag_FlagPreviouslySet_ReturnPreviousFlag() {
     final String newFlag = "uVR6jeaKqtMD6CPg";
 
-    final Module mockModuleWithoutDynamicFlag = mock(Module.class);
     final Module mockModuleWithoutExactFlag = mock(Module.class);
     final Module mockModuleWithExactFlag = mock(Module.class);
     final Module mockModuleWithDynamicFlag = mock(Module.class);
@@ -281,11 +286,7 @@ public class ModuleServiceTest {
 
     when(mockModuleWithoutExactFlag.withFlagEnabled(true)).thenReturn(mockModuleWithExactFlag);
     when(mockModuleWithExactFlag.withFlagExact(false)).thenReturn(mockModuleWithDynamicFlag);
-    when(mockModuleWithoutExactFlag.withFlagExact(false)).thenReturn(mockModuleWithoutDynamicFlag);
-    when(mockModuleWithoutDynamicFlag.withFlagEnabled(true)).thenReturn(mockModuleWithDynamicFlag);
 
-    when(mockModuleWithDynamicFlag.isFlagEnabled()).thenReturn(true);
-    when(mockModuleWithDynamicFlag.isFlagExact()).thenReturn(false);
     when(mockModuleWithDynamicFlag.getFlag()).thenReturn(newFlag);
 
     when(moduleRepository.save(mockModuleWithDynamicFlag))
@@ -327,8 +328,6 @@ public class ModuleServiceTest {
 
     when(mockModuleWithoutExactFlag.withFlagEnabled(true)).thenReturn(mockModuleWithExactFlag);
     when(mockModuleWithExactFlag.withFlagExact(false)).thenReturn(mockModuleWithDynamicFlag);
-    when(mockModuleWithoutExactFlag.withFlagExact(false)).thenReturn(mockModuleWithoutDynamicFlag);
-    when(mockModuleWithoutDynamicFlag.withFlagEnabled(true)).thenReturn(mockModuleWithDynamicFlag);
 
     when(keyService.generateRandomString(16)).thenReturn(Mono.just(newFlag));
     when(mockModuleWithDynamicFlag.withFlag(newFlag)).thenReturn(mockModuleWithFlag);
@@ -396,8 +395,6 @@ public class ModuleServiceTest {
 
     final long mockModuleId = 239;
 
-    when(mockModuleWithoutFlag.getId()).thenReturn(mockModuleId);
-
     when(mockModuleWithoutFlag.withFlagEnabled(true)).thenReturn(mockModuleWithFlagEnabled);
     when(mockModuleWithFlagEnabled.withFlagExact(true)).thenReturn(mockModuleWithExactFlagEnabled);
     when(mockModuleWithExactFlagEnabled.withFlag(exactFlag))
@@ -436,8 +433,6 @@ public class ModuleServiceTest {
 
   @Test
   public void setName_InvalidModuleId_ReturnsInvalidModuleIdException() {
-    // TODO: make this a list
-
     for (final long moduleId : TestUtils.INVALID_IDS) {
       StepVerifier.create(moduleService.setName(moduleId, "name"))
           .expectErrorMatches(throwable -> throwable instanceof InvalidModuleIdException
@@ -461,9 +456,7 @@ public class ModuleServiceTest {
 
     final long mockModuleId = 30;
 
-    when(moduleRepository.existsById(mockModuleId)).thenReturn(Mono.just(true));
     when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
-    when(moduleRepository.findByName(newName)).thenReturn(Mono.empty());
 
     when(mockModule.withName(newName)).thenReturn(mockModule);
     when(moduleRepository.save(any(Module.class))).thenReturn(Mono.just(mockModule));
