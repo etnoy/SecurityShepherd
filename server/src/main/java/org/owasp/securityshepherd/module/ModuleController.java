@@ -17,11 +17,13 @@
 package org.owasp.securityshepherd.module;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import org.owasp.securityshepherd.dto.SubmissionDto;
 import org.owasp.securityshepherd.model.Submission;
 import org.owasp.securityshepherd.security.ControllerAuthentication;
 import org.owasp.securityshepherd.service.SubmissionService;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,6 +35,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
+@Validated
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/")
 public class ModuleController {
@@ -41,12 +44,19 @@ public class ModuleController {
   private final ModuleService moduleService;
 
   private final ModuleSolutions moduleListingComponent;
-  
+
   private final ControllerAuthentication controllerAuthentication;
+
+  @GetMapping(path = "modules")
+  @PreAuthorize("hasRole('ROLE_USER')")
+  public Flux<ModuleListItem> findAllByUserId() {
+    return controllerAuthentication.getUserId()
+        .flatMapMany(moduleListingComponent::findOpenModulesByUserIdWithSolutionStatus);
+  }
 
   @GetMapping(path = "module/{id}")
   @PreAuthorize("hasRole('ROLE_USER')")
-  public Mono<Module> getModuleById(@PathVariable final long id) {
+  public Mono<Module> getModuleById(@Min(1) @PathVariable final long id) {
     return moduleService.findById(id);
   }
 
@@ -55,13 +65,6 @@ public class ModuleController {
   public Mono<ModuleListItem> getModuleByShortName(@PathVariable final String shortName) {
     return controllerAuthentication.getUserId().flatMap(userId -> moduleListingComponent
         .findOpenModuleByShortNameWithSolutionStatus(userId, shortName));
-  }
-
-  @GetMapping(path = "modules")
-  @PreAuthorize("hasRole('ROLE_USER')")
-  public Flux<ModuleListItem> findAll() {
-    return controllerAuthentication.getUserId()
-        .flatMapMany(moduleListingComponent::findOpenModulesByUserIdWithSolutionStatus);
   }
 
   @PostMapping(path = "module/")
