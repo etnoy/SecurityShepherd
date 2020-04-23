@@ -57,7 +57,6 @@ public class LoginController {
   @PostMapping(path = "/register")
   @ResponseStatus(HttpStatus.CREATED)
   public Mono<Long> register(@Valid @RequestBody final PasswordRegistrationDto registerDto) {
-
     return userService.createPasswordUser(registerDto.getDisplayName(), registerDto.getUserName(),
         passwordEncoder.encode(registerDto.getPassword()));
   }

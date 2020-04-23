@@ -19,11 +19,9 @@ package org.owasp.securityshepherd.module;
 import javax.validation.Valid;
 import org.owasp.securityshepherd.dto.SubmissionDto;
 import org.owasp.securityshepherd.model.Submission;
+import org.owasp.securityshepherd.security.ControllerAuthentication;
 import org.owasp.securityshepherd.service.SubmissionService;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.ReactiveSecurityContextHolder;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,8 +39,10 @@ public class ModuleController {
   private final SubmissionService submissionService;
 
   private final ModuleService moduleService;
-  
+
   private final ModuleSolutions moduleListingComponent;
+  
+  private final ControllerAuthentication controllerAuthentication;
 
   @GetMapping(path = "module/{id}")
   @PreAuthorize("hasRole('ROLE_USER')")
@@ -53,24 +53,21 @@ public class ModuleController {
   @GetMapping(path = "module/by-name/{shortName}")
   @PreAuthorize("hasRole('ROLE_USER')")
   public Mono<ModuleListItem> getModuleByShortName(@PathVariable final String shortName) {
-    return ReactiveSecurityContextHolder.getContext().map(SecurityContext::getAuthentication)
-        .map(Authentication::getPrincipal).cast(Long.class)
-        .flatMap(userId -> moduleListingComponent.findOpenModuleByShortNameWithSolutionStatus(userId, shortName));
+    return controllerAuthentication.getUserId().flatMap(userId -> moduleListingComponent
+        .findOpenModuleByShortNameWithSolutionStatus(userId, shortName));
   }
 
   @GetMapping(path = "modules")
   @PreAuthorize("hasRole('ROLE_USER')")
   public Flux<ModuleListItem> findAll() {
-    return ReactiveSecurityContextHolder.getContext().map(SecurityContext::getAuthentication)
-        .map(Authentication::getPrincipal).cast(Long.class)
+    return controllerAuthentication.getUserId()
         .flatMapMany(moduleListingComponent::findOpenModulesByUserIdWithSolutionStatus);
   }
 
   @PostMapping(path = "module/")
   @PreAuthorize("hasRole('ROLE_USER')")
   public Mono<Boolean> submitById(@RequestBody @Valid SubmissionDto submissionDto) {
-    return ReactiveSecurityContextHolder.getContext().map(SecurityContext::getAuthentication)
-        .map(Authentication::getPrincipal).cast(Long.class)
+    return controllerAuthentication.getUserId()
         .flatMap(userId -> submissionService
             .submit(userId, submissionDto.getModuleId(), submissionDto.getFlag())
             .map(Submission::isValid));
