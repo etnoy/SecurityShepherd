@@ -34,6 +34,7 @@ import org.owasp.securityshepherd.module.xss.XssTutorial;
 import org.owasp.securityshepherd.repository.CorrectionRepository;
 import org.owasp.securityshepherd.repository.SubmissionRepository;
 import org.owasp.securityshepherd.service.ConfigurationService;
+import org.owasp.securityshepherd.service.CorrectionService;
 import org.owasp.securityshepherd.service.ScoreService;
 import org.owasp.securityshepherd.service.SubmissionService;
 import org.owasp.securityshepherd.user.UserService;
@@ -64,6 +65,9 @@ public class StartupRunner implements ApplicationRunner {
 
   @Autowired
   SubmissionService submissionService;
+
+  @Autowired
+  CorrectionService correctionService;
 
   @Autowired
   ScoreService scoringService;
@@ -180,14 +184,13 @@ public class StartupRunner implements ApplicationRunner {
     final Clock correctionClock =
         Clock.fixed(Instant.parse("2000-01-04T10:00:00.00Z"), ZoneId.of("Z"));
     initializeService(correctionClock);
-    submissionService.submitCorrection(userIds.get(2), -1000, "Penalty for cheating").block();
+    correctionService.submit(userIds.get(2), -1000, "Penalty for cheating").block();
     initializeService(Clock.offset(correctionClock, Duration.ofHours(10)));
-    submissionService.submitCorrection(userIds.get(1), 100, "Thanks for the bribe").block();
+    correctionService.submit(userIds.get(1), 100, "Thanks for the bribe").block();
     initializeService(clock);
   }
 
   private void initializeService(Clock injectedClock) {
-    submissionService = new SubmissionService(submissionRepository, correctionRepository,
-        flagComponent, injectedClock);
+    submissionService = new SubmissionService(submissionRepository, flagComponent, injectedClock);
   }
 }

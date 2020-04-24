@@ -22,12 +22,9 @@ import java.util.List;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.ModuleAlreadySolvedException;
-import org.owasp.securityshepherd.model.Correction;
 import org.owasp.securityshepherd.model.Submission;
-import org.owasp.securityshepherd.model.Correction.CorrectionBuilder;
 import org.owasp.securityshepherd.model.Submission.SubmissionBuilder;
 import org.owasp.securityshepherd.module.FlagHandler;
-import org.owasp.securityshepherd.repository.CorrectionRepository;
 import org.owasp.securityshepherd.repository.SubmissionRepository;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
@@ -40,9 +37,7 @@ public final class SubmissionService {
 
   private final SubmissionRepository submissionRepository;
 
-  private final CorrectionRepository correctionRepository;
-
-  private final FlagHandler flagComponent;
+  private final FlagHandler flagHandler;
 
   private final Clock clock;
 
@@ -71,6 +66,9 @@ public final class SubmissionService {
   }
 
   public Mono<List<Long>> findAllValidIdsByUserId(final long userId) {
+    if (userId <= 0) {
+      return Mono.error(new InvalidUserIdException());
+    }
     return submissionRepository.findAllValidByUserId(userId).map(Submission::getModuleId)
         .collectList();
   }
@@ -89,7 +87,7 @@ public final class SubmissionService {
     submissionBuilder.time(LocalDateTime.now(clock));
     return
     // Check if flag is correct
-    flagComponent.verifyFlag(userId, moduleId, flag)
+    flagHandler.verifyFlag(userId, moduleId, flag)
         // Get isValid field
         .map(submissionBuilder::isValid)
         // Has this module been solved by this user? In that case, throw exception.
@@ -98,22 +96,6 @@ public final class SubmissionService {
             String.format("User %d has already finished module %d", userId, moduleId))))
         // Otherwise, build a submission and save it in db
         .map(SubmissionBuilder::build).flatMap(submissionRepository::save);
-  }
-
-  public Mono<Correction> submitCorrection(final Long userId, final long amount,
-      final String description) {
-    if (userId <= 0) {
-      return Mono.error(new InvalidUserIdException());
-    }
-
-    final CorrectionBuilder correctionBuilder = Correction.builder();
-
-    correctionBuilder.userId(userId);
-    correctionBuilder.amount(amount);
-    correctionBuilder.description(description);
-    correctionBuilder.time(LocalDateTime.now(clock));
-
-    return correctionRepository.save(correctionBuilder.build());
   }
 
   public Mono<Submission> submitValid(final Long userId, final Long moduleId) {
@@ -138,7 +120,6 @@ public final class SubmissionService {
         // Otherwise, build a submission and save it in db
         .map(SubmissionBuilder::build).flatMap(submissionRepository::save);
   }
-
 
   private Mono<Boolean> validSubmissionDoesNotExistByUserIdAndModuleId(final long userId,
       final long moduleId) {

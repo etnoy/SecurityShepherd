@@ -40,6 +40,7 @@ import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.repository.CorrectionRepository;
 import org.owasp.securityshepherd.repository.SubmissionRepository;
 import org.owasp.securityshepherd.service.ConfigurationService;
+import org.owasp.securityshepherd.service.CorrectionService;
 import org.owasp.securityshepherd.service.CryptoService;
 import org.owasp.securityshepherd.service.KeyService;
 import org.owasp.securityshepherd.service.ScoreService;
@@ -73,6 +74,9 @@ public class ScoringServiceIT {
   SubmissionService submissionService;
 
   @Autowired
+  CorrectionService correctionService;
+
+  @Autowired
   ScoreService scoringService;
 
   @Autowired
@@ -86,7 +90,7 @@ public class ScoringServiceIT {
 
   @Autowired
   ModulePointRepository modulePointRepository;
-  
+
   @Autowired
   FlagHandler flagComponent;
 
@@ -148,7 +152,8 @@ public class ScoringServiceIT {
     scoringService.setModuleScore(moduleId2, 1, 30).block();
     scoringService.setModuleScore(moduleId2, 2, 10).block();
 
-    final long moduleId3 = moduleService.create("IrrelevantModule", "irrelevant-module").block().getId();
+    final long moduleId3 =
+        moduleService.create("IrrelevantModule", "irrelevant-module").block().getId();
     moduleService.setExactFlag(moduleId3, flag).block();
 
     // You only get 1 point for this module
@@ -188,9 +193,9 @@ public class ScoringServiceIT {
     final Clock correctionClock =
         Clock.fixed(Instant.parse("2000-01-04T10:00:00.00Z"), ZoneId.of("Z"));
     initializeService(correctionClock);
-    submissionService.submitCorrection(userIds.get(2), -1000, "Penalty for cheating").block();
+    correctionService.submit(userIds.get(2), -1000, "Penalty for cheating").block();
     initializeService(Clock.offset(correctionClock, Duration.ofHours(10)));
-    submissionService.submitCorrection(userIds.get(1), 100, "Thanks for the bribe").block();
+    correctionService.submit(userIds.get(1), 100, "Thanks for the bribe").block();
 
     StepVerifier.create(scoringService.getScoreboard())
         .expectNext(Scoreboard.builder().rank(1L).userId(userIds.get(1)).score(251L).build())
@@ -205,8 +210,7 @@ public class ScoringServiceIT {
   }
 
   private void initializeService(Clock injectedClock) {
-    submissionService = new SubmissionService(submissionRepository,
-        correctionRepository, flagComponent, injectedClock);
+    submissionService = new SubmissionService(submissionRepository, flagComponent, injectedClock);
   }
 
   @BeforeEach

@@ -115,8 +115,7 @@ public class SubmissionServiceIT {
   }
 
   private void initializeService(Clock injectedClock) {
-    submissionService = new SubmissionService(submissionRepository, correctionRepository,
-        flagComponent, injectedClock);
+    submissionService = new SubmissionService(submissionRepository, flagComponent, injectedClock);
   }
 
   @BeforeEach
