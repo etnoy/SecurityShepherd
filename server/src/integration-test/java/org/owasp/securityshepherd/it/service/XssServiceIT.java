@@ -76,6 +76,7 @@ public class XssServiceIT {
 
   private String executeQuery(final String query) throws IOException {
     return xssService.doXss(
-        "<html><head><title>Alert</title></head><body><p>Result: " + query + "</p></body></html>");
+        "<html><head><title>Alert</title></head><body><p>Result: " + query + "</p></body></html>")
+        .get(0);
   }
 }

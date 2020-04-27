@@ -43,7 +43,7 @@ public class XssTutorial implements SubmittableModule {
   public static final String SHORT_NAME = "xss-tutorial";
 
   private final ObjectMapper objectMapper;
-  
+
   private final FlagHandler flagComponent;
 
   @PostConstruct
@@ -69,7 +69,7 @@ public class XssTutorial implements SubmittableModule {
     final String htmlTarget = String.format(
         "<html><head><title>Alert</title></head><body><p>Result: %s</p></body></html>", query);
 
-    final String alert = xssService.doXss(htmlTarget);
+    final String alert = xssService.doXss(htmlTarget).get(0);
 
     ObjectNode rootNode = objectMapper.createObjectNode();
 
