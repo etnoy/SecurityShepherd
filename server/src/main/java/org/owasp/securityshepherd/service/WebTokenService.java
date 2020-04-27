@@ -31,7 +31,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class WebTokenService {
 
-  private static final long EXPIRATION_TIME = 28800;
+  private static final long EXPIRATION_TIME = 900;
 
   public static final Key JWT_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 

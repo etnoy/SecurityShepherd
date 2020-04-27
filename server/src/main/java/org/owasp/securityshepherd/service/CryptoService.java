@@ -31,12 +31,10 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @Service
 public final class CryptoService {
-  
-  public Mono<byte[]> hmac(final byte[] key, final byte[] message) {
+  public Mono<byte[]> hmac(final byte[] key, final byte[] message, final String algorithm) {
     if (key == null) {
       return Mono.error(new NullPointerException("Key cannot be null"));
     }
-
     if (message == null) {
       return Mono.error(new NullPointerException("Message cannot be null"));
     }
@@ -44,19 +42,23 @@ public final class CryptoService {
     final Mac hmac512;
 
     try {
-      hmac512 = Mac.getInstance("HmacSHA512");
+      hmac512 = Mac.getInstance(algorithm);
     } catch (NoSuchAlgorithmException e) {
-      throw new CryptographicException("Could not initialize HMAC-SHA512", e);
+      return Mono.error(new CryptographicException("Could not initialize MAC algorithm", e));
     }
 
-    final SecretKeySpec keySpec = new SecretKeySpec(key, "HmacSHA512");
+    final SecretKeySpec keySpec = new SecretKeySpec(key, algorithm);
 
     try {
       hmac512.init(keySpec);
     } catch (InvalidKeyException e) {
-      throw new CryptographicException("Key was invalid when initializing HMAC-SHA512", e);
+      throw new CryptographicException("Invalid key supplied to MAC", e);
     }
 
     return Mono.just(hmac512.doFinal(message));
+  }
+
+  public Mono<byte[]> hmac(final byte[] key, final byte[] message) {
+    return hmac(key, message, "HmacSHA512");
   }
 }

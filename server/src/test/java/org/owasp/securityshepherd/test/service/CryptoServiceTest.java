@@ -23,6 +23,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.owasp.securityshepherd.exception.CryptographicException;
 import org.owasp.securityshepherd.service.CryptoService;
 import reactor.core.publisher.Hooks;
 import reactor.test.StepVerifier;
@@ -52,6 +53,16 @@ public class CryptoServiceTest {
 
     StepVerifier.create(cryptoService.hmac(key, null)).expectError(NullPointerException.class)
         .verify();
+  }
+
+  @Test
+  public void hmac_InvalidAlgorithm_ReturnsCryptographicException() {
+    final byte[] key = {-91, -79, 67, -107, 9, 91, 62, -95, 80, 78};
+
+    final byte[] message = {120, 56, 111, -98, -118, 44, -65, -127, 39, 35};
+
+    StepVerifier.create(cryptoService.hmac(key, message, "Double ROT-13"))
+        .expectError(CryptographicException.class).verify();
   }
 
   @Test
