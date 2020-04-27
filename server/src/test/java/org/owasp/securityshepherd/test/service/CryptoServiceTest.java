@@ -30,7 +30,6 @@ import reactor.test.StepVerifier;
 
 @DisplayName("CryptoService unit test")
 public class CryptoServiceTest {
-
   @BeforeAll
   private static void reactorVerbose() {
     // Tell Reactor to print verbose error messages
