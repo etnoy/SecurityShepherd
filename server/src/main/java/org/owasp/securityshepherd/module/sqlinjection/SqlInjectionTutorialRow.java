@@ -17,15 +17,12 @@
 package org.owasp.securityshepherd.module.sqlinjection;
 
 import java.io.Serializable;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 
 @Value
-@AllArgsConstructor
 @Builder
 public class SqlInjectionTutorialRow implements Serializable {
-
   private static final long serialVersionUID = 6226793239207879891L;
 
   private String name;
@@ -33,4 +30,13 @@ public class SqlInjectionTutorialRow implements Serializable {
   private String comment;
 
   private String error;
+
+  SqlInjectionTutorialRow(final String name, final String comment, final String error) {
+    if (name == null && comment == null && error == null) {
+      throw new NullPointerException("Name, comment, and error can't all be null");
+    }
+    this.name = name;
+    this.comment = comment;
+    this.error = error;
+  }
 }
