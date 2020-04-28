@@ -19,11 +19,9 @@ package org.owasp.securityshepherd.module.sqlinjection;
 import org.springframework.data.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Component;
 import io.r2dbc.spi.ConnectionFactories;
-import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
 @Component
-@RequiredArgsConstructor
 public class SqlInjectionDatabaseClientFactory {
   public Mono<DatabaseClient> create(final Mono<String> connectionUrl) {
     // Create a DatabaseClient that allows us to manually interact with the database
