@@ -87,10 +87,6 @@ public class SqlInjectionTutorial implements SubmittableModule {
     final String injectionQuery =
         String.format("SELECT * FROM sqlinjection.users WHERE name = '%s'", usernameQuery);
 
-    DatabaseClient dbc = databaseClientMono.block();
-    System.out.println("here: " + dbc.execute(injectionQuery).as(SqlInjectionTutorialRow.class)
-        .as(SqlInjectionTutorialRow.class));
-
     return databaseClientMono
         // Execute database query
         .flatMapMany(databaseClient -> databaseClient.execute(injectionQuery)
