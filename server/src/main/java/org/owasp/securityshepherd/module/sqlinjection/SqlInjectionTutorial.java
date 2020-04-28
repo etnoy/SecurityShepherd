@@ -17,6 +17,7 @@
 package org.owasp.securityshepherd.module.sqlinjection;
 
 import javax.annotation.PostConstruct;
+import org.owasp.securityshepherd.exception.ModuleNotInitializedException;
 import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleService;
@@ -24,8 +25,6 @@ import org.owasp.securityshepherd.module.SubmittableModule;
 import org.springframework.data.r2dbc.BadSqlGrammarException;
 import org.springframework.data.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Component;
-import io.r2dbc.spi.ConnectionFactories;
-import io.r2dbc.spi.R2dbcBadGrammarException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
@@ -35,6 +34,8 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @RequiredArgsConstructor
 public class SqlInjectionTutorial implements SubmittableModule {
+
+  private final SqlInjectionDatabaseClientFactory sqlInjectionDatabaseClientFactory;
 
   private final ModuleService moduleService;
 
@@ -58,7 +59,7 @@ public class SqlInjectionTutorial implements SubmittableModule {
 
   public Flux<SqlInjectionTutorialRow> submitQuery(final long userId, final String usernameQuery) {
     if (this.moduleId == null) {
-      return Flux.error(new RuntimeException("Must initialize module before submitting to it"));
+      return Flux.error(new ModuleNotInitializedException("Module must be initialized first"));
     }
     log.trace("Processing query " + usernameQuery);
     // Generate a dynamic flag and add it as a row to the database creation script. The flag is
@@ -79,17 +80,16 @@ public class SqlInjectionTutorial implements SubmittableModule {
             "%s%s", userId, "%5C%3B", query));
 
     // Create a DatabaseClient that allows us to manually interact with the database
-    final Mono<DatabaseClient> databaseClientMono = connectionUrl
-        // We have to replace all spaces with URL-encoded spaces for r2dbc to work
-        .map(url -> url.replace(" ", "%20"))
-        // Create a connection factory from the URL
-        .map(ConnectionFactories::get)
-        // Create a database client from the connection factory
-        .map(DatabaseClient::create);
+    final Mono<DatabaseClient> databaseClientMono =
+        sqlInjectionDatabaseClientFactory.create(connectionUrl);
 
     // Create the database query. Yes, this is vulnerable to SQL injection. That's the whole point.
     final String injectionQuery =
         String.format("SELECT * FROM sqlinjection.users WHERE name = '%s'", usernameQuery);
+
+    DatabaseClient dbc = databaseClientMono.block();
+    System.out.println("here: " + dbc.execute(injectionQuery).as(SqlInjectionTutorialRow.class)
+        .as(SqlInjectionTutorialRow.class));
 
     return databaseClientMono
         // Execute database query
@@ -98,19 +98,21 @@ public class SqlInjectionTutorial implements SubmittableModule {
         // Handle errors
         .onErrorResume(exception -> {
           // We want to forward database syntax errors to the user
-          if (exception instanceof BadSqlGrammarException && exception.getCause() != null
-              && exception.getCause() instanceof R2dbcBadGrammarException) {
+          if (exception instanceof BadSqlGrammarException) {
             return Flux.just(
                 SqlInjectionTutorialRow.builder().error(exception.getCause().toString()).build());
           } else {
             // All other errors are handled in the usual way
-            return Mono.error(exception);
+            return Flux.error(exception);
           }
         });
   }
 
   @Override
   public Long getModuleId() {
+    if (this.moduleId == null) {
+      throw new ModuleNotInitializedException("Module must be initialized first");
+    }
     return this.moduleId;
   }
 }

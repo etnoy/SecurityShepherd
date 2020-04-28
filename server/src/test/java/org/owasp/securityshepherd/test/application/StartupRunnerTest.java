@@ -26,7 +26,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.owasp.securityshepherd.SecurityShepherdApplication;
 import org.owasp.securityshepherd.application.StartupRunner;
 import org.owasp.securityshepherd.model.Correction;
 import org.owasp.securityshepherd.model.ModulePoint;
