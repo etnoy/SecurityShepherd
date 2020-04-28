@@ -27,11 +27,9 @@ import org.owasp.securityshepherd.model.Submission.SubmissionBuilder;
 import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.repository.SubmissionRepository;
 import org.springframework.stereotype.Service;
-import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-@RequiredArgsConstructor
 @Service
 public final class SubmissionService {
 
@@ -39,7 +37,13 @@ public final class SubmissionService {
 
   private final FlagHandler flagHandler;
 
-  private final Clock clock;
+  private Clock clock;
+
+  public SubmissionService(SubmissionRepository submissionRepository, FlagHandler flagHandler) {
+    this.submissionRepository = submissionRepository;
+    this.flagHandler = flagHandler;
+    this.clock = Clock.systemDefaultZone();
+  }
 
   public Flux<Submission> findAllByModuleId(final long moduleId) {
     if (moduleId <= 0) {
@@ -119,6 +123,10 @@ public final class SubmissionService {
             String.format("User %d has already finished module %d", userId, moduleId))))
         // Otherwise, build a submission and save it in db
         .map(SubmissionBuilder::build).flatMap(submissionRepository::save);
+  }
+
+  public void setClock(Clock clock) {
+    this.clock = clock;
   }
 
   private Mono<Boolean> validSubmissionDoesNotExistByUserIdAndModuleId(final long userId,

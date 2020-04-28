@@ -54,6 +54,7 @@ public class SubmissionServiceIT {
     Hooks.onOperatorDebug();
   }
 
+  @Autowired
   SubmissionService submissionService;
 
   @Autowired
@@ -114,15 +115,9 @@ public class SubmissionServiceIT {
         .expectNext(true).expectError(ModuleAlreadySolvedException.class).verify();
   }
 
-  private void initializeService(Clock injectedClock) {
-    submissionService = new SubmissionService(submissionRepository, flagComponent, injectedClock);
-  }
-
   @BeforeEach
   private void clear() {
     // Initialize services with the real clock
-    initializeService(clock);
-
     testService.deleteAll().block();
   }
 }

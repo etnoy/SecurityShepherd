@@ -236,13 +236,13 @@ public class SubmissonServiceTest {
 
   private void setClock(final Clock clock) {
     // Set up the system under test
-    submissionService = new SubmissionService(submissionRepository, flagHandler, clock);
+    submissionService.setClock(clock);
   }
 
   @BeforeEach
   private void setUp() {
     // Set up the system under test
-    setClock(null);
+    submissionService = new SubmissionService(submissionRepository, flagHandler);
   }
 
   @Test

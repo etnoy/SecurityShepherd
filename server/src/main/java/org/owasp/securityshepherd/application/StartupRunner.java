@@ -25,15 +25,14 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorial;
 import org.owasp.securityshepherd.module.xss.XssTutorial;
-import org.owasp.securityshepherd.repository.SubmissionRepository;
 import org.owasp.securityshepherd.service.CorrectionService;
 import org.owasp.securityshepherd.service.ScoreService;
 import org.owasp.securityshepherd.service.SubmissionService;
 import org.owasp.securityshepherd.user.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -56,17 +55,14 @@ public class StartupRunner implements ApplicationRunner {
 
   private final SqlInjectionTutorial sqlInjectionTutorial;
 
-  private SubmissionService submissionService;
+  private final SubmissionService submissionService;
 
   private final CorrectionService correctionService;
 
   private final ScoreService scoringService;
 
-  private final SubmissionRepository submissionRepository;
-
-  private final Clock clock;
-
-  private final FlagHandler flagHandler;
+  @Autowired
+  private Clock clock;
 
   @Override
   public void run(ApplicationArguments args) {
@@ -145,7 +141,7 @@ public class StartupRunner implements ApplicationRunner {
 
     while (userIdIterator.hasNext() && clockIterator.hasNext() && flagIterator.hasNext()) {
       // Recreate the submission service every time with a new clock
-      initializeService(clockIterator.next());
+      submissionService.setClock(clockIterator.next());
 
       final Long currentUserId = userIdIterator.next();
       final String currentFlag = flagIterator.next();
@@ -158,14 +154,11 @@ public class StartupRunner implements ApplicationRunner {
 
     final Clock correctionClock =
         Clock.fixed(Instant.parse("2000-01-04T10:00:00.00Z"), ZoneId.of("Z"));
-    initializeService(correctionClock);
+    submissionService.setClock(correctionClock);
     correctionService.submit(userIds.get(2), -1000, "Penalty for cheating").block();
-    initializeService(Clock.offset(correctionClock, Duration.ofHours(10)));
+    submissionService.setClock(Clock.offset(correctionClock, Duration.ofHours(10)));
     correctionService.submit(userIds.get(1), 100, "Thanks for the bribe").block();
-    initializeService(clock);
+    submissionService.setClock(clock);
   }
 
-  private void initializeService(Clock injectedClock) {
-    submissionService = new SubmissionService(submissionRepository, flagHandler, injectedClock);
-  }
 }

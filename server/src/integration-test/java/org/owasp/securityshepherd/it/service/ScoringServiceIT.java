@@ -179,7 +179,7 @@ public class ScoringServiceIT {
 
     while (userIdIterator.hasNext() && clockIterator.hasNext() && flagIterator.hasNext()) {
       // Recreate the submission service every time with a new clock
-      initializeService(clockIterator.next());
+      submissionService.setClock(clockIterator.next());
 
       final Long currentUserId = userIdIterator.next();
       final String currentFlag = flagIterator.next();
@@ -192,9 +192,9 @@ public class ScoringServiceIT {
 
     final Clock correctionClock =
         Clock.fixed(Instant.parse("2000-01-04T10:00:00.00Z"), ZoneId.of("Z"));
-    initializeService(correctionClock);
+    submissionService.setClock(correctionClock);
     correctionService.submit(userIds.get(2), -1000, "Penalty for cheating").block();
-    initializeService(Clock.offset(correctionClock, Duration.ofHours(10)));
+    submissionService.setClock(Clock.offset(correctionClock, Duration.ofHours(10)));
     correctionService.submit(userIds.get(1), 100, "Thanks for the bribe").block();
 
     StepVerifier.create(scoringService.getScoreboard())
@@ -207,10 +207,6 @@ public class ScoringServiceIT {
         .expectNext(Scoreboard.builder().rank(6L).userId(userIds.get(7)).score(0L).build())
         .expectNext(Scoreboard.builder().rank(8L).userId(userIds.get(2)).score(-799L).build())
         .expectComplete().verify();
-  }
-
-  private void initializeService(Clock injectedClock) {
-    submissionService = new SubmissionService(submissionRepository, flagComponent, injectedClock);
   }
 
   @BeforeEach
