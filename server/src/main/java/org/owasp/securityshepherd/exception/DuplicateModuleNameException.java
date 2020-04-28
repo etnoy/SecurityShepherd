@@ -16,6 +16,9 @@
 
 package org.owasp.securityshepherd.exception;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class DuplicateModuleNameException extends Exception {
 
   private static final long serialVersionUID = 1164167605174502173L;

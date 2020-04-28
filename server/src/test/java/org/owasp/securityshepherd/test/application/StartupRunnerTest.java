@@ -16,6 +16,7 @@
 
 package org.owasp.securityshepherd.test.application;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.BeforeAll;
@@ -25,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.owasp.securityshepherd.SecurityShepherdApplication;
 import org.owasp.securityshepherd.application.StartupRunner;
 import org.owasp.securityshepherd.model.Correction;
 import org.owasp.securityshepherd.model.ModulePoint;
@@ -178,7 +180,7 @@ public class StartupRunnerTest {
     when(correctionService.submit(3L, 100, "Thanks for the bribe"))
         .thenReturn(Mono.just(mockCorrection));
 
-    startupRunner.run(null);
+    assertDoesNotThrow(() -> startupRunner.run(null));
   }
 
   @BeforeEach

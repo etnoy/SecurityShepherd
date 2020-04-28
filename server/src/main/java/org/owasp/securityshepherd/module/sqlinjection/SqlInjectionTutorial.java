@@ -38,7 +38,7 @@ public class SqlInjectionTutorial implements SubmittableModule {
 
   private final ModuleService moduleService;
 
-  private final FlagHandler flagComponent;
+  private final FlagHandler flagHandler;
 
   private Long moduleId;
 
@@ -64,7 +64,7 @@ public class SqlInjectionTutorial implements SubmittableModule {
     // Generate a dynamic flag and add it as a row to the database creation script. The flag is
     // different for every user to prevent copying flags
     final Mono<String> insertionQuery =
-        flagComponent.getDynamicFlag(userId, this.moduleId)
+        flagHandler.getDynamicFlag(userId, this.moduleId)
             .map(flag -> String.format(
                 "INSERT INTO sqlinjection.users values ('Union Jack', 'Well done, flag is %s')",
                 flag));
