@@ -85,7 +85,7 @@ public class SqlInjectionTutorial implements SubmittableModule {
 
     // Create a DatabaseClient that allows us to manually interact with the database
     final Mono<DatabaseClient> databaseClientMono =
-        connectionUrl.map(url -> sqlInjectionDatabaseClientFactory.create(url));
+        connectionUrl.map(sqlInjectionDatabaseClientFactory::create);
 
     // Create the database query. Yes, this is vulnerable to SQL injection. That's the whole point.
     final String injectionQuery =
