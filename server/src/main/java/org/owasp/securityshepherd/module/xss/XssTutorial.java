@@ -23,11 +23,10 @@ import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.module.SubmittableModule;
 import org.owasp.securityshepherd.service.XssService;
 import org.springframework.stereotype.Component;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
+import org.owasp.securityshepherd.module.xss.XssTutorialResponse.XssTutorialResponseBuilder;
 
 @Component
 @Slf4j
@@ -41,8 +40,6 @@ public class XssTutorial implements SubmittableModule {
   private Long moduleId;
 
   public static final String SHORT_NAME = "xss-tutorial";
-
-  private final ObjectMapper objectMapper;
 
   private final FlagHandler flagComponent;
 
@@ -62,7 +59,7 @@ public class XssTutorial implements SubmittableModule {
     return this.moduleId;
   }
 
-  public Mono<String> submitQuery(final long userId, final String query) {
+  public Mono<XssTutorialResponse> submitQuery(final long userId, final String query) {
     if (this.moduleId == null) {
       return Mono.error(new RuntimeException("Must initialize module before submitting to it"));
     }
@@ -71,17 +68,18 @@ public class XssTutorial implements SubmittableModule {
 
     final String alert = xssService.doXss(htmlTarget).get(0);
 
-    ObjectNode rootNode = objectMapper.createObjectNode();
-
-    rootNode.put("result", String.format("Sorry, found no result for %s", query));
+    final XssTutorialResponseBuilder xssTutorialResponseBuilder = XssTutorialResponse.builder();
 
     if (alert != null) {
-      rootNode.put("alert", alert);
+      xssTutorialResponseBuilder.alert(alert);
 
       return flagComponent.getDynamicFlag(userId, this.moduleId)
           .map(flag -> String.format("Congratulations, flag is %s", flag))
-          .map(result -> rootNode.put("flag", result)).map(ObjectNode::toString);
+          .map(result -> xssTutorialResponseBuilder.flag(result))
+          .map(XssTutorialResponseBuilder::build);
+    } else {
+      xssTutorialResponseBuilder.result(String.format("Sorry, found no result for %s", query));
     }
-    return Mono.just(rootNode.toString());
+    return Mono.just(xssTutorialResponseBuilder.build());
   }
 }

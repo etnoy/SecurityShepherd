@@ -37,7 +37,6 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/")
 public class LoginController {
-
   private final UserService userService;
 
   private final WebTokenService webTokenService;
