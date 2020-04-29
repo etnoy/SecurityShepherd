@@ -39,6 +39,7 @@ import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionDatabaseClientFactory;
 import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorial;
 import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorialRow;
+import org.owasp.securityshepherd.service.KeyService;
 import org.springframework.data.r2dbc.BadSqlGrammarException;
 import org.springframework.data.r2dbc.core.DatabaseClient;
 import io.r2dbc.spi.R2dbcBadGrammarException;
@@ -66,6 +67,9 @@ public class SqlInjectionTutorialTest {
 
   @Mock
   FlagHandler flagHandler;
+
+  @Mock
+  KeyService keyService;
 
   @Test
   public void getModuleId_ModuleIntialized_ReturnsModuleId() {
@@ -129,8 +133,8 @@ public class SqlInjectionTutorialTest {
   @BeforeEach
   private void setUp() {
     // Set up the system under test
-    sqlInjectionTutorial =
-        new SqlInjectionTutorial(sqlInjectionDatabaseClientFactory, moduleService, flagHandler);
+    sqlInjectionTutorial = new SqlInjectionTutorial(sqlInjectionDatabaseClientFactory,
+        moduleService, flagHandler, keyService);
   }
 
   @Test
@@ -139,17 +143,20 @@ public class SqlInjectionTutorialTest {
     final Module mockModule = mock(Module.class);
     final String mockFlag = "mockedflag";
     final String query = "username";
+    final String randomUsername = "random";
     final long mockModuleId = 572L;
 
     when(moduleService.create("Sql Injection Tutorial", SqlInjectionTutorial.SHORT_NAME,
         "Tutorial for making sql injections")).thenReturn(Mono.just(mockModule));
+
+    when(keyService.generateRandomString(16)).thenReturn(Mono.just(randomUsername));
 
     when(mockModule.getId()).thenReturn(mockModuleId);
     when(moduleService.setDynamicFlag(mockModuleId)).thenReturn(Mono.just(mockModule));
     when(flagHandler.getDynamicFlag(mockUserId, mockModuleId)).thenReturn(Mono.just(mockFlag));
 
     final DatabaseClient mockDatabaseClient = mock(DatabaseClient.class, RETURNS_DEEP_STUBS);
-    when(sqlInjectionDatabaseClientFactory.create(any())).thenReturn(Mono.just(mockDatabaseClient));
+    when(sqlInjectionDatabaseClientFactory.create(any())).thenReturn(mockDatabaseClient);
 
     when(mockDatabaseClient.execute(any(String.class)).as(SqlInjectionTutorialRow.class).fetch()
         .all())
@@ -173,16 +180,17 @@ public class SqlInjectionTutorialTest {
     final String mockFlag = "mockedflag";
     final String query = "username";
     final long mockModuleId = 991L;
+    final String randomUsername = "random";
 
     when(moduleService.create("Sql Injection Tutorial", SqlInjectionTutorial.SHORT_NAME,
         "Tutorial for making sql injections")).thenReturn(Mono.just(mockModule));
+    when(keyService.generateRandomString(16)).thenReturn(Mono.just(randomUsername));
 
     when(mockModule.getId()).thenReturn(mockModuleId);
     when(moduleService.setDynamicFlag(mockModuleId)).thenReturn(Mono.just(mockModule));
     when(flagHandler.getDynamicFlag(mockUserId, mockModuleId)).thenReturn(Mono.just(mockFlag));
 
     final DatabaseClient mockDatabaseClient = mock(DatabaseClient.class, RETURNS_DEEP_STUBS);
-    when(sqlInjectionDatabaseClientFactory.create(any())).thenReturn(Mono.just(mockDatabaseClient));
 
     when(mockDatabaseClient.execute(any(String.class)).as(SqlInjectionTutorialRow.class).fetch()
         .all()).thenReturn(Flux.error(new RuntimeException()));
@@ -198,7 +206,14 @@ public class SqlInjectionTutorialTest {
     final long mockUserId = 419L;
     final String query = "username";
     StepVerifier.create(sqlInjectionTutorial.submitQuery(mockUserId, query))
-    .expectError(ModuleNotInitializedException.class);
+        .expectError(ModuleNotInitializedException.class);
+  }
+
+  private DatabaseClient getClient(final String args, final Flux<SqlInjectionTutorialRow> rows) {
+    final DatabaseClient mockDatabaseClient = mock(DatabaseClient.class, RETURNS_DEEP_STUBS);
+    when(mockDatabaseClient.execute(any(String.class)).as(SqlInjectionTutorialRow.class).fetch()
+        .all()).thenReturn(rows);
+    return mockDatabaseClient;
   }
 
   @Test
@@ -208,23 +223,24 @@ public class SqlInjectionTutorialTest {
     final String mockFlag = "mockedflag";
     final String query = "username";
     final long mockModuleId = 823L;
+    final String randomUsername = "random";
 
     when(moduleService.create("Sql Injection Tutorial", SqlInjectionTutorial.SHORT_NAME,
         "Tutorial for making sql injections")).thenReturn(Mono.just(mockModule));
 
     when(mockModule.getId()).thenReturn(mockModuleId);
+    when(keyService.generateRandomString(16)).thenReturn(Mono.just(randomUsername));
     when(moduleService.setDynamicFlag(mockModuleId)).thenReturn(Mono.just(mockModule));
     when(flagHandler.getDynamicFlag(mockUserId, mockModuleId)).thenReturn(Mono.just(mockFlag));
 
-    final DatabaseClient mockDatabaseClient = mock(DatabaseClient.class, RETURNS_DEEP_STUBS);
-    when(sqlInjectionDatabaseClientFactory.create(any())).thenReturn(Mono.just(mockDatabaseClient));
     final SqlInjectionTutorialRow mockSqlInjectionTutorialRow1 =
         mock(SqlInjectionTutorialRow.class);
     final SqlInjectionTutorialRow mockSqlInjectionTutorialRow2 =
         mock(SqlInjectionTutorialRow.class);
 
-    when(mockDatabaseClient.execute(any(String.class)).as(SqlInjectionTutorialRow.class).fetch()
-        .all()).thenReturn(Flux.just(mockSqlInjectionTutorialRow1, mockSqlInjectionTutorialRow2));
+    when(sqlInjectionDatabaseClientFactory.create(any(String.class)))
+        .thenAnswer(args -> getClient(args.getArgument(0, String.class),
+            Flux.just(mockSqlInjectionTutorialRow1, mockSqlInjectionTutorialRow2)));
 
     sqlInjectionTutorial.initialize().block();
 

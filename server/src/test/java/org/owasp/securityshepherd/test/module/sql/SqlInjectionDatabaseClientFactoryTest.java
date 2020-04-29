@@ -16,7 +16,6 @@
 
 package org.owasp.securityshepherd.test.module.sql;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -26,8 +25,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionDatabaseClientFactory;
 import org.springframework.data.r2dbc.core.DatabaseClient;
 import reactor.core.publisher.Hooks;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("SqlInjectionDatabaseClientFactory unit test")
@@ -44,9 +41,7 @@ public class SqlInjectionDatabaseClientFactoryTest {
   @Test
   public void create_ValidConnectionUrl_ReturnsDatabaseClient() {
     final String connectionUrl = "r2dbc:h2:mem:///db";
-    StepVerifier.create(sqlInjectionDatabaseClientFactory.create(Mono.just(connectionUrl)))
-        .assertNext(client -> {
-          assertThat(client).isInstanceOf(DatabaseClient.class);
-        }).expectComplete().verify();
+    final DatabaseClient client = sqlInjectionDatabaseClientFactory.create(connectionUrl);
+    assertThat(client).isInstanceOf(DatabaseClient.class);
   }
 }

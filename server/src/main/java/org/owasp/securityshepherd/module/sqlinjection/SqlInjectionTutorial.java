@@ -22,6 +22,7 @@ import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.module.SubmittableModule;
+import org.owasp.securityshepherd.service.KeyService;
 import org.springframework.data.r2dbc.BadSqlGrammarException;
 import org.springframework.data.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Component;
@@ -40,6 +41,8 @@ public class SqlInjectionTutorial implements SubmittableModule {
   private final ModuleService moduleService;
 
   private final FlagHandler flagHandler;
+
+  private final KeyService keyService;
 
   private Long moduleId;
 
@@ -61,14 +64,14 @@ public class SqlInjectionTutorial implements SubmittableModule {
     if (this.moduleId == null) {
       return Flux.error(new ModuleNotInitializedException("Module must be initialized first"));
     }
-    log.trace("Processing query " + usernameQuery);
+    final Mono<String> randomUserName = this.keyService.generateRandomString(16);
     // Generate a dynamic flag and add it as a row to the database creation script. The flag is
     // different for every user to prevent copying flags
     final Mono<String> insertionQuery =
-        flagHandler.getDynamicFlag(userId, this.moduleId)
-            .map(flag -> String.format(
-                "INSERT INTO sqlinjection.users values ('Union Jack', 'Well done, flag is %s')",
-                flag));
+        flagHandler.getDynamicFlag(userId, this.moduleId).zipWith(randomUserName)
+            .map(tuple -> String.format(
+                "INSERT INTO sqlinjection.users values ('%s', 'Well done, flag is %s')",
+                tuple.getT2(), tuple.getT1()));
 
     // Create a connection URL to a H2SQL in-memory database. Each submission call creates a
     // completely new instance of this database.
@@ -81,7 +84,7 @@ public class SqlInjectionTutorial implements SubmittableModule {
 
     // Create a DatabaseClient that allows us to manually interact with the database
     final Mono<DatabaseClient> databaseClientMono =
-        sqlInjectionDatabaseClientFactory.create(connectionUrl);
+        connectionUrl.map(url -> sqlInjectionDatabaseClientFactory.create(url));
 
     // Create the database query. Yes, this is vulnerable to SQL injection. That's the whole point.
     final String injectionQuery =

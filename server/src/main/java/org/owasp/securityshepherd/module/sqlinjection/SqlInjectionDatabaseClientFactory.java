@@ -19,18 +19,15 @@ package org.owasp.securityshepherd.module.sqlinjection;
 import org.springframework.data.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Component;
 import io.r2dbc.spi.ConnectionFactories;
-import reactor.core.publisher.Mono;
 
 @Component
 public class SqlInjectionDatabaseClientFactory {
-  public Mono<DatabaseClient> create(final Mono<String> connectionUrl) {
-    // Create a DatabaseClient that allows us to manually interact with the database
-    return connectionUrl
-        // We have to replace all spaces with URL-encoded spaces for r2dbc to work
-        .map(url -> url.replace(" ", "%20"))
-        // Create a connection factory from the URL
-        .map(ConnectionFactories::get)
-        // Create a database client from the connection factory
-        .map(DatabaseClient::create);
+  public DatabaseClient create(final String connectionUrl) {
+    // We have to replace all spaces with URL-encoded spaces for r2dbc to work
+    final String escapedUrl = connectionUrl.replace(" ", "%20");
+
+    // Create a connection factory from the URL
+    // Create a database client from the connection factory
+    return DatabaseClient.create(ConnectionFactories.get(escapedUrl));
   }
 }
