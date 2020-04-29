@@ -22,12 +22,13 @@
 		<skipITs>${skipTests}</skipITs>
 		<skipUTs>${skipTests}</skipUTs>
 		<sonar.exclusions>
-			**/SecurityShepherdApplication.java
+			**/SecurityShepherdApplication.java,
+			**/FilterChainConfiguration.java,
+			**/R2dbcMysqlConfiguration.java
 		</sonar.exclusions>
 	</properties>
 
 	<dependencies>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>

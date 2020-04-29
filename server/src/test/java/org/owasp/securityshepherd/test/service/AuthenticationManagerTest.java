@@ -42,7 +42,6 @@ import reactor.test.StepVerifier;
 @ExtendWith(MockitoExtension.class)
 @DisplayName("AuthenticationManager unit test")
 public class AuthenticationManagerTest {
-
   @BeforeAll
   private static void reactorVerbose() {
     // Tell Reactor to print verbose error messages
@@ -56,6 +55,17 @@ public class AuthenticationManagerTest {
 
   @Mock
   UserService userService;
+
+  @Test
+  public void authenticate_InvalidAuthentication_ReturnsValidAuthentication() {
+    final Authentication mockAuthentication = mock(Authentication.class);
+    final String mockToken = "token";
+    when(mockAuthentication.getCredentials()).thenReturn(mockToken);
+    when(webTokenService.validateToken(mockToken)).thenReturn(false);
+
+    StepVerifier.create(authenticationManager.authenticate(mockAuthentication)).expectComplete()
+        .verify();
+  }
 
   @Test
   public void authenticate_ValidAuthentication_ReturnsValidAuthentication() {
@@ -86,16 +96,5 @@ public class AuthenticationManagerTest {
   private void setUp() {
     // Set up the system under test
     authenticationManager = new AuthenticationManager(webTokenService, userService);
-  }
-
-  @Test
-  public void authenticate_InvalidAuthentication_ReturnsValidAuthentication() {
-    final Authentication mockAuthentication = mock(Authentication.class);
-    final String mockToken = "token";
-    when(mockAuthentication.getCredentials()).thenReturn(mockToken);
-    when(webTokenService.validateToken(mockToken)).thenReturn(false);
-
-    StepVerifier.create(authenticationManager.authenticate(mockAuthentication)).expectComplete()
-        .verify();
   }
 }
