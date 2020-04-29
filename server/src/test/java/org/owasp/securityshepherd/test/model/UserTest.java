@@ -30,7 +30,6 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 
 @DisplayName("User unit test")
 public class UserTest {
-
   @Test
   public void build_DisplayNameNotGiven_ThrowsNullPointerException() {
     final UserBuilder userBuilder = User.builder();
