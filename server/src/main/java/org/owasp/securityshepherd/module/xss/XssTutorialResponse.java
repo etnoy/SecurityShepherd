@@ -18,6 +18,7 @@ package org.owasp.securityshepherd.module.xss;
 
 import java.io.Serializable;
 import lombok.Builder;
+import lombok.NonNull;
 import lombok.Value;
 
 @Value
@@ -25,15 +26,8 @@ import lombok.Value;
 public class XssTutorialResponse implements Serializable {
   private static final long serialVersionUID = 7515754390732953464L;
 
+  @NonNull
   private String result;
 
   private String alert;
-
-  XssTutorialResponse(final String result, final String alert) {
-    if (result == null && alert == null) {
-      throw new NullPointerException("result and alert cannot both be null");
-    }
-    this.result = result;
-    this.alert = alert;
-  }
 }
