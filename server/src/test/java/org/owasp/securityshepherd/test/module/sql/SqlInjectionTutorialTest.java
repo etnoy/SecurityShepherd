@@ -71,13 +71,24 @@ public class SqlInjectionTutorialTest {
   @Mock
   KeyService keyService;
 
+  private DatabaseClient getClient(final String args, final Flux<SqlInjectionTutorialRow> rows) {
+    final DatabaseClient mockDatabaseClient = mock(DatabaseClient.class, RETURNS_DEEP_STUBS);
+    when(mockDatabaseClient.execute(any(String.class)).as(SqlInjectionTutorialRow.class).fetch()
+        .all()).thenReturn(rows);
+    return mockDatabaseClient;
+  }
+
+  @Test
+  public void getDescription_IsNotEmpty() {
+    assertThat(sqlInjectionTutorial.getDescription()).isNotEmpty();
+  }
+
   @Test
   public void getModuleId_ModuleIntialized_ReturnsModuleId() {
     final long mockModuleId = 92L;
     final Module mockModule = mock(Module.class);
 
-    when(moduleService.create("Sql Injection Tutorial", SqlInjectionTutorial.SHORT_NAME,
-        "Tutorial for making sql injections")).thenReturn(Mono.just(mockModule));
+    when(moduleService.create(sqlInjectionTutorial)).thenReturn(Mono.just(mockModule));
 
     when(mockModule.getId()).thenReturn(mockModuleId);
     when(moduleService.setDynamicFlag(mockModuleId)).thenReturn(Mono.just(mockModule));
@@ -93,10 +104,19 @@ public class SqlInjectionTutorialTest {
   }
 
   @Test
+  public void getName_ReturnsSqlInjectionTutorial() {
+    assertThat(sqlInjectionTutorial.getName()).isEqualTo("SQL Injection Tutorial");
+  }
+
+  @Test
+  public void getShortName_ReturnsSqlInjectionTutorial() {
+    assertThat(sqlInjectionTutorial.getShortName()).isEqualTo("sql-injection-tutorial");
+  }
+
+  @Test
   public void initialize_DuplicateModuleName_ReturnsException() {
-    when(moduleService.create("Sql Injection Tutorial", SqlInjectionTutorial.SHORT_NAME,
-        "Tutorial for making sql injections"))
-            .thenReturn(Mono.error(new DuplicateModuleNameException()));
+    when(moduleService.create(sqlInjectionTutorial))
+        .thenReturn(Mono.error(new DuplicateModuleNameException()));
 
     StepVerifier.create(sqlInjectionTutorial.initialize())
         .expectError(DuplicateModuleNameException.class).verify();
@@ -104,9 +124,8 @@ public class SqlInjectionTutorialTest {
 
   @Test
   public void initialize_DuplicateModuleShortName_ReturnsException() {
-    when(moduleService.create("Sql Injection Tutorial", SqlInjectionTutorial.SHORT_NAME,
-        "Tutorial for making sql injections"))
-            .thenReturn(Mono.error(new DuplicateModuleShortNameException()));
+    when(moduleService.create(sqlInjectionTutorial))
+        .thenReturn(Mono.error(new DuplicateModuleShortNameException()));
 
     StepVerifier.create(sqlInjectionTutorial.initialize())
         .expectError(DuplicateModuleShortNameException.class).verify();
@@ -118,8 +137,7 @@ public class SqlInjectionTutorialTest {
 
     final Module mockModule = mock(Module.class);
 
-    when(moduleService.create("Sql Injection Tutorial", SqlInjectionTutorial.SHORT_NAME,
-        "Tutorial for making sql injections")).thenReturn(Mono.just(mockModule));
+    when(moduleService.create(sqlInjectionTutorial)).thenReturn(Mono.just(mockModule));
 
     when(mockModule.getId()).thenReturn(mockModuleId);
     when(moduleService.setDynamicFlag(mockModuleId)).thenReturn(Mono.just(mockModule));
@@ -127,8 +145,6 @@ public class SqlInjectionTutorialTest {
     StepVerifier.create(sqlInjectionTutorial.initialize()).expectNext(mockModuleId).expectComplete()
         .verify();
   }
-
-
 
   @BeforeEach
   private void setUp() {
@@ -146,8 +162,7 @@ public class SqlInjectionTutorialTest {
     final byte[] randomBytes = {116, 104, 105, 115, 105, 115, 97, 102, 108, 97, 103};
     final long mockModuleId = 572L;
 
-    when(moduleService.create("Sql Injection Tutorial", SqlInjectionTutorial.SHORT_NAME,
-        "Tutorial for making sql injections")).thenReturn(Mono.just(mockModule));
+    when(moduleService.create(sqlInjectionTutorial)).thenReturn(Mono.just(mockModule));
 
     when(keyService.generateRandomBytes(16)).thenReturn(Mono.just(randomBytes));
 
@@ -174,49 +189,6 @@ public class SqlInjectionTutorialTest {
   }
 
   @Test
-  public void submitQuery_OtherException_ThrowsException() {
-    final long mockUserId = 810L;
-    final Module mockModule = mock(Module.class);
-    final String mockFlag = "mockedflag";
-    final String query = "username";
-    final long mockModuleId = 991L;
-    final byte[] randomBytes = {116, 104, 105, 115, 105, 115, 97, 102, 108, 97, 103};
-
-    when(moduleService.create("Sql Injection Tutorial", SqlInjectionTutorial.SHORT_NAME,
-        "Tutorial for making sql injections")).thenReturn(Mono.just(mockModule));
-    when(keyService.generateRandomBytes(16)).thenReturn(Mono.just(randomBytes));
-
-    when(mockModule.getId()).thenReturn(mockModuleId);
-    when(moduleService.setDynamicFlag(mockModuleId)).thenReturn(Mono.just(mockModule));
-    when(flagHandler.getDynamicFlag(mockUserId, mockModuleId)).thenReturn(Mono.just(mockFlag));
-
-    final DatabaseClient mockDatabaseClient = mock(DatabaseClient.class, RETURNS_DEEP_STUBS);
-
-    when(mockDatabaseClient.execute(any(String.class)).as(SqlInjectionTutorialRow.class).fetch()
-        .all()).thenReturn(Flux.error(new RuntimeException()));
-
-    sqlInjectionTutorial.initialize().block();
-
-    StepVerifier.create(sqlInjectionTutorial.submitQuery(mockUserId, query))
-        .expectError(RuntimeException.class);
-  }
-
-  @Test
-  public void submitQuery_ModuleNotIntialized_ReturnsModuleNotInitializedException() {
-    final long mockUserId = 419L;
-    final String query = "username";
-    StepVerifier.create(sqlInjectionTutorial.submitQuery(mockUserId, query))
-        .expectError(ModuleNotInitializedException.class);
-  }
-
-  private DatabaseClient getClient(final String args, final Flux<SqlInjectionTutorialRow> rows) {
-    final DatabaseClient mockDatabaseClient = mock(DatabaseClient.class, RETURNS_DEEP_STUBS);
-    when(mockDatabaseClient.execute(any(String.class)).as(SqlInjectionTutorialRow.class).fetch()
-        .all()).thenReturn(rows);
-    return mockDatabaseClient;
-  }
-
-  @Test
   public void submitQuery_ModuleInitialized_ReturnsSqlInjectionTutorialRow() {
     final long mockUserId = 606L;
     final Module mockModule = mock(Module.class);
@@ -225,8 +197,7 @@ public class SqlInjectionTutorialTest {
     final long mockModuleId = 823L;
     final byte[] randomBytes = {116, 104, 105, 115, 105, 115, 97, 102, 108, 97, 103};
 
-    when(moduleService.create("Sql Injection Tutorial", SqlInjectionTutorial.SHORT_NAME,
-        "Tutorial for making sql injections")).thenReturn(Mono.just(mockModule));
+    when(moduleService.create(sqlInjectionTutorial)).thenReturn(Mono.just(mockModule));
 
     when(mockModule.getId()).thenReturn(mockModuleId);
     when(keyService.generateRandomBytes(16)).thenReturn(Mono.just(randomBytes));
@@ -247,5 +218,40 @@ public class SqlInjectionTutorialTest {
     StepVerifier.create(sqlInjectionTutorial.submitQuery(mockUserId, query))
         .expectNext(mockSqlInjectionTutorialRow1).expectNext(mockSqlInjectionTutorialRow2)
         .expectComplete().verify();
+  }
+
+  @Test
+  public void submitQuery_ModuleNotIntialized_ReturnsModuleNotInitializedException() {
+    final long mockUserId = 419L;
+    final String query = "username";
+    StepVerifier.create(sqlInjectionTutorial.submitQuery(mockUserId, query))
+        .expectError(ModuleNotInitializedException.class);
+  }
+
+  @Test
+  public void submitQuery_OtherException_ThrowsException() {
+    final long mockUserId = 810L;
+    final Module mockModule = mock(Module.class);
+    final String mockFlag = "mockedflag";
+    final String query = "username";
+    final long mockModuleId = 991L;
+    final byte[] randomBytes = {116, 104, 105, 115, 105, 115, 97, 102, 108, 97, 103};
+
+    when(moduleService.create(sqlInjectionTutorial)).thenReturn(Mono.just(mockModule));
+    when(keyService.generateRandomBytes(16)).thenReturn(Mono.just(randomBytes));
+
+    when(mockModule.getId()).thenReturn(mockModuleId);
+    when(moduleService.setDynamicFlag(mockModuleId)).thenReturn(Mono.just(mockModule));
+    when(flagHandler.getDynamicFlag(mockUserId, mockModuleId)).thenReturn(Mono.just(mockFlag));
+
+    final DatabaseClient mockDatabaseClient = mock(DatabaseClient.class, RETURNS_DEEP_STUBS);
+
+    when(mockDatabaseClient.execute(any(String.class)).as(SqlInjectionTutorialRow.class).fetch()
+        .all()).thenReturn(Flux.error(new RuntimeException()));
+
+    sqlInjectionTutorial.initialize().block();
+
+    StepVerifier.create(sqlInjectionTutorial.submitQuery(mockUserId, query))
+        .expectError(RuntimeException.class);
   }
 }

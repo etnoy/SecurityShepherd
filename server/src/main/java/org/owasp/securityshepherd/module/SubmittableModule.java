@@ -21,6 +21,10 @@ import reactor.core.publisher.Mono;
 
 @Service
 public interface SubmittableModule {
+  public String getName();
+  public String getShortName();
+  public String getDescription();
+
   public Long getModuleId();
   public Mono<Long> initialize();
 }

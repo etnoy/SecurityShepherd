@@ -16,7 +16,8 @@
 
 package org.owasp.securityshepherd.module.xss;
 
-import javax.annotation.PostConstruct;
+import java.util.List;
+import org.owasp.securityshepherd.exception.ModuleNotInitializedException;
 import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleService;
@@ -33,30 +34,50 @@ import org.owasp.securityshepherd.module.xss.XssTutorialResponse.XssTutorialResp
 @RequiredArgsConstructor
 public class XssTutorial implements SubmittableModule {
 
+  private static final String NAME = "XSS Tutorial";
+
+  public static final String SHORT_NAME = "xss-tutorial";
+
+  private static final String DESCRIPTION = "Tutorial on cross site scripting (XSS)";
+
   private final XssService xssService;
 
   private final ModuleService moduleService;
 
-  private Long moduleId;
-
-  public static final String SHORT_NAME = "xss-tutorial";
-
   private final FlagHandler flagComponent;
 
-  @PostConstruct
-  public Mono<Long> initialize() {
-    log.info("Creating xss tutorial module");
-    final Mono<Module> moduleMono = moduleService.create("XSS Tutorial", SHORT_NAME,
-        "Tutorial for making cross site scripting");
-    return moduleMono.flatMap(module -> {
-      this.moduleId = module.getId();
-      return moduleService.setDynamicFlag(moduleId).then(Mono.just(this.moduleId));
-    });
+  private Long moduleId;
+
+  @Override
+  public String getDescription() {
+    return DESCRIPTION;
   }
 
   @Override
   public Long getModuleId() {
+    if (this.moduleId == null) {
+      throw new ModuleNotInitializedException("Module must be initialized first");
+    }
     return this.moduleId;
+  }
+
+  @Override
+  public String getName() {
+    return NAME;
+  }
+
+  @Override
+  public String getShortName() {
+    return SHORT_NAME;
+  }
+
+  public Mono<Long> initialize() {
+    log.info("Creating xss tutorial module");
+    final Mono<Module> moduleMono = moduleService.create(this);
+    return moduleMono.flatMap(module -> {
+      this.moduleId = module.getId();
+      return moduleService.setDynamicFlag(moduleId).then(Mono.just(this.moduleId));
+    });
   }
 
   public Mono<XssTutorialResponse> submitQuery(final long userId, final String query) {
@@ -66,20 +87,19 @@ public class XssTutorial implements SubmittableModule {
     final String htmlTarget = String.format(
         "<html><head><title>Alert</title></head><body><p>Result: %s</p></body></html>", query);
 
-    final String alert = xssService.doXss(htmlTarget).get(0);
+    final List<String> alerts = xssService.doXss(htmlTarget);
 
     final XssTutorialResponseBuilder xssTutorialResponseBuilder = XssTutorialResponse.builder();
 
-    if (alert != null) {
-      xssTutorialResponseBuilder.alert(alert);
+    if (!alerts.isEmpty()) {
+      xssTutorialResponseBuilder.alert(alerts.get(0));
 
       return flagComponent.getDynamicFlag(userId, this.moduleId)
           .map(flag -> String.format("Congratulations, flag is %s", flag))
-          .map(result -> xssTutorialResponseBuilder.flag(result))
-          .map(XssTutorialResponseBuilder::build);
+          .map(xssTutorialResponseBuilder::result).map(XssTutorialResponseBuilder::build);
     } else {
       xssTutorialResponseBuilder.result(String.format("Sorry, found no result for %s", query));
+      return Mono.just(xssTutorialResponseBuilder.build());
     }
-    return Mono.just(xssTutorialResponseBuilder.build());
   }
 }

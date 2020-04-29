@@ -29,14 +29,11 @@ public class XssTutorialResponse implements Serializable {
 
   private String alert;
 
-  private String flag;
-
-  XssTutorialResponse(final String result, final String alert, final String flag) {
-    if (result == null && alert == null && flag == null) {
-      throw new NullPointerException("Name, comment, and error can't all be null");
+  XssTutorialResponse(final String result, final String alert) {
+    if (result == null && alert == null) {
+      throw new NullPointerException("result and alert cannot both be null");
     }
     this.result = result;
     this.alert = alert;
-    this.flag = flag;
   }
 }

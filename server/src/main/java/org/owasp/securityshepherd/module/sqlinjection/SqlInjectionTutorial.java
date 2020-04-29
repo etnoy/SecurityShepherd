@@ -37,6 +37,12 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class SqlInjectionTutorial implements SubmittableModule {
 
+  private static final String NAME = "SQL Injection Tutorial";
+
+  public static final String SHORT_NAME = "sql-injection-tutorial";
+
+  private static final String DESCRIPTION = "Tutorial on SQL injections";
+
   private final SqlInjectionDatabaseClientFactory sqlInjectionDatabaseClientFactory;
 
   private final ModuleService moduleService;
@@ -47,13 +53,33 @@ public class SqlInjectionTutorial implements SubmittableModule {
 
   private Long moduleId;
 
-  public static final String SHORT_NAME = "sql-injection-tutorial";
+  @Override
+  public String getDescription() {
+    return DESCRIPTION;
+  }
+
+  @Override
+  public Long getModuleId() {
+    if (this.moduleId == null) {
+      throw new ModuleNotInitializedException("Module must be initialized first");
+    }
+    return this.moduleId;
+  }
+
+  @Override
+  public String getName() {
+    return NAME;
+  }
+
+  @Override
+  public String getShortName() {
+    return SHORT_NAME;
+  }
 
   @PostConstruct
   public Mono<Long> initialize() {
     log.info("Creating sql tutorial module");
-    final Mono<Module> moduleMono = moduleService.create("Sql Injection Tutorial", SHORT_NAME,
-        "Tutorial for making sql injections");
+    final Mono<Module> moduleMono = moduleService.create(this);
 
     return moduleMono.flatMap(module -> {
       this.moduleId = module.getId();
@@ -106,13 +132,5 @@ public class SqlInjectionTutorial implements SubmittableModule {
             return Flux.error(exception);
           }
         });
-  }
-
-  @Override
-  public Long getModuleId() {
-    if (this.moduleId == null) {
-      throw new ModuleNotInitializedException("Module must be initialized first");
-    }
-    return this.moduleId;
   }
 }
