@@ -16,19 +16,11 @@
 
 package org.owasp.securityshepherd.exception;
 
-import lombok.NoArgsConstructor;
-
-@NoArgsConstructor
 public class EmptyModuleShortNameException extends RuntimeException {
-
   private static final long serialVersionUID = -505553415557894220L;
 
   public EmptyModuleShortNameException(final String message) {
     super(message);
-  }
-
-  public EmptyModuleShortNameException(final String message, final Exception e) {
-    super(message, e);
   }
 }
 

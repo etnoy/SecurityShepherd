@@ -26,9 +26,4 @@ public class InvalidUserIdException extends RuntimeException {
   public InvalidUserIdException(final String message) {
     super(message);
   }
-
-  public InvalidUserIdException(final String message, final Exception e) {
-    super(message, e);
-  }
-
 }

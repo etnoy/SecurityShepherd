@@ -31,7 +31,6 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @Service
 public final class KeyService {
-
   private Mono<byte[]> byteGenerator(final SecureRandom strongPRNG, final int numberOfBytes) {
     byte[] randomBytes = new byte[numberOfBytes];
     strongPRNG.nextBytes(randomBytes);

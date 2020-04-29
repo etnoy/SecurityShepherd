@@ -25,8 +25,4 @@ public class ModuleIdNotFoundException extends RuntimeException {
   public ModuleIdNotFoundException(final String message) {
     super(message);
   }
-
-  public ModuleIdNotFoundException(final String message, final Exception e) {
-    super(message, e);
-  }
 }

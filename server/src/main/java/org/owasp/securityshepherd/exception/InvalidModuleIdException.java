@@ -25,9 +25,5 @@ public class InvalidModuleIdException extends RuntimeException {
   public InvalidModuleIdException(final String message) {
     super(message);
   }
-
-  public InvalidModuleIdException(final String message, final Exception e) {
-    super(message, e);
-  }
 }
 

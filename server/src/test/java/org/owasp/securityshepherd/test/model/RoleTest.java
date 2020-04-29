@@ -19,10 +19,7 @@ package org.owasp.securityshepherd.test.model;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.owasp.securityshepherd.security.AuthResponse;
 import org.owasp.securityshepherd.security.Role;
-import org.owasp.securityshepherd.test.util.TestUtils;
-import nl.jqno.equalsverifier.EqualsVerifier;
 
 @DisplayName("Role unit test")
 public class RoleTest {

@@ -21,12 +21,4 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DuplicateModuleShortNameException extends Exception {
   private static final long serialVersionUID = -4205389126275022037L;
-
-  public DuplicateModuleShortNameException(final String message) {
-    super(message);
-  }
-
-  public DuplicateModuleShortNameException(final String message, final Exception e) {
-    super(message, e);
-  }
 }

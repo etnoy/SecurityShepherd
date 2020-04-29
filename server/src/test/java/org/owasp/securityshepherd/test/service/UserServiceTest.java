@@ -36,9 +36,9 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.owasp.securityshepherd.exception.DuplicateUserDisplayNameException;
+import org.owasp.securityshepherd.exception.DuplicateUserLoginNameException;
 import org.owasp.securityshepherd.exception.InvalidClassIdException;
 import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
-import org.owasp.securityshepherd.exception.DuplicateClassNameException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.UserIdNotFoundException;
 import org.owasp.securityshepherd.repository.PasswordAuthRepository;
@@ -81,7 +81,7 @@ public class UserServiceTest {
 
   @Mock
   private ClassService classService;
-  
+
   @Mock
   private KeyService keyService;
 
@@ -240,7 +240,7 @@ public class UserServiceTest {
     when(userRepository.findByDisplayName(displayName)).thenReturn(Mono.empty());
 
     StepVerifier.create(userService.createPasswordUser(displayName, loginName, password))
-        .expectError(DuplicateClassNameException.class).verify();
+        .expectError(DuplicateUserLoginNameException.class).verify();
 
     verify(passwordAuthRepository, times(1)).findByLoginName(loginName);
     verify(userRepository, times(1)).findByDisplayName(displayName);

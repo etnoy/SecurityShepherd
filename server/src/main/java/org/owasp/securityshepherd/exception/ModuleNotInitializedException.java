@@ -16,9 +16,6 @@
 
 package org.owasp.securityshepherd.exception;
 
-import lombok.NoArgsConstructor;
-
-@NoArgsConstructor
 public class ModuleNotInitializedException extends RuntimeException {
   private static final long serialVersionUID = -5256615185996969687L;
 

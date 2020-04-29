@@ -17,8 +17,8 @@
 package org.owasp.securityshepherd.user;
 
 import org.owasp.securityshepherd.exception.ClassIdNotFoundException;
-import org.owasp.securityshepherd.exception.DuplicateClassNameException;
 import org.owasp.securityshepherd.exception.DuplicateUserDisplayNameException;
+import org.owasp.securityshepherd.exception.DuplicateUserLoginNameException;
 import org.owasp.securityshepherd.exception.InvalidClassIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.UserIdNotFoundException;
@@ -263,7 +263,7 @@ public final class UserService {
 
   private Mono<String> loginNameAlreadyExists(final String loginName) {
     return Mono
-        .error(new DuplicateClassNameException("Login name " + loginName + " already exists"));
+        .error(new DuplicateUserLoginNameException("Login name " + loginName + " already exists"));
   }
 
   public Mono<Void> promote(final long userId) {

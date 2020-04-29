@@ -23,9 +23,4 @@ public class DuplicateClassNameException extends Exception {
   public DuplicateClassNameException(final String message) {
     super(message);
   }
-
-  public DuplicateClassNameException(final String message, final Exception e) {
-    super(message, e);
-  }
-
 }
