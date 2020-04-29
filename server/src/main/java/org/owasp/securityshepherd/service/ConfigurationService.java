@@ -38,7 +38,6 @@ public final class ConfigurationService {
 
   private Mono<Configuration> create(final String key, final String value) {
     log.debug("Creating configuration key " + key + " with value " + value);
-
     return configurationRepository.save(Configuration.builder().key(key).value(value).build());
   }
 
@@ -47,7 +46,6 @@ public final class ConfigurationService {
   }
 
   private Mono<String> getByKey(final String key) {
-
     return configurationRepository.findByKey(key)
         .switchIfEmpty(Mono.error(
             new ConfigurationKeyNotFoundException("Configuration key " + key + " not found")))
@@ -61,7 +59,7 @@ public final class ConfigurationService {
 
   public Mono<byte[]> refreshServerKey() {
     final String serverKeyConfigurationKey = "serverKey";
-
+    log.info("Refreshing server key");
     return keyService.generateRandomBytes(16).zipWith(existsByKey(serverKeyConfigurationKey))
         .flatMap(tuple -> {
           if (Boolean.TRUE.equals(tuple.getT2())) {

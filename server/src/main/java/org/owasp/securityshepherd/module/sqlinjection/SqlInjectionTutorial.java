@@ -16,6 +16,7 @@
 
 package org.owasp.securityshepherd.module.sqlinjection;
 
+import java.util.Base64;
 import javax.annotation.PostConstruct;
 import org.owasp.securityshepherd.exception.ModuleNotInitializedException;
 import org.owasp.securityshepherd.module.FlagHandler;
@@ -64,14 +65,14 @@ public class SqlInjectionTutorial implements SubmittableModule {
     if (this.moduleId == null) {
       return Flux.error(new ModuleNotInitializedException("Module must be initialized first"));
     }
-    final Mono<String> randomUserName = this.keyService.generateRandomString(16);
+    final Mono<byte[]> randomUserName = this.keyService.generateRandomBytes(16);
     // Generate a dynamic flag and add it as a row to the database creation script. The flag is
     // different for every user to prevent copying flags
     final Mono<String> insertionQuery =
         flagHandler.getDynamicFlag(userId, this.moduleId).zipWith(randomUserName)
             .map(tuple -> String.format(
                 "INSERT INTO sqlinjection.users values ('%s', 'Well done, flag is %s')",
-                tuple.getT2(), tuple.getT1()));
+                Base64.getEncoder().encodeToString(tuple.getT2()), tuple.getT1()));
 
     // Create a connection URL to a H2SQL in-memory database. Each submission call creates a
     // completely new instance of this database.
