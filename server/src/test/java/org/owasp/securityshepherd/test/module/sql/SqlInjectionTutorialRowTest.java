@@ -14,12 +14,13 @@
  * 
  */
 
-package org.owasp.securityshepherd.module.sqlinjection;
+package org.owasp.securityshepherd.test.module.sql;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorialRow;
 import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorialRow.SqlInjectionTutorialRowBuilder;
 import org.owasp.securityshepherd.test.util.TestUtils;
 import nl.jqno.equalsverifier.EqualsVerifier;

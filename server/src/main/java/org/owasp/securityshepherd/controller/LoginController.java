@@ -17,10 +17,10 @@
 package org.owasp.securityshepherd.controller;
 
 import javax.validation.Valid;
-import org.owasp.securityshepherd.dto.PasswordLoginDto;
-import org.owasp.securityshepherd.dto.PasswordRegistrationDto;
 import org.owasp.securityshepherd.security.AuthResponse;
 import org.owasp.securityshepherd.service.WebTokenService;
+import org.owasp.securityshepherd.user.PasswordLoginDto;
+import org.owasp.securityshepherd.user.PasswordRegistrationDto;
 import org.owasp.securityshepherd.user.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -14,7 +14,7 @@
  * 
  */
 
-package org.owasp.securityshepherd.dto;
+package org.owasp.securityshepherd.user;
 
 import java.io.Serializable;
 import javax.validation.constraints.NotNull;
@@ -26,7 +26,6 @@ import lombok.Value;
 @Value
 @AllArgsConstructor
 public class PasswordRegistrationDto implements Serializable {
-
   private static final long serialVersionUID = 8155074795022450359L;
 
   @NotNull
