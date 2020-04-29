@@ -28,7 +28,6 @@ import reactor.core.publisher.Mono;
 @Component
 @RequiredArgsConstructor
 public class AuthenticationManager implements ReactiveAuthenticationManager {
-
   private final WebTokenService webTokenService;
 
   private final UserService userService;
