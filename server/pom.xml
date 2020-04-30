@@ -21,11 +21,6 @@
 		<skipTests>false</skipTests>
 		<skipITs>${skipTests}</skipITs>
 		<skipUTs>${skipTests}</skipUTs>
-		<sonar.exclusions>
-			**/SecurityShepherdApplication.java,
-			**/FilterChainConfiguration.java,
-			**/R2dbcMysqlConfiguration.java
-		</sonar.exclusions>
 	</properties>
 
 	<dependencies>
