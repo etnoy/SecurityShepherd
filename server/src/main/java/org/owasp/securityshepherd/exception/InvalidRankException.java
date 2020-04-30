@@ -16,10 +16,7 @@
 
 package org.owasp.securityshepherd.exception;
 
-import lombok.NoArgsConstructor;
-
 public class InvalidRankException extends RuntimeException {
-
   private static final long serialVersionUID = -6203877167408885331L;
 
   public InvalidRankException(final String message) {

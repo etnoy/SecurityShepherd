@@ -14,13 +14,9 @@
  * 
  */
 
-package org.owasp.securityshepherd.controller;
+package org.owasp.securityshepherd.authentication;
 
 import javax.validation.Valid;
-import org.owasp.securityshepherd.authentication.AuthResponse;
-import org.owasp.securityshepherd.authentication.PasswordLoginDto;
-import org.owasp.securityshepherd.authentication.PasswordRegistrationDto;
-import org.owasp.securityshepherd.authentication.WebTokenService;
 import org.owasp.securityshepherd.user.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
