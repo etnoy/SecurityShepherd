@@ -33,12 +33,6 @@ import org.owasp.securityshepherd.module.xss.XssTutorialResponse.XssTutorialResp
 @RequiredArgsConstructor
 public class XssTutorial implements SubmittableModule {
 
-  private static final String NAME = "XSS Tutorial";
-
-  public static final String SHORT_NAME = "xss-tutorial";
-
-  private static final String DESCRIPTION = "Tutorial on cross site scripting (XSS)";
-
   private final XssService xssService;
 
   private final ModuleService moduleService;
@@ -49,7 +43,7 @@ public class XssTutorial implements SubmittableModule {
 
   @Override
   public String getDescription() {
-    return DESCRIPTION;
+    return "Tutorial on cross site scripting (XSS)";
   }
 
   @Override
@@ -62,12 +56,12 @@ public class XssTutorial implements SubmittableModule {
 
   @Override
   public String getName() {
-    return NAME;
+    return "XSS Tutorial";
   }
 
   @Override
   public String getShortName() {
-    return SHORT_NAME;
+    return "xss-tutorial";
   }
 
   public Mono<Long> initialize() {

@@ -37,12 +37,6 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class SqlInjectionTutorial implements SubmittableModule {
 
-  private static final String NAME = "SQL Injection Tutorial";
-
-  public static final String SHORT_NAME = "sql-injection-tutorial";
-
-  private static final String DESCRIPTION = "Tutorial on SQL injections";
-
   private final SqlInjectionDatabaseClientFactory sqlInjectionDatabaseClientFactory;
 
   private final ModuleService moduleService;
@@ -55,7 +49,7 @@ public class SqlInjectionTutorial implements SubmittableModule {
 
   @Override
   public String getDescription() {
-    return DESCRIPTION;
+    return "Tutorial on SQL injections";
   }
 
   @Override
@@ -68,12 +62,12 @@ public class SqlInjectionTutorial implements SubmittableModule {
 
   @Override
   public String getName() {
-    return NAME;
+    return "SQL Injection Tutorial";
   }
 
   @Override
   public String getShortName() {
-    return SHORT_NAME;
+    return "sql-injection-tutorial";
   }
 
   @PostConstruct
