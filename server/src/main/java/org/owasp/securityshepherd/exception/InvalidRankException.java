@@ -14,16 +14,15 @@
  * 
  */
 
-package org.owasp.securityshepherd.module;
+package org.owasp.securityshepherd.exception;
 
-import org.springframework.stereotype.Service;
-import reactor.core.publisher.Mono;
+import lombok.NoArgsConstructor;
 
-@Service
-public interface SubmittableModule {
-  public String getDescription();
-  public long getModuleId();
-  public String getName();
-  public String getShortName();
-  public Mono<Long> initialize();
+public class InvalidRankException extends RuntimeException {
+
+  private static final long serialVersionUID = -6203877167408885331L;
+
+  public InvalidRankException(final String message) {
+    super(message);
+  }
 }

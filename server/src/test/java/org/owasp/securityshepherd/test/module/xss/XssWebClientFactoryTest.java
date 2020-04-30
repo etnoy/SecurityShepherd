@@ -32,13 +32,13 @@ public class XssWebClientFactoryTest {
   XssWebClientFactory xssWebClientFactory;
 
   @Test
-  public void createWebClient_ReturnsWebClient() {
-    assertThat(xssWebClientFactory.createWebClient()).isInstanceOf(WebClient.class);
+  public void createAlertHandler_ReturnsAlertHandler() {
+    assertThat(xssWebClientFactory.createAlertHandler()).isInstanceOf(CollectingAlertHandler.class);
   }
 
   @Test
-  public void createAlertHandler_ReturnsAlertHandler() {
-    assertThat(xssWebClientFactory.createAlertHandler()).isInstanceOf(CollectingAlertHandler.class);
+  public void createWebClient_ReturnsWebClient() {
+    assertThat(xssWebClientFactory.createWebClient()).isInstanceOf(WebClient.class);
   }
 
   @BeforeEach

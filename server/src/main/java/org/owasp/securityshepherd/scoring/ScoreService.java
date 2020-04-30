@@ -16,6 +16,8 @@
 
 package org.owasp.securityshepherd.scoring;
 
+import org.owasp.securityshepherd.exception.InvalidModuleIdException;
+import org.owasp.securityshepherd.exception.InvalidRankException;
 import org.owasp.securityshepherd.module.ModulePointRepository;
 import org.owasp.securityshepherd.scoring.ModulePoint.ModulePointBuilder;
 import org.springframework.stereotype.Service;
@@ -31,13 +33,19 @@ public final class ScoreService {
 
   private final ScoreboardRepository scoreboardRepository;
 
-  public Mono<ModulePoint> setModuleScore(final long moduleId, final int rank, final int score) {
-    ModulePointBuilder builder = ModulePoint.builder().moduleId(moduleId).rank(rank).points(score);
+  public Mono<ModulePoint> setModuleScore(final long moduleId, final int rank, final int points) {
+    if (moduleId <= 0) {
+      return Mono
+          .error(new InvalidModuleIdException("Module id must be a strictly positive integer"));
+    }
+    if (rank < 0) {
+      return Mono.error(new InvalidRankException("Rank must be zero or a positive integer"));
+    }
+    ModulePointBuilder builder = ModulePoint.builder().moduleId(moduleId).rank(rank).points(points);
     return modulePointRepository.save(builder.build());
   }
 
-  public Flux<Scoreboard> getScoreboard() {
+  public Flux<ScoreboardEntry> getScoreboard() {
     return scoreboardRepository.findAll();
   }
-
 }

@@ -68,28 +68,6 @@ public class CorrectionServiceTest {
   }
 
   @Test
-  public void submit_InvalidUserId_ReturnsCorrection() throws Exception {
-    final long mockUserId = 609L;
-    final int amount = 1000;
-    final String description = "Bonus";
-
-    when(correctionRepository.save(any(Correction.class)))
-        .thenAnswer(correction -> Mono.just(correction.getArgument(0, Correction.class)));
-
-    final Clock fixedClock = Clock.fixed(Instant.parse("2000-01-01T10:00:00.00Z"), ZoneId.of("Z"));
-
-    setClock(fixedClock);
-
-    StepVerifier.create(correctionService.submit(mockUserId, amount, description))
-        .assertNext(correction -> {
-          assertThat(correction.getUserId()).isEqualTo(mockUserId);
-          assertThat(correction.getAmount()).isEqualTo(amount);
-          assertThat(correction.getDescription()).isEqualTo(description);
-          assertThat(correction.getTime()).isEqualTo(LocalDateTime.now(fixedClock));
-        }).expectComplete().verify();
-  }
-
-  @Test
   public void submit_InvalidUserId_ReturnsInvalidUserIdException() {
     for (final long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(correctionService.submit(userId, 500, ""))

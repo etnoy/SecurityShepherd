@@ -25,7 +25,7 @@ import lombok.With;
 @Value
 @Builder
 @With
-public class Scoreboard implements Serializable {
+public class ScoreboardEntry implements Serializable {
 
   private static final long serialVersionUID = 902640084501001329L;
 

@@ -41,7 +41,7 @@ import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.scoring.CorrectionRepository;
 import org.owasp.securityshepherd.scoring.CorrectionService;
 import org.owasp.securityshepherd.scoring.ScoreService;
-import org.owasp.securityshepherd.scoring.Scoreboard;
+import org.owasp.securityshepherd.scoring.ScoreboardEntry;
 import org.owasp.securityshepherd.scoring.SubmissionRepository;
 import org.owasp.securityshepherd.scoring.SubmissionService;
 import org.owasp.securityshepherd.service.ConfigurationService;
@@ -198,14 +198,14 @@ public class ScoringServiceIT {
     correctionService.submit(userIds.get(1), 100, "Thanks for the bribe").block();
 
     StepVerifier.create(scoringService.getScoreboard())
-        .expectNext(Scoreboard.builder().rank(1L).userId(userIds.get(1)).score(251L).build())
-        .expectNext(Scoreboard.builder().rank(2L).userId(userIds.get(6)).score(231L).build())
-        .expectNext(Scoreboard.builder().rank(3L).userId(userIds.get(5)).score(201L).build())
-        .expectNext(Scoreboard.builder().rank(4L).userId(userIds.get(0)).score(171L).build())
-        .expectNext(Scoreboard.builder().rank(4L).userId(userIds.get(4)).score(171L).build())
-        .expectNext(Scoreboard.builder().rank(6L).userId(userIds.get(3)).score(0L).build())
-        .expectNext(Scoreboard.builder().rank(6L).userId(userIds.get(7)).score(0L).build())
-        .expectNext(Scoreboard.builder().rank(8L).userId(userIds.get(2)).score(-799L).build())
+        .expectNext(ScoreboardEntry.builder().rank(1L).userId(userIds.get(1)).score(251L).build())
+        .expectNext(ScoreboardEntry.builder().rank(2L).userId(userIds.get(6)).score(231L).build())
+        .expectNext(ScoreboardEntry.builder().rank(3L).userId(userIds.get(5)).score(201L).build())
+        .expectNext(ScoreboardEntry.builder().rank(4L).userId(userIds.get(0)).score(171L).build())
+        .expectNext(ScoreboardEntry.builder().rank(4L).userId(userIds.get(4)).score(171L).build())
+        .expectNext(ScoreboardEntry.builder().rank(6L).userId(userIds.get(3)).score(0L).build())
+        .expectNext(ScoreboardEntry.builder().rank(6L).userId(userIds.get(7)).score(0L).build())
+        .expectNext(ScoreboardEntry.builder().rank(8L).userId(userIds.get(2)).score(-799L).build())
         .expectComplete().verify();
   }
 

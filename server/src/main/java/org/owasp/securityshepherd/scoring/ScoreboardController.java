@@ -35,7 +35,7 @@ public class ScoreboardController {
 
   @GetMapping(path = "scoreboard")
   @PreAuthorize("hasRole('ROLE_USER')")
-  public Flux<Scoreboard> scoreboard() {
+  public Flux<ScoreboardEntry> scoreboard() {
     return scoringService.getScoreboard();
   }
 

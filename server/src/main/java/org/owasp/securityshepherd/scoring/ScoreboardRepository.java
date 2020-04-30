@@ -23,7 +23,7 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 
 @Repository
-public interface ScoreboardRepository extends ReactiveCrudRepository<Scoreboard, Long> {
+public interface ScoreboardRepository extends ReactiveCrudRepository<ScoreboardEntry, Long> {
   @Query("SELECT * from scoreboard WHERE user_id = :user_id")
-  public Flux<Scoreboard> findAllByUserId(@Param("user_id") final long userId);
+  public Flux<ScoreboardEntry> findAllByUserId(@Param("user_id") final long userId);
 }

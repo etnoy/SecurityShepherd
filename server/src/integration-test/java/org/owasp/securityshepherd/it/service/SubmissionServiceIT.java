@@ -84,20 +84,10 @@ public class SubmissionServiceIT {
   @Autowired
   FlagHandler flagComponent;
 
-  @Test
-  public void submitFlag_ValidExactFlag_Success() {
-    final String flag = "thisisaflag";
-
-    final Mono<Long> userIdMono = userService.create("TestUser");
-
-    final Mono<Long> moduleIdMono =
-        moduleService.create("Test Module", "short-name").map(Module::getId)
-            .flatMap(moduleId -> moduleService.setExactFlag(moduleId, flag)).map(Module::getId);
-
-    StepVerifier
-        .create(Mono.zip(userIdMono, moduleIdMono).flatMap(tuple -> submissionService
-            .submit(tuple.getT1(), tuple.getT2(), flag).map(Submission::isValid)))
-        .expectNext(true).expectComplete().verify();
+  @BeforeEach
+  private void clear() {
+    // Initialize services with the real clock
+    testService.deleteAll().block();
   }
 
   @Test
@@ -117,9 +107,19 @@ public class SubmissionServiceIT {
         .expectNext(true).expectError(ModuleAlreadySolvedException.class).verify();
   }
 
-  @BeforeEach
-  private void clear() {
-    // Initialize services with the real clock
-    testService.deleteAll().block();
+  @Test
+  public void submitFlag_ValidExactFlag_Success() {
+    final String flag = "thisisaflag";
+
+    final Mono<Long> userIdMono = userService.create("TestUser");
+
+    final Mono<Long> moduleIdMono =
+        moduleService.create("Test Module", "short-name").map(Module::getId)
+            .flatMap(moduleId -> moduleService.setExactFlag(moduleId, flag)).map(Module::getId);
+
+    StepVerifier
+        .create(Mono.zip(userIdMono, moduleIdMono).flatMap(tuple -> submissionService
+            .submit(tuple.getT1(), tuple.getT2(), flag).map(Submission::isValid)))
+        .expectNext(true).expectComplete().verify();
   }
 }

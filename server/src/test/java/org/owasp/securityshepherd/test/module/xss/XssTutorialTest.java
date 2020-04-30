@@ -63,6 +63,11 @@ public class XssTutorialTest {
   FlagHandler flagHandler;
 
   @Test
+  public void getDescription_IsNotEmpty() {
+    assertThat(xssTutorial.getDescription()).isNotEmpty();
+  }
+
+  @Test
   public void getModuleId_ModuleIntialized_ReturnsModuleId() {
     final long mockModuleId = 254L;
     final Module mockModule = mock(Module.class);
@@ -80,6 +85,16 @@ public class XssTutorialTest {
     assertThatThrownBy(() -> xssTutorial.getModuleId())
         .isInstanceOf(ModuleNotInitializedException.class)
         .hasMessageContaining("Module must be initialized first");
+  }
+
+  @Test
+  public void getName_ReturnsXssTutorial() {
+    assertThat(xssTutorial.getName()).isEqualTo("XSS Tutorial");
+  }
+
+  @Test
+  public void getShortName_ReturnsXssTutorial() {
+    assertThat(xssTutorial.getShortName()).isEqualTo("xss-tutorial");
   }
 
   @Test
@@ -182,21 +197,6 @@ public class XssTutorialTest {
       assertThat(response.getResult()).doesNotContain("Congratulations");
       assertThat(response.getAlert()).isEqualTo(null);
     }).expectComplete().verify();
-  }
-
-  @Test
-  public void getName_ReturnsXssTutorial() {
-    assertThat(xssTutorial.getName()).isEqualTo("XSS Tutorial");
-  }
-
-  @Test
-  public void getShortName_ReturnsXssTutorial() {
-    assertThat(xssTutorial.getShortName()).isEqualTo("xss-tutorial");
-  }
-
-  @Test
-  public void getDescription_IsNotEmpty() {
-    assertThat(xssTutorial.getDescription()).isNotEmpty();
   }
 
 }

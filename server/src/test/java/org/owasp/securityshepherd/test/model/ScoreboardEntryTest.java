@@ -22,160 +22,160 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.owasp.securityshepherd.scoring.Scoreboard;
-import org.owasp.securityshepherd.scoring.Scoreboard.ScoreboardBuilder;
+import org.owasp.securityshepherd.scoring.ScoreboardEntry;
+import org.owasp.securityshepherd.scoring.ScoreboardEntry.ScoreboardEntryBuilder;
 import org.owasp.securityshepherd.test.util.TestUtils;
 import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-@DisplayName("Scoreboard unit test")
-public class ScoreboardTest {
+@DisplayName("ScoreboardEntry unit test")
+public class ScoreboardEntryTest {
 
   @Test
   public void build_RankNotGiven_ThrowsNullPointerException() {
-    final ScoreboardBuilder scoreboardBuilder = Scoreboard.builder().userId(1L).score(1L);
+    final ScoreboardEntryBuilder scoreboardBuilder = ScoreboardEntry.builder().userId(1L).score(1L);
     assertThrows(NullPointerException.class, () -> scoreboardBuilder.build());
   }
 
   @Test
   public void build_ScoreGiven_ThrowsNullPointerException() {
-    final ScoreboardBuilder scoreboardBuilder = Scoreboard.builder().rank(1L).userId(1L);
+    final ScoreboardEntryBuilder scoreboardBuilder = ScoreboardEntry.builder().rank(1L).userId(1L);
     assertThrows(NullPointerException.class, () -> scoreboardBuilder.build());
   }
 
   @Test
   public void build_userIdNotGiven_ThrowsNullPointerException() {
-    final ScoreboardBuilder scoreboardBuilder = Scoreboard.builder().rank(1L).score(1L);
+    final ScoreboardEntryBuilder scoreboardBuilder = ScoreboardEntry.builder().rank(1L).score(1L);
     assertThrows(NullPointerException.class, () -> scoreboardBuilder.build());
   }
 
   @Test
   public void buildRank_NullRank_ThrowsNullPointerException() {
-    final ScoreboardBuilder scoreboardBuilder = Scoreboard.builder();
+    final ScoreboardEntryBuilder scoreboardBuilder = ScoreboardEntry.builder();
     assertThrows(NullPointerException.class, () -> scoreboardBuilder.rank(null));
   }
 
   @Test
   public void buildRank_ValidRank_Builds() {
-    final ScoreboardBuilder scoreboardBuilder = Scoreboard.builder().userId(1L).score(1L);
+    final ScoreboardEntryBuilder scoreboardBuilder = ScoreboardEntry.builder().userId(1L).score(1L);
 
     for (final long rank : TestUtils.LONGS) {
-      final Scoreboard scoreboard = scoreboardBuilder.rank(rank).build();
+      final ScoreboardEntry scoreboard = scoreboardBuilder.rank(rank).build();
 
-      assertThat(scoreboard, instanceOf(Scoreboard.class));
+      assertThat(scoreboard, instanceOf(ScoreboardEntry.class));
       assertThat(scoreboard.getRank(), is(rank));
     }
   }
 
   @Test
   public void buildScore_NullScore_ThrowsNullPointerException() {
-    final ScoreboardBuilder scoreboardBuilder = Scoreboard.builder();
+    final ScoreboardEntryBuilder scoreboardBuilder = ScoreboardEntry.builder();
     assertThrows(NullPointerException.class, () -> scoreboardBuilder.score(null));
   }
 
   @Test
   public void buildScore_ValidScore_Builds() {
-    final ScoreboardBuilder scoreboardBuilder = Scoreboard.builder().rank(1L).userId(1L);
+    final ScoreboardEntryBuilder scoreboardBuilder = ScoreboardEntry.builder().rank(1L).userId(1L);
 
     for (final long score : TestUtils.LONGS) {
-      final Scoreboard scoreboard = scoreboardBuilder.score(score).build();
+      final ScoreboardEntry scoreboard = scoreboardBuilder.score(score).build();
 
-      assertThat(scoreboard, instanceOf(Scoreboard.class));
+      assertThat(scoreboard, instanceOf(ScoreboardEntry.class));
       assertThat(scoreboard.getScore(), is(score));
     }
   }
 
   @Test
   public void buildUserId_NullUserId_ThrowsNullPointerException() {
-    final ScoreboardBuilder scoreboardBuilder = Scoreboard.builder();
+    final ScoreboardEntryBuilder scoreboardBuilder = ScoreboardEntry.builder();
     assertThrows(NullPointerException.class, () -> scoreboardBuilder.userId(null));
   }
 
   @Test
   public void buildUserId_ValidUserId_Builds() {
-    final ScoreboardBuilder scoreboardBuilder = Scoreboard.builder().rank(1L).score(1L);
+    final ScoreboardEntryBuilder scoreboardBuilder = ScoreboardEntry.builder().rank(1L).score(1L);
 
     for (final long userId : TestUtils.LONGS) {
-      final Scoreboard scoreboard = scoreboardBuilder.userId(userId).build();
+      final ScoreboardEntry scoreboard = scoreboardBuilder.userId(userId).build();
 
-      assertThat(scoreboard, instanceOf(Scoreboard.class));
+      assertThat(scoreboard, instanceOf(ScoreboardEntry.class));
       assertThat(scoreboard.getUserId(), is(userId));
     }
   }
 
   @Test
   public void equals_AutomaticTesting() {
-    EqualsVerifier.forClass(Scoreboard.class).withIgnoredAnnotations(NonNull.class).verify();
+    EqualsVerifier.forClass(ScoreboardEntry.class).withIgnoredAnnotations(NonNull.class).verify();
   }
 
   @Test
   public void scoreboardBuilderToString_ValidData_AsExpected() {
-    final ScoreboardBuilder builder = Scoreboard.builder().rank(17L).userId(83L).score(1L);
+    final ScoreboardEntryBuilder builder = ScoreboardEntry.builder().rank(17L).userId(83L).score(1L);
 
-    assertThat(builder.toString(), is("Scoreboard.ScoreboardBuilder(rank=17, userId=83, score=1)"));
+    assertThat(builder.toString(), is("ScoreboardEntry.ScoreboardEntryBuilder(rank=17, userId=83, score=1)"));
   }
 
   @Test
   public void toString_ValidData_AsExpected() {
-    final Scoreboard testScoreboard = Scoreboard.builder().rank(17L).userId(83L).score(1L).build();
+    final ScoreboardEntry testScoreboard = ScoreboardEntry.builder().rank(17L).userId(83L).score(1L).build();
 
-    assertThat(testScoreboard.toString(), is("Scoreboard(rank=17, userId=83, score=1)"));
+    assertThat(testScoreboard.toString(), is("ScoreboardEntry(rank=17, userId=83, score=1)"));
   }
 
   @Test
   public void withRank_NullRank_ThrowsNullPointerException() {
-    final Scoreboard scoreboard = Scoreboard.builder().rank(15L).userId(1L).score(15L).build();
+    final ScoreboardEntry scoreboard = ScoreboardEntry.builder().rank(15L).userId(1L).score(15L).build();
     assertThrows(NullPointerException.class, () -> scoreboard.withRank(null));
   }
 
   @Test
   public void withRank_ValidRank_ChangesRank() {
-    final Scoreboard scoreboard =
-        Scoreboard.builder().rank(TestUtils.INITIAL_LONG).userId(163L).score(15L).build();
+    final ScoreboardEntry scoreboard =
+        ScoreboardEntry.builder().rank(TestUtils.INITIAL_LONG).userId(163L).score(15L).build();
 
     for (final Long rank : TestUtils.LONGS) {
-      final Scoreboard newScoreboard = scoreboard.withRank(rank);
+      final ScoreboardEntry newScoreboard = scoreboard.withRank(rank);
 
-      assertThat(newScoreboard, is(instanceOf(Scoreboard.class)));
+      assertThat(newScoreboard, is(instanceOf(ScoreboardEntry.class)));
       assertThat(newScoreboard.getRank(), is(rank));
     }
   }
 
   @Test
   public void withScore_NullScore_ThrowsNullPointerException() {
-    final Scoreboard scoreboard =
-        Scoreboard.builder().rank(1L).score(15L).userId(1L).score(15L).build();
+    final ScoreboardEntry scoreboard =
+        ScoreboardEntry.builder().rank(1L).score(15L).userId(1L).score(15L).build();
     assertThrows(NullPointerException.class, () -> scoreboard.withScore(null));
   }
 
   @Test
   public void withScore_ValidScore_ChangesScore() {
-    final Scoreboard scoreboard =
-        Scoreboard.builder().score(TestUtils.INITIAL_LONG).rank(1L).userId(163L).build();
+    final ScoreboardEntry scoreboard =
+        ScoreboardEntry.builder().score(TestUtils.INITIAL_LONG).rank(1L).userId(163L).build();
 
     for (final Long score : TestUtils.LONGS) {
-      final Scoreboard newScoreboard = scoreboard.withScore(score);
+      final ScoreboardEntry newScoreboard = scoreboard.withScore(score);
 
-      assertThat(newScoreboard, is(instanceOf(Scoreboard.class)));
+      assertThat(newScoreboard, is(instanceOf(ScoreboardEntry.class)));
       assertThat(newScoreboard.getScore(), is(score));
     }
   }
 
   @Test
   public void withUserId_NullUserId_ThrowsNullPointerException() {
-    final Scoreboard scoreboard = Scoreboard.builder().rank(15L).userId(1L).score(15L).build();
+    final ScoreboardEntry scoreboard = ScoreboardEntry.builder().rank(15L).userId(1L).score(15L).build();
     assertThrows(NullPointerException.class, () -> scoreboard.withUserId(null));
   }
 
   @Test
   public void withUserId_ValidUserId_ChangesUserId() {
-    final Scoreboard scoreboard =
-        Scoreboard.builder().rank(1L).userId(TestUtils.INITIAL_LONG).score(15L).build();
+    final ScoreboardEntry scoreboard =
+        ScoreboardEntry.builder().rank(1L).userId(TestUtils.INITIAL_LONG).score(15L).build();
 
     for (final Long userId : TestUtils.LONGS) {
-      final Scoreboard newScoreboard = scoreboard.withUserId(userId);
+      final ScoreboardEntry newScoreboard = scoreboard.withUserId(userId);
 
-      assertThat(newScoreboard, is(instanceOf(Scoreboard.class)));
+      assertThat(newScoreboard, is(instanceOf(ScoreboardEntry.class)));
       assertThat(newScoreboard.getUserId(), is(userId));
     }
   }
