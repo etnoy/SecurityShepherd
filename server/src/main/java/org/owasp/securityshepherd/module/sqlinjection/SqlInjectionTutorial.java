@@ -16,6 +16,7 @@
 
 package org.owasp.securityshepherd.module.sqlinjection;
 
+import java.util.Base64;
 import org.owasp.securityshepherd.crypto.KeyService;
 import org.owasp.securityshepherd.exception.ModuleNotInitializedException;
 import org.owasp.securityshepherd.module.AbstractModule;
@@ -73,7 +74,8 @@ public class SqlInjectionTutorial extends AbstractModule {
     if (this.moduleId == null) {
       return Flux.error(new ModuleNotInitializedException("Module must be initialized first"));
     }
-    final String randomUserName = this.keyService.generateRandomString(16);
+    final String randomUserName =
+        Base64.getEncoder().encodeToString(this.keyService.generateRandomBytes(16));
     // Generate a dynamic flag and add it as a row to the database creation script. The flag is
     // different for every user to prevent copying flags
     final Mono<String> insertionQuery = flagHandler.getDynamicFlag(userId, this.moduleId)

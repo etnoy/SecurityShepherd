@@ -158,13 +158,13 @@ public class SqlInjectionTutorialTest {
     final Module mockModule = mock(Module.class);
     final String mockFlag = "mockedflag";
     final String query = "username";
-    final String randomString = "random";
 
     final long mockModuleId = 572L;
 
     when(moduleService.create(sqlInjectionTutorial)).thenReturn(Mono.just(mockModule));
-
-    when(keyService.generateRandomString(16)).thenReturn(randomString);
+    
+    final byte[] randomBytes = {120, 56, 111};
+    when(keyService.generateRandomBytes(16)).thenReturn(randomBytes);
 
     when(mockModule.getId()).thenReturn(mockModuleId);
     when(moduleService.setDynamicFlag(mockModuleId)).thenReturn(Mono.just(mockModule));
@@ -202,6 +202,9 @@ public class SqlInjectionTutorialTest {
     when(moduleService.setDynamicFlag(mockModuleId)).thenReturn(Mono.just(mockModule));
     when(flagHandler.getDynamicFlag(mockUserId, mockModuleId)).thenReturn(Mono.just(mockFlag));
 
+    final byte[] randomBytes = {120, 56, 111};
+    when(keyService.generateRandomBytes(16)).thenReturn(randomBytes);
+    
     final SqlInjectionTutorialRow mockSqlInjectionTutorialRow1 =
         mock(SqlInjectionTutorialRow.class);
     final SqlInjectionTutorialRow mockSqlInjectionTutorialRow2 =
@@ -234,6 +237,9 @@ public class SqlInjectionTutorialTest {
     final String query = "username";
     final long mockModuleId = 991L;
 
+    final byte[] randomBytes = {120, 56, 111};
+    when(keyService.generateRandomBytes(16)).thenReturn(randomBytes);
+    
     when(moduleService.create(sqlInjectionTutorial)).thenReturn(Mono.just(mockModule));
 
     when(mockModule.getId()).thenReturn(mockModuleId);
