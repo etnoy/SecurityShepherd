@@ -16,13 +16,13 @@
 
 package org.owasp.securityshepherd.module;
 
+import org.owasp.securityshepherd.crypto.KeyService;
 import org.owasp.securityshepherd.exception.DuplicateModuleNameException;
 import org.owasp.securityshepherd.exception.EmptyModuleNameException;
 import org.owasp.securityshepherd.exception.EmptyModuleShortNameException;
 import org.owasp.securityshepherd.exception.InvalidFlagException;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
-import org.owasp.securityshepherd.service.KeyService;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

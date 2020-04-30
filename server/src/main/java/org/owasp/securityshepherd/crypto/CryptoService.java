@@ -14,7 +14,7 @@
  * 
  */
 
-package org.owasp.securityshepherd.service;
+package org.owasp.securityshepherd.crypto;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;

@@ -14,7 +14,7 @@
  * 
  */
 
-package org.owasp.securityshepherd.service;
+package org.owasp.securityshepherd.crypto;
 
 import java.nio.charset.StandardCharsets;
 import org.apache.commons.codec.DecoderException;
@@ -22,7 +22,7 @@ import org.apache.commons.codec.binary.Hex;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import org.owasp.securityshepherd.exception.RNGException;
+import org.owasp.securityshepherd.exception.RngException;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -30,6 +30,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public final class KeyService {
+  private final PrngFactory prngFactory;
+
   private byte[] byteGenerator(final SecureRandom strongPRNG, final int numberOfBytes) {
     byte[] randomBytes = new byte[numberOfBytes];
     strongPRNG.nextBytes(randomBytes);
@@ -54,11 +56,10 @@ public final class KeyService {
 
   public byte[] generateRandomBytes(final int numberOfBytes) {
     try {
-      final SecureRandom prng = SecureRandom.getInstanceStrong();
+      final SecureRandom prng = prngFactory.getPrng();
       return byteGenerator(prng, numberOfBytes);
-
     } catch (NoSuchAlgorithmException e) {
-      throw new RNGException("Could not initialize PRNG", e);
+      throw new RngException("Could not initialize PRNG", e);
     }
   }
 

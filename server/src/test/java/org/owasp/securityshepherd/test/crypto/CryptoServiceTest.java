@@ -14,7 +14,7 @@
  * 
  */
 
-package org.owasp.securityshepherd.test.service;
+package org.owasp.securityshepherd.test.crypto;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -23,8 +23,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.owasp.securityshepherd.crypto.CryptoService;
 import org.owasp.securityshepherd.exception.CryptographicException;
-import org.owasp.securityshepherd.service.CryptoService;
 import reactor.core.publisher.Hooks;
 import reactor.test.StepVerifier;
 

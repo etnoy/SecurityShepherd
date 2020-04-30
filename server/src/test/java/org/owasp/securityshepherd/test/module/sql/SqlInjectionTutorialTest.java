@@ -16,7 +16,6 @@
 
 package org.owasp.securityshepherd.test.module.sql;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -30,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.owasp.securityshepherd.crypto.KeyService;
 import org.owasp.securityshepherd.exception.DuplicateModuleNameException;
 import org.owasp.securityshepherd.exception.DuplicateModuleShortNameException;
 import org.owasp.securityshepherd.exception.ModuleNotInitializedException;
@@ -39,7 +39,6 @@ import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionDatabaseClientFactory;
 import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorial;
 import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorialRow;
-import org.owasp.securityshepherd.service.KeyService;
 import org.springframework.data.r2dbc.BadSqlGrammarException;
 import org.springframework.data.r2dbc.core.DatabaseClient;
 import io.r2dbc.spi.R2dbcBadGrammarException;

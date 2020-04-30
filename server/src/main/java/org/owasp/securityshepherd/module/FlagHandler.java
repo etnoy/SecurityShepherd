@@ -16,13 +16,13 @@
 
 package org.owasp.securityshepherd.module;
 
+import org.owasp.securityshepherd.crypto.CryptoService;
+import org.owasp.securityshepherd.crypto.KeyService;
 import org.owasp.securityshepherd.exception.InvalidFlagStateException;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
 import org.owasp.securityshepherd.service.ConfigurationService;
-import org.owasp.securityshepherd.service.CryptoService;
-import org.owasp.securityshepherd.service.KeyService;
 import org.owasp.securityshepherd.user.UserService;
 import org.springframework.stereotype.Service;
 import com.google.common.primitives.Bytes;

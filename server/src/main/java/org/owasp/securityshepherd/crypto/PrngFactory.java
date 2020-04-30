@@ -14,21 +14,18 @@
  * 
  */
 
-package org.owasp.securityshepherd.exception;
+package org.owasp.securityshepherd.crypto;
 
-public class RNGException extends RuntimeException {
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import org.springframework.stereotype.Service;
 
-  /**
-   * 
-   */
-  private static final long serialVersionUID = -2579994940836702698L;
+import lombok.RequiredArgsConstructor;
 
-  public RNGException(final String message) {
-    super(message);
+@RequiredArgsConstructor
+@Service
+public final class PrngFactory {
+  public SecureRandom getPrng() throws NoSuchAlgorithmException {
+    return SecureRandom.getInstanceStrong();
   }
-
-  public RNGException(final String message, final Exception e) {
-    super(message, e);
-  }
-
 }
