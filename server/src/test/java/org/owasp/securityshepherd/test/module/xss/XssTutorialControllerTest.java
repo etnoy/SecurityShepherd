@@ -14,7 +14,7 @@
  * 
  */
 
-package org.owasp.securityshepherd.test.module.sql;
+package org.owasp.securityshepherd.test.module.xss;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -28,60 +28,54 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.owasp.securityshepherd.exception.NotAuthenticatedException;
-import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorial;
-import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorialController;
-import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorialRow;
+import org.owasp.securityshepherd.module.xss.XssTutorial;
+import org.owasp.securityshepherd.module.xss.XssTutorialController;
+import org.owasp.securityshepherd.module.xss.XssTutorialResponse;
 import org.owasp.securityshepherd.security.ControllerAuthentication;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("SqlInjectionTutorialController unit test")
-public class SqlInjectionTutorialControllerTest {
-
+@DisplayName("XssTutorialController unit test")
+public class XssTutorialControllerTest {
   @BeforeAll
   private static void reactorVerbose() {
     // Tell Reactor to print verbose error messages
     Hooks.onOperatorDebug();
   }
 
-  private SqlInjectionTutorialController sqlInjectionTutorialController;
+  private XssTutorialController xssTutorialController;
 
   @Mock
   private ControllerAuthentication controllerAuthentication;
 
   @Mock
-  private SqlInjectionTutorial sqlInjectionTutorial;
+  private XssTutorial xssTutorial;
 
   @Test
   public void search_Autenticated_CallsModule() {
-    final long mockUserId = 709L;
+    final long mockUserId = 527L;
 
-    final SqlInjectionTutorialRow sqlInjectionTutorialRow1 = mock(SqlInjectionTutorialRow.class);
-    final SqlInjectionTutorialRow sqlInjectionTutorialRow2 = mock(SqlInjectionTutorialRow.class);
-    final SqlInjectionTutorialRow sqlInjectionTutorialRow3 = mock(SqlInjectionTutorialRow.class);
+    final XssTutorialResponse xssTutorialRow = mock(XssTutorialResponse.class);
 
-    final String query = "sql";
+    final String query = "xss";
     when(controllerAuthentication.getUserId()).thenReturn(Mono.just(mockUserId));
 
-    when(sqlInjectionTutorial.submitQuery(mockUserId, query)).thenReturn(
-        Flux.just(sqlInjectionTutorialRow1, sqlInjectionTutorialRow2, sqlInjectionTutorialRow3));
+    when(xssTutorial.submitQuery(mockUserId, query)).thenReturn(Mono.just(xssTutorialRow));
 
-    StepVerifier.create(sqlInjectionTutorialController.search(query))
-        .expectNext(sqlInjectionTutorialRow1).expectNext(sqlInjectionTutorialRow2)
-        .expectNext(sqlInjectionTutorialRow3).expectComplete().verify();
+    StepVerifier.create(xssTutorialController.search(query)).expectNext(xssTutorialRow)
+        .expectComplete().verify();
     verify(controllerAuthentication, times(1)).getUserId();
-    verify(sqlInjectionTutorial, times(1)).submitQuery(mockUserId, query);
+    verify(xssTutorial, times(1)).submitQuery(mockUserId, query);
   }
 
   @Test
   public void search_NotAutenticated_CallsModule() {
-    final String query = "sql";
+    final String query = "xss";
     when(controllerAuthentication.getUserId())
         .thenReturn(Mono.error(new NotAuthenticatedException()));
-    StepVerifier.create(sqlInjectionTutorialController.search(query))
+    StepVerifier.create(xssTutorialController.search(query))
         .expectError(NotAuthenticatedException.class).verify();
     verify(controllerAuthentication, times(1)).getUserId();
   }
@@ -89,7 +83,6 @@ public class SqlInjectionTutorialControllerTest {
   @BeforeEach
   private void setUp() throws Exception {
     // Set up the system under test
-    sqlInjectionTutorialController =
-        new SqlInjectionTutorialController(sqlInjectionTutorial, controllerAuthentication);
+    xssTutorialController = new XssTutorialController(xssTutorial, controllerAuthentication);
   }
 }

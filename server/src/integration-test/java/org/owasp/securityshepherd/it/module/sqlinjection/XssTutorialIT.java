@@ -44,6 +44,11 @@ import reactor.test.StepVerifier;
 @Execution(ExecutionMode.SAME_THREAD)
 @DisplayName("XssTutorial integration test")
 public class XssTutorialIT {
+  @BeforeAll
+  private static void reactorVerbose() {
+    // Tell Reactor to print verbose error messages
+    Hooks.onOperatorDebug();
+  }
 
   @Autowired
   XssTutorial xssTutorial;
@@ -63,25 +68,14 @@ public class XssTutorialIT {
   @Autowired
   ScoreService scoreService;
 
-  @BeforeAll
-  private static void reactorVerbose() {
-    // Tell Reactor to print verbose error messages
-    Hooks.onOperatorDebug();
+  @BeforeEach
+  private void clear() {
+    testUtils.deleteAll().block();
   }
 
   private String extractFlagFromResponse(final XssTutorialResponse response) {
     assertThat(response.getResult()).startsWith("Congratulations, flag is");
     return response.getResult().replaceAll("Congratulations, flag is ", "");
-  }
-
-  @Test
-  public void submitSql_QueryWithoutXss_NoResults() {
-    final Long userId = userService.create("TestUser1").block();
-    xssTutorial.initialize().block();
-
-    StepVerifier.create(xssTutorial.submitQuery(userId, "test")).assertNext(response -> {
-      assertThat(response.getResult()).contains("Sorry");
-    }).expectComplete().verify();
   }
 
   @Test
@@ -114,8 +108,13 @@ public class XssTutorialIT {
         .expectNext(false).expectComplete().verify();
   }
 
-  @BeforeEach
-  private void clear() {
-    testUtils.deleteAll().block();
+  @Test
+  public void submitSql_QueryWithoutXss_NoResults() {
+    final Long userId = userService.create("TestUser1").block();
+    xssTutorial.initialize().block();
+
+    StepVerifier.create(xssTutorial.submitQuery(userId, "test")).assertNext(response -> {
+      assertThat(response.getResult()).startsWith("Sorry");
+    }).expectComplete().verify();
   }
 }
