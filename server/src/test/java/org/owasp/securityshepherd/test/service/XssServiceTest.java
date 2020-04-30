@@ -18,7 +18,6 @@ package org.owasp.securityshepherd.test.service;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
@@ -37,7 +36,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.owasp.securityshepherd.exception.XssEvaluationException;
-import org.owasp.securityshepherd.service.XssService;
+import org.owasp.securityshepherd.module.xss.XssService;
+import org.owasp.securityshepherd.module.xss.XssWebClientFactory;
 import com.gargoylesoftware.htmlunit.CollectingAlertHandler;
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -48,28 +48,10 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 @DisplayName("XssService unit test")
 public class XssServiceTest {
 
-  private XssService xssService;
+  XssService xssService;
 
   @Mock
-  private WebClient webClient;
-
-  @Mock
-  private CollectingAlertHandler alertHandler;
-
-  @Test
-  public void NoArgsConstructor_ValidData_ConstructsXssService()
-      throws FailingHttpStatusCodeException, MalformedURLException, IOException {
-    assertDoesNotThrow(() -> new XssService());
-  }
-
-  @Test
-  public void doXss_GetPageThrowsIOException_ThrowsXssEvaluationException()
-      throws FailingHttpStatusCodeException, MalformedURLException, IOException {
-    final String htmlPage = "<html></html>";
-    when(webClient.getPage(any(String.class))).thenThrow(new IOException());
-    assertThrows(XssEvaluationException.class, () -> xssService.doXss(htmlPage));
-    verify(webClient, times(1)).getPage(any(String.class));
-  }
+  XssWebClientFactory xssWebClientFactory;
 
   @Test
   public void doXss_AlertHandlerFindsAlerts_ReturnsCollectedAlerts() throws Exception {
@@ -87,18 +69,30 @@ public class XssServiceTest {
     when(mockElement2.isDisplayed()).thenReturn(false);
     when(mockElement3.isDisplayed()).thenReturn(true);
 
-    when(webClient.getPage(any(String.class))).thenReturn(mockPage);
+    final WebClient mockWebClient = mock(WebClient.class);
+    final CollectingAlertHandler mockAlertHandler = mock(CollectingAlertHandler.class);
+    when(xssWebClientFactory.createWebClient()).thenReturn(mockWebClient);
+    when(xssWebClientFactory.createAlertHandler()).thenReturn(mockAlertHandler);
+
+    when(mockWebClient.getPage(any(String.class))).thenReturn(mockPage);
     when(mockPage.getDomElementDescendants()).thenReturn(mockDomElements);
-    when(alertHandler.getCollectedAlerts()).thenReturn(alerts);
+    when(mockAlertHandler.getCollectedAlerts()).thenReturn(alerts);
     assertThat(xssService.doXss(htmlPage), is(alerts));
-    verify(webClient, times(1)).getPage(any(String.class));
-    verify(alertHandler, times(1)).getCollectedAlerts();
+    verify(mockWebClient, times(1)).getPage(any(String.class));
+    verify(mockAlertHandler, times(1)).getCollectedAlerts();
   }
 
-  @BeforeEach
-  private void setUp() {
-    // Set up the system under test
-    xssService = new XssService(webClient, alertHandler);
+  @Test
+  public void doXss_GetPageThrowsIOException_ThrowsXssEvaluationException()
+      throws FailingHttpStatusCodeException, MalformedURLException, IOException {
+    final String htmlPage = "<html></html>";
+    final WebClient mockWebClient = mock(WebClient.class);
+    final CollectingAlertHandler mockAlertHandler = mock(CollectingAlertHandler.class);
+    when(xssWebClientFactory.createWebClient()).thenReturn(mockWebClient);
+    when(xssWebClientFactory.createAlertHandler()).thenReturn(mockAlertHandler);
+    when(mockWebClient.getPage(any(String.class))).thenThrow(new IOException());
+    assertThrows(XssEvaluationException.class, () -> xssService.doXss(htmlPage));
+    verify(mockWebClient, times(1)).getPage(any(String.class));
   }
 
   @Test
@@ -106,10 +100,22 @@ public class XssServiceTest {
       throws Exception {
     final String htmlPage = "<html></html>";
     final HtmlPage mockPage = mock(HtmlPage.class);
-    when(webClient.getPage(any(String.class))).thenReturn(mockPage);
+    final WebClient mockWebClient = mock(WebClient.class);
+    final CollectingAlertHandler mockAlertHandler = mock(CollectingAlertHandler.class);
+    when(xssWebClientFactory.createWebClient()).thenReturn(mockWebClient);
+    when(xssWebClientFactory.createAlertHandler()).thenReturn(mockAlertHandler);
+
+    when(mockWebClient.getPage(any(String.class))).thenReturn(mockPage);
     doThrow(new IOException()).when(mockPage).initialize();
     assertThrows(XssEvaluationException.class, () -> xssService.doXss(htmlPage));
-    verify(webClient, times(1)).getPage(any(String.class));
+    verify(mockWebClient, times(1)).getPage(any(String.class));
     verify(mockPage, times(1)).initialize();
+  }
+
+  @BeforeEach
+  private void setUp() {
+    // Set up the system under test
+    xssService = new XssService(xssWebClientFactory);
+
   }
 }

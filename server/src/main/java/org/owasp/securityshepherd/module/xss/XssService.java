@@ -14,7 +14,7 @@
  * 
  */
 
-package org.owasp.securityshepherd.service;
+package org.owasp.securityshepherd.module.xss;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -33,20 +33,17 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class XssService {
-  private final WebClient webClient;
-
-  private final CollectingAlertHandler alertHandler;
-
-  public XssService() {
-    this.webClient = new WebClient();
-    this.alertHandler = new CollectingAlertHandler();
-  }
+  private final XssWebClientFactory xssWebClientFactory;
 
   public List<String> doXss(final String htmlPage) {
     MockWebConnection mockWebConnection = new MockWebConnection();
 
     mockWebConnection.setDefaultResponse(htmlPage);
+    final WebClient webClient = xssWebClientFactory.createWebClient();
     webClient.setWebConnection(mockWebConnection);
+
+    final CollectingAlertHandler alertHandler = xssWebClientFactory.createAlertHandler();
+    
     webClient.setAlertHandler(alertHandler);
 
     HtmlPage page = null;

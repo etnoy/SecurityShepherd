@@ -22,7 +22,6 @@ import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.module.SubmittableModule;
-import org.owasp.securityshepherd.service.XssService;
 import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -91,15 +90,15 @@ public class XssTutorial implements SubmittableModule {
 
     final XssTutorialResponseBuilder xssTutorialResponseBuilder = XssTutorialResponse.builder();
 
-    if (!alerts.isEmpty()) {
+    if (alerts.isEmpty()) {
+      xssTutorialResponseBuilder.result(String.format("Sorry, found no result for %s", query));
+      return Mono.just(xssTutorialResponseBuilder.build());
+    } else {
       xssTutorialResponseBuilder.alert(alerts.get(0));
 
       return flagComponent.getDynamicFlag(userId, this.moduleId)
           .map(flag -> String.format("Congratulations, flag is %s", flag))
           .map(xssTutorialResponseBuilder::result).map(XssTutorialResponseBuilder::build);
-    } else {
-      xssTutorialResponseBuilder.result(String.format("Sorry, found no result for %s", query));
-      return Mono.just(xssTutorialResponseBuilder.build());
     }
   }
 }
