@@ -17,6 +17,7 @@
 package org.owasp.securityshepherd.test.service;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atMost;
@@ -44,6 +45,7 @@ import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleRepository;
 import org.owasp.securityshepherd.module.ModuleService;
+import org.owasp.securityshepherd.module.SubmittableModule;
 import org.owasp.securityshepherd.test.util.TestUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Hooks;
@@ -82,13 +84,13 @@ public class ModuleServiceTest {
   @Test
   public void create_DuplicateName_ReturnsDuplicateModuleNameException() {
     final String name = "TestModule";
-    final String url = "test-module";
+    final String shortName = "test-module";
 
     final Module mockModule = mock(Module.class);
 
     when(moduleRepository.findByName(name)).thenReturn(Mono.just(mockModule));
 
-    StepVerifier.create(moduleService.create(name, url))
+    StepVerifier.create(moduleService.create(name, shortName))
         .expectErrorMatches(throwable -> throwable instanceof DuplicateModuleNameException
             && throwable.getMessage().equals("Module name TestModule already exists"))
         .verify();
@@ -98,7 +100,7 @@ public class ModuleServiceTest {
 
   @Test
   public void create_EmptyName_ReturnsIllegalArgumentException() {
-    StepVerifier.create(moduleService.create("", "url"))
+    StepVerifier.create(moduleService.create("", "shortName"))
         .expectErrorMatches(throwable -> throwable instanceof EmptyModuleNameException
             && throwable.getMessage().equals("Module name cannot be empty"))
         .verify();
@@ -106,14 +108,15 @@ public class ModuleServiceTest {
 
   @Test
   public void create_NullName_ReturnsNullPointerException() {
-    StepVerifier.create(moduleService.create(null, "url")).expectError(NullPointerException.class)
-        .verify();
+    StepVerifier.create(moduleService.create(null, "shortName"))
+        .expectError(NullPointerException.class).verify();
   }
 
   @Test
-  public void create_ValidData_Succeeds() {
+  public void create_NameAndShortnameAndDescription_Succeeds() {
     final String name = "TestModule";
-    final String url = "test-module";
+    final String shortName = "test-module";
+    final String description = "This is a module";
 
     final long mockModuleId = 390;
 
@@ -122,8 +125,70 @@ public class ModuleServiceTest {
 
     when(moduleRepository.findByName(name)).thenReturn(Mono.empty());
 
-    StepVerifier.create(moduleService.create(name, url)).assertNext(module -> {
+    StepVerifier.create(moduleService.create(name, shortName, description)).assertNext(module -> {
       assertThat(module.getName(), is(name));
+      assertThat(module.getShortName(), is(shortName));
+      assertThat(module.getDescription(), is(description));
+    }).expectComplete().verify();
+
+    ArgumentCaptor<Module> argument = ArgumentCaptor.forClass(Module.class);
+
+    verify(moduleRepository, times(1)).findByName(name);
+    verify(moduleRepository, times(1)).save(argument.capture());
+    verify(moduleRepository, times(1)).save(any(Module.class));
+    assertThat(argument.getValue().getName(), is(name));
+  }
+
+  @Test
+  public void create_NameAndShortnameSucceeds() {
+    final String name = "TestModule";
+    final String shortName = "test-module";
+
+    final long mockModuleId = 390;
+
+    when(moduleRepository.save(any(Module.class)))
+        .thenAnswer(user -> Mono.just(user.getArgument(0, Module.class).withId(mockModuleId)));
+
+    when(moduleRepository.findByName(name)).thenReturn(Mono.empty());
+
+    StepVerifier.create(moduleService.create(name, shortName)).assertNext(module -> {
+      assertThat(module.getName(), is(name));
+      assertThat(module.getShortName(), is(shortName));
+      assertThat(module.getDescription(), is(nullValue()));
+    }).expectComplete().verify();
+
+    ArgumentCaptor<Module> argument = ArgumentCaptor.forClass(Module.class);
+
+    verify(moduleRepository, times(1)).findByName(name);
+    verify(moduleRepository, times(1)).save(argument.capture());
+    verify(moduleRepository, times(1)).save(any(Module.class));
+    assertThat(argument.getValue().getName(), is(name));
+  }
+
+  @Test
+  public void create_ValidSubmittableModule_Succeeds() {
+    final String name = "TestModule";
+    final String shortName = "test-module";
+    final String description = "description";
+
+    final long mockModuleId = 390;
+
+    final SubmittableModule mockSubmittableModule = mock(SubmittableModule.class);
+
+    when(moduleRepository.save(any(Module.class)))
+        .thenAnswer(user -> Mono.just(user.getArgument(0, Module.class).withId(mockModuleId)));
+
+    when(moduleRepository.findByName(name)).thenReturn(Mono.empty());
+
+    when(mockSubmittableModule.getName()).thenReturn(name);
+    when(mockSubmittableModule.getShortName()).thenReturn(shortName);
+    when(mockSubmittableModule.getDescription()).thenReturn(description);
+
+    StepVerifier.create(moduleService.create(mockSubmittableModule)).assertNext(module -> {
+      assertThat(module.getName(), is(name));
+      assertThat(module.getShortName(), is(shortName));
+      assertThat(module.getDescription(), is(description));
+
     }).expectComplete().verify();
 
     ArgumentCaptor<Module> argument = ArgumentCaptor.forClass(Module.class);
@@ -147,7 +212,7 @@ public class ModuleServiceTest {
 
     verify(moduleRepository, times(1)).findAll();
   }
-  
+
   @Test
   public void findAll_NoModulesExist_ReturnsEmpty() {
     when(moduleRepository.findAll()).thenReturn(Flux.empty());
@@ -161,14 +226,15 @@ public class ModuleServiceTest {
     StepVerifier.create(moduleService.findAllOpen()).expectComplete().verify();
     verify(moduleRepository, times(1)).findAllOpen();
   }
-  
+
   @Test
   public void findAllOpen_OpenModulesExist_ReturnsOpenModules() {
     final Module mockModule1 = mock(Module.class);
     final Module mockModule2 = mock(Module.class);
     final Module mockModule3 = mock(Module.class);
 
-    when(moduleRepository.findAllOpen()).thenReturn(Flux.just(mockModule1, mockModule2, mockModule3));
+    when(moduleRepository.findAllOpen())
+        .thenReturn(Flux.just(mockModule1, mockModule2, mockModule3));
 
     StepVerifier.create(moduleService.findAllOpen()).expectNext(mockModule1).expectNext(mockModule2)
         .expectNext(mockModule3).expectComplete().verify();

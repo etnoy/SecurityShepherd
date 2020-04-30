@@ -130,7 +130,7 @@ public class ScoringServiceIT {
     userIds.add(userService.create("TestUser8").block());
 
     // Create a module to submit to
-    final long moduleId = moduleService.create("ScoreTestModule", "url").block().getId();
+    final long moduleId = moduleService.create("ScoreTestModule", "shortName").block().getId();
 
     // Set that module to have an exact flag
     moduleService.setExactFlag(moduleId, flag).block();
