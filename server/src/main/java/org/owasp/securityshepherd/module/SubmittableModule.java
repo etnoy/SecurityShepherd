@@ -25,6 +25,6 @@ public interface SubmittableModule {
   public String getShortName();
   public String getDescription();
 
-  public Long getModuleId();
+  public long getModuleId();
   public Mono<Long> initialize();
 }

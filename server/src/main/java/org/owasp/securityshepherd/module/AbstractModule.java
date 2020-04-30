@@ -25,7 +25,7 @@ public abstract class AbstractModule implements SubmittableModule {
   protected Long moduleId;
 
   @Override
-  public final Long getModuleId() {
+  public final long getModuleId() {
     if (this.moduleId == null) {
       throw new ModuleNotInitializedException("Module must be initialized first");
     }
