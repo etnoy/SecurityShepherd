@@ -40,7 +40,7 @@ public final class SubmissionService {
   public SubmissionService(SubmissionRepository submissionRepository, FlagHandler flagHandler) {
     this.submissionRepository = submissionRepository;
     this.flagHandler = flagHandler;
-    this.clock = Clock.systemDefaultZone();
+    resetClock();
   }
 
   public Flux<Submission> findAllByModuleId(final long moduleId) {
@@ -73,6 +73,14 @@ public final class SubmissionService {
     }
     return submissionRepository.findAllValidByUserId(userId).map(Submission::getModuleId)
         .collectList();
+  }
+
+  public void resetClock() {
+    this.clock = Clock.systemDefaultZone();
+  }
+
+  public void setClock(Clock clock) {
+    this.clock = clock;
   }
 
   public Mono<Submission> submit(final Long userId, final Long moduleId, final String flag) {
@@ -121,10 +129,6 @@ public final class SubmissionService {
             String.format("User %d has already finished module %d", userId, moduleId))))
         // Otherwise, build a submission and save it in db
         .map(SubmissionBuilder::build).flatMap(submissionRepository::save);
-  }
-
-  public void setClock(Clock clock) {
-    this.clock = clock;
   }
 
   private Mono<Boolean> validSubmissionDoesNotExistByUserIdAndModuleId(final long userId,

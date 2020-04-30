@@ -21,16 +21,26 @@ import java.time.LocalDateTime;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.scoring.Correction.CorrectionBuilder;
 import org.springframework.stereotype.Service;
-import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
-@RequiredArgsConstructor
 @Service
 public final class CorrectionService {
-
   private final CorrectionRepository correctionRepository;
 
-  private final Clock clock;
+  private Clock clock;
+
+  public CorrectionService(final CorrectionRepository correctionRepository) {
+    this.correctionRepository = correctionRepository;
+    resetClock();
+  }
+
+  public void resetClock() {
+    this.clock = Clock.systemDefaultZone();
+  }
+
+  public void setClock(Clock clock) {
+    this.clock = clock;
+  }
 
   public Mono<Correction> submit(final Long userId, final long amount, final String description) {
     if (userId <= 0) {

@@ -235,9 +235,9 @@ public class SubmissonServiceTest {
   }
 
   private void setClock(final Clock clock) {
-    // Set up the system under test
     submissionService.setClock(clock);
   }
+  
 
   @BeforeEach
   private void setUp() {

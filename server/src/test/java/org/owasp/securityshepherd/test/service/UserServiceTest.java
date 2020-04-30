@@ -331,12 +331,6 @@ public class UserServiceTest {
   }
 
   @Test
-  public void findPasswordAuthByLoginName_NullLoginName_ReturnsNullPointerException() {
-    StepVerifier.create(userService.findPasswordAuthByLoginName(null))
-        .expectError(NullPointerException.class).verify();
-  }
-
-  @Test
   public void deleteById_InvalidUserId_ReturnsInvalidUserIdException() {
     for (final Long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.deleteById(userId)).expectError(InvalidUserIdException.class)
@@ -476,14 +470,6 @@ public class UserServiceTest {
   }
 
   @Test
-  public void getAuthoritiesByUserId_InvalidUserId_ReturnsInvalidUserIdException() {
-    for (final long userId : TestUtils.INVALID_IDS) {
-      StepVerifier.create(userService.getAuthoritiesByUserId(userId))
-          .expectError(InvalidUserIdException.class).verify();
-    }
-  }
-
-  @Test
   public void findById_InvalidUserId_ReturnsInvalidUserIdException() {
     for (final long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.findById(userId)).expectError(InvalidUserIdException.class)
@@ -596,6 +582,12 @@ public class UserServiceTest {
   }
 
   @Test
+  public void findPasswordAuthByLoginName_NullLoginName_ReturnsNullPointerException() {
+    StepVerifier.create(userService.findPasswordAuthByLoginName(null))
+        .expectError(NullPointerException.class).verify();
+  }
+
+  @Test
   public void findPasswordAuthByUserId_InvalidUserId_ReturnsInvalidUserIdException() {
     for (final long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.findPasswordAuthByUserId(userId))
@@ -658,6 +650,14 @@ public class UserServiceTest {
     StepVerifier.create(userService.findUserAuthByUserId(nonExistentUserId)).expectComplete()
         .verify();
     verify(userAuthRepository, times(1)).findByUserId(nonExistentUserId);
+  }
+
+  @Test
+  public void getAuthoritiesByUserId_InvalidUserId_ReturnsInvalidUserIdException() {
+    for (final long userId : TestUtils.INVALID_IDS) {
+      StepVerifier.create(userService.getAuthoritiesByUserId(userId))
+          .expectError(InvalidUserIdException.class).verify();
+    }
   }
 
   @Test

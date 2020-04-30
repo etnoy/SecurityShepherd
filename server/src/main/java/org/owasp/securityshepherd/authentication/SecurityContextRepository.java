@@ -32,11 +32,6 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
   private final AuthenticationManager authenticationManager;
 
   @Override
-  public Mono<Void> save(ServerWebExchange serverWebExchange, SecurityContext securityContext) {
-    return Mono.error(new UnsupportedOperationException("Not supported yet."));
-  }
-
-  @Override
   public Mono<SecurityContext> load(ServerWebExchange serverWebExchange) {
     String authorizationHeader =
         serverWebExchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
@@ -48,5 +43,10 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
     } else {
       return Mono.empty();
     }
+  }
+
+  @Override
+  public Mono<Void> save(ServerWebExchange serverWebExchange, SecurityContext securityContext) {
+    return Mono.error(new UnsupportedOperationException("Not supported yet."));
   }
 }
