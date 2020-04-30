@@ -17,11 +17,10 @@
 package org.owasp.securityshepherd.module.xss;
 
 import java.util.List;
-import org.owasp.securityshepherd.exception.ModuleNotInitializedException;
+import org.owasp.securityshepherd.module.AbstractModule;
 import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleService;
-import org.owasp.securityshepherd.module.SubmittableModule;
 import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,27 +30,16 @@ import org.owasp.securityshepherd.module.xss.XssTutorialResponse.XssTutorialResp
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class XssTutorial implements SubmittableModule {
-
+public class XssTutorial extends AbstractModule {
   private final XssService xssService;
 
   private final ModuleService moduleService;
 
   private final FlagHandler flagComponent;
 
-  private Long moduleId;
-
   @Override
   public String getDescription() {
     return "Tutorial on cross site scripting (XSS)";
-  }
-
-  @Override
-  public Long getModuleId() {
-    if (this.moduleId == null) {
-      throw new ModuleNotInitializedException("Module must be initialized first");
-    }
-    return this.moduleId;
   }
 
   @Override

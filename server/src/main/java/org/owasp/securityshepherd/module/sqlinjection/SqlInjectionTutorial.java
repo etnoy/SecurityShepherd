@@ -17,12 +17,11 @@
 package org.owasp.securityshepherd.module.sqlinjection;
 
 import java.util.Base64;
-import javax.annotation.PostConstruct;
 import org.owasp.securityshepherd.exception.ModuleNotInitializedException;
+import org.owasp.securityshepherd.module.AbstractModule;
 import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleService;
-import org.owasp.securityshepherd.module.SubmittableModule;
 import org.owasp.securityshepherd.service.KeyService;
 import org.springframework.data.r2dbc.BadSqlGrammarException;
 import org.springframework.data.r2dbc.core.DatabaseClient;
@@ -35,7 +34,7 @@ import reactor.core.publisher.Mono;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class SqlInjectionTutorial implements SubmittableModule {
+public class SqlInjectionTutorial extends AbstractModule {
 
   private final SqlInjectionDatabaseClientFactory sqlInjectionDatabaseClientFactory;
 
@@ -45,19 +44,9 @@ public class SqlInjectionTutorial implements SubmittableModule {
 
   private final KeyService keyService;
 
-  private Long moduleId;
-
   @Override
   public String getDescription() {
     return "Tutorial on SQL injections";
-  }
-
-  @Override
-  public Long getModuleId() {
-    if (this.moduleId == null) {
-      throw new ModuleNotInitializedException("Module must be initialized first");
-    }
-    return this.moduleId;
   }
 
   @Override
@@ -70,7 +59,7 @@ public class SqlInjectionTutorial implements SubmittableModule {
     return "sql-injection-tutorial";
   }
 
-  @PostConstruct
+  @Override
   public Mono<Long> initialize() {
     log.info("Creating sql tutorial module");
     final Mono<Module> moduleMono = moduleService.create(this);
