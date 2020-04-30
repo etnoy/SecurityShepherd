@@ -329,7 +329,7 @@ public class ModuleServiceTest {
     when(mockModuleWithoutExactFlag.withFlagEnabled(true)).thenReturn(mockModuleWithExactFlag);
     when(mockModuleWithExactFlag.withFlagExact(false)).thenReturn(mockModuleWithDynamicFlag);
 
-    when(keyService.generateRandomString(16)).thenReturn(Mono.just(newFlag));
+    when(keyService.generateRandomString(16)).thenReturn(newFlag);
     when(mockModuleWithDynamicFlag.withFlag(newFlag)).thenReturn(mockModuleWithFlag);
     when(mockModuleWithFlag.isFlagEnabled()).thenReturn(true);
     when(mockModuleWithFlag.isFlagExact()).thenReturn(false);

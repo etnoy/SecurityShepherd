@@ -217,8 +217,8 @@ public final class UserService {
         .flatMap(user -> {
           final byte[] key = user.getKey();
           if (key == null) {
-            return keyService.generateRandomBytes(16).map(user::withKey)
-                .flatMap(userRepository::save).map(User::getKey);
+            return userRepository.save(user.withKey(keyService.generateRandomBytes(16)))
+                .map(User::getKey);
           }
           return Mono.just(key);
         });

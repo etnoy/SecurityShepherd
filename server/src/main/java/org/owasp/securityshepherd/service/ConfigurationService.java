@@ -60,16 +60,15 @@ public final class ConfigurationService {
   public Mono<byte[]> refreshServerKey() {
     final String serverKeyConfigurationKey = "serverKey";
     log.info("Refreshing server key");
-    return keyService.generateRandomBytes(16).zipWith(existsByKey(serverKeyConfigurationKey))
-        .flatMap(tuple -> {
-          if (Boolean.TRUE.equals(tuple.getT2())) {
-            return setValue(serverKeyConfigurationKey,
-                Base64.getEncoder().encodeToString(tuple.getT1()));
-          } else {
-            return create(serverKeyConfigurationKey,
-                Base64.getEncoder().encodeToString(tuple.getT1()));
-          }
-        }).map(Configuration::getValue).map(Base64.getDecoder()::decode);
+    final String newServerKey =
+        Base64.getEncoder().encodeToString(keyService.generateRandomBytes(16));
+    return existsByKey(serverKeyConfigurationKey).flatMap(exists -> {
+      if (Boolean.TRUE.equals(exists)) {
+        return setValue(serverKeyConfigurationKey, newServerKey);
+      } else {
+        return create(serverKeyConfigurationKey, newServerKey);
+      }
+    }).map(Configuration::getValue).map(Base64.getDecoder()::decode);
   }
 
   private Mono<Configuration> setValue(final String key, final String value) {

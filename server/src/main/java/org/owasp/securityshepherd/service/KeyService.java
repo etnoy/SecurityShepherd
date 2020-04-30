@@ -26,15 +26,14 @@ import org.owasp.securityshepherd.exception.RNGException;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
 @Service
 public final class KeyService {
-  private Mono<byte[]> byteGenerator(final SecureRandom strongPRNG, final int numberOfBytes) {
+  private byte[] byteGenerator(final SecureRandom strongPRNG, final int numberOfBytes) {
     byte[] randomBytes = new byte[numberOfBytes];
     strongPRNG.nextBytes(randomBytes);
-    return Mono.just(randomBytes);
+    return randomBytes;
   }
 
   public String convertByteKeyToString(final byte[] keyBytes) {
@@ -53,16 +52,17 @@ public final class KeyService {
     return keyString.getBytes();
   }
 
-  public Mono<byte[]> generateRandomBytes(final int numberOfBytes) {
+  public byte[] generateRandomBytes(final int numberOfBytes) {
     try {
-      return Mono.just(SecureRandom.getInstanceStrong())
-          .flatMap(prng -> byteGenerator(prng, numberOfBytes));
+      final SecureRandom prng = SecureRandom.getInstanceStrong();
+      return byteGenerator(prng, numberOfBytes);
+
     } catch (NoSuchAlgorithmException e) {
-      return Mono.error(new RNGException("Could not initialize PRNG", e));
+      throw new RNGException("Could not initialize PRNG", e);
     }
   }
 
-  public Mono<String> generateRandomString(final int numberOfBytes) {
-    return generateRandomBytes(numberOfBytes).map(this::convertByteKeyToString);
+  public String generateRandomString(final int numberOfBytes) {
+    return convertByteKeyToString(generateRandomBytes(numberOfBytes));
   }
 }

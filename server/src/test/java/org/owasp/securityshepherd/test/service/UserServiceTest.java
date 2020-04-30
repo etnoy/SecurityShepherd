@@ -738,7 +738,7 @@ public class UserServiceTest {
     when(userRepository.save(mockUserWithKey)).thenReturn(Mono.just(mockUserWithKey));
 
     // Set up the mock key service
-    when(keyService.generateRandomBytes(16)).thenReturn(Mono.just(testRandomBytes));
+    when(keyService.generateRandomBytes(16)).thenReturn(testRandomBytes);
 
     when(mockUserWithKey.getKey()).thenReturn(testRandomBytes);
 

@@ -43,9 +43,10 @@ public final class ModuleService {
   }
 
   public Mono<Module> create(final SubmittableModule submittableModule) {
-    return this.create(submittableModule.getName(), submittableModule.getShortName(), submittableModule.getDescription());
+    return this.create(submittableModule.getName(), submittableModule.getShortName(),
+        submittableModule.getDescription());
   }
-  
+
   public Mono<Module> create(final String moduleName, final String url) {
     return this.create(moduleName, url, null);
   }
@@ -81,7 +82,7 @@ public final class ModuleService {
   public Flux<Module> findAllOpen() {
     return moduleRepository.findAllOpen();
   }
-  
+
   public Mono<Module> findById(final long moduleId) {
     if (moduleId <= 0) {
       return Mono.error(new InvalidModuleIdException());
@@ -101,7 +102,8 @@ public final class ModuleService {
 
   public Mono<String> findNameById(final long moduleId) {
     if (moduleId <= 0) {
-      return Mono.error(new InvalidModuleIdException("Module id must be a strictly positive integer"));
+      return Mono
+          .error(new InvalidModuleIdException("Module id must be a strictly positive integer"));
     }
 
     return moduleRepository.findById(moduleId).map(Module::getName);
@@ -117,11 +119,11 @@ public final class ModuleService {
     }
 
     return findById(moduleId).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
-        .map(module -> module.withFlagEnabled(true).withFlagExact(false)).flatMap(module -> {
+        .map(module -> module.withFlagEnabled(true).withFlagExact(false)).map(module -> {
           if (module.getFlag() == null) {
-            return keyService.generateRandomString(16).map(module::withFlag);
+            return module.withFlag(keyService.generateRandomString(16));
           }
-          return Mono.just(module);
+          return module;
         }).flatMap(moduleRepository::save);
   }
 

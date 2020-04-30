@@ -87,7 +87,7 @@ public class ConfigurationServiceTest {
     final byte[] mockedServerKey =
         {-118, 9, -7, -35, 17, -116, -94, 0, -32, -117, 65, -127, 12, 82, 9, 29};
 
-    when(keyService.generateRandomBytes(16)).thenReturn(Mono.just(mockedServerKey));
+    when(keyService.generateRandomBytes(16)).thenReturn(mockedServerKey);
     when(configurationRepository.findByKey(serverKeyConfigurationKey)).thenReturn(Mono.empty());
     when(configurationRepository.save(any(Configuration.class)))
         .thenAnswer(configuration -> Mono.just(configuration.getArgument(0, Configuration.class)));
@@ -109,7 +109,7 @@ public class ConfigurationServiceTest {
     final String encodedNewServerKey = Base64.getEncoder().encodeToString(newServerKey);
 
     when(configurationRepository.findByKey(serverKeyConfigurationKey)).thenReturn(Mono.empty());
-    when(keyService.generateRandomBytes(16)).thenReturn(Mono.just(newServerKey));
+    when(keyService.generateRandomBytes(16)).thenReturn(newServerKey);
     when(configurationRepository.save(any(Configuration.class)))
         .thenAnswer(configuration -> Mono.just(configuration.getArgument(0, Configuration.class)));
 
@@ -144,7 +144,7 @@ public class ConfigurationServiceTest {
     when(mockedConfiguration.withValue(encodedNewServerKey)).thenReturn(mockedConfigurationNewKey);
     when(mockedConfigurationNewKey.getValue()).thenReturn(encodedNewServerKey);
 
-    when(keyService.generateRandomBytes(16)).thenReturn(Mono.just(newServerKey));
+    when(keyService.generateRandomBytes(16)).thenReturn(newServerKey);
     when(configurationRepository.save(any(Configuration.class)))
         .thenAnswer(configuration -> Mono.just(configuration.getArgument(0, Configuration.class)));
 
