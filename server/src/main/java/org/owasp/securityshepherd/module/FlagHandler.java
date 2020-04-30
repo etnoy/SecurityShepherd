@@ -38,7 +38,7 @@ public final class FlagHandler {
   private final ModuleService moduleService;
 
   private final UserService userService;
-  
+
   private final ConfigurationService configurationService;
 
   private final CryptoService cryptoService;
@@ -93,11 +93,11 @@ public final class FlagHandler {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
-  
+
     if (moduleId <= 0) {
       return Mono.error(new InvalidModuleIdException());
     }
-  
+
     final Mono<byte[]> baseFlag =
         // Find the module in the repo
         moduleService.findById(moduleId)
@@ -117,13 +117,12 @@ public final class FlagHandler {
             .map(Module::getFlag)
             // Get bytes from flag string
             .map(String::getBytes);
-  
+
     final Mono<byte[]> keyMono =
         userService.findKeyById(userId).zipWith(configurationService.getServerKey())
             .map(tuple -> Bytes.concat(tuple.getT1(), tuple.getT2()));
-  
-    return keyMono.zipWith(baseFlag)
-        .flatMap(tuple -> cryptoService.hmac(tuple.getT1(), tuple.getT2()))
+
+    return keyMono.zipWith(baseFlag).map(tuple -> cryptoService.hmac(tuple.getT1(), tuple.getT2()))
         .map(keyService::byteFlagToString);
   }
 }

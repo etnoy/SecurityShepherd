@@ -124,7 +124,7 @@ public class FlagHandlerTest {
     when(configurationService.getServerKey()).thenReturn(Mono.just(mockedServerKey));
 
     when(cryptoService.hmac(mockedTotalKey, mockedBaseFlag.getBytes()))
-        .thenReturn(Mono.just(mockedHmacOutput));
+        .thenReturn(mockedHmacOutput);
     when(keyService.byteFlagToString(mockedHmacOutput)).thenReturn(correctFlag);
 
     StepVerifier.create(flagHandler.getDynamicFlag(mockUserId, mockModuleId))
@@ -232,8 +232,7 @@ public class FlagHandlerTest {
 
     when(configurationService.getServerKey()).thenReturn(Mono.just(mockedServerKey));
 
-    when(cryptoService.hmac(mockedTotalKey, baseFlag.getBytes()))
-        .thenReturn(Mono.just(mockedHmacOutput));
+    when(cryptoService.hmac(mockedTotalKey, baseFlag.getBytes())).thenReturn(mockedHmacOutput);
 
     when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
     when(keyService.byteFlagToString(mockedHmacOutput)).thenReturn(validFlag);
@@ -364,8 +363,7 @@ public class FlagHandlerTest {
 
     when(configurationService.getServerKey()).thenReturn(Mono.just(mockedServerKey));
 
-    when(cryptoService.hmac(mockedTotalKey, validFlag.getBytes()))
-        .thenReturn(Mono.just(mockedHmacOutput));
+    when(cryptoService.hmac(mockedTotalKey, validFlag.getBytes())).thenReturn(mockedHmacOutput);
 
     when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
 
@@ -482,8 +480,7 @@ public class FlagHandlerTest {
 
     when(configurationService.getServerKey()).thenReturn(Mono.just(mockedServerKey));
 
-    when(cryptoService.hmac(mockedTotalKey, validFlag.getBytes()))
-        .thenReturn(Mono.just(mockedHmacOutput));
+    when(cryptoService.hmac(mockedTotalKey, validFlag.getBytes())).thenReturn(mockedHmacOutput);
 
     when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
 

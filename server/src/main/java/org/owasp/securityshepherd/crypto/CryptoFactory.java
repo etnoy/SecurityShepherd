@@ -16,16 +16,27 @@
 
 package org.owasp.securityshepherd.crypto;
 
+import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
-public final class PrngFactory {
+public final class CryptoFactory {
   public SecureRandom getPrng() throws NoSuchAlgorithmException {
     return SecureRandom.getInstanceStrong();
+  }
+
+  public Mac getHmac() throws NoSuchAlgorithmException {
+    return Mac.getInstance("HmacSHA512");
+  }
+
+  public SecretKeySpec getHmacKey(byte[] key) throws NoSuchAlgorithmException {
+    return new SecretKeySpec(key, "HmacSHA512");
   }
 }

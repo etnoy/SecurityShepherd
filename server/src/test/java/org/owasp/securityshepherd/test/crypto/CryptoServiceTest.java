@@ -16,20 +16,31 @@
 
 package org.owasp.securityshepherd.test.crypto;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.owasp.securityshepherd.crypto.CryptoFactory;
 import org.owasp.securityshepherd.crypto.CryptoService;
 import org.owasp.securityshepherd.exception.CryptographicException;
 import reactor.core.publisher.Hooks;
-import reactor.test.StepVerifier;
 
+@ExtendWith(MockitoExtension.class)
 @DisplayName("CryptoService unit test")
 public class CryptoServiceTest {
+
   @BeforeAll
   private static void reactorVerbose() {
     // Tell Reactor to print verbose error messages
@@ -38,51 +49,86 @@ public class CryptoServiceTest {
 
   CryptoService cryptoService;
 
+  @Mock
+  CryptoFactory cryptoFactory;
+
+  @Test
+  public void hmac_GetHmacKeyThrowsNoSuchAlgorithmException_ThrowsCryptographicException()
+      throws Exception {
+    final byte[] key = {-91};
+    final byte[] message = {120, 56, 111};
+
+    Mac mockMac = mock(Mac.class);
+    when(cryptoFactory.getHmac()).thenReturn(mockMac);
+    when(cryptoFactory.getHmacKey(key)).thenThrow(new NoSuchAlgorithmException());
+
+    assertThatExceptionOfType(CryptographicException.class)
+        .isThrownBy(() -> cryptoService.hmac(key, message));
+  }
+
+  @Test
+  public void hmac_GetHmacThrowsNoSuchAlgorithmException_ThrowsCryptographicException()
+      throws Exception {
+    final byte[] key = {-91, -79, 67};
+    final byte[] message = {120, 56};
+    when(cryptoFactory.getHmac()).thenThrow(new NoSuchAlgorithmException());
+    assertThatExceptionOfType(CryptographicException.class)
+        .isThrownBy(() -> cryptoService.hmac(key, message));
+  }
+
+  @Test
+  public void hmac_InvalidKeyException_ThrowsCryptographicException() throws Exception {
+    final byte[] key = {-91};
+    final byte[] message = {120, 56, 111};
+
+    Mac mockMac = mock(Mac.class);
+    when(cryptoFactory.getHmac()).thenReturn(mockMac);
+
+    SecretKeySpec mockSecretKeySpec = mock(SecretKeySpec.class);
+    when(cryptoFactory.getHmacKey(key)).thenReturn(mockSecretKeySpec);
+
+    doThrow(new InvalidKeyException()).when(mockMac).init(mockSecretKeySpec);
+
+    assertThatExceptionOfType(CryptographicException.class)
+        .isThrownBy(() -> cryptoService.hmac(key, message));
+  }
+
   @Test
   public void hmac_NullKey_ThrowsNullPointerException() {
     final byte[] message = {120, 56, 111, -98, -118, 44, -65, -127, 39, 35};
 
-    StepVerifier.create(cryptoService.hmac(null, message)).expectError(NullPointerException.class)
-        .verify();
+    assertThatExceptionOfType(NullPointerException.class)
+        .isThrownBy(() -> cryptoService.hmac(null, message));
   }
+
 
   @Test
   public void hmac_NullMessage_ThrowsNullPointerException() {
     final byte[] key = {-91, -79, 67, -107, 9, 91, 62, -95, 80, 78};
 
-    StepVerifier.create(cryptoService.hmac(key, null)).expectError(NullPointerException.class)
-        .verify();
+    assertThatExceptionOfType(NullPointerException.class)
+        .isThrownBy(() -> cryptoService.hmac(key, null));
   }
 
   @Test
-  public void hmac_InvalidAlgorithm_ReturnsCryptographicException() {
-    final byte[] key = {-91, -79, 67, -107, 9, 91, 62, -95, 80, 78};
+  public void hmac_ValidData_ReturnsHash() throws Exception {
+    final byte[] key = {-91};
+    final byte[] message = {120, 56, 111};
+    final byte[] expectedHash = {46};
 
-    final byte[] message = {120, 56, 111, -98, -118, 44, -65, -127, 39, 35};
+    Mac mockMac = mock(Mac.class);
+    when(cryptoFactory.getHmac()).thenReturn(mockMac);
 
-    StepVerifier.create(cryptoService.hmac(key, message, "Double ROT-13"))
-        .expectError(CryptographicException.class).verify();
-  }
+    SecretKeySpec mockSecretKeySpec = mock(SecretKeySpec.class);
+    when(cryptoFactory.getHmacKey(key)).thenReturn(mockSecretKeySpec);
 
-  @Test
-  public void hmac_ValidData_ReturnsHash() {
-    final byte[] key = {-91, -79, 67, -107, 9, 91, 62, -95, 80, 78};
+    when(mockMac.doFinal(message)).thenReturn(expectedHash);
 
-    final byte[] message = {120, 56, 111, -98, -118, 44, -65, -127, 39, 35};
-
-    final byte[] expectedHash = {46, 102, -1, 90, 100, 13, 14, -96, 57, 8, 67, 116, 104, -45, 12,
-        -122, -80, -110, 110, 19, 12, 77, 66, -39, 95, 26, -17, 107, 58, -106, 48, -6, 108, 22,
-        -113, -49, 5, -21, -52, 119, 46, 102, 39, -9, 45, 124, -103, -100, 43, -1, 84, 105, -35,
-        -81, 65, -97, -49, 23, 2, 111, 20, 58, 56, -2};
-
-    StepVerifier.create(cryptoService.hmac(key, message)).assertNext(hash -> {
-      assertThat(hash, is(expectedHash));
-      assertThat(hash.length, greaterThan(1));
-    }).expectComplete().verify();
+    assertThat(cryptoService.hmac(key, message)).isEqualTo(expectedHash);
   }
 
   @BeforeEach
   private void setUp() {
-    cryptoService = new CryptoService();
+    cryptoService = new CryptoService(cryptoFactory);
   }
 }

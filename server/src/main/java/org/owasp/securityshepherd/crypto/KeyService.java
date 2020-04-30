@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public final class KeyService {
-  private final PrngFactory prngFactory;
+  private final CryptoFactory cryptoFactory;
 
   private byte[] byteGenerator(final SecureRandom strongPRNG, final int numberOfBytes) {
     byte[] randomBytes = new byte[numberOfBytes];
@@ -56,7 +56,7 @@ public final class KeyService {
 
   public byte[] generateRandomBytes(final int numberOfBytes) {
     try {
-      final SecureRandom prng = prngFactory.getPrng();
+      final SecureRandom prng = cryptoFactory.getPrng();
       return byteGenerator(prng, numberOfBytes);
     } catch (NoSuchAlgorithmException e) {
       throw new RngException("Could not initialize PRNG", e);
