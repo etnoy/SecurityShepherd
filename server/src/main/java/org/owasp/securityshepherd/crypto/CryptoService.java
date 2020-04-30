@@ -17,7 +17,6 @@
 package org.owasp.securityshepherd.crypto;
 
 import java.security.InvalidKeyException;
-import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -47,12 +46,7 @@ public final class CryptoService {
       throw new CryptographicException("Could not initialize MAC algorithm", e);
     }
 
-    SecretKeySpec secretKeySpec;
-    try {
-      secretKeySpec = cryptoFactory.getHmacKey(key);
-    } catch (NoSuchAlgorithmException e) {
-      throw new CryptographicException("Could not initialize key", e);
-    }
+    SecretKeySpec secretKeySpec = cryptoFactory.getHmacKey(key);
 
     try {
       hmac512.init(secretKeySpec);

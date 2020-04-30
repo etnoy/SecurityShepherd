@@ -16,7 +16,6 @@
 
 package org.owasp.securityshepherd.crypto;
 
-import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import javax.crypto.Mac;
@@ -36,7 +35,7 @@ public final class CryptoFactory {
     return Mac.getInstance("HmacSHA512");
   }
 
-  public SecretKeySpec getHmacKey(byte[] key) throws NoSuchAlgorithmException {
+  public SecretKeySpec getHmacKey(byte[] key) {
     return new SecretKeySpec(key, "HmacSHA512");
   }
 }

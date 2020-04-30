@@ -40,7 +40,6 @@ import reactor.core.publisher.Hooks;
 @ExtendWith(MockitoExtension.class)
 @DisplayName("CryptoService unit test")
 public class CryptoServiceTest {
-
   @BeforeAll
   private static void reactorVerbose() {
     // Tell Reactor to print verbose error messages
@@ -51,20 +50,6 @@ public class CryptoServiceTest {
 
   @Mock
   CryptoFactory cryptoFactory;
-
-  @Test
-  public void hmac_GetHmacKeyThrowsNoSuchAlgorithmException_ThrowsCryptographicException()
-      throws Exception {
-    final byte[] key = {-91};
-    final byte[] message = {120, 56, 111};
-
-    Mac mockMac = mock(Mac.class);
-    when(cryptoFactory.getHmac()).thenReturn(mockMac);
-    when(cryptoFactory.getHmacKey(key)).thenThrow(new NoSuchAlgorithmException());
-
-    assertThatExceptionOfType(CryptographicException.class)
-        .isThrownBy(() -> cryptoService.hmac(key, message));
-  }
 
   @Test
   public void hmac_GetHmacThrowsNoSuchAlgorithmException_ThrowsCryptographicException()
