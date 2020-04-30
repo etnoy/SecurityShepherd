@@ -17,6 +17,7 @@
 package org.owasp.securityshepherd.scoring;
 
 import java.io.Serializable;
+import org.springframework.data.relational.core.mapping.Table;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -25,8 +26,8 @@ import lombok.With;
 @Value
 @Builder
 @With
+@Table("scoreboard")
 public class ScoreboardEntry implements Serializable {
-
   private static final long serialVersionUID = 902640084501001329L;
 
   @NonNull
