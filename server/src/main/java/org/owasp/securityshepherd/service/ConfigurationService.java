@@ -17,10 +17,10 @@
 package org.owasp.securityshepherd.service;
 
 import java.util.Base64;
+import org.owasp.securityshepherd.configuration.ConfigurationRepository;
 import org.owasp.securityshepherd.crypto.KeyService;
 import org.owasp.securityshepherd.exception.ConfigurationKeyNotFoundException;
 import org.owasp.securityshepherd.model.Configuration;
-import org.owasp.securityshepherd.repository.ConfigurationRepository;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;

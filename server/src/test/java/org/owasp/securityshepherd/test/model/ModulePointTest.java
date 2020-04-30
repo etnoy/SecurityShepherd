@@ -22,8 +22,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.owasp.securityshepherd.model.ModulePoint;
-import org.owasp.securityshepherd.model.ModulePoint.ModulePointBuilder;
+import org.owasp.securityshepherd.scoring.ModulePoint;
+import org.owasp.securityshepherd.scoring.ModulePoint.ModulePointBuilder;
 import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 

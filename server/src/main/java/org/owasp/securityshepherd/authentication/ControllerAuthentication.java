@@ -1,4 +1,4 @@
-package org.owasp.securityshepherd.security;
+package org.owasp.securityshepherd.authentication;
 
 import org.owasp.securityshepherd.exception.NotAuthenticatedException;
 import org.springframework.security.core.Authentication;

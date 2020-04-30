@@ -14,11 +14,11 @@
  * 
  */
 
-package org.owasp.securityshepherd.model;
+package org.owasp.securityshepherd.authentication;
 
 import java.io.Serializable;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -27,19 +27,21 @@ import lombok.With;
 @Value
 @Builder
 @With
-public class ModulePoint implements Serializable {
-  private static final long serialVersionUID = 4548877736126023113L;
+public final class PasswordAuth implements Serializable {
+  private static final long serialVersionUID = 32553442956391684L;
 
   @Id
   private Long id;
 
   @NonNull
-  private Long moduleId;
-
-  @Column("submission_rank")
-  @NonNull
-  private Integer rank;
+  private Long userId;
 
   @NonNull
-  private Integer points;
+  private String loginName;
+
+  @NonNull
+  private String hashedPassword;
+
+  @JsonProperty("isPasswordNonExpired")
+  private boolean isPasswordNonExpired;
 }

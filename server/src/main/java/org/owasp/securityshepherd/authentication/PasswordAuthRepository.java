@@ -14,17 +14,25 @@
  * 
  */
 
-package org.owasp.securityshepherd.repository;
+package org.owasp.securityshepherd.authentication;
 
-import org.owasp.securityshepherd.model.Correction;
+import org.springframework.data.r2dbc.repository.Modifying;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
-import reactor.core.publisher.Flux;
+
+import reactor.core.publisher.Mono;
 
 @Repository
-public interface CorrectionRepository extends ReactiveCrudRepository<Correction, Long> {
-  @Query("SELECT * from correction WHERE user_id = :user_id")
-  public Flux<Correction> findAllByUserId(@Param("user_id") final long userId);
+public interface PasswordAuthRepository extends ReactiveCrudRepository<PasswordAuth, Long> {
+  @Query("SELECT * from password_auth WHERE login_name = :login_name")
+  public Mono<PasswordAuth> findByLoginName(@Param("login_name") final String loginName);
+
+  @Query("SELECT * from password_auth WHERE user_id = :user_id")
+  public Mono<PasswordAuth> findByUserId(@Param("user_id") final long userId);
+
+  @Modifying
+  @Query("delete from password_auth WHERE user_id = :user_id")
+  public Mono<UserAuth> deleteByUserId(@Param("user_id") final long userId);
 }

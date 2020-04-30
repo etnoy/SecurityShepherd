@@ -14,14 +14,12 @@
  * 
  */
 
-package org.owasp.securityshepherd.service;
+package org.owasp.securityshepherd.scoring;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
-import org.owasp.securityshepherd.model.Correction;
-import org.owasp.securityshepherd.model.Correction.CorrectionBuilder;
-import org.owasp.securityshepherd.repository.CorrectionRepository;
+import org.owasp.securityshepherd.scoring.Correction.CorrectionBuilder;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;

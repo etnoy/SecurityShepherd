@@ -14,25 +14,45 @@
  * 
  */
 
-package org.owasp.securityshepherd.user;
+package org.owasp.securityshepherd.authentication;
 
 import java.io.Serializable;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
+import org.springframework.data.annotation.Id;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NonNull;
 import lombok.Value;
+import lombok.With;
 
 @Value
 @AllArgsConstructor
-public class SubmissionDto implements Serializable {
-  private static final long serialVersionUID = 8425777966286079418L;
+@Builder
+@With
+public final class UserAuth implements Serializable {
+  
+  private static final long serialVersionUID = -1511082836956413928L;
 
-  @NotNull
-  @Min(value = 1, message = "{Size.submissionDto.userName}")
-  private Long moduleId;
+  @Id
+  private Long id;
 
-  @NotNull
-  @Size(min = 1, message = "{Size.submissionDto.userName}")
-  private String flag;
+  @NonNull
+  private Long userId;
+
+  @JsonProperty("isEnabled")
+  private boolean isEnabled;
+
+  private int badLoginCount;
+
+  @JsonProperty("isAdmin")
+  private boolean isAdmin;
+
+  private LocalDateTime suspendedUntil;
+
+  private String suspensionMessage;
+
+  private LocalDateTime lastLogin;
+
+  private String lastLoginMethod;
 }

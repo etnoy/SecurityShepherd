@@ -16,9 +16,9 @@
 
 package org.owasp.securityshepherd.module;
 
-import org.owasp.securityshepherd.model.Submission;
-import org.owasp.securityshepherd.security.ControllerAuthentication;
-import org.owasp.securityshepherd.service.SubmissionService;
+import org.owasp.securityshepherd.authentication.ControllerAuthentication;
+import org.owasp.securityshepherd.scoring.Submission;
+import org.owasp.securityshepherd.scoring.SubmissionService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;

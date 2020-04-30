@@ -16,7 +16,7 @@
 
 package org.owasp.securityshepherd.module;
 
-import org.owasp.securityshepherd.model.ModulePoint;
+import org.owasp.securityshepherd.scoring.ModulePoint;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;

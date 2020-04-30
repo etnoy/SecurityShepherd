@@ -14,7 +14,7 @@
  * 
  */
 
-package org.owasp.securityshepherd.security;
+package org.owasp.securityshepherd.authentication;
 
 public enum Role {
     ROLE_USER, ROLE_ADMIN

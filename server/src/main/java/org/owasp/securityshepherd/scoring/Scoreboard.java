@@ -14,29 +14,27 @@
  * 
  */
 
-package org.owasp.securityshepherd.user;
+package org.owasp.securityshepherd.scoring;
 
 import java.io.Serializable;
-
-import org.springframework.data.annotation.Id;
-
 import lombok.Builder;
-import lombok.Value;
 import lombok.NonNull;
+import lombok.Value;
 import lombok.With;
 
 @Value
 @Builder
 @With
-public class SamlAuth implements Serializable {
-  private static final long serialVersionUID = 211951930649985921L;
+public class Scoreboard implements Serializable {
 
-  @Id
-  private Integer id;
+  private static final long serialVersionUID = 902640084501001329L;
 
   @NonNull
-  private Integer userId;
+  private Long rank;
+  
+  @NonNull
+  private Long userId;
 
   @NonNull
-  private String samlId;
+  private Long score;
 }

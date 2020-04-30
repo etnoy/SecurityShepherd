@@ -14,7 +14,7 @@
  * 
  */
 
-package org.owasp.securityshepherd.service;
+package org.owasp.securityshepherd.scoring;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -22,10 +22,8 @@ import java.util.List;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.ModuleAlreadySolvedException;
-import org.owasp.securityshepherd.model.Submission;
-import org.owasp.securityshepherd.model.Submission.SubmissionBuilder;
 import org.owasp.securityshepherd.module.FlagHandler;
-import org.owasp.securityshepherd.repository.SubmissionRepository;
+import org.owasp.securityshepherd.scoring.Submission.SubmissionBuilder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

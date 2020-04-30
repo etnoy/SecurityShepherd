@@ -20,8 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import javax.validation.constraints.NotNull;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.owasp.securityshepherd.authentication.PasswordRegistrationDto;
 import org.owasp.securityshepherd.test.util.TestUtils;
-import org.owasp.securityshepherd.user.PasswordRegistrationDto;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 @DisplayName("PasswordRegistrationDto unit test")

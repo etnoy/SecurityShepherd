@@ -14,35 +14,29 @@
  * 
  */
 
-package org.owasp.securityshepherd.model;
+package org.owasp.securityshepherd.authentication;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+
 import org.springframework.data.annotation.Id;
+
 import lombok.Builder;
-import lombok.NonNull;
 import lombok.Value;
+import lombok.NonNull;
 import lombok.With;
 
 @Value
 @Builder
 @With
-public class Correction implements Serializable {
-
-  private static final long serialVersionUID = -3672798577756177047L;
+public class SamlAuth implements Serializable {
+  private static final long serialVersionUID = 211951930649985921L;
 
   @Id
-  private Long id;
+  private Integer id;
 
   @NonNull
-  private Long userId;
+  private Integer userId;
 
   @NonNull
-  private Long amount;
-  
-  @NonNull
-  private LocalDateTime time;
-  
-  private String description;
-
+  private String samlId;
 }

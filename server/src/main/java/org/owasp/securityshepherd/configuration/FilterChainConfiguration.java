@@ -16,8 +16,8 @@
 
 package org.owasp.securityshepherd.configuration;
 
-import org.owasp.securityshepherd.repository.SecurityContextRepository;
-import org.owasp.securityshepherd.security.AuthenticationManager;
+import org.owasp.securityshepherd.authentication.AuthenticationManager;
+import org.owasp.securityshepherd.authentication.SecurityContextRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;

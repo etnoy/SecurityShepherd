@@ -19,7 +19,7 @@ package org.owasp.securityshepherd.module;
 import org.owasp.securityshepherd.exception.EmptyModuleShortNameException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.module.ModuleListItem.ModuleListItemBuilder;
-import org.owasp.securityshepherd.service.SubmissionService;
+import org.owasp.securityshepherd.scoring.SubmissionService;
 import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;

@@ -14,17 +14,35 @@
  * 
  */
 
-package org.owasp.securityshepherd.security;
+package org.owasp.securityshepherd.scoring;
 
 import java.io.Serializable;
-import lombok.AllArgsConstructor;
+import java.time.LocalDateTime;
+import org.springframework.data.annotation.Id;
+import lombok.Builder;
+import lombok.NonNull;
 import lombok.Value;
+import lombok.With;
 
 @Value
-@AllArgsConstructor
-public final class AuthResponse implements Serializable {
-  private static final long serialVersionUID = 5631647781132001719L;
+@Builder
+@With
+public class Correction implements Serializable {
+
+  private static final long serialVersionUID = -3672798577756177047L;
+
+  @Id
+  private Long id;
+
+  @NonNull
+  private Long userId;
+
+  @NonNull
+  private Long amount;
   
-  private String token;
-  private String userName;
+  @NonNull
+  private LocalDateTime time;
+  
+  private String description;
+
 }

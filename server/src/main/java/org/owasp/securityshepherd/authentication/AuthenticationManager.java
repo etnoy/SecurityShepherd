@@ -14,9 +14,8 @@
  * 
  */
 
-package org.owasp.securityshepherd.security;
+package org.owasp.securityshepherd.authentication;
 
-import org.owasp.securityshepherd.service.WebTokenService;
 import org.owasp.securityshepherd.user.UserService;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

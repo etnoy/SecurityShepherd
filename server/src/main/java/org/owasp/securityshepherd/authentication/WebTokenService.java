@@ -14,7 +14,7 @@
  * 
  */
 
-package org.owasp.securityshepherd.service;
+package org.owasp.securityshepherd.authentication;
 
 import java.security.Key;
 import java.time.Clock;

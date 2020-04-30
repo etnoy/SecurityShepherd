@@ -14,9 +14,8 @@
  * 
  */
 
-package org.owasp.securityshepherd.repository;
+package org.owasp.securityshepherd.scoring;
 
-import org.owasp.securityshepherd.model.Scoreboard;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;

@@ -14,29 +14,32 @@
  * 
  */
 
-package org.owasp.securityshepherd.user;
+package org.owasp.securityshepherd.scoring;
 
 import java.io.Serializable;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import org.owasp.securityshepherd.validation.ValidPassword;
-import lombok.AllArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import lombok.Builder;
+import lombok.NonNull;
 import lombok.Value;
+import lombok.With;
 
 @Value
-@AllArgsConstructor
-public class PasswordRegistrationDto implements Serializable {
-  private static final long serialVersionUID = 8155074795022450359L;
+@Builder
+@With
+public class ModulePoint implements Serializable {
+  private static final long serialVersionUID = 4548877736126023113L;
 
-  @NotNull
-  @Size(min = 1, message = "{Size.userDto.displayName}")
-  private String displayName;
+  @Id
+  private Long id;
 
-  @NotNull
-  @Size(min = 1, message = "{Size.userDto.userName}")
-  private String userName;
+  @NonNull
+  private Long moduleId;
 
-  @ValidPassword
-  @NotNull
-  private String password;
+  @Column("submission_rank")
+  @NonNull
+  private Integer rank;
+
+  @NonNull
+  private Integer points;
 }

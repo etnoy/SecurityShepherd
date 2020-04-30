@@ -14,7 +14,7 @@
  * 
  */
 
-package org.owasp.securityshepherd.repository;
+package org.owasp.securityshepherd.configuration;
 
 import org.owasp.securityshepherd.model.Configuration;
 import org.springframework.data.r2dbc.repository.Modifying;

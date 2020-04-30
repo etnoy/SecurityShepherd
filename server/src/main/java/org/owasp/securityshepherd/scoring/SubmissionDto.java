@@ -14,34 +14,25 @@
  * 
  */
 
-package org.owasp.securityshepherd.user;
+package org.owasp.securityshepherd.scoring;
 
 import java.io.Serializable;
-import org.springframework.data.annotation.Id;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
-import lombok.NonNull;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Value;
-import lombok.With;
 
 @Value
-@Builder
-@With
-public final class PasswordAuth implements Serializable {
-  private static final long serialVersionUID = 32553442956391684L;
+@AllArgsConstructor
+public class SubmissionDto implements Serializable {
+  private static final long serialVersionUID = 8425777966286079418L;
 
-  @Id
-  private Long id;
+  @NotNull
+  @Min(value = 1, message = "{Size.submissionDto.userName}")
+  private Long moduleId;
 
-  @NonNull
-  private Long userId;
-
-  @NonNull
-  private String loginName;
-
-  @NonNull
-  private String hashedPassword;
-
-  @JsonProperty("isPasswordNonExpired")
-  private boolean isPasswordNonExpired;
+  @NotNull
+  @Size(min = 1, message = "{Size.submissionDto.userName}")
+  private String flag;
 }

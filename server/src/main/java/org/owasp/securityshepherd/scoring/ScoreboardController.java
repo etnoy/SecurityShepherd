@@ -14,12 +14,8 @@
  * 
  */
 
-package org.owasp.securityshepherd.controller;
+package org.owasp.securityshepherd.scoring;
 
-import org.owasp.securityshepherd.model.Scoreboard;
-import org.owasp.securityshepherd.model.Submission;
-import org.owasp.securityshepherd.service.ScoreService;
-import org.owasp.securityshepherd.service.SubmissionService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

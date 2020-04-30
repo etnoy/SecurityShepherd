@@ -14,39 +14,29 @@
  * 
  */
 
-package org.owasp.securityshepherd.model;
+package org.owasp.securityshepherd.authentication;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
-import org.springframework.data.annotation.Id;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import org.owasp.securityshepherd.validation.ValidPassword;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Value;
-import lombok.NonNull;
-import lombok.With;
 
 @Value
-@Builder
 @AllArgsConstructor
-@With
-public class Submission implements Serializable {
-  private static final long serialVersionUID = -5485881248601955741L;
+public class PasswordRegistrationDto implements Serializable {
+  private static final long serialVersionUID = 8155074795022450359L;
 
-  @Id
-  private Long id;
+  @NotNull
+  @Size(min = 1, message = "{Size.userDto.displayName}")
+  private String displayName;
 
-  @NonNull
-  private Long userId;
+  @NotNull
+  @Size(min = 1, message = "{Size.userDto.userName}")
+  private String userName;
 
-  @NonNull
-  private Long moduleId;
-
-  @NonNull
-  private LocalDateTime time;
-
-  @JsonProperty("isValid")
-  private boolean isValid;
-
-  private String flag;
+  @ValidPassword
+  @NotNull
+  private String password;
 }

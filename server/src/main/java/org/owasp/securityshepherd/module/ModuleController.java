@@ -17,7 +17,7 @@
 package org.owasp.securityshepherd.module;
 
 import javax.validation.constraints.Min;
-import org.owasp.securityshepherd.security.ControllerAuthentication;
+import org.owasp.securityshepherd.authentication.ControllerAuthentication;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
