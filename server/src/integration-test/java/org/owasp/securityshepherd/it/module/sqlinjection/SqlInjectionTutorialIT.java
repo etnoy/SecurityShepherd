@@ -134,6 +134,10 @@ public class SqlInjectionTutorialIT {
         .map(Submission::isValid)).expectNext(false).expectComplete().verify();
   }
 
+  // TODO: 
+  
+  // ' OR '1=1 gives numberformatexception
+  
   @BeforeEach
   private void clear() {
     testUtils.deleteAll().block();

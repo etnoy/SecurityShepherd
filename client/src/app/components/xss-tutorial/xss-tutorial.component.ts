@@ -3,15 +3,16 @@ import { ApiService } from '../../service/api.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Module } from 'src/app/model/module';
 import { AlertService } from 'src/app/service/alert.service';
+import { XssTutorialResult } from 'src/app/model/xss-tutorial-result';
 
 @Component({
   selector: 'app-xss-tutorial',
   templateUrl: './xss-tutorial.component.html',
-  styleUrls: ['./xss-tutorial.component.css'],
+  styleUrls: ['./xss-tutorial.component.css']
 })
 export class XssTutorialComponent implements OnInit {
   queryForm: FormGroup;
-  result: string;
+  result: XssTutorialResult;
   loading = false;
 
   @Input() module: Module;
@@ -22,9 +23,9 @@ export class XssTutorialComponent implements OnInit {
     private alertService: AlertService
   ) {
     this.queryForm = this.fb.group({
-      query: [''],
+      query: ['']
     });
-    this.result = '';
+    this.result = null;
   }
 
   ngOnInit(): void {}
@@ -38,19 +39,14 @@ export class XssTutorialComponent implements OnInit {
 
     return this.apiService
       .modulePostRequest(
-        this.module.id,
-        'query',
+        this.module.shortName,
+        'search',
         this.queryForm.controls.query.value
       )
-      .subscribe((data) => {
-        data = JSON.parse(data);
-        this.result = data['result'];
-        const flag = data['flag'];
-        if (flag) {
-          this.alertService.success(flag);
-        }
+      .subscribe(data => {
+        this.result = data;
         const alert = data['alert'];
-        if (alert) {
+        if (this.result.alert) {
           window.alert(alert);
         }
         this.loading = false;

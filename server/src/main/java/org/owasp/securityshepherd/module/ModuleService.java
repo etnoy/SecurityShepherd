@@ -66,8 +66,8 @@ public final class ModuleService {
     return Mono.just(moduleName).filterWhen(this::doesNotExistByName)
         .switchIfEmpty(Mono.error(new DuplicateModuleNameException(
             String.format("Module name %s already exists", moduleName))))
-        .map(name -> Module.builder().name(name).description(description).shortName(shortName)
-            .build())
+        .map(name -> Module.builder().isOpen(true).name(name).description(description)
+            .shortName(shortName).build())
         .flatMap(moduleRepository::save);
   }
 

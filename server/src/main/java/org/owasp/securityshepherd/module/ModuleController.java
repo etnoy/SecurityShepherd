@@ -55,7 +55,7 @@ public class ModuleController {
   @GetMapping(path = "module/by-name/{shortName}")
   @PreAuthorize("hasRole('ROLE_USER')")
   public Mono<ModuleListItem> getModuleByShortName(@PathVariable final String shortName) {
-    return controllerAuthentication.getUserId().flatMap(userId -> moduleSolutions
-        .findOpenModuleByShortNameWithSolutionStatus(userId, shortName));
+    return controllerAuthentication.getUserId().flatMap(
+        userId -> moduleSolutions.findOpenModuleByShortNameWithSolutionStatus(userId, shortName));
   }
 }

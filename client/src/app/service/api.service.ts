@@ -3,14 +3,14 @@ import { Injectable } from '@angular/core';
 import {
   HttpClient,
   HttpHeaders,
-  HttpErrorResponse,
+  HttpErrorResponse
 } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { map, catchError } from 'rxjs/operators';
 import { User } from '../model/user';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class ApiService {
   endpoint = 'http://localhost:8080/api/v1';
@@ -26,7 +26,7 @@ export class ApiService {
   }
 
   submitFlag(moduleId: string, flag: string): Observable<any> {
-    const api = `${this.endpoint}/module/submit/${moduleId}`;
+    const api = `${this.endpoint}/flag/submit/${moduleId}`;
     return this.http.post<any>(api, flag).pipe(
       map((res: Response) => {
         return res || {};
@@ -62,7 +62,7 @@ export class ApiService {
   // Sign-in
   login(user: User) {
     return this.http.post<any>(`${this.endpoint}/login`, user).pipe(
-      map((returnedUser) => {
+      map(returnedUser => {
         // store user details and jwt token in local storage to keep user logged in between page refreshes
         localStorage.setItem('currentUser', JSON.stringify(returnedUser));
         this.currentUserSubject.next(returnedUser);
