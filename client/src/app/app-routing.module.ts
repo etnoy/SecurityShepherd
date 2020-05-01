@@ -27,7 +27,7 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
-    path: 'submission/:id',
+    path: 'scoreboard/:id',
     component: UserScoreComponent,
     canActivate: [AuthGuard],
   },

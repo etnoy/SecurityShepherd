@@ -198,14 +198,22 @@ public class ScoringServiceIT {
     correctionService.submit(userIds.get(1), 100, "Thanks for the bribe").block();
 
     StepVerifier.create(scoringService.getScoreboard())
-        .expectNext(ScoreboardEntry.builder().rank(1L).userId(userIds.get(1)).score(251L).build())
-        .expectNext(ScoreboardEntry.builder().rank(2L).userId(userIds.get(6)).score(231L).build())
-        .expectNext(ScoreboardEntry.builder().rank(3L).userId(userIds.get(5)).score(201L).build())
-        .expectNext(ScoreboardEntry.builder().rank(4L).userId(userIds.get(0)).score(171L).build())
-        .expectNext(ScoreboardEntry.builder().rank(4L).userId(userIds.get(4)).score(171L).build())
-        .expectNext(ScoreboardEntry.builder().rank(6L).userId(userIds.get(3)).score(0L).build())
-        .expectNext(ScoreboardEntry.builder().rank(6L).userId(userIds.get(7)).score(0L).build())
-        .expectNext(ScoreboardEntry.builder().rank(8L).userId(userIds.get(2)).score(-799L).build())
+        .expectNext(ScoreboardEntry.builder().rank(1L).userId(userIds.get(1)).score(251L)
+            .goldMedals(0L).silverMedals(0L).bronzeMedals(0L).build())
+        .expectNext(ScoreboardEntry.builder().rank(2L).userId(userIds.get(6)).score(231L)
+            .goldMedals(3L).silverMedals(0L).bronzeMedals(0L).build())
+        .expectNext(ScoreboardEntry.builder().rank(3L).userId(userIds.get(5)).score(201L)
+            .goldMedals(0L).silverMedals(3L).bronzeMedals(0L).build())
+        .expectNext(ScoreboardEntry.builder().rank(4L).userId(userIds.get(0)).score(171L)
+            .goldMedals(0L).silverMedals(0L).bronzeMedals(0L).build())
+        .expectNext(ScoreboardEntry.builder().rank(4L).userId(userIds.get(4)).score(171L)
+            .goldMedals(0L).silverMedals(0L).bronzeMedals(0L).build())
+        .expectNext(ScoreboardEntry.builder().rank(6L).userId(userIds.get(3)).score(0L)
+            .goldMedals(0L).silverMedals(0L).bronzeMedals(0L).build())
+        .expectNext(ScoreboardEntry.builder().rank(6L).userId(userIds.get(7)).score(0L)
+            .goldMedals(0L).silverMedals(0L).bronzeMedals(0L).build())
+        .expectNext(ScoreboardEntry.builder().rank(8L).userId(userIds.get(2)).score(-799L)
+            .goldMedals(0L).silverMedals(3L).bronzeMedals(0L).build())
         .expectComplete().verify();
   }
 

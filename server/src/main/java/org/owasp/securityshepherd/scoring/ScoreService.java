@@ -48,4 +48,6 @@ public final class ScoreService {
   public Flux<ScoreboardEntry> getScoreboard() {
     return scoreboardRepository.findAll();
   }
+  
+  
 }

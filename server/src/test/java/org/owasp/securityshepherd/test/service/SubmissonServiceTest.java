@@ -42,6 +42,7 @@ import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.ModuleAlreadySolvedException;
 import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.scoring.CorrectionRepository;
+import org.owasp.securityshepherd.scoring.RankedSubmissionRepository;
 import org.owasp.securityshepherd.scoring.Submission;
 import org.owasp.securityshepherd.scoring.SubmissionRepository;
 import org.owasp.securityshepherd.scoring.SubmissionService;
@@ -55,7 +56,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @ExtendWith(MockitoExtension.class)
 @DisplayName("SubmissionService unit test")
 public class SubmissonServiceTest {
-
   @BeforeAll
   private static void reactorVerbose() {
     // Tell Reactor to print verbose error messages
@@ -66,6 +66,9 @@ public class SubmissonServiceTest {
 
   @Mock
   private SubmissionRepository submissionRepository;
+
+  @Mock
+  private RankedSubmissionRepository rankedSubmissionRepository;
 
   @Mock
   private CorrectionRepository correctionRepository;
@@ -237,12 +240,13 @@ public class SubmissonServiceTest {
   private void setClock(final Clock clock) {
     submissionService.setClock(clock);
   }
-  
+
 
   @BeforeEach
   private void setUp() {
     // Set up the system under test
-    submissionService = new SubmissionService(submissionRepository, flagHandler);
+    submissionService =
+        new SubmissionService(submissionRepository, rankedSubmissionRepository, flagHandler);
   }
 
   @Test

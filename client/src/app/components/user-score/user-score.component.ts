@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Submission } from 'src/app/model/submission';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from 'src/app/service/api.service';
+import { UserScore } from 'src/app/model/user-score';
 
 @Component({
   selector: 'app-user-score',
@@ -9,8 +10,8 @@ import { ApiService } from 'src/app/service/api.service';
   styleUrls: ['./user-score.component.css'],
 })
 export class UserScoreComponent implements OnInit {
-  submissions: Submission[];
-  userId: string;
+  submissions: UserScore[];
+  userId: number;
 
   constructor(private route: ActivatedRoute, public apiService: ApiService) {
     this.submissions = [];
@@ -18,11 +19,11 @@ export class UserScoreComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
-      const userId: string = params.get('id');
+      const userId: number = Number(params.get('id'));
 
       this.apiService
-        .getValidSubmissionsByUserId(userId)
-        .subscribe((submissions: Submission[]) => {
+        .getScoresByUserId(userId)
+        .subscribe((submissions: UserScore[]) => {
           this.userId = userId;
           this.submissions = submissions;
         });

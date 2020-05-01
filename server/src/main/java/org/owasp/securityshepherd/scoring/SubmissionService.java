@@ -33,12 +33,16 @@ public final class SubmissionService {
 
   private final SubmissionRepository submissionRepository;
 
+  private final RankedSubmissionRepository rankedSubmissionRepository;
+
   private final FlagHandler flagHandler;
 
   private Clock clock;
 
-  public SubmissionService(SubmissionRepository submissionRepository, FlagHandler flagHandler) {
+  public SubmissionService(SubmissionRepository submissionRepository,
+      RankedSubmissionRepository rankedSubmissionRepository, FlagHandler flagHandler) {
     this.submissionRepository = submissionRepository;
+    this.rankedSubmissionRepository = rankedSubmissionRepository;
     this.flagHandler = flagHandler;
     resetClock();
   }
@@ -57,6 +61,13 @@ public final class SubmissionService {
     return submissionRepository.findAllValidByUserId(userId);
   }
 
+  public Flux<RankedSubmission> findAllRankedByUserId(final long userId) {
+    if (userId <= 0) {
+      return Flux.error(new InvalidUserIdException());
+    }
+    return rankedSubmissionRepository.findAllByUserId(userId);
+  }
+  
   public Mono<Submission> findAllValidByUserIdAndModuleId(final long userId, final long moduleId) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());

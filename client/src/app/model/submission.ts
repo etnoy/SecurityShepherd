@@ -1,7 +1,8 @@
 export class Submission {
-  id: string;
-  userId: string;
-  moduleId: string;
+  submission_id: number;
+  userId: number;
+  rank: number;
+  moduleId: number;
   time: string;
   isValid: boolean;
   flag: string;

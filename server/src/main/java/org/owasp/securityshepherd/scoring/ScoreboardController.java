@@ -28,10 +28,9 @@ import reactor.core.publisher.Flux;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/")
 public class ScoreboardController {
-
   private final ScoreService scoringService;
-
-  private final SubmissionService submissionService;
+  
+  private final UserScoreHandler userScoreHandler;
 
   @GetMapping(path = "scoreboard")
   @PreAuthorize("hasRole('ROLE_USER')")
@@ -39,9 +38,9 @@ public class ScoreboardController {
     return scoringService.getScoreboard();
   }
 
-  @GetMapping(path = "submissions/{userId}")
+  @GetMapping(path = "scoreboard/{userId}")
   @PreAuthorize("hasRole('ROLE_USER')")
-  public Flux<Submission> getById(@PathVariable final long userId) {
-    return submissionService.findAllValidByUserId(userId);
+  public Flux<RankedSubmission> getById(@PathVariable final long userId) {
+    return userScoreHandler.findAllScoresByUserId(userId);
   }
 }

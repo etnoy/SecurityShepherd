@@ -57,7 +57,8 @@ public class ScoreboardEntryTest {
 
   @Test
   public void buildRank_ValidRank_Builds() {
-    final ScoreboardEntryBuilder scoreboardBuilder = ScoreboardEntry.builder().userId(1L).score(1L);
+    final ScoreboardEntryBuilder scoreboardBuilder = ScoreboardEntry.builder().userId(1L).score(1L)
+        .goldMedals(0L).silverMedals(0L).bronzeMedals(0L);
 
     for (final long rank : TestUtils.LONGS) {
       final ScoreboardEntry scoreboard = scoreboardBuilder.rank(rank).build();
@@ -75,7 +76,8 @@ public class ScoreboardEntryTest {
 
   @Test
   public void buildScore_ValidScore_Builds() {
-    final ScoreboardEntryBuilder scoreboardBuilder = ScoreboardEntry.builder().rank(1L).userId(1L);
+    final ScoreboardEntryBuilder scoreboardBuilder = ScoreboardEntry.builder().rank(1L).userId(1L)
+        .goldMedals(0L).silverMedals(0L).bronzeMedals(0L);
 
     for (final long score : TestUtils.LONGS) {
       final ScoreboardEntry scoreboard = scoreboardBuilder.score(score).build();
@@ -93,7 +95,8 @@ public class ScoreboardEntryTest {
 
   @Test
   public void buildUserId_ValidUserId_Builds() {
-    final ScoreboardEntryBuilder scoreboardBuilder = ScoreboardEntry.builder().rank(1L).score(1L);
+    final ScoreboardEntryBuilder scoreboardBuilder = ScoreboardEntry.builder().goldMedals(0L)
+        .silverMedals(0L).bronzeMedals(0L).rank(1L).score(1L);
 
     for (final long userId : TestUtils.LONGS) {
       final ScoreboardEntry scoreboard = scoreboardBuilder.userId(userId).build();
@@ -110,28 +113,33 @@ public class ScoreboardEntryTest {
 
   @Test
   public void scoreboardBuilderToString_ValidData_AsExpected() {
-    final ScoreboardEntryBuilder builder = ScoreboardEntry.builder().rank(17L).userId(83L).score(1L);
+    final ScoreboardEntryBuilder builder =
+        ScoreboardEntry.builder().rank(17L).userId(83L).score(1L);
 
-    assertThat(builder.toString(), is("ScoreboardEntry.ScoreboardEntryBuilder(rank=17, userId=83, score=1)"));
+    assertThat(builder.toString(), is(
+        "ScoreboardEntry.ScoreboardEntryBuilder(rank=17, userId=83, score=1, goldMedals=null, silverMedals=null, bronzeMedals=null)"));
   }
 
   @Test
   public void toString_ValidData_AsExpected() {
-    final ScoreboardEntry testScoreboard = ScoreboardEntry.builder().rank(17L).userId(83L).score(1L).build();
+    final ScoreboardEntry testScoreboard = ScoreboardEntry.builder().rank(17L).userId(83L)
+        .goldMedals(0L).silverMedals(0L).bronzeMedals(0L).score(1L).build();
 
-    assertThat(testScoreboard.toString(), is("ScoreboardEntry(rank=17, userId=83, score=1)"));
+    assertThat(testScoreboard.toString(), is(
+        "ScoreboardEntry(rank=17, userId=83, score=1, goldMedals=0, silverMedals=0, bronzeMedals=0)"));
   }
 
   @Test
   public void withRank_NullRank_ThrowsNullPointerException() {
-    final ScoreboardEntry scoreboard = ScoreboardEntry.builder().rank(15L).userId(1L).score(15L).build();
+    final ScoreboardEntry scoreboard = ScoreboardEntry.builder().rank(15L).userId(1L).score(15L)
+        .goldMedals(0L).silverMedals(0L).bronzeMedals(0L).build();
     assertThrows(NullPointerException.class, () -> scoreboard.withRank(null));
   }
 
   @Test
   public void withRank_ValidRank_ChangesRank() {
-    final ScoreboardEntry scoreboard =
-        ScoreboardEntry.builder().rank(TestUtils.INITIAL_LONG).userId(163L).score(15L).build();
+    final ScoreboardEntry scoreboard = ScoreboardEntry.builder().rank(TestUtils.INITIAL_LONG)
+        .goldMedals(0L).silverMedals(0L).bronzeMedals(0L).userId(163L).score(15L).build();
 
     for (final Long rank : TestUtils.LONGS) {
       final ScoreboardEntry newScoreboard = scoreboard.withRank(rank);
@@ -143,15 +151,15 @@ public class ScoreboardEntryTest {
 
   @Test
   public void withScore_NullScore_ThrowsNullPointerException() {
-    final ScoreboardEntry scoreboard =
-        ScoreboardEntry.builder().rank(1L).score(15L).userId(1L).score(15L).build();
+    final ScoreboardEntry scoreboard = ScoreboardEntry.builder().rank(1L).score(15L).userId(1L)
+        .score(15L).goldMedals(0L).silverMedals(0L).bronzeMedals(0L).build();
     assertThrows(NullPointerException.class, () -> scoreboard.withScore(null));
   }
 
   @Test
   public void withScore_ValidScore_ChangesScore() {
-    final ScoreboardEntry scoreboard =
-        ScoreboardEntry.builder().score(TestUtils.INITIAL_LONG).rank(1L).userId(163L).build();
+    final ScoreboardEntry scoreboard = ScoreboardEntry.builder().score(TestUtils.INITIAL_LONG)
+        .rank(1L).userId(163L).goldMedals(0L).silverMedals(0L).bronzeMedals(0L).build();
 
     for (final Long score : TestUtils.LONGS) {
       final ScoreboardEntry newScoreboard = scoreboard.withScore(score);
@@ -163,14 +171,15 @@ public class ScoreboardEntryTest {
 
   @Test
   public void withUserId_NullUserId_ThrowsNullPointerException() {
-    final ScoreboardEntry scoreboard = ScoreboardEntry.builder().rank(15L).userId(1L).score(15L).build();
+    final ScoreboardEntry scoreboard = ScoreboardEntry.builder().rank(15L).userId(1L).goldMedals(0L)
+        .silverMedals(0L).bronzeMedals(0L).score(15L).build();
     assertThrows(NullPointerException.class, () -> scoreboard.withUserId(null));
   }
 
   @Test
   public void withUserId_ValidUserId_ChangesUserId() {
-    final ScoreboardEntry scoreboard =
-        ScoreboardEntry.builder().rank(1L).userId(TestUtils.INITIAL_LONG).score(15L).build();
+    final ScoreboardEntry scoreboard = ScoreboardEntry.builder().rank(1L).goldMedals(0L)
+        .silverMedals(0L).bronzeMedals(0L).userId(TestUtils.INITIAL_LONG).score(15L).build();
 
     for (final Long userId : TestUtils.LONGS) {
       final ScoreboardEntry newScoreboard = scoreboard.withUserId(userId);

@@ -16,35 +16,23 @@
 
 package org.owasp.securityshepherd.scoring;
 
-import java.io.Serializable;
-import org.springframework.data.relational.core.mapping.Table;
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
-import lombok.With;
+import org.owasp.securityshepherd.exception.InvalidModuleIdException;
+import org.owasp.securityshepherd.exception.InvalidUserIdException;
+import org.owasp.securityshepherd.module.ModuleService;
+import org.owasp.securityshepherd.user.UserService;
+import org.springframework.stereotype.Component;
+import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Flux;
 
-@Value
-@Builder
-@With
-@Table("scoreboard")
-public class ScoreboardEntry implements Serializable {
-  private static final long serialVersionUID = 902640084501001329L;
+@Component
+@RequiredArgsConstructor
+public final class UserScoreHandler {
+  private final SubmissionService submissionService;
 
-  @NonNull
-  private Long rank;
-  
-  @NonNull
-  private Long userId;
-
-  @NonNull
-  private Long score;
-  
-  @NonNull
-  private Long goldMedals;
-  
-  @NonNull
-  private Long silverMedals;
-  
-  @NonNull
-  private Long bronzeMedals;
+  public Flux<RankedSubmission> findAllScoresByUserId(final long userId) {
+    if (userId <= 0) {
+      return Flux.error(new InvalidUserIdException());
+    }
+    return submissionService.findAllRankedByUserId(userId);
+  }
 }

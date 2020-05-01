@@ -117,65 +117,76 @@ CREATE TABLE configuration (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
-CREATE VIEW submission_ranks AS 
-SELECT user_id, rank() over (partition by module_id order by time) as 'rank',  module_id, time 
-FROM submission where is_valid=true;
-
-CREATE VIEW bonus AS 
+CREATE VIEW ranked_submission AS
+WITH ranks as 
+(
+	SELECT 
+		rank() over (partition by module_id order by time) as 'rank',
+		id as submission_id,
+		user_id,
+		module_id,
+	 	time,
+	 	flag
+	FROM submission
+	where is_valid=true
+)
 SELECT 
-	user_id, 
-	submission_ranks.module_id, 
-	COALESCE(points, 0) as bonus, 
-	time  
-FROM 
-	submission_ranks 
-left join 
-	module_point 
-	on (
-		submission_ranks.module_id = module_point.module_id 
-	and 
-		submission_ranks.rank = submission_rank
-	);
-
-CREATE VIEW score AS 
-select 
-	user_id, bonus.module_id, bonus+points as amount, time 
-from 
-	bonus 
-inner join 
-	module_point 
-	on (
-		bonus.module_id=module_point.module_id 
-	and 
-		module_point.submission_rank=0
-	);
-
-CREATE VIEW scoreboard AS 
-SELECT
-	rank() over(order by sum(amount) desc) as 'rank',
+	submission_id,
 	user_id,
-	CAST(sum(amount) as SIGNED) as score
-FROM (
-	SELECT 
-		user_id, amount 
-	FROM 
-		score 
+	`rank`,
+	ranks.module_id,
+ 	time,
+ 	flag,
+ 	base_score.points as base_score,
+ 	COALESCE(bonus_score.points, 0) as bonus_score,
+ 	base_score.points + COALESCE(bonus_score.points, 0) as score
+FROM ranks
+left join
+	module_point as bonus_score
+	on (
+		ranks.module_id = bonus_score.module_id
+	and
+		`rank` = bonus_score.submission_rank
+	) 
+inner join 
+	module_point as base_score
+	on (
+		ranks.module_id=base_score.module_id 
+	and 
+		base_score.submission_rank=0
+	);
+
+CREATE VIEW scoreboard AS
+SELECT
+	rank() over(order by sum(score) desc) as 'rank',
+	user_id,
+	CAST(sum(score) as SIGNED) as score,
+	sum(case when `rank` = 1 then 1 else 0 end) as gold_medals,
+	sum(case when `rank` = 2 then 1 else 0 end) as silver_medals,
+	sum(case when `rank` = 3 then 1 else 0 end) as bronze_medals 
+FROM 
+(
+	SELECT
+		user_id, score, `rank`
+	FROM
+		ranked_submission
 	UNION ALL
-	SELECT 
-		user_id, 
-		amount 
-	FROM 
+	SELECT
+		user_id,
+		amount as score, 
+		0
+	FROM
 		correction
 	UNION ALL
-	SELECT 
-		id 
-	as 
+	SELECT
+		id
+	as
 		user_id, 
-		0 
-	FROM 
-		user) 
-	as 
+		0,
+		0
+	FROM
+		user
+	) 
+	as
 	all_scores 
 group by user_id order by 'rank' desc;
-
-

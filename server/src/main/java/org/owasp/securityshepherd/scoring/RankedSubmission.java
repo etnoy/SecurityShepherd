@@ -17,34 +17,40 @@
 package org.owasp.securityshepherd.scoring;
 
 import java.io.Serializable;
-import org.springframework.data.relational.core.mapping.Table;
+import java.time.LocalDateTime;
+import org.springframework.data.annotation.Id;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.NonNull;
 import lombok.Value;
+import lombok.NonNull;
 import lombok.With;
 
 @Value
 @Builder
+@AllArgsConstructor
 @With
-@Table("scoreboard")
-public class ScoreboardEntry implements Serializable {
-  private static final long serialVersionUID = 902640084501001329L;
+public class RankedSubmission implements Serializable {
+  static final long serialVersionUID = -5485881248601955741L;
+
+  @Id
+  Long submissionId;
 
   @NonNull
-  private Long rank;
-  
-  @NonNull
-  private Long userId;
+  Long userId;
 
   @NonNull
-  private Long score;
+  Long moduleId;
   
+  Long rank;
+
   @NonNull
-  private Long goldMedals;
+  LocalDateTime time;
+
+  String flag;
   
-  @NonNull
-  private Long silverMedals;
+  Long baseScore;
   
-  @NonNull
-  private Long bronzeMedals;
+  Long bonusScore;
+  
+  Long score;
 }

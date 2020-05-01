@@ -1,5 +1,8 @@
 export class Score {
-  rank: string;
-  userId: string;
-  score: string;
+  rank: number;
+  userId: number;
+  score: number;
+  goldMedals: number;
+  silverMedals: number;
+  bronzeMedals: number;
 }
