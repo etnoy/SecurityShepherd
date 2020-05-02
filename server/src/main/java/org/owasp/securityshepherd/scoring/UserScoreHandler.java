@@ -16,10 +16,7 @@
 
 package org.owasp.securityshepherd.scoring;
 
-import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
-import org.owasp.securityshepherd.module.ModuleService;
-import org.owasp.securityshepherd.user.UserService;
 import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
