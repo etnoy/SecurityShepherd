@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="CrossOriginConfiguration unit test" tests="1" skipped="0" failures="0" errors="0" timestamp="2020-09-14T14:07:31" hostname="PCSE07195" time="1.434">
-  <properties/>
-  <testcase name="authenticate_EmptyPassword_ReturnsIllegalArgumentException()" classname="org.owasp.securityshepherd.test.configuration.CrossOriginConfigurationTest" time="1.434"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="FlagController unit test" tests="2" skipped="0" failures="0" errors="0" timestamp="2020-09-14T14:07:31" hostname="PCSE07195" time="3.744">
-  <properties/>
-  <testcase name="submitFlag_UserNotAuthenticated_ReturnsException()" classname="org.owasp.securityshepherd.test.controller.FlagControllerTest" time="3.743"/>
-  <testcase name="submitFlag_UserAuthenticatedAndValidFlagSubmitted_ReturnsValidSubmission()" classname="org.owasp.securityshepherd.test.controller.FlagControllerTest" time="3.959"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>

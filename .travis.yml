@@ -1,6 +1,13 @@
 os: linux
 dist: xenial
 language: java
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
 jobs:
   include:
     - stage: test
@@ -9,7 +16,7 @@ jobs:
         - cd server
         - git fetch --unshallow
       script:
-        - mvn clean verify sonar:sonar -DskipITs=true -Pcoverage -Dsonar.projectKey=etnoy_SecurityShepherd -B -V
+        - ./gradlew test 
     - stage: test
       name: Backend integration tests
       services: mysql
