@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=edge"/>
+<title>Test results - XssTutorial unit test</title>
+<link href="../css/base-style.css" rel="stylesheet" type="text/css"/>
+<link href="../css/style.css" rel="stylesheet" type="text/css"/>
+<script src="../js/report.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="content">
+<h1>XssTutorial unit test</h1>
+<div class="breadcrumbs">
+<a href="../index.html">all</a> &gt; 
+<a href="../packages/org.owasp.securityshepherd.test.module.xss.html">org.owasp.securityshepherd.test.module.xss</a> &gt; XssTutorialTest</div>
+<div id="summary">
+<table>
+<tr>
+<td>
+<div class="summaryGroup">
+<table>
+<tr>
+<td>
+<div class="infoBox" id="tests">
+<div class="counter">11</div>
+<p>tests</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="failures">
+<div class="counter">0</div>
+<p>failures</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="ignored">
+<div class="counter">0</div>
+<p>ignored</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="duration">
+<div class="counter">0.432s</div>
+<p>duration</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</td>
+<td>
+<div class="infoBox success" id="successRate">
+<div class="percent">100%</div>
+<p>successful</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div id="tabs">
+<ul class="tabLinks">
+<li>
+<a href="#tab0">Tests</a>
+</li>
+<li>
+<a href="#tab1">Standard output</a>
+</li>
+</ul>
+<div id="tab0" class="tab">
+<h2>Tests</h2>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Duration</th>
+<th>Result</th>
+</tr>
+</thead>
+<tr>
+<td class="success">getDescription_IsNotEmpty()</td>
+<td class="success">0.001s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">getModuleId_ModuleIntialized_ReturnsModuleId()</td>
+<td class="success">0.005s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">getModuleId_ModuleNotIntialized_ThrowsModuleNotInitializedException()</td>
+<td class="success">0.012s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">getName_ReturnsXssTutorial()</td>
+<td class="success">0.001s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">getShortName_ReturnsXssTutorial()</td>
+<td class="success">0.183s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">initialize_DuplicateModuleName_ReturnsException()</td>
+<td class="success">0.005s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">initialize_DuplicateModuleShortName_ReturnsException()</td>
+<td class="success">0.003s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">initialize_ValidModuleName_InitializesModule()</td>
+<td class="success">0.025s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">submitQuery_MakesAlert_ReturnsFlag()</td>
+<td class="success">0.061s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">submitQuery_ModuleNotIntialized_ReturnsModuleNotInitializedException()</td>
+<td class="success">0.001s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">submitQuery_NoAlert_ReturnsQuery()</td>
+<td class="success">0.135s</td>
+<td class="success">passed</td>
+</tr>
+</table>
+</div>
+<div id="tab1" class="tab">
+<h2>Standard output</h2>
+<span class="code">
+<pre>16:07:38.709 [ForkJoinPool-1-worker-5] DEBUG reactor.core.publisher.Hooks - Enabling stacktrace debugging via onOperatorDebug
+16:07:38.727 [ForkJoinPool-1-worker-0] DEBUG org.springframework.data.convert.CustomConversions - Adding user defined converter from class java.time.LocalDate to class java.time.LocalDate as writing converter.
+16:07:38.728 [ForkJoinPool-1-worker-0] DEBUG org.springframework.data.convert.CustomConversions - Adding user defined converter from class java.time.LocalDateTime to class java.time.LocalDateTime as writing converter.
+16:07:38.728 [ForkJoinPool-1-worker-0] DEBUG org.springframework.data.convert.CustomConversions - Adding user defined converter from class java.time.LocalTime to class java.time.LocalTime as writing converter.
+16:07:38.729 [ForkJoinPool-1-worker-0] DEBUG org.springframework.data.convert.CustomConversions - Adding converter from interface io.r2dbc.spi.Row to class java.lang.Boolean as reading converter.
+16:07:38.729 [ForkJoinPool-1-worker-0] DEBUG org.springframework.data.convert.CustomConversions - Adding converter from interface io.r2dbc.spi.Row to class java.lang.Number as reading converter.
+16:07:38.729 [ForkJoinPool-1-worker-0] DEBUG org.springframework.data.convert.CustomConversions - Adding converter from interface io.r2dbc.spi.Row to class java.time.LocalDate as reading converter.
+16:07:38.730 [ForkJoinPool-1-worker-0] DEBUG org.springframework.data.convert.CustomConversions - Adding converter from interface io.r2dbc.spi.Row to class java.time.LocalDateTime as reading converter.
+16:07:38.730 [ForkJoinPool-1-worker-0] DEBUG org.springframework.data.convert.CustomConversions - Adding converter from interface io.r2dbc.spi.Row to class java.time.LocalTime as reading converter.
+16:07:38.730 [ForkJoinPool-1-worker-0] DEBUG org.springframework.data.convert.CustomConversions - Adding converter from interface io.r2dbc.spi.Row to class java.time.OffsetDateTime as reading converter.
+16:07:38.730 [ForkJoinPool-1-worker-0] DEBUG org.springframework.data.convert.CustomConversions - Adding converter from interface io.r2dbc.spi.Row to class java.lang.String as reading converter.
+16:07:38.731 [ForkJoinPool-1-worker-0] DEBUG org.springframework.data.convert.CustomConversions - Adding converter from interface io.r2dbc.spi.Row to class java.util.UUID as reading converter.
+16:07:38.731 [ForkJoinPool-1-worker-0] DEBUG org.springframework.data.convert.CustomConversions - Adding converter from interface io.r2dbc.spi.Row to class java.time.ZonedDateTime as reading converter.
+16:07:38.796 [ForkJoinPool-1-worker-0] DEBUG org.springframework.data.convert.CustomConversions - Adding converter from class java.util.Date to class java.time.LocalDateTime as reading converter.
+16:07:38.798 [ForkJoinPool-1-worker-0] DEBUG org.springframework.data.convert.CustomConversions - Adding converter from class java.time.LocalDateTime to class java.util.Date as writing converter.
+16:07:38.798 [ForkJoinPool-1-worker-0] DEBUG org.springframework.data.convert.CustomConversions - Adding converter from class java.util.Date to class java.time.LocalDate as reading converter.
+16:07:38.799 [ForkJoinPool-1-worker-0] DEBUG org.springframework.data.convert.CustomConversions - Adding converter from class java.time.LocalDate to class java.util.Date as writing converter.
+16:07:38.799 [ForkJoinPool-1-worker-0] DEBUG org.springframework.data.convert.CustomConversions - Adding converter from class java.util.Date to class java.time.LocalTime as reading converter.
+16:07:38.800 [ForkJoinPool-1-worker-0] DEBUG org.springframework.data.convert.CustomConversions - Adding converter from class java.time.LocalTime to class java.util.Date as writing converter.
+16:07:38.800 [ForkJoinPool-1-worker-0] DEBUG org.springframework.data.convert.CustomConversions - Adding converter from class java.util.Date to class java.time.Instant as reading converter.
+16:07:38.801 [ForkJoinPool-1-worker-0] DEBUG org.springframework.data.convert.CustomConversions - Adding converter from class java.time.Instant to class java.util.Date as writing converter.
+16:07:38.801 [ForkJoinPool-1-worker-0] DEBUG org.springframework.data.convert.CustomConversions - Adding converter from class java.time.LocalDateTime to class java.time.Instant as reading converter.
+16:07:38.801 [ForkJoinPool-1-worker-0] DEBUG org.springframework.data.convert.CustomConversions - Adding converter from class java.time.Instant to class java.time.LocalDateTime as reading converter.
+16:07:38.801 [ForkJoinPool-1-worker-0] DEBUG org.springframework.data.convert.CustomConversions - Adding converter from class java.time.ZoneId to class java.lang.String as writing converter.
+16:07:38.802 [ForkJoinPool-1-worker-0] DEBUG org.springframework.data.convert.CustomConversions - Adding converter from class java.lang.String to class java.time.ZoneId as reading converter.
+16:07:38.803 [ForkJoinPool-1-worker-0] DEBUG org.springframework.data.convert.CustomConversions - Adding converter from class java.time.Duration to class java.lang.String as writing converter.
+16:07:38.803 [ForkJoinPool-1-worker-0] DEBUG org.springframework.data.convert.CustomConversions - Adding converter from class java.lang.String to class java.time.Duration as reading converter.
+16:07:38.803 [ForkJoinPool-1-worker-0] DEBUG org.springframework.data.convert.CustomConversions - Adding converter from class java.time.Period to class java.lang.String as writing converter.
+16:07:38.803 [ForkJoinPool-1-worker-0] DEBUG org.springframework.data.convert.CustomConversions - Adding converter from class java.lang.String to class java.time.Period as reading converter.
+16:07:38.804 [ForkJoinPool-1-worker-0] DEBUG org.springframework.data.convert.CustomConversions - Adding converter from class java.lang.String to class java.time.LocalDate as reading converter.
+16:07:38.804 [ForkJoinPool-1-worker-0] DEBUG org.springframework.data.convert.CustomConversions - Adding converter from class java.lang.String to class java.time.LocalDateTime as reading converter.
+16:07:38.804 [ForkJoinPool-1-worker-0] DEBUG org.springframework.data.convert.CustomConversions - Adding converter from class java.lang.String to class java.time.Instant as reading converter.
+16:07:38.903 [ForkJoinPool-1-worker-5] INFO org.owasp.securityshepherd.module.xss.XssTutorial - Creating xss tutorial module
+16:07:39.074 [ForkJoinPool-1-worker-5] INFO org.owasp.securityshepherd.module.xss.XssTutorial - Creating xss tutorial module
+16:07:39.081 [ForkJoinPool-1-worker-5] INFO org.owasp.securityshepherd.module.xss.XssTutorial - Creating xss tutorial module
+16:07:39.191 [ForkJoinPool-1-worker-4] DEBUG reactor.core.publisher.Hooks - Enabling stacktrace debugging via onOperatorDebug
+16:07:39.196 [ForkJoinPool-1-worker-5] INFO org.owasp.securityshepherd.module.xss.XssTutorial - Creating xss tutorial module
+</pre>
+</span>
+</div>
+</div>
+<div id="footer">
+<p>
+<div>
+<label class="hidden" id="label-for-line-wrapping-toggle" for="line-wrapping-toggle">Wrap lines
+<input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
+</label>
+</div>Generated by 
+<a href="http://www.gradle.org">Gradle 6.6.1</a> at Sep 14, 2020 4:07:56 PM</p>
+</div>
+</div>
+</body>
+</html>

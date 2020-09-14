@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="XssService unit test" tests="3" skipped="0" failures="0" errors="0" timestamp="2020-09-14T14:07:35" hostname="PCSE07195" time="3.503">
+  <properties/>
+  <testcase name="doXss_AlertHandlerFindsAlerts_ReturnsCollectedAlerts()" classname="org.owasp.securityshepherd.test.service.XssServiceTest" time="3.481"/>
+  <testcase name="doXss_PageInitializeThrowsIOException_ThrowsXssEvaluationException()" classname="org.owasp.securityshepherd.test.service.XssServiceTest" time="0.01"/>
+  <testcase name="doXss_GetPageThrowsIOException_ThrowsXssEvaluationException()" classname="org.owasp.securityshepherd.test.service.XssServiceTest" time="0.005"/>
+  <system-out><![CDATA[16:07:38.970 [ForkJoinPool-1-worker-5] INFO org.owasp.securityshepherd.module.xss.XssTutorial - Creating xss tutorial module
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="XssWebClientFactory unit test" tests="2" skipped="0" failures="0" errors="0" timestamp="2020-09-14T14:07:39" hostname="PCSE07195" time="3.152">
+  <properties/>
+  <testcase name="createAlertHandler_ReturnsAlertHandler()" classname="org.owasp.securityshepherd.test.module.xss.XssWebClientFactoryTest" time="0.007"/>
+  <testcase name="createWebClient_ReturnsWebClient()" classname="org.owasp.securityshepherd.test.module.xss.XssWebClientFactoryTest" time="3.267"/>
+  <system-out><![CDATA[16:07:39.066 [ForkJoinPool-1-worker-5] INFO org.owasp.securityshepherd.module.xss.XssTutorial - Creating xss tutorial module
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="LoginController unit test" tests="3" skipped="0" failures="0" errors="0" timestamp="2020-09-14T14:07:31" hostname="PCSE07195" time="6.44">
+  <properties/>
+  <testcase name="register_ValidData_ReturnsUserid()" classname="org.owasp.securityshepherd.test.controller.LoginControllerTest" time="6.368"/>
+  <testcase name="login_InvalidCredentials_ReturnsJWT()" classname="org.owasp.securityshepherd.test.controller.LoginControllerTest" time="2.722"/>
+  <testcase name="login_ValidCredentials_ReturnsJWT()" classname="org.owasp.securityshepherd.test.controller.LoginControllerTest" time="4.362"/>
+  <system-out><![CDATA[16:07:31.748 [ForkJoinPool-1-worker-2] DEBUG reactor.core.publisher.Hooks - Enabling stacktrace debugging via onOperatorDebug
+16:07:33.877 [ForkJoinPool-1-worker-1] DEBUG reactor.core.publisher.Hooks - Hooking onLastOperator: org.springframework.security.core.context.SecurityContext
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

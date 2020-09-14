@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="StartupRunner unit test" tests="1" skipped="0" failures="0" errors="0" timestamp="2020-09-14T14:07:31" hostname="PCSE07195" time="4.095">
+  <properties/>
+  <testcase name="run_MockedServices_CallsMocks()" classname="org.owasp.securityshepherd.test.application.StartupRunnerTest" time="4.095"/>
+  <system-out><![CDATA[16:07:31.484 [ForkJoinPool-1-worker-1] DEBUG reactor.util.Loggers$LoggerFactory - Using Slf4j logging framework
+16:07:31.495 [ForkJoinPool-1-worker-1] DEBUG reactor.core.publisher.Hooks - Enabling stacktrace debugging via onOperatorDebug
+16:07:31.499 [ForkJoinPool-1-worker-7] DEBUG reactor.core.publisher.Hooks - Enabling stacktrace debugging via onOperatorDebug
+16:07:31.501 [ForkJoinPool-1-worker-6] DEBUG reactor.core.publisher.Hooks - Enabling stacktrace debugging via onOperatorDebug
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

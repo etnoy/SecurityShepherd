@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ClassIdNotFoundException unit test" tests="1" skipped="0" failures="0" errors="0" timestamp="2020-09-14T14:07:37" hostname="PCSE07195" time="0.008">
+  <properties/>
+  <testcase name="messageConstructor_ValidMessage_MessageIncluded()" classname="org.owasp.securityshepherd.test.exception.ClassIdNotFoundExceptionTest" time="0.008"/>
+  <system-out><![CDATA[16:07:37.587 [ForkJoinPool-1-worker-3] DEBUG reactor.core.publisher.Hooks - Enabling stacktrace debugging via onOperatorDebug
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

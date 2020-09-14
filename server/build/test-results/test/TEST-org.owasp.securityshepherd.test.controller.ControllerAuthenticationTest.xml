@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ControllerAuthentication unit test" tests="2" skipped="0" failures="0" errors="0" timestamp="2020-09-14T14:07:31" hostname="PCSE07195" time="3.908">
+  <properties/>
+  <testcase name="getUserId_UserNotAuthenticated_ReturnsNotAuthenticatedException()" classname="org.owasp.securityshepherd.test.controller.ControllerAuthenticationTest" time="3.889"/>
+  <testcase name="getUserId_UserAuthenticated_ReturnsUserId()" classname="org.owasp.securityshepherd.test.controller.ControllerAuthenticationTest" time="0.016"/>
+  <system-out><![CDATA[16:07:35.459 [ForkJoinPool-1-worker-1] DEBUG reactor.core.publisher.Hooks - Hooking onLastOperator: org.springframework.security.core.context.SecurityContext
+]]></system-out>
+  <system-err><![CDATA[Sep 14, 2020 4:07:30 PM org.junit.jupiter.engine.config.EnumConfigurationParameterConverter get
+INFO: Using parallel execution mode 'CONCURRENT' set via the 'junit.jupiter.execution.parallel.mode.default' configuration parameter.
+]]></system-err>
+</testsuite>

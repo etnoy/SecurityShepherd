@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="SqlInjectionTutorial unit test" tests="12" skipped="0" failures="0" errors="0" timestamp="2020-09-14T14:07:38" hostname="PCSE07195" time="4.446">
+  <properties/>
+  <testcase name="getShortName_ReturnsSqlInjectionTutorial()" classname="org.owasp.securityshepherd.test.module.sql.SqlInjectionTutorialTest" time="0.658"/>
+  <testcase name="initialize_DuplicateModuleName_ReturnsException()" classname="org.owasp.securityshepherd.test.module.sql.SqlInjectionTutorialTest" time="0.524"/>
+  <testcase name="initialize_ValidModuleName_InitializesModule()" classname="org.owasp.securityshepherd.test.module.sql.SqlInjectionTutorialTest" time="0.009"/>
+  <testcase name="submitQuery_ModuleNotIntialized_ReturnsModuleNotInitializedException()" classname="org.owasp.securityshepherd.test.module.sql.SqlInjectionTutorialTest" time="0.521"/>
+  <testcase name="getModuleId_ModuleNotIntialized_ThrowsModuleNotInitializedException()" classname="org.owasp.securityshepherd.test.module.sql.SqlInjectionTutorialTest" time="0.004"/>
+  <testcase name="getDescription_IsNotEmpty()" classname="org.owasp.securityshepherd.test.module.sql.SqlInjectionTutorialTest" time="0.001"/>
+  <testcase name="initialize_DuplicateModuleShortName_ReturnsException()" classname="org.owasp.securityshepherd.test.module.sql.SqlInjectionTutorialTest" time="0.003"/>
+  <testcase name="getModuleId_ModuleIntialized_ReturnsModuleId()" classname="org.owasp.securityshepherd.test.module.sql.SqlInjectionTutorialTest" time="0.003"/>
+  <testcase name="submitQuery_BadSqlGrammarException_ReturnsErrorToUser()" classname="org.owasp.securityshepherd.test.module.sql.SqlInjectionTutorialTest" time="1.839"/>
+  <testcase name="submitQuery_OtherException_ThrowsException()" classname="org.owasp.securityshepherd.test.module.sql.SqlInjectionTutorialTest" time="3.756"/>
+  <testcase name="getName_ReturnsSqlInjectionTutorial()" classname="org.owasp.securityshepherd.test.module.sql.SqlInjectionTutorialTest" time="0.004"/>
+  <testcase name="submitQuery_ModuleInitialized_ReturnsSqlInjectionTutorialRow()" classname="org.owasp.securityshepherd.test.module.sql.SqlInjectionTutorialTest" time="2.522"/>
+  <system-out><![CDATA[16:07:41.547 [ForkJoinPool-1-worker-6] INFO org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorial - Creating sql tutorial module
+16:07:41.575 [ForkJoinPool-1-worker-6] INFO org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorial - Creating sql tutorial module
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

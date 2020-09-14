@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="CryptoService unit test" tests="5" skipped="0" failures="0" errors="0" timestamp="2020-09-14T14:07:35" hostname="PCSE07195" time="1.896">
+  <properties/>
+  <testcase name="hmac_NullMessage_ThrowsNullPointerException()" classname="org.owasp.securityshepherd.test.crypto.CryptoServiceTest" time="0.165"/>
+  <testcase name="hmac_NullKey_ThrowsNullPointerException()" classname="org.owasp.securityshepherd.test.crypto.CryptoServiceTest" time="0.002"/>
+  <testcase name="hmac_GetHmacThrowsNoSuchAlgorithmException_ThrowsCryptographicException()" classname="org.owasp.securityshepherd.test.crypto.CryptoServiceTest" time="0.082"/>
+  <testcase name="hmac_InvalidKeyException_ThrowsCryptographicException()" classname="org.owasp.securityshepherd.test.crypto.CryptoServiceTest" time="0.269"/>
+  <testcase name="hmac_ValidData_ReturnsHash()" classname="org.owasp.securityshepherd.test.crypto.CryptoServiceTest" time="1.798"/>
+  <system-out><![CDATA[16:07:35.669 [ForkJoinPool-1-worker-3] DEBUG reactor.core.publisher.Hooks - Enabling stacktrace debugging via onOperatorDebug
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

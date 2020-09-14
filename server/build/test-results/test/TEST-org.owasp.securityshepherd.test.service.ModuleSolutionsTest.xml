@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ModuleSolutions unit test" tests="9" skipped="0" failures="0" errors="0" timestamp="2020-09-14T14:07:40" hostname="PCSE07195" time="0.158">
+  <properties/>
+  <testcase name="findOpenModuleByShortNameWithSolutionStatus_EmptyShortName_ReturnsInvalidModuleShortNameException()" classname="org.owasp.securityshepherd.test.service.ModuleSolutionsTest" time="0.005"/>
+  <testcase name="findOpenModulesByUserIdWithSolutionStatus_NoModulesOrSubmissions_ReturnsEmpty()" classname="org.owasp.securityshepherd.test.service.ModuleSolutionsTest" time="0.004"/>
+  <testcase name="findOpenModuleByShortNameWithSolutionStatus_ModuleIsOpenAndHasSolution_ReturnsModule()" classname="org.owasp.securityshepherd.test.service.ModuleSolutionsTest" time="0.015"/>
+  <testcase name="findOpenModuleByShortNameWithSolutionStatus_NullShortName_ReturnsInvalidModuleShortNameException()" classname="org.owasp.securityshepherd.test.service.ModuleSolutionsTest" time="0.002"/>
+  <testcase name="findOpenModuleByShortNameWithSolutionStatus_ModuleIsOpenAndHasNoSolution_ReturnsModule()" classname="org.owasp.securityshepherd.test.service.ModuleSolutionsTest" time="0.005"/>
+  <testcase name="findOpenModulesByUserIdWithSolutionStatus_ValidSubmissions_ReturnsModules()" classname="org.owasp.securityshepherd.test.service.ModuleSolutionsTest" time="0.009"/>
+  <testcase name="findOpenModuleByShortNameWithSolutionStatus_ModuleIsClosedAndHasSolution_ReturnsEmpty()" classname="org.owasp.securityshepherd.test.service.ModuleSolutionsTest" time="0.004"/>
+  <testcase name="findOpenModuleByShortNameWithSolutionStatus_InvalidUserid_ReturnsInvalidUserIdException()" classname="org.owasp.securityshepherd.test.service.ModuleSolutionsTest" time="0.096"/>
+  <testcase name="findOpenModulesByUserIdWithSolutionStatus_InvalidUserid_ReturnsInvalidUserIdException()" classname="org.owasp.securityshepherd.test.service.ModuleSolutionsTest" time="0.006"/>
+  <system-out><![CDATA[16:07:40.461 [ForkJoinPool-1-worker-7] DEBUG reactor.core.publisher.Hooks - Enabling stacktrace debugging via onOperatorDebug
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

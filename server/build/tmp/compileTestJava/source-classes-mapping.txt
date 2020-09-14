@@ -1,0 +1,104 @@
+org/owasp/securityshepherd/test/model/SubmissionDtoTest.java
+ org.owasp.securityshepherd.test.model.SubmissionDtoTest
+org/owasp/securityshepherd/test/model/SamlAuthTest.java
+ org.owasp.securityshepherd.test.model.SamlAuthTest
+org/owasp/securityshepherd/test/crypto/CryptoServiceTest.java
+ org.owasp.securityshepherd.test.crypto.CryptoServiceTest
+org/owasp/securityshepherd/test/model/ClassTest.java
+ org.owasp.securityshepherd.test.model.ClassTest
+org/owasp/securityshepherd/test/module/xss/XssTutorialResponseTest.java
+ org.owasp.securityshepherd.test.module.xss.XssTutorialResponseTest
+org/owasp/securityshepherd/test/configuration/CrossOriginConfigurationTest.java
+ org.owasp.securityshepherd.test.configuration.CrossOriginConfigurationTest
+org/owasp/securityshepherd/test/exception/XssEvaluationExceptionTest.java
+ org.owasp.securityshepherd.test.exception.XssEvaluationExceptionTest
+org/owasp/securityshepherd/test/model/ModuleListItemTest.java
+ org.owasp.securityshepherd.test.model.ModuleListItemTest
+org/owasp/securityshepherd/test/model/UserTest.java
+ org.owasp.securityshepherd.test.model.UserTest
+org/owasp/securityshepherd/test/model/UserAuthTest.java
+ org.owasp.securityshepherd.test.model.UserAuthTest
+org/owasp/securityshepherd/test/service/ModuleSolutionsTest.java
+ org.owasp.securityshepherd.test.service.ModuleSolutionsTest
+org/owasp/securityshepherd/test/service/ScoreServiceTest.java
+ org.owasp.securityshepherd.test.service.ScoreServiceTest
+org/owasp/securityshepherd/test/model/RoleTest.java
+ org.owasp.securityshepherd.test.model.RoleTest
+org/owasp/securityshepherd/test/module/xss/XssTutorialTest.java
+ org.owasp.securityshepherd.test.module.xss.XssTutorialTest
+org/owasp/securityshepherd/test/controller/UserControllerTest.java
+ org.owasp.securityshepherd.test.controller.UserControllerTest
+org/owasp/securityshepherd/test/service/AuthenticationManagerTest.java
+ org.owasp.securityshepherd.test.service.AuthenticationManagerTest
+org/owasp/securityshepherd/test/service/ModuleServiceTest.java
+ org.owasp.securityshepherd.test.service.ModuleServiceTest
+org/owasp/securityshepherd/test/service/CorrectionServiceTest.java
+ org.owasp.securityshepherd.test.service.CorrectionServiceTest
+org/owasp/securityshepherd/test/service/SecurityContextRepositoryTest.java
+ org.owasp.securityshepherd.test.service.SecurityContextRepositoryTest
+org/owasp/securityshepherd/test/service/FlagHandlerTest.java
+ org.owasp.securityshepherd.test.service.FlagHandlerTest
+org/owasp/securityshepherd/test/service/ClassServiceTest.java
+ org.owasp.securityshepherd.test.service.ClassServiceTest
+org/owasp/securityshepherd/test/module/sql/SqlInjectionDatabaseClientFactoryTest.java
+ org.owasp.securityshepherd.test.module.sql.SqlInjectionDatabaseClientFactoryTest
+org/owasp/securityshepherd/test/model/PasswordLoginDtoTest.java
+ org.owasp.securityshepherd.test.model.PasswordLoginDtoTest
+org/owasp/securityshepherd/test/util/TestUtils.java
+ org.owasp.securityshepherd.test.util.TestUtils
+org/owasp/securityshepherd/test/service/UserServiceTest.java
+ org.owasp.securityshepherd.test.service.UserServiceTest
+org/owasp/securityshepherd/test/exception/ClassIdNotFoundExceptionTest.java
+ org.owasp.securityshepherd.test.exception.ClassIdNotFoundExceptionTest
+org/owasp/securityshepherd/test/model/CorrectionTest.java
+ org.owasp.securityshepherd.test.model.CorrectionTest
+org/owasp/securityshepherd/test/model/ModulePointTest.java
+ org.owasp.securityshepherd.test.model.ModulePointTest
+org/owasp/securityshepherd/test/module/sql/SqlInjectionTutorialTest.java
+ org.owasp.securityshepherd.test.module.sql.SqlInjectionTutorialTest
+org/owasp/securityshepherd/test/service/ConfigurationServiceTest.java
+ org.owasp.securityshepherd.test.service.ConfigurationServiceTest
+org/owasp/securityshepherd/test/controller/ControllerAuthenticationTest.java
+ org.owasp.securityshepherd.test.controller.ControllerAuthenticationTest
+org/owasp/securityshepherd/test/module/sql/SqlInjectionTutorialControllerTest.java
+ org.owasp.securityshepherd.test.module.sql.SqlInjectionTutorialControllerTest
+org/owasp/securityshepherd/test/model/AuthResponseTest.java
+ org.owasp.securityshepherd.test.model.AuthResponseTest
+org/owasp/securityshepherd/test/application/StartupRunnerTest.java
+ org.owasp.securityshepherd.test.application.StartupRunnerTest
+org/owasp/securityshepherd/test/service/XssServiceTest.java
+ org.owasp.securityshepherd.test.service.XssServiceTest
+org/owasp/securityshepherd/test/model/PasswordRegistrationDtoTest.java
+ org.owasp.securityshepherd.test.model.PasswordRegistrationDtoTest
+org/owasp/securityshepherd/test/controller/ModuleControllerTest.java
+ org.owasp.securityshepherd.test.controller.ModuleControllerTest
+org/owasp/securityshepherd/test/crypto/KeyServiceTest.java
+ org.owasp.securityshepherd.test.crypto.KeyServiceTest
+org/owasp/securityshepherd/test/configuration/PasswordEncoderConfigurationTest.java
+ org.owasp.securityshepherd.test.configuration.PasswordEncoderConfigurationTest
+org/owasp/securityshepherd/test/model/ConfigurationTest.java
+ org.owasp.securityshepherd.test.model.ConfigurationTest
+org/owasp/securityshepherd/test/controller/LoginControllerTest.java
+ org.owasp.securityshepherd.test.controller.LoginControllerTest
+org/owasp/securityshepherd/test/crypto/CryptoFactoryTest.java
+ org.owasp.securityshepherd.test.crypto.CryptoFactoryTest
+org/owasp/securityshepherd/test/module/xss/XssWebClientFactoryTest.java
+ org.owasp.securityshepherd.test.module.xss.XssWebClientFactoryTest
+org/owasp/securityshepherd/test/configuration/ObjectMapperConfigurationTest.java
+ org.owasp.securityshepherd.test.configuration.ObjectMapperConfigurationTest
+org/owasp/securityshepherd/test/module/sql/SqlInjectionTutorialRowTest.java
+ org.owasp.securityshepherd.test.module.sql.SqlInjectionTutorialRowTest
+org/owasp/securityshepherd/test/service/SubmissonServiceTest.java
+ org.owasp.securityshepherd.test.service.SubmissonServiceTest
+org/owasp/securityshepherd/test/model/ScoreboardEntryTest.java
+ org.owasp.securityshepherd.test.model.ScoreboardEntryTest
+org/owasp/securityshepherd/test/model/SubmissionTest.java
+ org.owasp.securityshepherd.test.model.SubmissionTest
+org/owasp/securityshepherd/test/controller/FlagControllerTest.java
+ org.owasp.securityshepherd.test.controller.FlagControllerTest
+org/owasp/securityshepherd/test/module/xss/XssTutorialControllerTest.java
+ org.owasp.securityshepherd.test.module.xss.XssTutorialControllerTest
+org/owasp/securityshepherd/test/model/ModuleTest.java
+ org.owasp.securityshepherd.test.model.ModuleTest
+org/owasp/securityshepherd/test/model/PasswordAuthTest.java
+ org.owasp.securityshepherd.test.model.PasswordAuthTest

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=edge"/>
+<title>Test results - ModuleService unit test</title>
+<link href="../css/base-style.css" rel="stylesheet" type="text/css"/>
+<link href="../css/style.css" rel="stylesheet" type="text/css"/>
+<script src="../js/report.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="content">
+<h1>ModuleService unit test</h1>
+<div class="breadcrumbs">
+<a href="../index.html">all</a> &gt; 
+<a href="../packages/org.owasp.securityshepherd.test.service.html">org.owasp.securityshepherd.test.service</a> &gt; ModuleServiceTest</div>
+<div id="summary">
+<table>
+<tr>
+<td>
+<div class="summaryGroup">
+<table>
+<tr>
+<td>
+<div class="infoBox" id="tests">
+<div class="counter">33</div>
+<p>tests</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="failures">
+<div class="counter">0</div>
+<p>failures</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="ignored">
+<div class="counter">0</div>
+<p>ignored</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="duration">
+<div class="counter">1.540s</div>
+<p>duration</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</td>
+<td>
+<div class="infoBox success" id="successRate">
+<div class="percent">100%</div>
+<p>successful</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div id="tabs">
+<ul class="tabLinks">
+<li>
+<a href="#tab0">Tests</a>
+</li>
+<li>
+<a href="#tab1">Standard output</a>
+</li>
+</ul>
+<div id="tab0" class="tab">
+<h2>Tests</h2>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Duration</th>
+<th>Result</th>
+</tr>
+</thead>
+<tr>
+<td class="success">count_NoArgument_ReturnsCount()</td>
+<td class="success">0.001s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">create_DuplicateName_ReturnsDuplicateModuleNameException()</td>
+<td class="success">0.004s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">create_EmptyName_ReturnsIllegalArgumentException()</td>
+<td class="success">0.006s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">create_NameAndShortnameAndDescription_Succeeds()</td>
+<td class="success">0.004s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">create_NameAndShortnameSucceeds()</td>
+<td class="success">0.004s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">create_NullName_ReturnsNullPointerException()</td>
+<td class="success">0.001s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">create_ValidSubmittableModule_Succeeds()</td>
+<td class="success">0.598s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">findAllOpen_NoModulesExist_ReturnsEmpty()</td>
+<td class="success">0.001s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">findAllOpen_OpenModulesExist_ReturnsOpenModules()</td>
+<td class="success">0.001s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">findAll_ModulesExist_ReturnsModules()</td>
+<td class="success">0.002s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">findAll_NoModulesExist_ReturnsEmpty()</td>
+<td class="success">0.057s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">findById_InvalidModuleId_ReturnsInvalidModuleIdException()</td>
+<td class="success">0.003s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">findById_ModuleIdExists_ReturnsInvalidModuleIdException()</td>
+<td class="success">0.002s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">findById_NonExistentModuleId_ReturnsEmpty()</td>
+<td class="success">0.011s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">findByShortName_EmptyShortName_ReturnsInvalidShortNameException()</td>
+<td class="success">0.002s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">findByShortName_ExistingShortName_ReturnsModule()</td>
+<td class="success">0.002s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">findByShortName_NonExistentShortName_ReturnsEmpty()</td>
+<td class="success">0.002s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">findByShortName_NullShortName_ReturnsNullPointerException()</td>
+<td class="success">0.004s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">findNameById_ExistingModuleId_ReturnsUserEntity()</td>
+<td class="success">0.002s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">findNameById_InvalidModuleId_ReturnsInvalidModuleIdException()</td>
+<td class="success">0.006s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">findNameById_NonExistentModuleId_ReturnsEmpty()</td>
+<td class="success">0.002s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">setDynamicFlag_FlagPreviouslySet_ReturnPreviousFlag()</td>
+<td class="success">0.782s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">setDynamicFlag_NegativeModuleId_ReturnsInvalidModuleIdException()</td>
+<td class="success">0.002s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">setDynamicFlag_NoPreviousFlag_GeneratesNewFlag()</td>
+<td class="success">0.008s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">setDynamicFlag_ZeroModuleId_ReturnsInvalidModuleIdException()</td>
+<td class="success">0.001s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">setExactFlag_EmptyExactFlag_ReturnsInvalidFlagException()</td>
+<td class="success">0.001s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">setExactFlag_InvalidModuleId_ReturnsInvalidModuleIdException()</td>
+<td class="success">0.002s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">setExactFlag_NullExactFlag_ReturnsNulPointerException()</td>
+<td class="success">0.006s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">setExactFlag_ValidFlag_SetsFlagToExact()</td>
+<td class="success">0.006s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">setName_EmptyName_ReturnsEmptyModuleNameException()</td>
+<td class="success">0.001s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">setName_InvalidModuleId_ReturnsInvalidModuleIdException()</td>
+<td class="success">0.004s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">setName_NullName_ReturnsNullPointerException()</td>
+<td class="success">0.002s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">setName_ValidName_Succeeds()</td>
+<td class="success">0.010s</td>
+<td class="success">passed</td>
+</tr>
+</table>
+</div>
+<div id="tab1" class="tab">
+<h2>Standard output</h2>
+<span class="code">
+<pre>16:07:40.328 [ForkJoinPool-1-worker-5] DEBUG reactor.core.publisher.Hooks - Enabling stacktrace debugging via onOperatorDebug
+16:07:40.330 [ForkJoinPool-1-worker-6] DEBUG reactor.core.publisher.Hooks - Enabling stacktrace debugging via onOperatorDebug
+16:07:41.552 [ForkJoinPool-1-worker-6] INFO org.owasp.securityshepherd.module.ModuleService - Setting name of module with id 30 to newName
+16:07:41.713 [ForkJoinPool-1-worker-5] INFO org.owasp.securityshepherd.module.ModuleService - Creating new module with name TestModule and url test-module
+16:07:41.748 [ForkJoinPool-1-worker-5] INFO org.owasp.securityshepherd.module.ModuleService - Creating new module with name TestModule and url test-module
+16:07:41.754 [ForkJoinPool-1-worker-5] INFO org.owasp.securityshepherd.module.ModuleService - Creating new module with name TestModule and url test-module
+</pre>
+</span>
+</div>
+</div>
+<div id="footer">
+<p>
+<div>
+<label class="hidden" id="label-for-line-wrapping-toggle" for="line-wrapping-toggle">Wrap lines
+<input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
+</label>
+</div>Generated by 
+<a href="http://www.gradle.org">Gradle 6.6.1</a> at Sep 14, 2020 4:07:56 PM</p>
+</div>
+</div>
+</body>
+</html>
