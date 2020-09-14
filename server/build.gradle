@@ -17,6 +17,15 @@ repositories {
     mavenLocal()
 }
 
+sourceSets {
+    integrationTest {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+		java.srcDir 'src/integration-test/java'
+        resources.srcDir 'src/integration-test/resources'
+    }
+}
+
 dependencies {
     implementation 'com.google.guava:guava:28.2-jre'
     implementation 'org.springframework.data:spring-data-commons'
@@ -42,6 +51,7 @@ dependencies {
     
     compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+	
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
 	testImplementation "org.projectlombok:lombok"
@@ -55,7 +65,22 @@ dependencies {
     testImplementation 'io.projectreactor:reactor-test:3.3.4.RELEASE'
     testImplementation 'org.apache.commons:commons-lang3:3.11'   
     
+    integrationTestCompileOnly 'org.projectlombok:lombok'
+    
+    integrationTestAnnotationProcessor "org.projectlombok:lombok"
+	integrationTestImplementation "org.projectlombok:lombok"
+    
+    integrationTestImplementation 'org.springframework.boot:spring-boot-starter-test'
+    integrationTestImplementation 'org.springframework.security:spring-security-test:5.2.2.RELEASE'
+    integrationTestImplementation 'org.junit.jupiter:junit-jupiter-engine:5.6.0'
+    integrationTestRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.0'
+    
+    integrationTestImplementation 'nl.jqno.equalsverifier:equalsverifier:3.4.2'
+    integrationTestImplementation 'io.projectreactor:reactor-test:3.3.4.RELEASE'
+    integrationTestImplementation 'org.apache.commons:commons-lang3:3.11' 
 }
+
+
 
 group = 'org.owasp.securityshepherd'
 version = '4.0.0-testing'
@@ -66,12 +91,21 @@ configurations {
   compileOnly {
     extendsFrom annotationProcessor
   }
+  integrationTestImplementation.extendsFrom implementation
+  integrationTestRuntimeOnly.extendsFrom runtimeOnly
 }
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
+task integrationTest(type: Test) {
+    description = 'Runs integration tests.'
+    group = 'verification'
+
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+}
 
 test {
     useJUnitPlatform()
