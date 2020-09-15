@@ -2,12 +2,13 @@ import { TestBed, async } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Component } from '@angular/core';
 
 describe('AppComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [AppComponent],
-      imports: [HttpClientTestingModule, RouterTestingModule]
+      declarations: [AppComponent, MockAlertComponent],
+      imports: [HttpClientTestingModule, RouterTestingModule],
     }).compileComponents();
   }));
 
@@ -17,3 +18,9 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 });
+
+@Component({
+  selector: 'app-alert',
+  template: '',
+})
+class MockAlertComponent {}
