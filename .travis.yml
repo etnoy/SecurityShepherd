@@ -33,7 +33,7 @@ jobs:
         - mysql --version
         - mysql -e 'CREATE DATABASE IF NOT EXISTS core;'
       script:
-        - mvn verify -DskipUTs=true
+        - ./gradlew integrationTest
     - stage: test
       name: Angular lint
       language: node_js
