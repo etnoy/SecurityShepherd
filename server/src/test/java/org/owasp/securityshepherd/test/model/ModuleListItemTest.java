@@ -48,10 +48,10 @@ public class ModuleListItemTest {
 
   @Test
   void build_ShortNameNotGiven_ThrowsNullPointerException() {
+    final ModuleListItemBuilder moduleListItemBuilder =
+        ModuleListItem.builder().id(1L).name("TestModuleListItem");
     Throwable thrownException =
-        assertThrows(
-            NullPointerException.class,
-            () -> ModuleListItem.builder().id(1L).name("TestModuleListItem").build());
+        assertThrows(NullPointerException.class, () -> moduleListItemBuilder.build());
     assertThat(thrownException.getMessage(), is("shortName is marked non-null but is null"));
   }
 
