@@ -38,64 +38,64 @@ public class XssServiceIT {
   @Autowired private XssService xssService;
 
   @Test
-  public void scriptAlert_ShouldShowAlert() throws Exception {
+  void scriptAlert_ShouldShowAlert() throws Exception {
     assertThat(executeQuery("<script>alert('script-xss')</script>"), is("script-xss"));
   }
 
   @Test
-  public void noXss_ShouldNotShowAlert() throws Exception {
+  void noXss_ShouldNotShowAlert() throws Exception {
     assertThat(executeQuery(""), is(nullValue()));
   }
 
   @Test
-  public void noXss_PreviousFailure_ShouldShowAlert() throws Exception {
+  void noXss_PreviousFailure_ShouldShowAlert() throws Exception {
     assertThat(executeQuery(""), is(nullValue()));
     // Test for the gotcha that previous versions of xssservice didn't clear between invocations
     assertThat(executeQuery("<script>alert('previousfail')</script>"), is("previousfail"));
   }
 
   @Test
-  public void noXss_PreviousSuccess_ShouldNotShowAlert() throws Exception {
+  void noXss_PreviousSuccess_ShouldNotShowAlert() throws Exception {
     assertThat(executeQuery("<script>alert('success')</script>"), is("success"));
     // Test for the gotcha that previous versions of xssservice didn't clear between invocations
     assertThat(executeQuery(""), is(nullValue()));
   }
 
   @Test
-  public void imgOnLoad_ShouldShowAlert() throws Exception {
+  void imgOnLoad_ShouldShowAlert() throws Exception {
     assertThat(executeQuery("<img src=\"#\" onload=\"alert('img-onload')\" />"), is("img-onload"));
   }
 
   @Test
-  public void submitButtonOnMouseOver_ShouldShowAlert() throws Exception {
+  void submitButtonOnMouseOver_ShouldShowAlert() throws Exception {
     assertThat(
         executeQuery("<input type=\"submit\" onmouseover=\"alert('submit-mouseover')\"/>"),
         is("submit-mouseover"));
   }
 
   @Test
-  public void submitButtonOnMouseDown_ShouldShowAlert() throws Exception {
+  void submitButtonOnMouseDown_ShouldShowAlert() throws Exception {
     assertThat(
         executeQuery("<input type=\"submit\" onmousedown=\"alert('submit-mousedown')\"/>"),
         is("submit-mousedown"));
   }
 
   @Test
-  public void aOnBlur_ShouldShowAlert() throws Exception {
+  void aOnBlur_ShouldShowAlert() throws Exception {
     assertThat(
         executeQuery("<a onblur=alert('a-onblur') tabindex=1 id=x></a><input autofocus>"),
         is("a-onblur"));
   }
 
   @Test
-  public void submitButtonOnClick_ShouldShowAlert() throws Exception {
+  void submitButtonOnClick_ShouldShowAlert() throws Exception {
     assertThat(
         executeQuery("<input type=\"submit\" onclick=\"alert('submit-onclick')\"/>"),
         is("submit-onclick"));
   }
 
   @Test
-  public void inputButtonOnClick_ShouldShowAlert() throws Exception {
+  void inputButtonOnClick_ShouldShowAlert() throws Exception {
     assertThat(
         executeQuery("<input type=\"button\" onclick=\"alert('input-onclick')\"/>"),
         is("input-onclick"));

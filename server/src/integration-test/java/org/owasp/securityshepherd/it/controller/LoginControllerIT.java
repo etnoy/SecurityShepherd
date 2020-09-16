@@ -61,7 +61,7 @@ public class LoginControllerIT {
 
   @Test
   @DisplayName("Logging in with correct credentials should return a valid token")
-  public void login_CorrectCredentials_ReturnsToken() {
+  void login_CorrectCredentials_ReturnsToken() {
     final String loginName = "test";
     final String hashedPassword = "$2y$12$53B6QcsGwF3Os1GVFUFSQOhIPXnWFfuEkRJdbknFWnkXfUBMUKhaW";
 
@@ -106,7 +106,7 @@ public class LoginControllerIT {
 
   @Test
   @DisplayName("Logging in with an incorrect password should return HTTP Unauthorized")
-  public void login_WrongPassword_ReturnsUnauthorized() {
+  void login_WrongPassword_ReturnsUnauthorized() {
     final String loginName = "test";
     final String hashedPassword = "$2y$12$53B6QcsGwF3Os1GVFUFSQOhIPXnWFfuEkRJdbknFWnkXfUBMUKhaW";
 
@@ -127,7 +127,7 @@ public class LoginControllerIT {
 
   @Test
   @DisplayName("Logging in with an incorrect username should return HTTP Unauthorized")
-  public void login_WrongUserName_ReturnsUnauthorized() {
+  void login_WrongUserName_ReturnsUnauthorized() {
 
     final String loginName = "test";
     final String hashedPassword = "$2y$12$53B6QcsGwF3Os1GVFUFSQOhIPXnWFfuEkRJdbknFWnkXfUBMUKhaW";

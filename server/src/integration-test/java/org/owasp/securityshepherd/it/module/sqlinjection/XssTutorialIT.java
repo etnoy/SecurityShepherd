@@ -71,7 +71,7 @@ public class XssTutorialIT {
   }
 
   @Test
-  public void submitQuery_XssQuery_ShowsAlert() {
+  void submitQuery_XssQuery_ShowsAlert() {
     final Long userId = userService.create("TestUser1").block();
     final Long moduleId = xssTutorial.initialize().block();
 
@@ -91,7 +91,7 @@ public class XssTutorialIT {
   }
 
   @Test
-  public void submitSql_CorrectAttackQuery_ModifiedFlagIsWrong() {
+  void submitSql_CorrectAttackQuery_ModifiedFlagIsWrong() {
     final Long userId = userService.create("TestUser1").block();
     final Long moduleId = xssTutorial.initialize().block();
 
@@ -113,7 +113,7 @@ public class XssTutorialIT {
   }
 
   @Test
-  public void submitSql_QueryWithoutXss_NoResults() {
+  void submitSql_QueryWithoutXss_NoResults() {
     final Long userId = userService.create("TestUser1").block();
     xssTutorial.initialize().block();
 

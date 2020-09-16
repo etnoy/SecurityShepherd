@@ -68,7 +68,7 @@ public class ModuleControllerIT {
 
   @Test
   @Validated
-  public void getModuleById_InvalidId_ReturnsError() throws Exception {
+  void getModuleById_InvalidId_ReturnsError() throws Exception {
 
     final String loginName = "testUser";
     final String password = "paLswOrdha17£@£sh";

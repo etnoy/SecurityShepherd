@@ -93,7 +93,7 @@ public class ScoringServiceIT {
   @Autowired CryptoService cryptoService;
 
   @Test
-  public void computeScoreForModule_SubmittedScores_ReturnsCorrectScoresForUsers()
+  void computeScoreForModule_SubmittedScores_ReturnsCorrectScoresForUsers()
       throws Exception {
     // We'll use this exact flag
     final String flag = "itsaflag";

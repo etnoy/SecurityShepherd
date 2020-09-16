@@ -63,7 +63,7 @@ public class UserControllerIT {
   @Autowired TestUtils testService;
 
   @Test
-  public void getUserList_AuthenticatedUser_Forbidden() {
+  void getUserList_AuthenticatedUser_Forbidden() {
     final String loginName = "test";
     final String hashedPassword = "$2y$12$53B6QcsGwF3Os1GVFUFSQOhIPXnWFfuEkRJdbknFWnkXfUBMUKhaW";
 
@@ -102,7 +102,7 @@ public class UserControllerIT {
   }
 
   @Test
-  public void getUserList_UserPromotedToAdmin_Success() {
+  void getUserList_UserPromotedToAdmin_Success() {
     final String loginName = "test";
     final String hashedPassword = "$2y$12$53B6QcsGwF3Os1GVFUFSQOhIPXnWFfuEkRJdbknFWnkXfUBMUKhaW";
 
@@ -155,7 +155,7 @@ public class UserControllerIT {
   }
 
   @Test
-  public void listUsers_UsersExist_ReturnsUserList() throws Exception {
+  void listUsers_UsersExist_ReturnsUserList() throws Exception {
     final String loginName = "test";
     final String password = "paLswOrdha17£@£sh";
 
@@ -257,7 +257,7 @@ public class UserControllerIT {
   }
 
   @Test
-  public void register_ValidData_ReturnsValidUser() throws Exception {
+  void register_ValidData_ReturnsValidUser() throws Exception {
     final String loginName = "test";
     final String password = "paLswOrdha17£@£sh";
 
