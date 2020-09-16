@@ -140,6 +140,6 @@ sonarqube {
 	properties {
 		property "sonar.projectName", "Security Shepherd"
 		property "sonar.projectKey", "etnoy_SecurityShepherd"
-		properties["sonar.tests"] += sourceSets.integrationTest.allJava.srcDirs
+		properties["sonar.tests"] += "src/integration-test/java"
 	}
 }
