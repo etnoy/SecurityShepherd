@@ -14,8 +14,8 @@
  */
 package org.owasp.securityshepherd.test.service;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
@@ -74,7 +74,7 @@ class XssServiceTest {
     when(mockWebClient.getPage(any(String.class))).thenReturn(mockPage);
     when(mockPage.getDomElementDescendants()).thenReturn(mockDomElements);
     when(mockAlertHandler.getCollectedAlerts()).thenReturn(alerts);
-    assertThat(xssService.doXss(htmlPage), is(alerts));
+    assertThat(xssService.doXss(htmlPage)).isEqualTo(alerts);
     verify(mockWebClient, times(1)).getPage(any(String.class));
     verify(mockAlertHandler, times(1)).getCollectedAlerts();
   }

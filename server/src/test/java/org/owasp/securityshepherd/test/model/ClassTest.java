@@ -16,9 +16,8 @@
 
 package org.owasp.securityshepherd.test.model;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,24 +43,22 @@ class ClassTest {
   @Test
   void build_ValidData_Builds() {
     final ClassEntity testClass = ClassEntity.builder().id(3).name("TestClass").build();
-    assertThat(testClass, is(instanceOf(ClassEntity.class)));
-    assertThat(testClass.getId(), is(3));
+    assertThat(testClass).isInstanceOf(ClassEntity.class);
+    assertThat(testClass.getId()).isEqualTo(3);
   }
 
   @Test
   void build_ValidName_Builds() {
     final String name = "className";
     final ClassEntity classEntity = ClassEntity.builder().name(name).build();
-    assertThat(classEntity, is(instanceOf(ClassEntity.class)));
-    assertThat(classEntity.getName(), is(name));
+    assertThat(classEntity).isInstanceOf(ClassEntity.class);
+    assertThat(classEntity.getName()).isEqualTo(name);
   }
 
   @Test
   void classBuildertoString_ValidData_NotNull() {
-    assertThat(ClassEntity.builder().name("TestClass").toString(),
-        is("ClassEntity.ClassBuilder(id=null, name=TestClass)"));
-    assertThat(ClassEntity.builder().id(379).name("AnotherTestClass").toString(),
-        is("ClassEntity.ClassBuilder(id=379, name=AnotherTestClass)"));
+    assertThat(ClassEntity.builder().name("TestClass").toString()).isEqualTo("ClassEntity.ClassBuilder(id=null, name=TestClass)");
+    assertThat(ClassEntity.builder().id(379).name("AnotherTestClass").toString()).isEqualTo("ClassEntity.ClassBuilder(id=379, name=AnotherTestClass)");
   }
 
   @Test
@@ -71,8 +68,7 @@ class ClassTest {
 
   @Test
   void toString_ValidData_AsExpected() {
-    assertThat(ClassEntity.builder().name("TestClass").build().toString(),
-        is("ClassEntity(id=null, name=TestClass)"));
+    assertThat(ClassEntity.builder().name("TestClass").build().toString()).isEqualTo("ClassEntity(id=null, name=TestClass)");
   }
 
   @Test
@@ -81,12 +77,12 @@ class ClassTest {
     final Integer[] testedIds = {originalId, null, 0, -1, 1000, -1000, 123456789};
     final ClassEntity classEntity = ClassEntity.builder().id(originalId).name("TestClass").build();
 
-    assertThat(classEntity.getId(), is(originalId));
+    assertThat(classEntity.getId()).isEqualTo(originalId);
 
     for (Integer id : testedIds) {
       final ClassEntity changedClass = classEntity.withId(id);
-      assertThat(classEntity, is(instanceOf(ClassEntity.class)));
-      assertThat(changedClass.getId(), is(id));
+      assertThat(classEntity).isInstanceOf(ClassEntity.class);
+      assertThat(changedClass.getId()).isEqualTo(id);
     }
   }
 
@@ -107,8 +103,8 @@ class ClassTest {
 
     for (final String newName : testedNames) {
       final ClassEntity changedClass = classEntity.withName(newName);
-      assertThat(changedClass, is(instanceOf(ClassEntity.class)));
-      assertThat(changedClass.getName(), is(newName));
+      assertThat(changedClass).isInstanceOf(ClassEntity.class);
+      assertThat(changedClass.getName()).isEqualTo(newName);
     }
   }
 }

@@ -14,8 +14,8 @@
  */
 package org.owasp.securityshepherd.it.controller;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Base64;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -101,7 +101,7 @@ class LoginControllerIT {
 
     final long userId = Long.parseLong(jsonBody.read("$.sub"));
 
-    assertThat(userId, is(createdUserId));
+    assertThat(userId).isEqualTo(createdUserId);
   }
 
   @Test

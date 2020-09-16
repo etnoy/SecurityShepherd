@@ -14,8 +14,8 @@
  */
 package org.owasp.securityshepherd.test.service;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
@@ -73,7 +73,7 @@ class ConfigurationServiceTest {
     StepVerifier.create(configurationService.getServerKey())
         .assertNext(
             serverKey -> {
-              assertThat(serverKey, is(mockedServerKey));
+              assertThat(serverKey).isEqualTo(mockedServerKey);
               verify(configurationRepository).findByKey(serverKeyConfigurationKey);
               verify(keyService, never()).generateRandomBytes(16);
               verify(configurationRepository, never()).save(any(Configuration.class));
@@ -97,7 +97,7 @@ class ConfigurationServiceTest {
     StepVerifier.create(configurationService.getServerKey())
         .assertNext(
             serverKey -> {
-              assertThat(serverKey, is(mockedServerKey));
+              assertThat(serverKey).isEqualTo(mockedServerKey);
 
               verify(configurationRepository, atLeast(1)).findByKey(serverKeyConfigurationKey);
               verify(keyService).generateRandomBytes(16);
@@ -123,7 +123,7 @@ class ConfigurationServiceTest {
     StepVerifier.create(configurationService.refreshServerKey())
         .assertNext(
             serverKey -> {
-              assertThat(serverKey, is(newServerKey));
+              assertThat(serverKey).isEqualTo(newServerKey);
 
               verify(configurationRepository, atLeast(1)).findByKey(serverKeyConfigurationKey);
               verify(keyService).generateRandomBytes(16);
@@ -132,7 +132,7 @@ class ConfigurationServiceTest {
 
               verify(configurationRepository).save(argument.capture());
 
-              assertThat(argument.getValue().getValue(), is(encodedNewServerKey));
+              assertThat(argument.getValue().getValue()).isEqualTo(encodedNewServerKey);
             })
         .expectComplete()
         .verify();
@@ -163,7 +163,7 @@ class ConfigurationServiceTest {
     StepVerifier.create(configurationService.refreshServerKey())
         .assertNext(
             serverKey -> {
-              assertThat(serverKey, is(newServerKey));
+              assertThat(serverKey).isEqualTo(newServerKey);
               verify(configurationRepository, atLeast(1)).findByKey(serverKeyConfigurationKey);
               verify(keyService).generateRandomBytes(16);
 
@@ -173,8 +173,8 @@ class ConfigurationServiceTest {
 
               verify(configurationRepository).save(argument.capture());
 
-              assertThat(argument.getValue(), is(mockedConfigurationNewKey));
-              assertThat(argument.getValue().getValue(), is(encodedNewServerKey));
+              assertThat(argument.getValue()).isEqualTo(mockedConfigurationNewKey);
+              assertThat(argument.getValue().getValue()).isEqualTo(encodedNewServerKey);
             })
         .expectComplete()
         .verify();

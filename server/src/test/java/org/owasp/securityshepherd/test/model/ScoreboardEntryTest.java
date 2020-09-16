@@ -14,9 +14,8 @@
  */
 package org.owasp.securityshepherd.test.model;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -66,8 +65,8 @@ class ScoreboardEntryTest {
     for (final long rank : TestUtils.LONGS) {
       final ScoreboardEntry scoreboard = scoreboardBuilder.rank(rank).build();
 
-      assertThat(scoreboard, instanceOf(ScoreboardEntry.class));
-      assertThat(scoreboard.getRank(), is(rank));
+      assertThat(scoreboard).isInstanceOf(ScoreboardEntry.class);
+      assertThat(scoreboard.getRank()).isEqualTo(rank);
     }
   }
 
@@ -90,8 +89,8 @@ class ScoreboardEntryTest {
     for (final long score : TestUtils.LONGS) {
       final ScoreboardEntry scoreboard = scoreboardBuilder.score(score).build();
 
-      assertThat(scoreboard, instanceOf(ScoreboardEntry.class));
-      assertThat(scoreboard.getScore(), is(score));
+      assertThat(scoreboard).isInstanceOf(ScoreboardEntry.class);
+      assertThat(scoreboard.getScore()).isEqualTo(score);
     }
   }
 
@@ -114,8 +113,8 @@ class ScoreboardEntryTest {
     for (final long userId : TestUtils.LONGS) {
       final ScoreboardEntry scoreboard = scoreboardBuilder.userId(userId).build();
 
-      assertThat(scoreboard, instanceOf(ScoreboardEntry.class));
-      assertThat(scoreboard.getUserId(), is(userId));
+      assertThat(scoreboard).isInstanceOf(ScoreboardEntry.class);
+      assertThat(scoreboard.getUserId()).isEqualTo(userId);
     }
   }
 
@@ -129,10 +128,8 @@ class ScoreboardEntryTest {
     final ScoreboardEntryBuilder builder =
         ScoreboardEntry.builder().rank(17L).userId(83L).score(1L);
 
-    assertThat(
-        builder.toString(),
-        is(
-            "ScoreboardEntry.ScoreboardEntryBuilder(rank=17, userId=83, score=1, goldMedals=null, silverMedals=null, bronzeMedals=null)"));
+    assertThat(builder.toString()).isEqualTo(
+            "ScoreboardEntry.ScoreboardEntryBuilder(rank=17, userId=83, score=1, goldMedals=null, silverMedals=null, bronzeMedals=null)");
   }
 
   @Test
@@ -147,11 +144,9 @@ class ScoreboardEntryTest {
             .score(1L)
             .build();
 
-    assertThat(
-        testScoreboard.toString(),
-        is(
+    assertThat(testScoreboard.toString()).isEqualTo(
             "ScoreboardEntry(rank=17, userId=83, score=1, "
-                + "goldMedals=0, silverMedals=0, bronzeMedals=0)"));
+                + "goldMedals=0, silverMedals=0, bronzeMedals=0)");
   }
 
   @Test
@@ -183,8 +178,8 @@ class ScoreboardEntryTest {
     for (final Long rank : TestUtils.LONGS) {
       final ScoreboardEntry newScoreboard = scoreboard.withRank(rank);
 
-      assertThat(newScoreboard, is(instanceOf(ScoreboardEntry.class)));
-      assertThat(newScoreboard.getRank(), is(rank));
+      assertThat(newScoreboard).isInstanceOf(ScoreboardEntry.class);
+      assertThat(newScoreboard.getRank()).isEqualTo(rank);
     }
   }
 
@@ -218,8 +213,8 @@ class ScoreboardEntryTest {
     for (final Long score : TestUtils.LONGS) {
       final ScoreboardEntry newScoreboard = scoreboard.withScore(score);
 
-      assertThat(newScoreboard, is(instanceOf(ScoreboardEntry.class)));
-      assertThat(newScoreboard.getScore(), is(score));
+      assertThat(newScoreboard).isInstanceOf(ScoreboardEntry.class);
+      assertThat(newScoreboard.getScore()).isEqualTo(score);
     }
   }
 
@@ -252,8 +247,8 @@ class ScoreboardEntryTest {
     for (final Long userId : TestUtils.LONGS) {
       final ScoreboardEntry newScoreboard = scoreboard.withUserId(userId);
 
-      assertThat(newScoreboard, is(instanceOf(ScoreboardEntry.class)));
-      assertThat(newScoreboard.getUserId(), is(userId));
+      assertThat(newScoreboard).isInstanceOf(ScoreboardEntry.class);
+      assertThat(newScoreboard.getUserId()).isEqualTo(userId);
     }
   }
 }

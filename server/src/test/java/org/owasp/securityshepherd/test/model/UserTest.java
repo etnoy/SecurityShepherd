@@ -14,8 +14,8 @@
  */
 package org.owasp.securityshepherd.test.model;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
@@ -33,7 +33,7 @@ class UserTest {
     final UserBuilder userBuilder = User.builder();
     final Exception thrownException =
         assertThrows(NullPointerException.class, () -> userBuilder.build());
-    assertThat(thrownException.getMessage(), is("displayName is marked non-null but is null"));
+    assertThat(thrownException.getMessage()).isEqualTo("displayName is marked non-null but is null");
   }
 
   @Test
@@ -42,7 +42,7 @@ class UserTest {
 
     for (final LocalDateTime accountCreated : TestUtils.LOCALDATETIMES_WITH_NULL) {
       final User user = userBuilder.accountCreated(accountCreated).build();
-      assertThat(user.getAccountCreated(), is(accountCreated));
+      assertThat(user.getAccountCreated()).isEqualTo(accountCreated);
     }
   }
 
@@ -52,7 +52,7 @@ class UserTest {
 
     for (final Long classId : TestUtils.LONGS_WITH_NULL) {
       final User user = userBuilder.classId(classId).build();
-      assertThat(user.getClassId(), is(classId));
+      assertThat(user.getClassId()).isEqualTo(classId);
     }
   }
 
@@ -61,7 +61,7 @@ class UserTest {
     final UserBuilder userBuilder = User.builder();
     final Exception thrownException =
         assertThrows(NullPointerException.class, () -> userBuilder.displayName(null));
-    assertThat(thrownException.getMessage(), is("displayName is marked non-null but is null"));
+    assertThat(thrownException.getMessage()).isEqualTo("displayName is marked non-null but is null");
   }
 
   @Test
@@ -69,7 +69,7 @@ class UserTest {
     final UserBuilder userBuilder = User.builder();
     for (final String displayName : TestUtils.STRINGS) {
       final User user = userBuilder.displayName(displayName).build();
-      assertThat(user.getDisplayName(), is(displayName));
+      assertThat(user.getDisplayName()).isEqualTo(displayName);
     }
   }
 
@@ -78,7 +78,7 @@ class UserTest {
     final UserBuilder userBuilder = User.builder().id(12345L).displayName("TestUser");
     for (final Long id : TestUtils.LONGS_WITH_NULL) {
       final User user = userBuilder.id(id).build();
-      assertThat(user.getId(), is(id));
+      assertThat(user.getId()).isEqualTo(id);
     }
   }
 
@@ -87,7 +87,7 @@ class UserTest {
     final UserBuilder userBuilder = User.builder().displayName("TestUser");
     for (final boolean isNotBanned : TestUtils.BOOLEANS) {
       final User user = userBuilder.isNotBanned(isNotBanned).build();
-      assertThat(user.isNotBanned(), is(isNotBanned));
+      assertThat(user.isNotBanned()).isEqualTo(isNotBanned);
     }
   }
 
@@ -100,22 +100,18 @@ class UserTest {
   void toString_ValidData_AsExpected() {
     final User testUser = User.builder().displayName("TestUser").build();
 
-    assertThat(
-        testUser.toString(),
-        is(
+    assertThat(testUser.toString()).isEqualTo(
             "User(id=null, displayName=TestUser, classId=null, email=null, "
-                + "isNotBanned=false, accountCreated=null, key=null)"));
+                + "isNotBanned=false, accountCreated=null, key=null)");
   }
 
   @Test
   void userBuilderToString_ValidData_AsExpected() {
     final UserBuilder builder = User.builder();
 
-    assertThat(
-        builder.toString(),
-        is(
+    assertThat(builder.toString()).isEqualTo(
             "User.UserBuilder(id=null, displayName=null, classId=null, "
-                + "email=null, isNotBanned=false, accountCreated=null, key=null)"));
+                + "email=null, isNotBanned=false, accountCreated=null, key=null)");
   }
 
   @Test
@@ -128,7 +124,7 @@ class UserTest {
 
     for (final LocalDateTime accountCreated : TestUtils.LOCALDATETIMES_WITH_NULL) {
       final User withUser = user.withAccountCreated(accountCreated);
-      assertThat(withUser.getAccountCreated(), is(accountCreated));
+      assertThat(withUser.getAccountCreated()).isEqualTo(accountCreated);
     }
   }
 
@@ -139,7 +135,7 @@ class UserTest {
 
     for (final Long classId : TestUtils.LONGS_WITH_NULL) {
       final User withUser = user.withClassId(classId);
-      assertThat(withUser.getClassId(), is(classId));
+      assertThat(withUser.getClassId()).isEqualTo(classId);
     }
   }
 
@@ -148,7 +144,7 @@ class UserTest {
     final User user = User.builder().displayName("TestUser").build();
     final Exception thrownException =
         assertThrows(NullPointerException.class, () -> user.withDisplayName(null));
-    assertThat(thrownException.getMessage(), is("displayName is marked non-null but is null"));
+    assertThat(thrownException.getMessage()).isEqualTo("displayName is marked non-null but is null");
   }
 
   @Test
@@ -157,7 +153,7 @@ class UserTest {
 
     for (final String displayName : TestUtils.STRINGS) {
       final User withUser = user.withDisplayName(displayName);
-      assertThat(withUser.getDisplayName(), is(displayName));
+      assertThat(withUser.getDisplayName()).isEqualTo(displayName);
     }
   }
 
@@ -168,7 +164,7 @@ class UserTest {
 
     for (final String email : TestUtils.STRINGS) {
       final User withUser = user.withEmail(email);
-      assertThat(withUser.getEmail(), is(email));
+      assertThat(withUser.getEmail()).isEqualTo(email);
     }
   }
 
@@ -178,7 +174,7 @@ class UserTest {
 
     for (final Long id : TestUtils.LONGS_WITH_NULL) {
       final User withUser = user.withId(id);
-      assertThat(withUser.getId(), is(id));
+      assertThat(withUser.getId()).isEqualTo(id);
     }
   }
 
@@ -189,7 +185,7 @@ class UserTest {
 
     for (byte[] key : TestUtils.BYTE_ARRAYS_WITH_NULL) {
       final User withUser = user.withKey(key);
-      assertThat(withUser.getKey(), is(key));
+      assertThat(withUser.getKey()).isEqualTo(key);
     }
   }
 
@@ -200,7 +196,7 @@ class UserTest {
 
     for (final boolean isNotBanned : TestUtils.BOOLEANS) {
       final User withUser = user.withNotBanned(isNotBanned);
-      assertThat(withUser.isNotBanned(), is(isNotBanned));
+      assertThat(withUser.isNotBanned()).isEqualTo(isNotBanned);
     }
   }
 }

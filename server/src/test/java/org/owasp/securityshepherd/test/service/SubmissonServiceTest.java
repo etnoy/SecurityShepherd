@@ -14,8 +14,8 @@
  */
 package org.owasp.securityshepherd.test.service;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -49,7 +49,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("SubmissionService unit test")
@@ -288,12 +287,12 @@ class SubmissonServiceTest {
     StepVerifier.create(submissionService.submit(mockUserId, mockModuleId, flag))
         .assertNext(
             submission -> {
-              assertThat(submission.getId(), is(mockSubmissionId));
-              assertThat(submission.getUserId(), is(mockUserId));
-              assertThat(submission.getModuleId(), is(mockModuleId));
-              assertThat(submission.getFlag(), is(flag));
-              assertThat(submission.getTime(), is(LocalDateTime.now(fixedClock)));
-              assertThat(submission.isValid(), is(false));
+              assertThat(submission.getId()).isEqualTo(mockSubmissionId);
+              assertThat(submission.getUserId()).isEqualTo(mockUserId);
+              assertThat(submission.getModuleId()).isEqualTo(mockModuleId);
+              assertThat(submission.getFlag()).isEqualTo(flag);
+              assertThat(submission.getTime()).isEqualTo(LocalDateTime.now(fixedClock));
+              assertThat(submission.isValid()).isFalse();
             })
         .expectComplete()
         .verify();
@@ -372,12 +371,12 @@ class SubmissonServiceTest {
     StepVerifier.create(submissionService.submit(mockUserId, mockModuleId, flag))
         .assertNext(
             submission -> {
-              assertThat(submission.getId(), is(mockSubmissionId));
-              assertThat(submission.getUserId(), is(mockUserId));
-              assertThat(submission.getModuleId(), is(mockModuleId));
-              assertThat(submission.getFlag(), is(flag));
-              assertThat(submission.getTime(), is(LocalDateTime.now(fixedClock)));
-              assertThat(submission.isValid(), is(true));
+              assertThat(submission.getId()).isEqualTo(mockSubmissionId);
+              assertThat(submission.getUserId()).isEqualTo(mockUserId);
+              assertThat(submission.getModuleId()).isEqualTo(mockModuleId);
+              assertThat(submission.getFlag()).isEqualTo(flag);
+              assertThat(submission.getTime()).isEqualTo(LocalDateTime.now(fixedClock));
+              assertThat(submission.isValid()).isTrue();
             })
         .expectComplete()
         .verify();
@@ -448,12 +447,12 @@ class SubmissonServiceTest {
     StepVerifier.create(submissionService.submitValid(mockUserId, mockModuleId))
         .assertNext(
             submission -> {
-              assertThat(submission.getId(), is(mockSubmissionId));
-              assertThat(submission.getUserId(), is(mockUserId));
-              assertThat(submission.getModuleId(), is(mockModuleId));
-              assertThat(submission.getFlag(), is(nullValue()));
-              assertThat(submission.getTime(), is(LocalDateTime.now(fixedClock)));
-              assertThat(submission.isValid(), is(true));
+              assertThat(submission.getId()).isEqualTo(mockSubmissionId);
+              assertThat(submission.getUserId()).isEqualTo(mockUserId);
+              assertThat(submission.getModuleId()).isEqualTo(mockModuleId);
+              assertThat(submission.getFlag()).isNull();
+              assertThat(submission.getTime()).isEqualTo(LocalDateTime.now(fixedClock));
+              assertThat(submission.isValid()).isTrue();
             })
         .expectComplete()
         .verify();

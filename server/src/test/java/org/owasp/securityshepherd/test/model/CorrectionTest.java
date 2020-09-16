@@ -14,9 +14,8 @@
  */
 package org.owasp.securityshepherd.test.model;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
@@ -64,8 +63,8 @@ class CorrectionTest {
     for (final long amount : TestUtils.LONGS) {
       final Correction correction = correctionBuilder.amount(amount).build();
 
-      assertThat(correction, instanceOf(Correction.class));
-      assertThat(correction.getAmount(), is(amount));
+      assertThat(correction).isInstanceOf(Correction.class);
+      assertThat(correction.getAmount()).isEqualTo(amount);
     }
   }
 
@@ -77,8 +76,8 @@ class CorrectionTest {
     for (final String description : TestUtils.STRINGS_WITH_NULL) {
       final Correction correction = correctionBuilder.description(description).build();
 
-      assertThat(correction, is(instanceOf(Correction.class)));
-      assertThat(correction.getDescription(), is(description));
+      assertThat(correction).isInstanceOf(Correction.class);
+      assertThat(correction.getDescription()).isEqualTo(description);
     }
   }
 
@@ -90,8 +89,8 @@ class CorrectionTest {
     for (final Long id : TestUtils.LONGS_WITH_NULL) {
       final Correction correction = correctionBuilder.id(id).build();
 
-      assertThat(correction, instanceOf(Correction.class));
-      assertThat(correction.getId(), is(id));
+      assertThat(correction).isInstanceOf(Correction.class);
+      assertThat(correction.getId()).isEqualTo(id);
     }
   }
 
@@ -115,8 +114,8 @@ class CorrectionTest {
     for (final long userId : TestUtils.LONGS) {
       final Correction correction = correctionBuilder.userId(userId).build();
 
-      assertThat(correction, instanceOf(Correction.class));
-      assertThat(correction.getUserId(), is(userId));
+      assertThat(correction).isInstanceOf(Correction.class);
+      assertThat(correction.getUserId()).isEqualTo(userId);
     }
   }
 
@@ -125,10 +124,8 @@ class CorrectionTest {
     final CorrectionBuilder builder =
         Correction.builder().time(LocalDateTime.MIN).amount(1L).userId(83L);
 
-    assertThat(
-        builder.toString(),
-        is(
-            "Correction.CorrectionBuilder(id=null, userId=83, amount=1, time=-999999999-01-01T00:00, description=null)"));
+    assertThat(builder.toString()).isEqualTo(
+            "Correction.CorrectionBuilder(id=null, userId=83, amount=1, time=-999999999-01-01T00:00, description=null)");
   }
 
   @Test
@@ -141,10 +138,8 @@ class CorrectionTest {
     final Correction testCorrection =
         Correction.builder().time(LocalDateTime.MIN).amount(1L).userId(83L).build();
 
-    assertThat(
-        testCorrection.toString(),
-        is(
-            "Correction(id=null, userId=83, amount=1, time=-999999999-01-01T00:00, description=null)"));
+    assertThat(testCorrection.toString()).isEqualTo(
+            "Correction(id=null, userId=83, amount=1, time=-999999999-01-01T00:00, description=null)");
   }
 
   @Test
@@ -162,8 +157,8 @@ class CorrectionTest {
     for (final Long amount : TestUtils.LONGS) {
       final Correction newCorrection = correction.withAmount(amount);
 
-      assertThat(newCorrection, is(instanceOf(Correction.class)));
-      assertThat(newCorrection.getAmount(), is(amount));
+      assertThat(newCorrection).isInstanceOf(Correction.class);
+      assertThat(newCorrection.getAmount()).isEqualTo(amount);
     }
   }
 
@@ -180,8 +175,8 @@ class CorrectionTest {
     for (final String description : TestUtils.STRINGS_WITH_NULL) {
       final Correction newCorrection = correction.withDescription(description);
 
-      assertThat(newCorrection, is(instanceOf(Correction.class)));
-      assertThat(newCorrection.getDescription(), is(description));
+      assertThat(newCorrection).isInstanceOf(Correction.class);
+      assertThat(newCorrection.getDescription()).isEqualTo(description);
     }
   }
 
@@ -193,8 +188,8 @@ class CorrectionTest {
     for (final Long id : TestUtils.LONGS_WITH_NULL) {
       final Correction newCorrection = correction.withId(id);
 
-      assertThat(newCorrection, is(instanceOf(Correction.class)));
-      assertThat(newCorrection.getId(), is(id));
+      assertThat(newCorrection).isInstanceOf(Correction.class);
+      assertThat(newCorrection.getId()).isEqualTo(id);
     }
   }
 
@@ -218,7 +213,7 @@ class CorrectionTest {
     for (LocalDateTime time : TestUtils.LOCALDATETIMES) {
       final Correction changedCorrection = testCorrection.withTime(time);
 
-      assertThat(changedCorrection.getTime(), is(time));
+      assertThat(changedCorrection.getTime()).isEqualTo(time);
     }
   }
 
@@ -241,8 +236,8 @@ class CorrectionTest {
     for (final Long userId : TestUtils.LONGS) {
       final Correction newCorrection = correction.withUserId(userId);
 
-      assertThat(newCorrection, is(instanceOf(Correction.class)));
-      assertThat(newCorrection.getUserId(), is(userId));
+      assertThat(newCorrection).isInstanceOf(Correction.class);
+      assertThat(newCorrection.getUserId()).isEqualTo(userId);
     }
   }
 }

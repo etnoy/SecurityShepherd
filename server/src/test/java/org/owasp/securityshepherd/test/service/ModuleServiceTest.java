@@ -16,8 +16,9 @@
 
 package org.owasp.securityshepherd.test.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atMost;
@@ -126,9 +127,9 @@ class ModuleServiceTest {
     when(moduleRepository.findByName(name)).thenReturn(Mono.empty());
 
     StepVerifier.create(moduleService.create(name, shortName, description)).assertNext(module -> {
-      assertThat(module.getName(), is(name));
-      assertThat(module.getShortName(), is(shortName));
-      assertThat(module.getDescription(), is(description));
+      assertThat(module.getName()).isEqualTo(name);
+      assertThat(module.getShortName()).isEqualTo(shortName);
+      assertThat(module.getDescription()).isEqualTo(description);
     }).expectComplete().verify();
 
     ArgumentCaptor<Module> argument = ArgumentCaptor.forClass(Module.class);
@@ -136,7 +137,7 @@ class ModuleServiceTest {
     verify(moduleRepository, times(1)).findByName(name);
     verify(moduleRepository, times(1)).save(argument.capture());
     verify(moduleRepository, times(1)).save(any(Module.class));
-    assertThat(argument.getValue().getName(), is(name));
+    assertThat(argument.getValue().getName()).isEqualTo(name);
   }
 
   @Test
@@ -152,9 +153,9 @@ class ModuleServiceTest {
     when(moduleRepository.findByName(name)).thenReturn(Mono.empty());
 
     StepVerifier.create(moduleService.create(name, shortName)).assertNext(module -> {
-      assertThat(module.getName(), is(name));
-      assertThat(module.getShortName(), is(shortName));
-      assertThat(module.getDescription(), is(nullValue()));
+      assertThat(module.getName()).isEqualTo(name);
+      assertThat(module.getShortName()).isEqualTo(shortName);
+      assertThat(module.getDescription()).isNull();
     }).expectComplete().verify();
 
     ArgumentCaptor<Module> argument = ArgumentCaptor.forClass(Module.class);
@@ -162,7 +163,7 @@ class ModuleServiceTest {
     verify(moduleRepository, times(1)).findByName(name);
     verify(moduleRepository, times(1)).save(argument.capture());
     verify(moduleRepository, times(1)).save(any(Module.class));
-    assertThat(argument.getValue().getName(), is(name));
+    assertThat(argument.getValue().getName()).isEqualTo(name);
   }
 
   @Test
@@ -185,9 +186,9 @@ class ModuleServiceTest {
     when(mockSubmittableModule.getDescription()).thenReturn(description);
 
     StepVerifier.create(moduleService.create(mockSubmittableModule)).assertNext(module -> {
-      assertThat(module.getName(), is(name));
-      assertThat(module.getShortName(), is(shortName));
-      assertThat(module.getDescription(), is(description));
+      assertThat(module.getName()).isEqualTo(name);
+      assertThat(module.getShortName()).isEqualTo(shortName);
+      assertThat(module.getDescription()).isEqualTo(description);
 
     }).expectComplete().verify();
 
@@ -196,7 +197,7 @@ class ModuleServiceTest {
     verify(moduleRepository, times(1)).findByName(name);
     verify(moduleRepository, times(1)).save(argument.capture());
     verify(moduleRepository, times(1)).save(any(Module.class));
-    assertThat(argument.getValue().getName(), is(name));
+    assertThat(argument.getValue().getName()).isEqualTo(name);
   }
 
   @Test
@@ -359,7 +360,7 @@ class ModuleServiceTest {
         .thenReturn(Mono.just(mockModuleWithDynamicFlag));
 
     StepVerifier.create(moduleService.setDynamicFlag(mockModuleId)).assertNext(module -> {
-      assertThat(module.getFlag(), is(newFlag));
+      assertThat(module.getFlag()).isEqualTo(newFlag);
     }).expectComplete().verify();
 
     verify(moduleRepository, times(1)).save(any(Module.class));
@@ -367,7 +368,7 @@ class ModuleServiceTest {
 
     ArgumentCaptor<Module> argument = ArgumentCaptor.forClass(Module.class);
     verify(moduleRepository, times(1)).save(argument.capture());
-    assertThat(argument.getValue().getFlag(), is(newFlag));
+    assertThat(argument.getValue().getFlag()).isEqualTo(newFlag);
   }
 
   @Test
@@ -404,9 +405,9 @@ class ModuleServiceTest {
     when(moduleRepository.save(mockModuleWithFlag)).thenReturn(Mono.just(mockModuleWithFlag));
 
     StepVerifier.create(moduleService.setDynamicFlag(mockModuleId)).assertNext(module -> {
-      assertThat(module.isFlagEnabled(), is(true));
-      assertThat(module.isFlagExact(), is(false));
-      assertThat(module.getFlag(), is(newFlag));
+      assertThat(module.isFlagEnabled()).isTrue();
+      assertThat(module.isFlagExact()).isFalse();
+      assertThat(module.getFlag()).isEqualTo(newFlag);
     }).expectComplete().verify();
 
     verify(mockModuleWithoutExactFlag, atMost(1)).withFlagEnabled(true);
@@ -475,18 +476,18 @@ class ModuleServiceTest {
         .thenReturn(Mono.just(mockModuleWithExactFlagEnabledAndSet));
 
     StepVerifier.create(moduleService.setExactFlag(mockModuleId, exactFlag)).assertNext(module -> {
-      assertThat(module.isFlagEnabled(), is(true));
-      assertThat(module.isFlagExact(), is(true));
-      assertThat(module.getFlag(), is(exactFlag));
+      assertThat(module.isFlagEnabled()).isTrue();
+      assertThat(module.isFlagExact()).isTrue();
+      assertThat(module.getFlag()).isEqualTo(exactFlag);
     }).expectComplete().verify();
 
     ArgumentCaptor<Long> findArgument = ArgumentCaptor.forClass(Long.class);
     verify(moduleRepository, times(1)).findById(findArgument.capture());
-    assertThat(findArgument.getValue(), is(mockModuleId));
+    assertThat(findArgument.getValue()).isEqualTo(mockModuleId);
 
     ArgumentCaptor<Module> saveArgument = ArgumentCaptor.forClass(Module.class);
     verify(moduleRepository, times(1)).save(saveArgument.capture());
-    assertThat(saveArgument.getValue().getFlag(), is(exactFlag));
+    assertThat(saveArgument.getValue().getFlag()).isEqualTo(exactFlag);
   }
 
   @Test

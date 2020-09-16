@@ -14,9 +14,8 @@
  */
 package org.owasp.securityshepherd.test.model;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,9 +40,7 @@ class SamlAuthTest {
 
   @Test
   void builderToString_ValidData_AsExpected() {
-    assertThat(
-        SamlAuth.builder().id(15).userId(3).samlId("me@example.com").toString(),
-        is("SamlAuth.SamlAuthBuilder(id=15, userId=3, samlId=me@example.com)"));
+    assertThat(SamlAuth.builder().id(15).userId(3).samlId("me@example.com").toString()).isEqualTo("SamlAuth.SamlAuthBuilder(id=15, userId=3, samlId=me@example.com)");
   }
 
   @Test
@@ -67,8 +64,8 @@ class SamlAuthTest {
     for (final int userId : userIdsToTest) {
       samlAuthBuilder.userId(userId);
 
-      assertThat(samlAuthBuilder.build(), instanceOf(SamlAuth.class));
-      assertThat(samlAuthBuilder.build().getUserId(), is(userId));
+      assertThat(samlAuthBuilder.build()).isInstanceOf(SamlAuth.class);
+      assertThat(samlAuthBuilder.build().getUserId()).isEqualTo(userId);
     }
   }
 
@@ -81,8 +78,8 @@ class SamlAuthTest {
 
       builder.samlId(samlId);
 
-      assertThat(builder.build(), instanceOf(SamlAuth.class));
-      assertThat(builder.build().getSamlId(), is(samlId));
+      assertThat(builder.build()).isInstanceOf(SamlAuth.class);
+      assertThat(builder.build().getSamlId()).isEqualTo(samlId);
     }
   }
 
@@ -93,9 +90,7 @@ class SamlAuthTest {
 
   @Test
   void toString_ValidData_AsExpected() {
-    assertThat(
-        SamlAuth.builder().id(67).samlId("TestID").userId(3).build().toString(),
-        is("SamlAuth(id=67, userId=3, samlId=TestID)"));
+    assertThat(SamlAuth.builder().id(67).samlId("TestID").userId(3).build().toString()).isEqualTo("SamlAuth(id=67, userId=3, samlId=TestID)");
   }
 
   @Test
@@ -106,10 +101,10 @@ class SamlAuthTest {
     final SamlAuth newPasswordAuth =
         SamlAuth.builder().id(originalId).userId(3).samlId("me@example.com").build();
 
-    assertThat(newPasswordAuth.getId(), is(originalId));
+    assertThat(newPasswordAuth.getId()).isEqualTo(originalId);
 
     for (final int newId : testedIds) {
-      assertThat(newPasswordAuth.withId(newId).getId(), is(newId));
+      assertThat(newPasswordAuth.withId(newId).getId()).isEqualTo(newId);
     }
   }
 
@@ -130,7 +125,7 @@ class SamlAuthTest {
 
     for (final String newSamlId : testedSamlIds) {
       final SamlAuth changedAuth = samlAuth.withSamlId(newSamlId);
-      assertThat(changedAuth.getSamlId(), is(newSamlId));
+      assertThat(changedAuth.getSamlId()).isEqualTo(newSamlId);
     }
   }
 
@@ -148,10 +143,10 @@ class SamlAuthTest {
     final SamlAuth samlAuth =
         SamlAuth.builder().userId(originalUserId).samlId("me@example.com").build();
 
-    assertThat(samlAuth.getUserId(), is(originalUserId));
+    assertThat(samlAuth.getUserId()).isEqualTo(originalUserId);
 
     for (final int userId : userIds) {
-      assertThat(samlAuth.withUserId(userId).getUserId(), is(userId));
+      assertThat(samlAuth.withUserId(userId).getUserId()).isEqualTo(userId);
     }
   }
 }

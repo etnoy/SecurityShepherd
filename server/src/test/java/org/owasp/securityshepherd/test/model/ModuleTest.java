@@ -14,9 +14,8 @@
  */
 package org.owasp.securityshepherd.test.model;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,7 +33,7 @@ class ModuleTest {
     
     Throwable thrownException =
         assertThrows(NullPointerException.class, () -> moduleBuilder.build());
-    assertThat(thrownException.getMessage(), is("name is marked non-null but is null"));
+    assertThat(thrownException.getMessage()).isEqualTo("name is marked non-null but is null");
   }
 
   @Test
@@ -43,7 +42,7 @@ class ModuleTest {
 
     Throwable thrownException =
         assertThrows(NullPointerException.class, () -> moduleBuilder.build());
-    assertThat(thrownException.getMessage(), is("shortName is marked non-null but is null"));
+    assertThat(thrownException.getMessage()).isEqualTo("shortName is marked non-null but is null");
   }
 
   @Test
@@ -52,7 +51,7 @@ class ModuleTest {
     for (final String description : TestUtils.STRINGS_WITH_NULL) {
       builder.description(description);
       final Module module = builder.build();
-      assertThat(module.getDescription(), is(description));
+      assertThat(module.getDescription()).isEqualTo(description);
     }
   }
 
@@ -64,8 +63,8 @@ class ModuleTest {
 
       builder.isFlagExact(isFlagExact);
 
-      assertThat(builder.build(), instanceOf(Module.class));
-      assertThat(builder.build().isFlagExact(), is(isFlagExact));
+      assertThat(builder.build()).isInstanceOf(Module.class);
+      assertThat(builder.build().isFlagExact()).isEqualTo(isFlagExact);
     }
   }
 
@@ -76,8 +75,8 @@ class ModuleTest {
 
       builder.isFlagEnabled(isFlagEnabled);
 
-      assertThat(builder.build(), instanceOf(Module.class));
-      assertThat(builder.build().isFlagEnabled(), is(isFlagEnabled));
+      assertThat(builder.build()).isInstanceOf(Module.class);
+      assertThat(builder.build().isFlagEnabled()).isEqualTo(isFlagEnabled);
     }
   }
 
@@ -89,8 +88,8 @@ class ModuleTest {
 
       builder.isOpen(isOpen);
 
-      assertThat(builder.build(), instanceOf(Module.class));
-      assertThat(builder.build().isOpen(), is(isOpen));
+      assertThat(builder.build()).isInstanceOf(Module.class);
+      assertThat(builder.build().isOpen()).isEqualTo(isOpen);
     }
   }
 
@@ -99,7 +98,7 @@ class ModuleTest {
     final ModuleBuilder moduleBuilder = Module.builder().shortName("test-module");
     Throwable thrownException =
         assertThrows(NullPointerException.class, () -> moduleBuilder.name(null));
-    assertThat(thrownException.getMessage(), is("name is marked non-null but is null"));
+    assertThat(thrownException.getMessage()).isEqualTo("name is marked non-null but is null");
   }
 
   @Test
@@ -107,7 +106,7 @@ class ModuleTest {
     final ModuleBuilder moduleBuilder = Module.builder().name("TestModule");
     Throwable thrownException =
         assertThrows(NullPointerException.class, () -> moduleBuilder.shortName(null));
-    assertThat(thrownException.getMessage(), is("shortName is marked non-null but is null"));
+    assertThat(thrownException.getMessage()).isEqualTo("shortName is marked non-null but is null");
   }
 
   @Test
@@ -116,8 +115,8 @@ class ModuleTest {
     for (final String name : TestUtils.STRINGS) {
       builder.name(name);
       final Module module = builder.build();
-      assertThat(module, instanceOf(Module.class));
-      assertThat(module.getName(), is(name));
+      assertThat(module).isInstanceOf(Module.class);
+      assertThat(module.getName()).isEqualTo(name);
     }
   }
 
@@ -127,8 +126,8 @@ class ModuleTest {
     for (final String shortName : TestUtils.STRINGS) {
       builder.shortName(shortName);
       final Module module = builder.build();
-      assertThat(module, instanceOf(Module.class));
-      assertThat(module.getShortName(), is(shortName));
+      assertThat(module).isInstanceOf(Module.class);
+      assertThat(module.getShortName()).isEqualTo(shortName);
     }
   }
 
@@ -141,22 +140,18 @@ class ModuleTest {
   void moduleBuilderToString_ValidData_AsExpected() {
     final ModuleBuilder builder = Module.builder();
 
-    assertThat(
-        builder.toString(),
-        is(
+    assertThat(builder.toString()).isEqualTo(
             "Module.ModuleBuilder(id=null, name=null, shortName=null, description=null, isFlagEnabled=false, "
-                + "isFlagExact=false, flag=null, isOpen=false)"));
+                + "isFlagExact=false, flag=null, isOpen=false)");
   }
 
   @Test
   void toString_ValidData_AsExpected() {
     final Module testModule = Module.builder().name("TestModule").shortName("test-module").build();
 
-    assertThat(
-        testModule.toString(),
-        is(
+    assertThat(testModule.toString()).isEqualTo(
             "Module(id=null, name=TestModule, shortName=test-module, description=null, isFlagEnabled=false, isFlagExact=false, "
-                + "flag=null, isOpen=false)"));
+                + "flag=null, isOpen=false)");
   }
 
   @Test
@@ -172,10 +167,10 @@ class ModuleTest {
             .description("Description")
             .build();
 
-    assertThat(testModule.getDescription(), is("Description"));
+    assertThat(testModule.getDescription()).isEqualTo("Description");
 
     for (final String newDescription : testedDescriptions) {
-      assertThat(testModule.withDescription(newDescription).getDescription(), is(newDescription));
+      assertThat(testModule.withDescription(newDescription).getDescription()).isEqualTo(newDescription);
     }
   }
 
@@ -188,10 +183,10 @@ class ModuleTest {
     final Module module =
         Module.builder().name("TestModule").shortName("test-module").flag("abc123xyz789").build();
 
-    assertThat(module.getFlag(), is(originalFlag));
+    assertThat(module.getFlag()).isEqualTo(originalFlag);
 
     for (final String newFlag : testedFlags) {
-      assertThat(module.withFlag(newFlag).getFlag(), is(newFlag));
+      assertThat(module.withFlag(newFlag).getFlag()).isEqualTo(newFlag);
     }
   }
 
@@ -201,12 +196,12 @@ class ModuleTest {
 
     final Module testModule = Module.builder().name("TestModule").shortName("test-module").build();
 
-    assertThat(testModule.isFlagEnabled(), is(false));
+    assertThat(testModule.isFlagEnabled()).isFalse();
 
     Module changedModule = testModule.withFlagEnabled(false);
-    assertThat(changedModule.isFlagEnabled(), is(false));
+    assertThat(changedModule.isFlagEnabled()).isFalse();
     changedModule = testModule.withFlagEnabled(true);
-    assertThat(changedModule.isFlagEnabled(), is(true));
+    assertThat(changedModule.isFlagEnabled()).isTrue();
   }
 
   @Test
@@ -215,12 +210,12 @@ class ModuleTest {
 
     final Module testModule = Module.builder().name("TestModule").shortName("test-module").build();
 
-    assertThat(testModule.isFlagExact(), is(false));
+    assertThat(testModule.isFlagExact()).isFalse();
 
     Module changedModule = testModule.withFlagExact(false);
-    assertThat(changedModule.isFlagExact(), is(false));
+    assertThat(changedModule.isFlagExact()).isFalse();
     changedModule = testModule.withFlagExact(true);
-    assertThat(changedModule.isFlagExact(), is(true));
+    assertThat(changedModule.isFlagExact()).isTrue();
   }
 
   @Test
@@ -234,7 +229,7 @@ class ModuleTest {
 
     for (final long id : TestUtils.LONGS) {
       final Module withModule = testModule.withId(id);
-      assertThat(withModule.getId(), is(id));
+      assertThat(withModule.getId()).isEqualTo(id);
     }
   }
 
@@ -243,7 +238,7 @@ class ModuleTest {
     final Module module = Module.builder().name("TestModule").shortName("test-module").build();
     Throwable thrownException =
         assertThrows(NullPointerException.class, () -> module.withName(null));
-    assertThat(thrownException.getMessage(), is("name is marked non-null but is null"));
+    assertThat(thrownException.getMessage()).isEqualTo("name is marked non-null but is null");
   }
 
   @Test
@@ -253,7 +248,7 @@ class ModuleTest {
 
     for (final String moduleName : TestUtils.STRINGS) {
       final Module withModule = testModule.withName(moduleName);
-      assertThat(withModule.getName(), is(moduleName));
+      assertThat(withModule.getName()).isEqualTo(moduleName);
     }
   }
 
@@ -261,12 +256,12 @@ class ModuleTest {
   void withOpen_ValidBoolean_ChangesOpen() {
     final Module testModule = Module.builder().name("TestModule").shortName("test-module").build();
 
-    assertThat(testModule.isOpen(), is(false));
+    assertThat(testModule.isOpen()).isFalse();
 
     Module changedModule = testModule.withOpen(false);
-    assertThat(changedModule.isOpen(), is(false));
+    assertThat(changedModule.isOpen()).isFalse();
     changedModule = testModule.withOpen(true);
-    assertThat(changedModule.isOpen(), is(true));
+    assertThat(changedModule.isOpen()).isTrue();
   }
 
   @Test
@@ -274,7 +269,7 @@ class ModuleTest {
     final Module module = Module.builder().name("TestModule").shortName("test-module").build();
     Throwable thrownException =
         assertThrows(NullPointerException.class, () -> module.withShortName(null));
-    assertThat(thrownException.getMessage(), is("shortName is marked non-null but is null"));
+    assertThat(thrownException.getMessage()).isEqualTo("shortName is marked non-null but is null");
   }
 
   @Test
@@ -284,7 +279,7 @@ class ModuleTest {
 
     for (final String shortName : TestUtils.STRINGS) {
       final Module withModule = testModule.withShortName(shortName);
-      assertThat(withModule.getShortName(), is(shortName));
+      assertThat(withModule.getShortName()).isEqualTo(shortName);
     }
   }
 }

@@ -14,9 +14,8 @@
  */
 package org.owasp.securityshepherd.test.exception;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import static org.hamcrest.CoreMatchers.is;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,7 +38,7 @@ class ClassIdNotFoundExceptionTest {
   void messageConstructor_ValidMessage_MessageIncluded() throws Exception {
     for (final String message : TestUtils.STRINGS) {
       ClassIdNotFoundException exception = new ClassIdNotFoundException(message);
-      assertThat(exception.getMessage(), is(message));
+      assertThat(exception.getMessage()).isEqualTo(message);
     }
   }
 }

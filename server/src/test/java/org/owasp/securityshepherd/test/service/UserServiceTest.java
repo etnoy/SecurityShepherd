@@ -14,9 +14,8 @@
  */
 package org.owasp.securityshepherd.test.service;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -214,7 +213,7 @@ class UserServiceTest {
 
     ArgumentCaptor<User> argument = ArgumentCaptor.forClass(User.class);
     verify(userRepository, times(1)).save(argument.capture());
-    assertThat(argument.getValue().getDisplayName(), is(displayName));
+    assertThat(argument.getValue().getDisplayName()).isEqualTo(displayName);
   }
 
   @Test
@@ -332,19 +331,19 @@ class UserServiceTest {
 
     ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
     verify(userRepository, times(1)).save(userArgumentCaptor.capture());
-    assertThat(userArgumentCaptor.getValue().getId(), is(nullValue()));
-    assertThat(userArgumentCaptor.getValue().getDisplayName(), is(displayName));
+    assertThat(userArgumentCaptor.getValue().getId()).isNull();
+    assertThat(userArgumentCaptor.getValue().getDisplayName()).isEqualTo(displayName);
 
     ArgumentCaptor<UserAuth> userAuthArgumentCaptor = ArgumentCaptor.forClass(UserAuth.class);
     verify(userAuthRepository, times(1)).save(userAuthArgumentCaptor.capture());
-    assertThat(userAuthArgumentCaptor.getValue().getUserId(), is(mockUserId));
+    assertThat(userAuthArgumentCaptor.getValue().getUserId()).isEqualTo(mockUserId);
 
     ArgumentCaptor<PasswordAuth> passwordAuthArgumentCaptor =
         ArgumentCaptor.forClass(PasswordAuth.class);
     verify(passwordAuthRepository, times(1)).save(passwordAuthArgumentCaptor.capture());
-    assertThat(passwordAuthArgumentCaptor.getValue().getUserId(), is(mockUserId));
-    assertThat(passwordAuthArgumentCaptor.getValue().getLoginName(), is(loginName));
-    assertThat(passwordAuthArgumentCaptor.getValue().getHashedPassword(), is(hashedPassword));
+    assertThat(passwordAuthArgumentCaptor.getValue().getUserId()).isEqualTo(mockUserId);
+    assertThat(passwordAuthArgumentCaptor.getValue().getLoginName()).isEqualTo(loginName);
+    assertThat(passwordAuthArgumentCaptor.getValue().getHashedPassword()).isEqualTo(hashedPassword);
   }
 
   @Test
@@ -817,8 +816,8 @@ class UserServiceTest {
 
     verify(userRepository, times(1)).save(argument.capture());
 
-    assertThat(argument.getValue(), is(mockUserWithKey));
-    assertThat(argument.getValue().getKey(), is(testRandomBytes));
+    assertThat(argument.getValue()).isEqualTo(mockUserWithKey);
+    assertThat(argument.getValue().getKey()).isEqualTo(testRandomBytes);
   }
 
   @Test

@@ -16,9 +16,8 @@
 
 package org.owasp.securityshepherd.test.exception;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,14 +30,14 @@ import org.owasp.securityshepherd.test.util.TestUtils;
 class XssEvaluationExceptionTest {
   @Test
   void noArgsConstructor_NoArguments_ReturnsException() {
-    assertThat(new XssEvaluationException(), is(instanceOf(XssEvaluationException.class)));
+    assertThat(new XssEvaluationException()).isInstanceOf(XssEvaluationException.class);
   }
 
   @Test
   void messageConstructor_ValidMessage_MessageIncluded() {
     for (final String message : TestUtils.STRINGS) {
       XssEvaluationException exception = new XssEvaluationException(message);
-      assertThat(exception.getMessage(), is(message));
+      assertThat(exception.getMessage()).isEqualTo(message);
     }
   }
 
@@ -47,14 +46,14 @@ class XssEvaluationExceptionTest {
     for (final String message : TestUtils.STRINGS) {
       XssEvaluationException exception =
           new XssEvaluationException(message, new RuntimeException());
-      assertThat(exception.getMessage(), is(message));
-      assertThat(exception.getCause(), is(instanceOf(RuntimeException.class)));
+      assertThat(exception.getMessage()).isEqualTo(message);
+      assertThat(exception.getCause()).isInstanceOf(RuntimeException.class);
     }
   }
 
   @Test
   void exceptionConstructor_ValidException_MessageIncluded() {
     XssEvaluationException exception = new XssEvaluationException(new RuntimeException());
-    assertThat(exception.getCause(), is(instanceOf(RuntimeException.class)));
+    assertThat(exception.getCause()).isInstanceOf(RuntimeException.class);
   }
 }

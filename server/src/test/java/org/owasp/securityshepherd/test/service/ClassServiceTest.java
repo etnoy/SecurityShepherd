@@ -14,9 +14,8 @@
  */
 package org.owasp.securityshepherd.test.service;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -109,8 +108,8 @@ class ClassServiceTest {
     StepVerifier.create(classService.create(mockClassName))
         .assertNext(
             createdClass -> {
-              assertThat(createdClass, is(instanceOf(ClassEntity.class)));
-              assertThat(createdClass.getName(), is(mockClassName));
+              assertThat(createdClass).isInstanceOf(ClassEntity.class);
+              assertThat(createdClass.getName()).isEqualTo(mockClassName);
             })
         .expectComplete()
         .verify();
@@ -175,7 +174,7 @@ class ClassServiceTest {
     StepVerifier.create(classService.getById(mockId))
         .assertNext(
             classEntity -> {
-              assertThat(classEntity.getName(), is(mockName));
+              assertThat(classEntity.getName()).isEqualTo(mockName);
             })
         .expectComplete()
         .verify();
@@ -260,7 +259,7 @@ class ClassServiceTest {
     StepVerifier.create(classService.setName(mockId, newName))
         .assertNext(
             classEntity -> {
-              assertThat(classEntity.getName(), is(newName));
+              assertThat(classEntity.getName()).isEqualTo(newName);
             })
         .expectComplete()
         .verify();

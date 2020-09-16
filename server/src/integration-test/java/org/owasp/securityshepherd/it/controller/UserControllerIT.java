@@ -14,8 +14,8 @@
  */
 package org.owasp.securityshepherd.it.controller;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.HashSet;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -327,7 +327,7 @@ class UserControllerIT {
     StepVerifier.create(getResult.getResponseBody())
         .assertNext(
             getData -> {
-              assertThat(getData, is(userService.findById(userId).block()));
+              assertThat(getData).isEqualTo(userService.findById(userId).block());
             })
         .expectComplete()
         .verify();

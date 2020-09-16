@@ -14,9 +14,8 @@
  */
 package org.owasp.securityshepherd.test.model;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -55,8 +54,8 @@ class ModulePointTest {
 
       builder.id(id);
 
-      assertThat(builder.build(), instanceOf(ModulePoint.class));
-      assertThat(builder.build().getId(), is(id));
+      assertThat(builder.build()).isInstanceOf(ModulePoint.class);
+      assertThat(builder.build().getId()).isEqualTo(id);
     }
   }
 
@@ -75,8 +74,8 @@ class ModulePointTest {
           ModulePoint.builder().moduleId(moduleId).rank(123).points(1);
       builder.moduleId(moduleId);
 
-      assertThat(builder.build(), instanceOf(ModulePoint.class));
-      assertThat(builder.build().getModuleId(), is(moduleId));
+      assertThat(builder.build()).isInstanceOf(ModulePoint.class);
+      assertThat(builder.build().getModuleId()).isEqualTo(moduleId);
     }
   }
 
@@ -94,8 +93,8 @@ class ModulePointTest {
       final ModulePointBuilder builder = ModulePoint.builder().moduleId(12L).points(1);
       builder.rank(rank);
 
-      assertThat(builder.build(), instanceOf(ModulePoint.class));
-      assertThat(builder.build().getRank(), is(rank));
+      assertThat(builder.build()).isInstanceOf(ModulePoint.class);
+      assertThat(builder.build().getRank()).isEqualTo(rank);
     }
   }
 
@@ -113,8 +112,8 @@ class ModulePointTest {
       final ModulePointBuilder builder = ModulePoint.builder().moduleId(1773L).rank(1);
       builder.points(points);
 
-      assertThat(builder.build(), instanceOf(ModulePoint.class));
-      assertThat(builder.build().getPoints(), is(points));
+      assertThat(builder.build()).isInstanceOf(ModulePoint.class);
+      assertThat(builder.build().getPoints()).isEqualTo(points);
     }
   }
 
@@ -128,9 +127,7 @@ class ModulePointTest {
     final ModulePointBuilder builder =
         ModulePoint.builder().id(17L).moduleId(83L).rank(1).points(54);
 
-    assertThat(
-        builder.toString(),
-        is("ModulePoint.ModulePointBuilder(id=17, moduleId=83, rank=1, points=54)"));
+    assertThat(builder.toString()).isEqualTo("ModulePoint.ModulePointBuilder(id=17, moduleId=83, rank=1, points=54)");
   }
 
   @Test
@@ -138,9 +135,7 @@ class ModulePointTest {
     final ModulePoint testModulePoint =
         ModulePoint.builder().id(1337L).moduleId(123L).rank(6789).points(987).build();
 
-    assertThat(
-        testModulePoint.toString(),
-        is("ModulePoint(id=1337, moduleId=123, rank=6789, points=987)"));
+    assertThat(testModulePoint.toString()).isEqualTo("ModulePoint(id=1337, moduleId=123, rank=6789, points=987)");
   }
 
   @Test
@@ -153,7 +148,7 @@ class ModulePointTest {
 
     for (final Long id : testedIds) {
       final ModulePoint newModulePoint = modulePoint.withId(id);
-      assertThat(newModulePoint.getId(), is(id));
+      assertThat(newModulePoint.getId()).isEqualTo(id);
     }
   }
 
@@ -176,7 +171,7 @@ class ModulePointTest {
 
     for (final long moduleId : testedModuleIds) {
       final ModulePoint newModulePoint = modulePoint.withModuleId(moduleId);
-      assertThat(newModulePoint.getModuleId(), is(moduleId));
+      assertThat(newModulePoint.getModuleId()).isEqualTo(moduleId);
     }
   }
 
@@ -203,7 +198,7 @@ class ModulePointTest {
 
     for (Integer rank : testedRanks) {
       final ModulePoint newModulePoint = modulePoint.withRank(rank);
-      assertThat(newModulePoint.getRank(), is(rank));
+      assertThat(newModulePoint.getRank()).isEqualTo(rank);
     }
   }
 
@@ -224,7 +219,7 @@ class ModulePointTest {
 
     for (Integer points : testedScores) {
       final ModulePoint newModulePoint = modulePoint.withPoints(points);
-      assertThat(newModulePoint.getPoints(), is(points));
+      assertThat(newModulePoint.getPoints()).isEqualTo(points);
     }
   }
 }

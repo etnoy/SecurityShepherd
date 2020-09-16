@@ -14,9 +14,8 @@
  */
 package org.owasp.securityshepherd.test.model;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,9 +30,7 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 class ConfigurationTest {
   @Test
   void builderToString_ValidData_AsExpected() {
-    assertThat(
-        Configuration.builder().toString(),
-        is("Configuration.ConfigurationBuilder(id=null, key=null, value=null)"));
+    assertThat(Configuration.builder().toString()).isEqualTo("Configuration.ConfigurationBuilder(id=null, key=null, value=null)");
   }
 
   @Test
@@ -58,8 +55,8 @@ class ConfigurationTest {
 
       builder.id(id);
 
-      assertThat(builder.build(), instanceOf(Configuration.class));
-      assertThat(builder.build().getId(), is(id));
+      assertThat(builder.build()).isInstanceOf(Configuration.class);
+      assertThat(builder.build().getId()).isEqualTo(id);
     }
   }
 
@@ -80,8 +77,8 @@ class ConfigurationTest {
 
       builder.key(key);
 
-      assertThat(builder.build(), instanceOf(Configuration.class));
-      assertThat(builder.build().getKey(), is(key));
+      assertThat(builder.build()).isInstanceOf(Configuration.class);
+      assertThat(builder.build().getKey()).isEqualTo(key);
     }
   }
 
@@ -97,8 +94,8 @@ class ConfigurationTest {
 
     for (String value : TestUtils.STRINGS) {
       configurationBuilder.value(value);
-      assertThat(configurationBuilder.build(), instanceOf(Configuration.class));
-      assertThat(configurationBuilder.build().getValue(), is(value));
+      assertThat(configurationBuilder.build()).isInstanceOf(Configuration.class);
+      assertThat(configurationBuilder.build().getValue()).isEqualTo(value);
     }
   }
 
@@ -109,9 +106,7 @@ class ConfigurationTest {
 
   @Test
   void toString_ValidData_AsExpected() {
-    assertThat(
-        Configuration.builder().key("serverKey").value("abc123secret").build().toString(),
-        is("Configuration(id=null, key=serverKey, value=abc123secret)"));
+    assertThat(Configuration.builder().key("serverKey").value("abc123secret").build().toString()).isEqualTo("Configuration(id=null, key=serverKey, value=abc123secret)");
   }
 
   @Test
@@ -126,7 +121,7 @@ class ConfigurationTest {
 
     for (Integer id : testedIds) {
       final Configuration newConfiguration = configuration.withId(id);
-      assertThat(newConfiguration.getId(), is(id));
+      assertThat(newConfiguration.getId()).isEqualTo(id);
     }
   }
 
@@ -149,7 +144,7 @@ class ConfigurationTest {
 
     for (String key : testedKeys) {
       final Configuration changedConfiguration = configuration.withKey(key);
-      assertThat(changedConfiguration.getKey(), is(key));
+      assertThat(changedConfiguration.getKey()).isEqualTo(key);
     }
   }
 
@@ -171,7 +166,7 @@ class ConfigurationTest {
 
     for (String value : testedValues) {
       final Configuration changedConfiguration = configuration.withValue(value);
-      assertThat(changedConfiguration.getValue(), is(value));
+      assertThat(changedConfiguration.getValue()).isEqualTo(value);
     }
   }
 }
