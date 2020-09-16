@@ -1,19 +1,17 @@
 /**
  * This file is part of Security Shepherd.
  *
- * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Security Shepherd.
- * If not, see <http://www.gnu.org/licenses/>.
- * 
+ * <p>You should have received a copy of the GNU General Public License along with Security
+ * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.owasp.securityshepherd.application;
 
 import java.time.Clock;
@@ -40,7 +38,10 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@ConditionalOnProperty(prefix = "application.runner", value = "enabled", havingValue = "true",
+@ConditionalOnProperty(
+    prefix = "application.runner",
+    value = "enabled",
+    havingValue = "true",
     matchIfMissing = true)
 @Component
 @RequiredArgsConstructor
@@ -61,15 +62,16 @@ public class StartupRunner implements ApplicationRunner {
 
   private final ScoreService scoringService;
 
-  @Autowired
-  private Clock clock;
+  @Autowired private Clock clock;
 
   @Override
   public void run(ApplicationArguments args) {
     log.info("Running StartupRunner");
     // Create a default admin account
-    userService.createPasswordUser("Admin", "admin",
-        "$2y$08$WpfUVZLcXNNpmM2VwSWlbe25dae.eEC99AOAVUiU5RaJmfFsE9B5G").block();
+    userService
+        .createPasswordUser(
+            "Admin", "admin", "$2y$08$WpfUVZLcXNNpmM2VwSWlbe25dae.eEC99AOAVUiU5RaJmfFsE9B5G")
+        .block();
 
     xssTutorial.initialize().block();
     sqlInjectionTutorial.initialize().block();
@@ -128,8 +130,12 @@ public class StartupRunner implements ApplicationRunner {
     List<Integer> timeOffsets = Arrays.asList(3, 4, 1, 2, 3, 1, 0, 5);
 
     // The duration between times should be 1 day
-    final List<Clock> clocks = timeOffsets.stream().map(Duration::ofDays)
-        .map(duration -> Clock.offset(startTime, duration)).collect(Collectors.toList());
+    final List<Clock> clocks =
+        timeOffsets
+            .stream()
+            .map(Duration::ofDays)
+            .map(duration -> Clock.offset(startTime, duration))
+            .collect(Collectors.toList());
 
     final List<String> flags =
         Arrays.asList(flag, flag, flag, wrongFlag, flag, flag, flag, wrongFlag);
@@ -160,5 +166,4 @@ public class StartupRunner implements ApplicationRunner {
     correctionService.submit(userIds.get(1), 100, "Thanks for the bribe").block();
     submissionService.setClock(clock);
   }
-
 }

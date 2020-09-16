@@ -1,19 +1,17 @@
 /**
  * This file is part of Security Shepherd.
  *
- * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Security Shepherd.
- * If not, see <http://www.gnu.org/licenses/>.
- * 
+ * <p>You should have received a copy of the GNU General Public License along with Security
+ * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.owasp.securityshepherd.module;
 
 import org.owasp.securityshepherd.crypto.KeyService;
@@ -43,7 +41,9 @@ public final class ModuleService {
   }
 
   public Mono<Module> create(final SubmittableModule submittableModule) {
-    return this.create(submittableModule.getName(), submittableModule.getShortName(),
+    return this.create(
+        submittableModule.getName(),
+        submittableModule.getShortName(),
         submittableModule.getDescription());
   }
 
@@ -51,8 +51,8 @@ public final class ModuleService {
     return this.create(moduleName, url, null);
   }
 
-  public Mono<Module> create(final String moduleName, final String shortName,
-      final String description) {
+  public Mono<Module> create(
+      final String moduleName, final String shortName, final String description) {
     if (moduleName == null) {
       return Mono.error(new NullPointerException("Module name cannot be null"));
     }
@@ -63,11 +63,20 @@ public final class ModuleService {
 
     log.info("Creating new module with name " + moduleName + " and url " + shortName);
 
-    return Mono.just(moduleName).filterWhen(this::doesNotExistByName)
-        .switchIfEmpty(Mono.error(new DuplicateModuleNameException(
-            String.format("Module name %s already exists", moduleName))))
-        .map(name -> Module.builder().isOpen(true).name(name).description(description)
-            .shortName(shortName).build())
+    return Mono.just(moduleName)
+        .filterWhen(this::doesNotExistByName)
+        .switchIfEmpty(
+            Mono.error(
+                new DuplicateModuleNameException(
+                    String.format("Module name %s already exists", moduleName))))
+        .map(
+            name ->
+                Module.builder()
+                    .isOpen(true)
+                    .name(name)
+                    .description(description)
+                    .shortName(shortName)
+                    .build())
         .flatMap(moduleRepository::save);
   }
 
@@ -102,8 +111,8 @@ public final class ModuleService {
 
   public Mono<String> findNameById(final long moduleId) {
     if (moduleId <= 0) {
-      return Mono
-          .error(new InvalidModuleIdException("Module id must be a strictly positive integer"));
+      return Mono.error(
+          new InvalidModuleIdException("Module id must be a strictly positive integer"));
     }
 
     return moduleRepository.findById(moduleId).map(Module::getName);
@@ -118,13 +127,17 @@ public final class ModuleService {
       return Mono.error(moduleIdMustBePositive());
     }
 
-    return findById(moduleId).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
-        .map(module -> module.withFlagEnabled(true).withFlagExact(false)).map(module -> {
-          if (module.getFlag() == null) {
-            return module.withFlag(keyService.generateRandomString(16));
-          }
-          return module;
-        }).flatMap(moduleRepository::save);
+    return findById(moduleId)
+        .switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
+        .map(module -> module.withFlagEnabled(true).withFlagExact(false))
+        .map(
+            module -> {
+              if (module.getFlag() == null) {
+                return module.withFlag(keyService.generateRandomString(16));
+              }
+              return module;
+            })
+        .flatMap(moduleRepository::save);
   }
 
   public Mono<Module> setExactFlag(final long moduleId, final String exactFlag) {
@@ -138,7 +151,8 @@ public final class ModuleService {
       return Mono.error(new InvalidFlagException("Flag cannot be empty"));
     }
 
-    return findById(moduleId).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
+    return findById(moduleId)
+        .switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
         .map(module -> module.withFlagEnabled(true).withFlagExact(true).withFlag(exactFlag))
         .flatMap(moduleRepository::save);
   }
@@ -158,7 +172,9 @@ public final class ModuleService {
 
     log.info("Setting name of module with id " + moduleId + " to " + moduleName);
 
-    return findById(moduleId).switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
-        .map(module -> module.withName(moduleName)).flatMap(moduleRepository::save);
+    return findById(moduleId)
+        .switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
+        .map(module -> module.withName(moduleName))
+        .flatMap(moduleRepository::save);
   }
 }

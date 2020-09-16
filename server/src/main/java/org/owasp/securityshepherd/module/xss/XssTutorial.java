@@ -1,19 +1,17 @@
 /**
  * This file is part of Security Shepherd.
  *
- * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Security Shepherd.
- * If not, see <http://www.gnu.org/licenses/>.
- * 
+ * <p>You should have received a copy of the GNU General Public License along with Security
+ * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.owasp.securityshepherd.module.xss;
 
 import java.util.List;
@@ -55,18 +53,20 @@ public class XssTutorial extends AbstractModule {
   public Mono<Long> initialize() {
     log.info("Creating xss tutorial module");
     final Mono<Module> moduleMono = moduleService.create(this);
-    return moduleMono.flatMap(module -> {
-      this.moduleId = module.getId();
-      return moduleService.setDynamicFlag(moduleId).then(Mono.just(this.moduleId));
-    });
+    return moduleMono.flatMap(
+        module -> {
+          this.moduleId = module.getId();
+          return moduleService.setDynamicFlag(moduleId).then(Mono.just(this.moduleId));
+        });
   }
 
   public Mono<XssTutorialResponse> submitQuery(final long userId, final String query) {
     if (this.moduleId == null) {
       return Mono.error(new RuntimeException("Must initialize module before submitting to it"));
     }
-    final String htmlTarget = String.format(
-        "<html><head><title>Alert</title></head><body><p>Result: %s</p></body></html>", query);
+    final String htmlTarget =
+        String.format(
+            "<html><head><title>Alert</title></head><body><p>Result: %s</p></body></html>", query);
 
     final List<String> alerts = xssService.doXss(htmlTarget);
 
@@ -78,9 +78,11 @@ public class XssTutorial extends AbstractModule {
     } else {
       xssTutorialResponseBuilder.alert(alerts.get(0));
 
-      return flagComponent.getDynamicFlag(userId, this.moduleId)
+      return flagComponent
+          .getDynamicFlag(userId, this.moduleId)
           .map(flag -> String.format("Congratulations, flag is %s", flag))
-          .map(xssTutorialResponseBuilder::result).map(XssTutorialResponseBuilder::build);
+          .map(xssTutorialResponseBuilder::result)
+          .map(XssTutorialResponseBuilder::build);
     }
   }
 }

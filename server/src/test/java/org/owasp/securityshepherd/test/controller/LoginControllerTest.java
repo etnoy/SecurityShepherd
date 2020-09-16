@@ -1,19 +1,17 @@
 /**
  * This file is part of Security Shepherd.
  *
- * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Security Shepherd.
- * If not, see <http://www.gnu.org/licenses/>.
- * 
+ * <p>You should have received a copy of the GNU General Public License along with Security
+ * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.owasp.securityshepherd.test.controller;
 
 import static org.mockito.Mockito.when;
@@ -49,14 +47,11 @@ public class LoginControllerTest {
 
   LoginController loginController;
 
-  @Mock
-  UserService userService;
+  @Mock UserService userService;
 
-  @Mock
-  WebTokenService webTokenService;
+  @Mock WebTokenService webTokenService;
 
-  @Mock
-  PasswordEncoder passwordEncoder;
+  @Mock PasswordEncoder passwordEncoder;
 
   @Test
   public void login_InvalidCredentials_ReturnsJWT() {
@@ -67,7 +62,9 @@ public class LoginControllerTest {
     when(userService.findUserIdByLoginName(userName)).thenReturn(Mono.just(mockUserId));
     when(userService.authenticate(userName, password)).thenReturn(Mono.just(false));
     StepVerifier.create(loginController.login(passwordLoginDto))
-        .expectNext(new ResponseEntity<>(HttpStatus.UNAUTHORIZED)).expectComplete().verify();
+        .expectNext(new ResponseEntity<>(HttpStatus.UNAUTHORIZED))
+        .expectComplete()
+        .verify();
   }
 
   @Test
@@ -82,7 +79,8 @@ public class LoginControllerTest {
     when(userService.authenticate(userName, password)).thenReturn(Mono.just(true));
     when(webTokenService.generateToken(mockUserId)).thenReturn(mockJwt);
     StepVerifier.create(loginController.login(passwordLoginDto))
-        .expectNext(new ResponseEntity<>(mockAuthResponse, HttpStatus.OK)).expectComplete()
+        .expectNext(new ResponseEntity<>(mockAuthResponse, HttpStatus.OK))
+        .expectComplete()
         .verify();
   }
 
@@ -98,8 +96,10 @@ public class LoginControllerTest {
     when(passwordEncoder.encode(password)).thenReturn(encodedPassword);
     when(userService.createPasswordUser(displayName, userName, encodedPassword))
         .thenReturn(Mono.just(mockUserId));
-    StepVerifier.create(loginController.register(passwordRegistrationDto)).expectNext(mockUserId)
-        .expectComplete().verify();
+    StepVerifier.create(loginController.register(passwordRegistrationDto))
+        .expectNext(mockUserId)
+        .expectComplete()
+        .verify();
   }
 
   @BeforeEach

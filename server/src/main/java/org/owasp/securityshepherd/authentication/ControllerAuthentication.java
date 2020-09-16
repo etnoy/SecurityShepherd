@@ -19,6 +19,7 @@ public class ControllerAuthentication {
         .filter(auth -> auth.getPrincipal() != null)
         .switchIfEmpty(Mono.error(new NotAuthenticatedException()))
         // If the principal isn't null, cast it to Long
-        .map(Authentication::getPrincipal).cast(Long.class);
+        .map(Authentication::getPrincipal)
+        .cast(Long.class);
   }
 }

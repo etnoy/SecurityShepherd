@@ -1,19 +1,17 @@
 /**
  * This file is part of Security Shepherd.
  *
- * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Security Shepherd.
- * If not, see <http://www.gnu.org/licenses/>.
- * 
+ * <p>You should have received a copy of the GNU General Public License along with Security
+ * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.owasp.securityshepherd.user;
 
 import org.owasp.securityshepherd.authentication.PasswordAuth;
@@ -79,15 +77,18 @@ public final class UserService {
         // Extract the password hash
         .map(PasswordAuth::getHashedPassword)
         // Check if hash matches
-        .map(hashedPassword -> encoder.matches(password, hashedPassword)).defaultIfEmpty(false);
+        .map(hashedPassword -> encoder.matches(password, hashedPassword))
+        .defaultIfEmpty(false);
   }
 
   public Flux<SimpleGrantedAuthority> getAuthoritiesByUserId(final long userId) {
     if (userId <= 0) {
       return Flux.error(new InvalidUserIdException());
     }
-    return findUserAuthByUserId(userId).filter(UserAuth::isAdmin)
-        .map(userAuth -> new SimpleGrantedAuthority("ROLE_ADMIN")).flux()
+    return findUserAuthByUserId(userId)
+        .filter(UserAuth::isAdmin)
+        .map(userAuth -> new SimpleGrantedAuthority("ROLE_ADMIN"))
+        .flux()
         .concatWithValues(new SimpleGrantedAuthority("ROLE_USER"));
   }
 
@@ -102,14 +103,15 @@ public final class UserService {
 
     log.info("Creating new user with display name " + displayName);
 
-    return Mono.just(displayName).filterWhen(this::doesNotExistByDisplayName)
+    return Mono.just(displayName)
+        .filterWhen(this::doesNotExistByDisplayName)
         .switchIfEmpty(displayNameAlreadyExists(displayName))
         .flatMap(name -> userRepository.save(User.builder().displayName(name).build()))
         .map(User::getId);
   }
 
-  public Mono<Long> createPasswordUser(final String displayName, final String loginName,
-      final String hashedPassword) {
+  public Mono<Long> createPasswordUser(
+      final String displayName, final String loginName, final String hashedPassword) {
     if (displayName == null) {
       return Mono.error(new NullPointerException("Display name cannot be null"));
     }
@@ -126,45 +128,56 @@ public final class UserService {
       return Mono.error(new IllegalArgumentException());
     }
 
-    log.info("Creating new password login user with display name " + displayName
-        + " and login name " + loginName);
+    log.info(
+        "Creating new password login user with display name "
+            + displayName
+            + " and login name "
+            + loginName);
 
-    final Mono<String> loginNameMono = Mono.just(loginName)
-        .filterWhen(this::doesNotExistByLoginName).switchIfEmpty(loginNameAlreadyExists(loginName));
+    final Mono<String> loginNameMono =
+        Mono.just(loginName)
+            .filterWhen(this::doesNotExistByLoginName)
+            .switchIfEmpty(loginNameAlreadyExists(loginName));
 
     final Mono<String> displayNameMono =
-        Mono.just(displayName).filterWhen(this::doesNotExistByDisplayName)
+        Mono.just(displayName)
+            .filterWhen(this::doesNotExistByDisplayName)
             .switchIfEmpty(displayNameAlreadyExists(displayName));
 
-    return Mono.zip(displayNameMono, loginNameMono).flatMap(tuple -> {
+    return Mono.zip(displayNameMono, loginNameMono)
+        .flatMap(
+            tuple -> {
+              final UserBuilder userBuilder = User.builder();
+              userBuilder.displayName(tuple.getT1());
 
-      final UserBuilder userBuilder = User.builder();
-      userBuilder.displayName(tuple.getT1());
+              final Mono<Long> userIdMono =
+                  userRepository.save(userBuilder.build()).map(User::getId);
 
-      final Mono<Long> userIdMono = userRepository.save(userBuilder.build()).map(User::getId);
+              final PasswordAuthBuilder passwordAuthBuilder = PasswordAuth.builder();
+              passwordAuthBuilder.loginName(tuple.getT2());
+              passwordAuthBuilder.hashedPassword(hashedPassword);
 
-      final PasswordAuthBuilder passwordAuthBuilder = PasswordAuth.builder();
-      passwordAuthBuilder.loginName(tuple.getT2());
-      passwordAuthBuilder.hashedPassword(hashedPassword);
+              return userIdMono.delayUntil(
+                  userId -> {
+                    Mono<UserAuth> userAuthMono =
+                        userAuthRepository.save(UserAuth.builder().userId(userId).build());
 
-      return userIdMono.delayUntil(userId -> {
-        Mono<UserAuth> userAuthMono =
-            userAuthRepository.save(UserAuth.builder().userId(userId).build());
+                    Mono<PasswordAuth> passwordAuthMono =
+                        passwordAuthRepository.save(passwordAuthBuilder.userId(userId).build());
 
-        Mono<PasswordAuth> passwordAuthMono =
-            passwordAuthRepository.save(passwordAuthBuilder.userId(userId).build());
-
-        return Mono.when(userAuthMono, passwordAuthMono);
-      });
-    });
+                    return Mono.when(userAuthMono, passwordAuthMono);
+                  });
+            });
   }
 
   public Mono<Void> deleteById(final long userId) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
-    return passwordAuthRepository.deleteByUserId(userId)
-        .then(userAuthRepository.deleteByUserId(userId)).then(userRepository.deleteById(userId));
+    return passwordAuthRepository
+        .deleteByUserId(userId)
+        .then(userAuthRepository.deleteByUserId(userId))
+        .then(userRepository.deleteById(userId));
   }
 
   public Mono<Void> demote(final long userId) {
@@ -174,8 +187,10 @@ public final class UserService {
 
     log.info("Demoting user with id " + userId + " to user");
 
-    return findUserAuthByUserId(userId).map(userAuth -> userAuth.withAdmin(false))
-        .flatMap(userAuthRepository::save).then();
+    return findUserAuthByUserId(userId)
+        .map(userAuth -> userAuth.withAdmin(false))
+        .flatMap(userAuthRepository::save)
+        .then();
   }
 
   private Mono<String> displayNameAlreadyExists(final String displayName) {
@@ -215,16 +230,20 @@ public final class UserService {
       return Mono.error(new InvalidUserIdException());
     }
 
-    return Mono.just(id).filterWhen(userRepository::existsById)
-        .switchIfEmpty(Mono.error(new UserIdNotFoundException())).flatMap(userRepository::findById)
-        .flatMap(user -> {
-          final byte[] key = user.getKey();
-          if (key == null) {
-            return userRepository.save(user.withKey(keyService.generateRandomBytes(16)))
-                .map(User::getKey);
-          }
-          return Mono.just(key);
-        });
+    return Mono.just(id)
+        .filterWhen(userRepository::existsById)
+        .switchIfEmpty(Mono.error(new UserIdNotFoundException()))
+        .flatMap(userRepository::findById)
+        .flatMap(
+            user -> {
+              final byte[] key = user.getKey();
+              if (key == null) {
+                return userRepository
+                    .save(user.withKey(keyService.generateRandomBytes(16)))
+                    .map(User::getKey);
+              }
+              return Mono.just(key);
+            });
   }
 
   public Mono<PasswordAuth> findPasswordAuthByLoginName(final String loginName) {
@@ -265,8 +284,8 @@ public final class UserService {
   }
 
   private Mono<String> loginNameAlreadyExists(final String loginName) {
-    return Mono
-        .error(new DuplicateUserLoginNameException("Login name " + loginName + " already exists"));
+    return Mono.error(
+        new DuplicateUserLoginNameException("Login name " + loginName + " already exists"));
   }
 
   public Mono<Void> promote(final long userId) {
@@ -276,8 +295,10 @@ public final class UserService {
 
     log.info("Promoting user with id " + userId + " to admin");
 
-    return findUserAuthByUserId(userId).map(userAuth -> userAuth.withAdmin(true))
-        .flatMap(userAuthRepository::save).then();
+    return findUserAuthByUserId(userId)
+        .map(userAuth -> userAuth.withAdmin(true))
+        .flatMap(userAuthRepository::save)
+        .then();
   }
 
   public Mono<User> setClassId(final long userId, final long classId) {
@@ -289,11 +310,16 @@ public final class UserService {
       return Mono.error(new InvalidClassIdException());
     }
 
-    final Mono<Long> classIdMono = Mono.just(classId).filterWhen(classService::existsById)
-        .switchIfEmpty(Mono.error(new ClassIdNotFoundException()));
+    final Mono<Long> classIdMono =
+        Mono.just(classId)
+            .filterWhen(classService::existsById)
+            .switchIfEmpty(Mono.error(new ClassIdNotFoundException()));
 
-    return Mono.just(userId).flatMap(this::findById).zipWith(classIdMono)
-        .map(tuple -> tuple.getT1().withClassId(tuple.getT2())).flatMap(userRepository::save);
+    return Mono.just(userId)
+        .flatMap(this::findById)
+        .zipWith(classIdMono)
+        .map(tuple -> tuple.getT1().withClassId(tuple.getT2()))
+        .flatMap(userRepository::save);
   }
 
   public Mono<User> setDisplayName(final long userId, final String displayName) {
@@ -312,12 +338,16 @@ public final class UserService {
     log.info("Setting display name of user id " + userId + " to " + displayName);
 
     final Mono<String> displayNameMono =
-        Mono.just(displayName).filterWhen(this::doesNotExistByDisplayName)
+        Mono.just(displayName)
+            .filterWhen(this::doesNotExistByDisplayName)
             .switchIfEmpty(displayNameAlreadyExists(displayName));
 
-    return Mono.just(userId).filterWhen(userRepository::existsById)
-        .switchIfEmpty(Mono.error(new UserIdNotFoundException())).flatMap(this::findById)
-        .zipWith(displayNameMono).map(tuple -> tuple.getT1().withDisplayName(tuple.getT2()))
+    return Mono.just(userId)
+        .filterWhen(userRepository::existsById)
+        .switchIfEmpty(Mono.error(new UserIdNotFoundException()))
+        .flatMap(this::findById)
+        .zipWith(displayNameMono)
+        .map(tuple -> tuple.getT1().withDisplayName(tuple.getT2()))
         .flatMap(userRepository::save);
   }
 }
