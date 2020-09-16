@@ -200,7 +200,7 @@ class XssTutorialTest {
             response -> {
               assertThat(response.getResult()).contains("Sorry");
               assertThat(response.getResult()).doesNotContain("Congratulations");
-              assertThat(response.getAlert()).isEqualTo(null);
+              assertThat(response.getAlert()).isNull();
             })
         .expectComplete()
         .verify();

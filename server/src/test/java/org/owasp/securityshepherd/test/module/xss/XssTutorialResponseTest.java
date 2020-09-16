@@ -50,7 +50,7 @@ class XssTutorialResponseTest {
     final XssTutorialResponseBuilder testXssTutorialResponseBuilder =
         XssTutorialResponse.builder().result("TestXssTutorialResponse").alert("xss");
     assertThat(testXssTutorialResponseBuilder.toString())
-        .isEqualTo(
+        .hasToString(
             "XssTutorialResponse.XssTutorialResponseBuilder(result=TestXssTutorialResponse, alert=xss)");
   }
 
@@ -84,6 +84,6 @@ class XssTutorialResponseTest {
     final XssTutorialResponse testXssTutorialResponse =
         XssTutorialResponse.builder().result("result is good").alert("xss warning").build();
     assertThat(testXssTutorialResponse.toString())
-        .isEqualTo("XssTutorialResponse(result=result is good, alert=xss warning)");
+        .hasToString("XssTutorialResponse(result=result is good, alert=xss warning)");
   }
 }

@@ -64,7 +64,7 @@ class SqlInjectionTutorialRowTest {
             .comment("This is a user")
             .error("no error");
     assertThat(testSqlInjectionTutorialRowBuilder.toString())
-        .isEqualTo(
+        .hasToString(
             "SqlInjectionTutorialRow.SqlInjectionTutorialRowBuilder(name=TestSqlInjectionTutorialRow, comment=This is a user, error=no error)");
   }
 
