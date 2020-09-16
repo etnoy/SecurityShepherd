@@ -63,7 +63,8 @@ class ConfigurationTest {
 
   @Test
   void buildKey_NullKey_ThrowsNullPointerException() {
-    assertThrows(NullPointerException.class, () -> Configuration.builder().key(null));
+    final ConfigurationBuilder configurationBuilder = Configuration.builder();
+    assertThrows(NullPointerException.class, () -> configurationBuilder.key(null));
   }
 
   @Test
@@ -84,7 +85,8 @@ class ConfigurationTest {
 
   @Test
   void buildValue_NullValue_ThrowsNullPointerException() {
-    assertThrows(NullPointerException.class, () -> Configuration.builder().value(null));
+    final ConfigurationBuilder configurationBuilder = Configuration.builder();
+    assertThrows(NullPointerException.class, () -> configurationBuilder.value(null));
   }
 
   @Test
@@ -95,12 +97,12 @@ class ConfigurationTest {
 
     for (String value : valuesToTest) {
 
-      final ConfigurationBuilder builder = Configuration.builder().key("TestKey");
+      final ConfigurationBuilder configurationBuilder = Configuration.builder().key("TestKey");
 
-      builder.value(value);
+      configurationBuilder.value(value);
 
-      assertThat(builder.build(), instanceOf(Configuration.class));
-      assertThat(builder.build().getValue(), is(value));
+      assertThat(configurationBuilder.build(), instanceOf(Configuration.class));
+      assertThat(configurationBuilder.build().getValue(), is(value));
     }
   }
 
@@ -132,9 +134,10 @@ class ConfigurationTest {
 
   @Test
   void withKey_NullKey_ThrowsNullPointerException() {
-    assertThrows(
-        NullPointerException.class,
-        () -> Configuration.builder().key("serverKey").value("secret123").build().withKey(null));
+    final Configuration configuration =
+        Configuration.builder().key("serverKey").value("secret123").build();
+
+    assertThrows(NullPointerException.class, () -> configuration.withKey(null));
   }
 
   @Test
@@ -147,7 +150,6 @@ class ConfigurationTest {
     };
 
     for (String key : testedKeys) {
-
       final Configuration changedConfiguration = configuration.withKey(key);
       assertThat(changedConfiguration.getKey(), is(key));
     }

@@ -45,6 +45,6 @@ class AuthResponseTest {
   void toString_ValidData_AsExpected() {
     final AuthResponse authResponse = new AuthResponse("token", "loginName");
     assertThat(authResponse.toString())
-        .isEqualTo("AuthResponse(token=token, userName=loginName)");
+        .hasToString("AuthResponse(token=token, userName=loginName)");
   }
 }

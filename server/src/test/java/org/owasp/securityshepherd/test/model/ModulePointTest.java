@@ -30,19 +30,20 @@ class ModulePointTest {
 
   @Test
   void build_ModuleIdNotGiven_ThrowsNullPointerException() {
-    assertThrows(NullPointerException.class, () -> ModulePoint.builder().rank(1).points(2).build());
+    final ModulePointBuilder modulePointBuilder = ModulePoint.builder().rank(1).points(2);
+    assertThrows(NullPointerException.class, () -> modulePointBuilder.build());
   }
 
   @Test
   void build_RankNotGiven_ThrowsNullPointerException() {
-    assertThrows(
-        NullPointerException.class, () -> ModulePoint.builder().moduleId(37L).points(2).build());
+    final ModulePointBuilder modulePointBuilder = ModulePoint.builder().moduleId(22L).points(2);
+    assertThrows(NullPointerException.class, () -> modulePointBuilder.build());
   }
 
   @Test
   void build_ScoreNotGiven_ThrowsNullPointerException() {
-    assertThrows(
-        NullPointerException.class, () -> ModulePoint.builder().moduleId(22L).rank(2).build());
+    final ModulePointBuilder modulePointBuilder = ModulePoint.builder().moduleId(22L).rank(2);
+    assertThrows(NullPointerException.class, () -> modulePointBuilder.build());
   }
 
   @Test
@@ -81,7 +82,8 @@ class ModulePointTest {
 
   @Test
   void buildRank_NullRank_ThrowsNullPointerException() {
-    assertThrows(NullPointerException.class, () -> ModulePoint.builder().rank(null));
+    final ModulePointBuilder modulePointBuilder = ModulePoint.builder();
+    assertThrows(NullPointerException.class, () -> modulePointBuilder.rank(null));
   }
 
   @Test
@@ -99,7 +101,8 @@ class ModulePointTest {
 
   @Test
   void buildScore_NullScore_ThrowsNullPointerException() {
-    assertThrows(NullPointerException.class, () -> ModulePoint.builder().points(null));
+    final ModulePointBuilder modulePointBuilder = ModulePoint.builder();
+    assertThrows(NullPointerException.class, () -> modulePointBuilder.points(null));
   }
 
   @Test

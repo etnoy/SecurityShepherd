@@ -30,16 +30,19 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 class ModuleTest {
   @Test
   void build_NameNotGiven_ThrowsNullPointerException() {
+    final ModuleBuilder moduleBuilder = Module.builder().shortName("test-module");
+    
     Throwable thrownException =
-        assertThrows(
-            NullPointerException.class, () -> Module.builder().shortName("test-module").build());
+        assertThrows(NullPointerException.class, () -> moduleBuilder.build());
     assertThat(thrownException.getMessage(), is("name is marked non-null but is null"));
   }
 
   @Test
   void build_ShortNameNotGiven_ThrowsNullPointerException() {
+    final ModuleBuilder moduleBuilder = Module.builder().name("test-module");
+
     Throwable thrownException =
-        assertThrows(NullPointerException.class, () -> Module.builder().name("TestModule").build());
+        assertThrows(NullPointerException.class, () -> moduleBuilder.build());
     assertThat(thrownException.getMessage(), is("shortName is marked non-null but is null"));
   }
 

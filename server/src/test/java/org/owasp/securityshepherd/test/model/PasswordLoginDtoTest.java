@@ -29,8 +29,8 @@ class PasswordLoginDtoTest {
     for (final String userName : TestUtils.STRINGS) {
       for (final String password : TestUtils.STRINGS) {
         final PasswordLoginDto passwordLoginDto = new PasswordLoginDto(userName, password);
-        assertThat(passwordLoginDto.getUserName()).isEqualTo(userName);
-        assertThat(passwordLoginDto.getPassword()).isEqualTo(password);
+        assertThat(passwordLoginDto.getUserName()).hasToString(userName);
+        assertThat(passwordLoginDto.getPassword()).hasToString(password);
       }
     }
   }
