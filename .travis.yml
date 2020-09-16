@@ -18,7 +18,7 @@ jobs:
         - git fetch --unshallow
       script:
         - ./gradlew test 
-          ./gradlew sonarqube
+        - ./gradlew sonarqube
     - stage: test
       name: Backend integration tests
       services: mysql
