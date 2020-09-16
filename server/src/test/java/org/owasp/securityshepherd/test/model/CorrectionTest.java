@@ -1,19 +1,17 @@
 /**
  * This file is part of Security Shepherd.
  *
- * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Security Shepherd.
- * If not, see <http://www.gnu.org/licenses/>.
- * 
+ * <p>You should have received a copy of the GNU General Public License along with Security
+ * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.owasp.securityshepherd.test.model;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -127,8 +125,10 @@ public class CorrectionTest {
     final CorrectionBuilder builder =
         Correction.builder().time(LocalDateTime.MIN).amount(1L).userId(83L);
 
-    assertThat(builder.toString(), is(
-        "Correction.CorrectionBuilder(id=null, userId=83, amount=1, time=-999999999-01-01T00:00, description=null)"));
+    assertThat(
+        builder.toString(),
+        is(
+            "Correction.CorrectionBuilder(id=null, userId=83, amount=1, time=-999999999-01-01T00:00, description=null)"));
   }
 
   @Test
@@ -141,8 +141,10 @@ public class CorrectionTest {
     final Correction testCorrection =
         Correction.builder().time(LocalDateTime.MIN).amount(1L).userId(83L).build();
 
-    assertThat(testCorrection.toString(), is(
-        "Correction(id=null, userId=83, amount=1, time=-999999999-01-01T00:00, description=null)"));
+    assertThat(
+        testCorrection.toString(),
+        is(
+            "Correction(id=null, userId=83, amount=1, time=-999999999-01-01T00:00, description=null)"));
   }
 
   @Test
@@ -167,8 +169,13 @@ public class CorrectionTest {
 
   @Test
   public void withDescription_ValidDescription_ChangesUserId() {
-    final Correction correction = Correction.builder().time(LocalDateTime.MIN).userId(1L).amount(1L)
-        .description(TestUtils.INITIAL_STRING).build();
+    final Correction correction =
+        Correction.builder()
+            .time(LocalDateTime.MIN)
+            .userId(1L)
+            .amount(1L)
+            .description(TestUtils.INITIAL_STRING)
+            .build();
 
     for (final String description : TestUtils.STRINGS_WITH_NULL) {
       final Correction newCorrection = correction.withDescription(description);
@@ -200,8 +207,13 @@ public class CorrectionTest {
 
   @Test
   public void withTime_ValidTime_ChangesTime() {
-    final Correction testCorrection = Correction.builder().time(LocalDateTime.MIN).userId(1L)
-        .amount(1L).time(TestUtils.INITIAL_LOCALDATETIME).build();
+    final Correction testCorrection =
+        Correction.builder()
+            .time(LocalDateTime.MIN)
+            .userId(1L)
+            .amount(1L)
+            .time(TestUtils.INITIAL_LOCALDATETIME)
+            .build();
 
     for (LocalDateTime time : TestUtils.LOCALDATETIMES) {
       final Correction changedCorrection = testCorrection.withTime(time);
@@ -219,8 +231,12 @@ public class CorrectionTest {
 
   @Test
   public void withUserId_ValidUserId_ChangesUserId() {
-    final Correction correction = Correction.builder().time(LocalDateTime.MIN)
-        .userId(TestUtils.INITIAL_LONG).amount(1L).build();
+    final Correction correction =
+        Correction.builder()
+            .time(LocalDateTime.MIN)
+            .userId(TestUtils.INITIAL_LONG)
+            .amount(1L)
+            .build();
 
     for (final Long userId : TestUtils.LONGS) {
       final Correction newCorrection = correction.withUserId(userId);

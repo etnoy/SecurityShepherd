@@ -1,19 +1,17 @@
 /**
  * This file is part of Security Shepherd.
  *
- * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Security Shepherd.
- * If not, see <http://www.gnu.org/licenses/>.
- * 
+ * <p>You should have received a copy of the GNU General Public License along with Security
+ * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.owasp.securityshepherd.test.model;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -31,7 +29,8 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 public class ConfigurationTest {
   @Test
   public void builderToString_ValidData_AsExpected() {
-    assertThat(Configuration.builder().toString(),
+    assertThat(
+        Configuration.builder().toString(),
         is("Configuration.ConfigurationBuilder(id=null, key=null, value=null)"));
   }
 
@@ -69,8 +68,9 @@ public class ConfigurationTest {
 
   @Test
   public void buildKey_ValidKey_Builds() {
-    final String[] keysToTest =
-        {"", "serverKey", "timestampSetting", "\"", "$$^¨'", "åäö", "a", "1", "userName"};
+    final String[] keysToTest = {
+      "", "serverKey", "timestampSetting", "\"", "$$^¨'", "åäö", "a", "1", "userName"
+    };
 
     for (String key : keysToTest) {
       final ConfigurationBuilder builder = Configuration.builder().value("TestValue");
@@ -89,8 +89,9 @@ public class ConfigurationTest {
 
   @Test
   public void buildValue_ValidValue_Builds() {
-    final String[] valuesToTest =
-        {"", "serverValue", "timestampSetting", "\"", "$$^¨'", "åäö", "a", "1", "userName"};
+    final String[] valuesToTest = {
+      "", "serverValue", "timestampSetting", "\"", "$$^¨'", "åäö", "a", "1", "userName"
+    };
 
     for (String value : valuesToTest) {
 
@@ -110,7 +111,8 @@ public class ConfigurationTest {
 
   @Test
   public void toString_ValidData_AsExpected() {
-    assertThat(Configuration.builder().key("serverKey").value("abc123secret").build().toString(),
+    assertThat(
+        Configuration.builder().key("serverKey").value("abc123secret").build().toString(),
         is("Configuration(id=null, key=serverKey, value=abc123secret)"));
   }
 
@@ -130,7 +132,8 @@ public class ConfigurationTest {
 
   @Test
   public void withKey_NullKey_ThrowsNullPointerException() {
-    assertThrows(NullPointerException.class,
+    assertThrows(
+        NullPointerException.class,
         () -> Configuration.builder().key("serverKey").value("secret123").build().withKey(null));
   }
 
@@ -139,8 +142,9 @@ public class ConfigurationTest {
     final Configuration configuration =
         Configuration.builder().key("settingKey").value("123").build();
 
-    final String[] testedKeys =
-        {"settingKey", "", "\"", "!\"+,-", "serverKey", "Long  With     Whitespace", "12345"};
+    final String[] testedKeys = {
+      "settingKey", "", "\"", "!\"+,-", "serverKey", "Long  With     Whitespace", "12345"
+    };
 
     for (String key : testedKeys) {
 
@@ -151,7 +155,8 @@ public class ConfigurationTest {
 
   @Test
   public void withValue_NullValue_ThrowsNullPointerException() {
-    assertThrows(NullPointerException.class,
+    assertThrows(
+        NullPointerException.class,
         () -> Configuration.builder().key("serverKey").value("secret123").build().withValue(null));
   }
 
@@ -160,8 +165,9 @@ public class ConfigurationTest {
     final Configuration configuration =
         Configuration.builder().key("settingKey").value("settingValue").build();
 
-    final String[] testedValues =
-        {"settingValue", "", "\"", "!\"+,-", "serverValue", "Long  With     Whitespace", "12345"};
+    final String[] testedValues = {
+      "settingValue", "", "\"", "!\"+,-", "serverValue", "Long  With     Whitespace", "12345"
+    };
 
     for (String value : testedValues) {
       final Configuration changedConfiguration = configuration.withValue(value);

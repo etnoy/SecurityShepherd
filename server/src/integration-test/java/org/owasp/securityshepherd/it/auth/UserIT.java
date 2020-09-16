@@ -1,19 +1,17 @@
 /**
  * This file is part of Security Shepherd.
  *
- * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Security Shepherd.
- * If not, see <http://www.gnu.org/licenses/>.
- * 
+ * <p>You should have received a copy of the GNU General Public License along with Security
+ * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.owasp.securityshepherd.it.auth;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -43,27 +41,38 @@ public class UserIT {
     Hooks.onOperatorDebug();
   }
 
-  @Autowired
-  UserService userService;
+  @Autowired UserService userService;
 
-  @Autowired
-  TestUtils testService;
+  @Autowired TestUtils testService;
 
   @Test
   public void createPasswordUser_ValidData_ReturnsCorrectUser() {
-    final long userId = userService.createPasswordUser("Test User", "user_login_name",
-        "$2y$12$53B6QcsGwF3Os1GVFUFSQOhIPXnWFfuEkRJdbknFWnkXfUBMUKhaW").block();
+    final long userId =
+        userService
+            .createPasswordUser(
+                "Test User",
+                "user_login_name",
+                "$2y$12$53B6QcsGwF3Os1GVFUFSQOhIPXnWFfuEkRJdbknFWnkXfUBMUKhaW")
+            .block();
 
-    StepVerifier.create(userService.findById(userId).map(User::getId)).expectNext(userId)
-        .expectComplete().verify();
+    StepVerifier.create(userService.findById(userId).map(User::getId))
+        .expectNext(userId)
+        .expectComplete()
+        .verify();
   }
 
   @Test
   public void createUser_NaughtyUsernames_RepositoryFindsCorrectUser() {
     for (final String displayName : TestUtils.STRINGS) {
       if (!displayName.isEmpty()) {
-        StepVerifier.create(userService.create(displayName).flatMap(userService::findById)
-            .map(User::getDisplayName)).expectNext(displayName).expectComplete().verify();
+        StepVerifier.create(
+                userService
+                    .create(displayName)
+                    .flatMap(userService::findById)
+                    .map(User::getDisplayName))
+            .expectNext(displayName)
+            .expectComplete()
+            .verify();
         testService.deleteAll().block();
       }
     }

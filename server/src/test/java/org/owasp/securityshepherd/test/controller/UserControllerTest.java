@@ -1,19 +1,17 @@
 /**
  * This file is part of Security Shepherd.
  *
- * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Security Shepherd.
- * If not, see <http://www.gnu.org/licenses/>.
- * 
+ * <p>You should have received a copy of the GNU General Public License along with Security
+ * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.owasp.securityshepherd.test.controller;
 
 import static org.mockito.Mockito.mock;
@@ -47,8 +45,7 @@ public class UserControllerTest {
 
   private UserController userController;
 
-  @Mock
-  private UserService userService;
+  @Mock private UserService userService;
 
   @Test
   public void deleteById_ValidId_CallsUserService() {
@@ -79,7 +76,9 @@ public class UserControllerTest {
     final User user = mock(User.class);
 
     when(userService.findById(mockUserId)).thenReturn(Mono.just(user));
-    StepVerifier.create(userController.findById(mockUserId)).expectNext(user).expectComplete()
+    StepVerifier.create(userController.findById(mockUserId))
+        .expectNext(user)
+        .expectComplete()
         .verify();
     verify(userService, times(1)).findById(mockUserId);
   }
@@ -92,8 +91,13 @@ public class UserControllerTest {
     final User user4 = mock(User.class);
 
     when(userService.findAll()).thenReturn(Flux.just(user1, user2, user3, user4));
-    StepVerifier.create(userController.findAll()).expectNext(user1).expectNext(user2)
-        .expectNext(user3).expectNext(user4).expectComplete().verify();
+    StepVerifier.create(userController.findAll())
+        .expectNext(user1)
+        .expectNext(user2)
+        .expectNext(user3)
+        .expectNext(user4)
+        .expectComplete()
+        .verify();
     verify(userService, times(1)).findAll();
   }
 
@@ -102,5 +106,4 @@ public class UserControllerTest {
     // Set up the system under test
     userController = new UserController(userService);
   }
-
 }

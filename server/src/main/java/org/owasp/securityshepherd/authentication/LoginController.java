@@ -1,19 +1,17 @@
 /**
  * This file is part of Security Shepherd.
  *
- * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Security Shepherd.
- * If not, see <http://www.gnu.org/licenses/>.
- * 
+ * <p>You should have received a copy of the GNU General Public License along with Security
+ * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.owasp.securityshepherd.authentication;
 
 import javax.validation.Valid;
@@ -41,10 +39,12 @@ public class LoginController {
 
   @PostMapping(value = "/login")
   public Mono<ResponseEntity<AuthResponse>> login(@RequestBody @Valid PasswordLoginDto loginDto) {
-    return userService.findUserIdByLoginName(loginDto.getUserName())
+    return userService
+        .findUserIdByLoginName(loginDto.getUserName())
         .filterWhen(
             userId -> userService.authenticate(loginDto.getUserName(), loginDto.getPassword()))
-        .map(webTokenService::generateToken).map(token -> new AuthResponse(token, loginDto.getUserName()))
+        .map(webTokenService::generateToken)
+        .map(token -> new AuthResponse(token, loginDto.getUserName()))
         .map(authResponse -> new ResponseEntity<>(authResponse, HttpStatus.OK))
         .defaultIfEmpty(new ResponseEntity<>(HttpStatus.UNAUTHORIZED));
   }
@@ -52,7 +52,9 @@ public class LoginController {
   @PostMapping(path = "/register")
   @ResponseStatus(HttpStatus.CREATED)
   public Mono<Long> register(@Valid @RequestBody final PasswordRegistrationDto registerDto) {
-    return userService.createPasswordUser(registerDto.getDisplayName(), registerDto.getUserName(),
+    return userService.createPasswordUser(
+        registerDto.getDisplayName(),
+        registerDto.getUserName(),
         passwordEncoder.encode(registerDto.getPassword()));
   }
 }

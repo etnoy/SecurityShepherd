@@ -1,19 +1,17 @@
 /**
  * This file is part of Security Shepherd.
  *
- * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Security Shepherd.
- * If not, see <http://www.gnu.org/licenses/>.
- * 
+ * <p>You should have received a copy of the GNU General Public License along with Security
+ * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.owasp.securityshepherd.test.model;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -175,28 +173,44 @@ public class SubmissionTest {
   @Test
   public void submissionBuilderToString_ValidData_AsExpected() {
     final SubmissionBuilder builder = Submission.builder();
-    assertThat(builder.toString(), is(
-        "Submission.SubmissionBuilder(id=null, userId=null, moduleId=null, time=null, isValid=false, flag=null)"));
+    assertThat(
+        builder.toString(),
+        is(
+            "Submission.SubmissionBuilder(id=null, userId=null, moduleId=null, time=null, isValid=false, flag=null)"));
   }
 
   @Test
   public void toString_ValidData_AsExpected() {
-    final Submission testSubmission = Submission.builder().moduleId(11234L).flag("flag")
-        .userId(67898L).time(LocalDateTime.MIN).build();
+    final Submission testSubmission =
+        Submission.builder()
+            .moduleId(11234L)
+            .flag("flag")
+            .userId(67898L)
+            .time(LocalDateTime.MIN)
+            .build();
 
-    assertThat(testSubmission.toString(),
-        is("Submission(id=null, userId=67898, moduleId=11234, time=" + LocalDateTime.MIN
-            + ", isValid=false, flag=flag)"));
+    assertThat(
+        testSubmission.toString(),
+        is(
+            "Submission(id=null, userId=67898, moduleId=11234, time="
+                + LocalDateTime.MIN
+                + ", isValid=false, flag=flag)"));
   }
 
   @Test
   public void withFlag_ValidFlag_ChangesFlag() {
     final String originalFlag = "flag";
-    final String[] testedFlags =
-        {originalFlag, "abc123xyz789", "", "a", "Long Flag With Spaces", "12345"};
+    final String[] testedFlags = {
+      originalFlag, "abc123xyz789", "", "a", "Long Flag With Spaces", "12345"
+    };
 
-    final Submission testSubmission = Submission.builder().flag(originalFlag).userId(1345L)
-        .moduleId(64627489L).time(LocalDateTime.MIN).build();
+    final Submission testSubmission =
+        Submission.builder()
+            .flag(originalFlag)
+            .userId(1345L)
+            .moduleId(64627489L)
+            .time(LocalDateTime.MIN)
+            .build();
 
     for (final String newFlag : testedFlags) {
       final Submission changedSubmission = testSubmission.withFlag(newFlag);
@@ -209,8 +223,13 @@ public class SubmissionTest {
     final long originalId = 1;
     final Long[] testedIds = {originalId, null, 0L, -1L, 1000L, -1000L, 123456789L, -12346789L};
 
-    final Submission testSubmission = Submission.builder().userId(12393L).moduleId(4689L)
-        .flag("flag").time(LocalDateTime.MIN).build();
+    final Submission testSubmission =
+        Submission.builder()
+            .userId(12393L)
+            .moduleId(4689L)
+            .flag("flag")
+            .time(LocalDateTime.MIN)
+            .build();
 
     for (final Long newSubmissionId : testedIds) {
       final Submission changedSubmission = testSubmission.withId(newSubmissionId);
@@ -220,8 +239,13 @@ public class SubmissionTest {
 
   @Test
   public void withModuleId_NullModuleId_ThrowsNullPointerException() {
-    final Submission submission = Submission.builder().userId(1L).flag("flag")
-        .time(LocalDateTime.MIN).moduleId(TestUtils.INITIAL_LONG).build();
+    final Submission submission =
+        Submission.builder()
+            .userId(1L)
+            .flag("flag")
+            .time(LocalDateTime.MIN)
+            .moduleId(TestUtils.INITIAL_LONG)
+            .build();
     assertThrows(NullPointerException.class, () -> submission.withModuleId(null));
   }
 
@@ -230,8 +254,13 @@ public class SubmissionTest {
     final long originalId = 1;
     final long[] testedIds = {originalId, 0, -1, 1000, -1000, 123456789, -12346789};
 
-    final Submission testSubmission = Submission.builder().moduleId(originalId).flag("flag")
-        .userId(6736L).time(LocalDateTime.MIN.plusDays(77)).build();
+    final Submission testSubmission =
+        Submission.builder()
+            .moduleId(originalId)
+            .flag("flag")
+            .userId(6736L)
+            .time(LocalDateTime.MIN.plusDays(77))
+            .build();
 
     for (final long newId : testedIds) {
       final Submission changedSubmission = testSubmission.withModuleId(newId);
@@ -241,15 +270,25 @@ public class SubmissionTest {
 
   @Test
   public void withTime_NullTime_ThrowsNullPointerException() {
-    final Submission submission = Submission.builder().userId(TestUtils.INITIAL_LONG).flag("flag")
-        .time(LocalDateTime.MIN).moduleId(1L).build();
+    final Submission submission =
+        Submission.builder()
+            .userId(TestUtils.INITIAL_LONG)
+            .flag("flag")
+            .time(LocalDateTime.MIN)
+            .moduleId(1L)
+            .build();
     assertThrows(NullPointerException.class, () -> submission.withTime(null));
   }
 
   @Test
   public void withTime_ValidTime_ChangesTime() {
-    final Submission testSubmission = Submission.builder().userId(4L).moduleId(716789L).flag("flag")
-        .time(TestUtils.INITIAL_LOCALDATETIME).build();
+    final Submission testSubmission =
+        Submission.builder()
+            .userId(4L)
+            .moduleId(716789L)
+            .flag("flag")
+            .time(TestUtils.INITIAL_LOCALDATETIME)
+            .build();
 
     for (LocalDateTime time : TestUtils.LOCALDATETIMES) {
       final Submission changedSubmission = testSubmission.withTime(time);
@@ -260,15 +299,25 @@ public class SubmissionTest {
 
   @Test
   public void withUserId_NullUserId_ThrowsNullPointerException() {
-    final Submission submission = Submission.builder().userId(TestUtils.INITIAL_LONG).flag("flag")
-        .time(LocalDateTime.MIN).moduleId(1L).build();
+    final Submission submission =
+        Submission.builder()
+            .userId(TestUtils.INITIAL_LONG)
+            .flag("flag")
+            .time(LocalDateTime.MIN)
+            .moduleId(1L)
+            .build();
     assertThrows(NullPointerException.class, () -> submission.withUserId(null));
   }
 
   @Test
   public void withUserId_ValidUserId_ChangesUserId() {
-    final Submission submission = Submission.builder().userId(TestUtils.INITIAL_LONG).flag("flag")
-        .time(LocalDateTime.MIN).moduleId(1L).build();
+    final Submission submission =
+        Submission.builder()
+            .userId(TestUtils.INITIAL_LONG)
+            .flag("flag")
+            .time(LocalDateTime.MIN)
+            .moduleId(1L)
+            .build();
 
     for (final Long userId : TestUtils.LONGS) {
       final Submission newSubmission = submission.withUserId(userId);
@@ -279,8 +328,13 @@ public class SubmissionTest {
 
   @Test
   public void withValid_ValidBoolean_ChangesIsValid() {
-    final Submission testSubmission = Submission.builder().userId(15123L).moduleId(6789L)
-        .flag("flag").time(LocalDateTime.MIN).build();
+    final Submission testSubmission =
+        Submission.builder()
+            .userId(15123L)
+            .moduleId(6789L)
+            .flag("flag")
+            .time(LocalDateTime.MIN)
+            .build();
 
     for (final boolean isValid : TestUtils.BOOLEANS) {
       final Submission changedSubmission = testSubmission.withValid(isValid);

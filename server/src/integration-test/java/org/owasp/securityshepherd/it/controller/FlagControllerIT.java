@@ -1,19 +1,17 @@
 /**
  * This file is part of Security Shepherd.
  *
- * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Security Shepherd.
- * If not, see <http://www.gnu.org/licenses/>.
- * 
+ * <p>You should have received a copy of the GNU General Public License along with Security
+ * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.owasp.securityshepherd.it.controller;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -47,7 +45,8 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
+@SpringBootTest(
+    webEnvironment = WebEnvironment.RANDOM_PORT,
     properties = {"application.runner.enabled=false"})
 @AutoConfigureWebTestClient
 @Execution(ExecutionMode.SAME_THREAD)
@@ -59,23 +58,17 @@ public class FlagControllerIT {
     Hooks.onOperatorDebug();
   }
 
-  @Autowired
-  UserService userService;
+  @Autowired UserService userService;
 
-  @Autowired
-  ModuleService moduleService;
+  @Autowired ModuleService moduleService;
 
-  @Autowired
-  TestUtils testService;
+  @Autowired TestUtils testService;
 
-  @Autowired
-  WebTestClient webTestClient;
+  @Autowired WebTestClient webTestClient;
 
-  @Autowired
-  ObjectMapper objectMapper;
+  @Autowired ObjectMapper objectMapper;
 
-  @Autowired
-  ModuleController moduleController;
+  @Autowired ModuleController moduleController;
 
   @BeforeEach
   private void setUp() {
@@ -96,24 +89,58 @@ public class FlagControllerIT {
 
     moduleService.setExactFlag(moduleId, flag).block();
 
-    webTestClient.post().uri("/api/v1/register").contentType(MediaType.APPLICATION_JSON)
-        .body(BodyInserters
-            .fromValue(new PasswordRegistrationDto("TestUserDisplayName", loginName, password)))
-        .exchange().expectStatus().isCreated();
-
-    String token = JsonPath.parse(new String(webTestClient.post().uri("/api/v1/login")
+    webTestClient
+        .post()
+        .uri("/api/v1/register")
         .contentType(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromPublisher(
-            Mono.just("{\"userName\": \"" + loginName + "\", \"password\": \"" + password + "\"}"),
-            String.class))
-        .exchange().expectStatus().isOk().expectBody().returnResult().getResponseBody()))
-        .read("$.token");
+        .body(
+            BodyInserters.fromValue(
+                new PasswordRegistrationDto("TestUserDisplayName", loginName, password)))
+        .exchange()
+        .expectStatus()
+        .isCreated();
 
-    StepVerifier.create(webTestClient.post().uri(String.format("/api/v1/flag/submit/%d", moduleId))
-        .header("Authorization", "Bearer " + token).accept(MediaType.APPLICATION_JSON)
-        .contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromValue(flag + "invalid"))
-        .exchange().expectStatus().isOk().returnResult(Submission.class).getResponseBody()
-        .map(Submission::isValid)).expectNext(false).expectComplete().verify();
+    String token =
+        JsonPath.parse(
+                new String(
+                    webTestClient
+                        .post()
+                        .uri("/api/v1/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(
+                            BodyInserters.fromPublisher(
+                                Mono.just(
+                                    "{\"userName\": \""
+                                        + loginName
+                                        + "\", \"password\": \""
+                                        + password
+                                        + "\"}"),
+                                String.class))
+                        .exchange()
+                        .expectStatus()
+                        .isOk()
+                        .expectBody()
+                        .returnResult()
+                        .getResponseBody()))
+            .read("$.token");
+
+    StepVerifier.create(
+            webTestClient
+                .post()
+                .uri(String.format("/api/v1/flag/submit/%d", moduleId))
+                .header("Authorization", "Bearer " + token)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(flag + "invalid"))
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .returnResult(Submission.class)
+                .getResponseBody()
+                .map(Submission::isValid))
+        .expectNext(false)
+        .expectComplete()
+        .verify();
   }
 
   @Test
@@ -131,8 +158,14 @@ public class FlagControllerIT {
     final BodyInserter<String, ReactiveHttpOutputMessage> submissionBody =
         BodyInserters.fromValue(flag);
 
-    webTestClient.post().uri(endpoint).accept(MediaType.APPLICATION_JSON)
-        .contentType(MediaType.APPLICATION_JSON).body(submissionBody).exchange().expectStatus()
+    webTestClient
+        .post()
+        .uri(endpoint)
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(submissionBody)
+        .exchange()
+        .expectStatus()
         .isUnauthorized();
   }
 
@@ -150,33 +183,65 @@ public class FlagControllerIT {
 
     moduleService.setExactFlag(moduleId, flag).block();
 
-    webTestClient.post().uri("/api/v1/register").contentType(MediaType.APPLICATION_JSON)
-        .body(BodyInserters
-            .fromValue(new PasswordRegistrationDto("TestUserDisplayName", loginName, password)))
-        .exchange().expectStatus().isCreated();
-
-    String token = JsonPath.parse(new String(webTestClient.post().uri("/api/v1/login")
+    webTestClient
+        .post()
+        .uri("/api/v1/register")
         .contentType(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromPublisher(
-            Mono.just("{\"userName\": \"" + loginName + "\", \"password\": \"" + password + "\"}"),
-            String.class))
-        .exchange().expectStatus().isOk().expectBody().returnResult().getResponseBody()))
-        .read("$.token");
+        .body(
+            BodyInserters.fromValue(
+                new PasswordRegistrationDto("TestUserDisplayName", loginName, password)))
+        .exchange()
+        .expectStatus()
+        .isCreated();
+
+    String token =
+        JsonPath.parse(
+                new String(
+                    webTestClient
+                        .post()
+                        .uri("/api/v1/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(
+                            BodyInserters.fromPublisher(
+                                Mono.just(
+                                    "{\"userName\": \""
+                                        + loginName
+                                        + "\", \"password\": \""
+                                        + password
+                                        + "\"}"),
+                                String.class))
+                        .exchange()
+                        .expectStatus()
+                        .isOk()
+                        .expectBody()
+                        .returnResult()
+                        .getResponseBody()))
+            .read("$.token");
 
     final String endpoint = String.format("/api/v1/flag/submit/%d", moduleId);
 
     final BodyInserter<String, ReactiveHttpOutputMessage> submissionBody =
         BodyInserters.fromValue(flag);
 
-    final Flux<Submission> moduleSubmissionFlux = webTestClient.post().uri(endpoint)
-        .header("Authorization", "Bearer " + token).accept(MediaType.APPLICATION_JSON)
-        .contentType(MediaType.APPLICATION_JSON).body(submissionBody).exchange().expectStatus()
-        .isOk().returnResult(Submission.class).getResponseBody();
+    final Flux<Submission> moduleSubmissionFlux =
+        webTestClient
+            .post()
+            .uri(endpoint)
+            .header("Authorization", "Bearer " + token)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(submissionBody)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .returnResult(Submission.class)
+            .getResponseBody();
 
     StepVerifier.create(moduleSubmissionFlux.map(Submission::isValid))
         // We expect the submission to be valid
         .expectNext(true)
         // We're done
-        .expectComplete().verify();
+        .expectComplete()
+        .verify();
   }
 }

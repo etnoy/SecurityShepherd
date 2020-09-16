@@ -1,19 +1,17 @@
 /**
  * This file is part of Security Shepherd.
  *
- * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Security Shepherd.
- * If not, see <http://www.gnu.org/licenses/>.
- * 
+ * <p>You should have received a copy of the GNU General Public License along with Security
+ * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.owasp.securityshepherd.test.controller;
 
 import static org.mockito.Mockito.mock;
@@ -52,17 +50,13 @@ public class ModuleControllerTest {
 
   private ModuleController moduleController;
 
-  @Mock
-  private ControllerAuthentication controllerAuthentication;
+  @Mock private ControllerAuthentication controllerAuthentication;
 
-  @Mock
-  private SubmissionService submissionService;
+  @Mock private SubmissionService submissionService;
 
-  @Mock
-  private ModuleService moduleService;
+  @Mock private ModuleService moduleService;
 
-  @Mock
-  private ModuleSolutions moduleSolutions;
+  @Mock private ModuleSolutions moduleSolutions;
 
   @Test
   public void findAllByUserId_IdExists_ReturnsModule() throws Exception {
@@ -75,12 +69,21 @@ public class ModuleControllerTest {
 
     when(controllerAuthentication.getUserId()).thenReturn(Mono.just(mockUserId));
 
-    when(moduleSolutions.findOpenModulesByUserIdWithSolutionStatus(mockUserId)).thenReturn(Flux
-        .just(mockModuleListItem1, mockModuleListItem2, mockModuleListItem3, mockModuleListItem4));
+    when(moduleSolutions.findOpenModulesByUserIdWithSolutionStatus(mockUserId))
+        .thenReturn(
+            Flux.just(
+                mockModuleListItem1,
+                mockModuleListItem2,
+                mockModuleListItem3,
+                mockModuleListItem4));
 
-    StepVerifier.create(moduleController.findAllByUserId()).expectNext(mockModuleListItem1)
-        .expectNext(mockModuleListItem2).expectNext(mockModuleListItem3)
-        .expectNext(mockModuleListItem4).expectComplete().verify();
+    StepVerifier.create(moduleController.findAllByUserId())
+        .expectNext(mockModuleListItem1)
+        .expectNext(mockModuleListItem2)
+        .expectNext(mockModuleListItem3)
+        .expectNext(mockModuleListItem4)
+        .expectComplete()
+        .verify();
     verify(moduleSolutions, times(1)).findOpenModulesByUserIdWithSolutionStatus(mockUserId);
     verify(controllerAuthentication, times(1)).getUserId();
   }
@@ -91,7 +94,8 @@ public class ModuleControllerTest {
         .thenReturn(Mono.error(new NotAuthenticatedException()));
 
     StepVerifier.create(moduleController.findAllByUserId())
-        .expectError(NotAuthenticatedException.class).verify();
+        .expectError(NotAuthenticatedException.class)
+        .verify();
   }
 
   @Test
@@ -107,8 +111,10 @@ public class ModuleControllerTest {
     final long mockModuleId = 433L;
     final Module mockedModule = mock(Module.class);
     when(moduleService.findById(mockModuleId)).thenReturn(Mono.just(mockedModule));
-    StepVerifier.create(moduleController.getModuleById(mockModuleId)).expectNext(mockedModule)
-        .expectComplete().verify();
+    StepVerifier.create(moduleController.getModuleById(mockModuleId))
+        .expectNext(mockedModule)
+        .expectComplete()
+        .verify();
     verify(moduleService, times(1)).findById(mockModuleId);
   }
 
@@ -120,11 +126,12 @@ public class ModuleControllerTest {
 
     when(moduleSolutions.findOpenModuleByShortNameWithSolutionStatus(mockUserId, mockShortName))
         .thenReturn(Mono.empty());
-    StepVerifier.create(moduleController.getModuleByShortName(mockShortName)).expectComplete()
+    StepVerifier.create(moduleController.getModuleByShortName(mockShortName))
+        .expectComplete()
         .verify();
     verify(controllerAuthentication, times(1)).getUserId();
-    verify(moduleSolutions, times(1)).findOpenModuleByShortNameWithSolutionStatus(mockUserId,
-        mockShortName);
+    verify(moduleSolutions, times(1))
+        .findOpenModuleByShortNameWithSolutionStatus(mockUserId, mockShortName);
   }
 
   @Test
@@ -137,10 +144,12 @@ public class ModuleControllerTest {
     when(moduleSolutions.findOpenModuleByShortNameWithSolutionStatus(mockUserId, mockShortName))
         .thenReturn(Mono.just(mockModuleListItem));
     StepVerifier.create(moduleController.getModuleByShortName(mockShortName))
-        .expectNext(mockModuleListItem).expectComplete().verify();
+        .expectNext(mockModuleListItem)
+        .expectComplete()
+        .verify();
     verify(controllerAuthentication, times(1)).getUserId();
-    verify(moduleSolutions, times(1)).findOpenModuleByShortNameWithSolutionStatus(mockUserId,
-        mockShortName);
+    verify(moduleSolutions, times(1))
+        .findOpenModuleByShortNameWithSolutionStatus(mockUserId, mockShortName);
   }
 
   @BeforeEach
@@ -149,5 +158,4 @@ public class ModuleControllerTest {
     moduleController =
         new ModuleController(moduleService, moduleSolutions, controllerAuthentication);
   }
-
 }

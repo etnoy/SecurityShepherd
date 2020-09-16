@@ -1,19 +1,17 @@
 /**
  * This file is part of Security Shepherd.
  *
- * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Security Shepherd.
- * If not, see <http://www.gnu.org/licenses/>.
- * 
+ * <p>You should have received a copy of the GNU General Public License along with Security
+ * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.owasp.securityshepherd.it.controller;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -42,8 +40,9 @@ import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-properties = {"application.runner.enabled=false"})
+@SpringBootTest(
+    webEnvironment = WebEnvironment.RANDOM_PORT,
+    properties = {"application.runner.enabled=false"})
 @AutoConfigureWebTestClient
 @Execution(ExecutionMode.SAME_THREAD)
 @DisplayName("LoginController integration test")
@@ -53,15 +52,12 @@ public class LoginControllerIT {
     // Tell Reactor to print verbose error messages
     Hooks.onOperatorDebug();
   }
-  
-  @Autowired
-  UserService userService;
 
-  @Autowired
-  private WebTestClient webTestClient;
-  
-  @Autowired
-  TestUtils testService;
+  @Autowired UserService userService;
+
+  @Autowired private WebTestClient webTestClient;
+
+  @Autowired TestUtils testService;
 
   @Test
   @DisplayName("Logging in with correct credentials should return a valid token")
@@ -69,16 +65,30 @@ public class LoginControllerIT {
     final String loginName = "test";
     final String hashedPassword = "$2y$12$53B6QcsGwF3Os1GVFUFSQOhIPXnWFfuEkRJdbknFWnkXfUBMUKhaW";
 
-    final long createdUserId = userService.createPasswordUser("Test User", loginName, hashedPassword).block();
+    final long createdUserId =
+        userService.createPasswordUser("Test User", loginName, hashedPassword).block();
 
-    final String jws = JsonPath.parse(
-        new String(webTestClient.post().uri("/api/v1/login").contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromPublisher(
-                Mono.just("{\"userName\": \"" + loginName + "\", \"password\": \"test\"}"),
-                String.class))
-            .exchange().expectStatus().isOk().expectBody(String.class).returnResult()
-            .getResponseBody()))
-        .read("$.token");
+    final String jws =
+        JsonPath.parse(
+                new String(
+                    webTestClient
+                        .post()
+                        .uri("/api/v1/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(
+                            BodyInserters.fromPublisher(
+                                Mono.just(
+                                    "{\"userName\": \""
+                                        + loginName
+                                        + "\", \"password\": \"test\"}"),
+                                String.class))
+                        .exchange()
+                        .expectStatus()
+                        .isOk()
+                        .expectBody(String.class)
+                        .returnResult()
+                        .getResponseBody()))
+            .read("$.token");
 
     final int signatureDotPosition = jws.lastIndexOf('.');
 
@@ -90,7 +100,7 @@ public class LoginControllerIT {
         JsonPath.parse(new String(Base64.getDecoder().decode(jwt.substring(bodyDotPosition + 1))));
 
     final long userId = Long.parseLong(jsonBody.read("$.sub"));
-    
+
     assertThat(userId, is(createdUserId));
   }
 
@@ -102,11 +112,17 @@ public class LoginControllerIT {
 
     userService.createPasswordUser("Test User", loginName, hashedPassword).block();
 
-    webTestClient.post().uri("/api/v1/login").contentType(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromPublisher(
-            Mono.just("{\"userName\": \"" + loginName + "\", \"password\": \"wrong\"}"),
-            String.class))
-        .exchange().expectStatus().isUnauthorized();
+    webTestClient
+        .post()
+        .uri("/api/v1/login")
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(
+            BodyInserters.fromPublisher(
+                Mono.just("{\"userName\": \"" + loginName + "\", \"password\": \"wrong\"}"),
+                String.class))
+        .exchange()
+        .expectStatus()
+        .isUnauthorized();
   }
 
   @Test
@@ -118,10 +134,17 @@ public class LoginControllerIT {
 
     userService.createPasswordUser("Test User", loginName, hashedPassword).block();
 
-    webTestClient.post().uri("/api/v1/login").contentType(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromPublisher(
-            Mono.just("{\"userName\": \"doesnotexist\", \"password\": \"wrong\"}"), String.class))
-        .exchange().expectStatus().isUnauthorized();
+    webTestClient
+        .post()
+        .uri("/api/v1/login")
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(
+            BodyInserters.fromPublisher(
+                Mono.just("{\"userName\": \"doesnotexist\", \"password\": \"wrong\"}"),
+                String.class))
+        .exchange()
+        .expectStatus()
+        .isUnauthorized();
   }
 
   @BeforeEach

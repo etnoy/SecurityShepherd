@@ -1,19 +1,17 @@
 /**
  * This file is part of Security Shepherd.
  *
- * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Security Shepherd.
- * If not, see <http://www.gnu.org/licenses/>.
- * 
+ * <p>You should have received a copy of the GNU General Public License along with Security
+ * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.owasp.securityshepherd.test.service;
 
 import static org.mockito.Mockito.atLeast;
@@ -55,20 +53,15 @@ public class FlagHandlerTest {
 
   private FlagHandler flagHandler;
 
-  @Mock
-  private ModuleService moduleService;
+  @Mock private ModuleService moduleService;
 
-  @Mock
-  private UserService userService;
+  @Mock private UserService userService;
 
-  @Mock
-  private ConfigurationService configurationService;
+  @Mock private ConfigurationService configurationService;
 
-  @Mock
-  private KeyService keyService;
+  @Mock private KeyService keyService;
 
-  @Mock
-  private CryptoService cryptoService;
+  @Mock private CryptoService cryptoService;
 
   @Test
   public void getDynamicFlag_FlagIsExact_ReturnsInvalidFlagStateException() {
@@ -77,10 +70,12 @@ public class FlagHandlerTest {
     final long mockModuleId = 18;
     final long mockUserId = 7;
 
-    final byte[] mockedUserKey =
-        {-108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62, 9, 19};
-    final byte[] mockedServerKey =
-        {-118, 9, -7, -35, 17, -116, -94, 0, -32, -117, 65, -127, 12, 82, 9, 29};
+    final byte[] mockedUserKey = {
+      -108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62, 9, 19
+    };
+    final byte[] mockedServerKey = {
+      -118, 9, -7, -35, 17, -116, -94, 0, -32, -117, 65, -127, 12, 82, 9, 29
+    };
 
     when(moduleService.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
 
@@ -92,7 +87,8 @@ public class FlagHandlerTest {
     when(configurationService.getServerKey()).thenReturn(Mono.just(mockedServerKey));
 
     StepVerifier.create(flagHandler.getDynamicFlag(mockUserId, mockModuleId))
-        .expectError(InvalidFlagStateException.class).verify();
+        .expectError(InvalidFlagStateException.class)
+        .verify();
   }
 
   @Test
@@ -102,14 +98,19 @@ public class FlagHandlerTest {
     final long mockModuleId = 76;
     final long mockUserId = 785;
 
-    final byte[] mockedUserKey =
-        {-108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62, 9, 19};
-    final byte[] mockedServerKey =
-        {-118, 9, -7, -35, 17, -116, -94, 0, -32, -117, 65, -127, 12, 82, 9, 29};
-    final byte[] mockedTotalKey = {-108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62,
-        9, 19, -118, 9, -7, -35, 17, -116, -94, 0, -32, -117, 65, -127, 12, 82, 9, 29};
-    final byte[] mockedHmacOutput =
-        {-128, 1, -7, -35, 15, -116, -94, 0, -32, -117, 115, -127, 12, 82, 97, 19};
+    final byte[] mockedUserKey = {
+      -108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62, 9, 19
+    };
+    final byte[] mockedServerKey = {
+      -118, 9, -7, -35, 17, -116, -94, 0, -32, -117, 65, -127, 12, 82, 9, 29
+    };
+    final byte[] mockedTotalKey = {
+      -108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62, 9, 19, -118, 9, -7, -35, 17,
+      -116, -94, 0, -32, -117, 65, -127, 12, 82, 9, 29
+    };
+    final byte[] mockedHmacOutput = {
+      -128, 1, -7, -35, 15, -116, -94, 0, -32, -117, 115, -127, 12, 82, 97, 19
+    };
 
     final String mockedBaseFlag = "ZrLBRsS0QfL5TDz5";
     final String correctFlag = "thisistheoutputtedflag";
@@ -128,7 +129,9 @@ public class FlagHandlerTest {
     when(keyService.byteFlagToString(mockedHmacOutput)).thenReturn(correctFlag);
 
     StepVerifier.create(flagHandler.getDynamicFlag(mockUserId, mockModuleId))
-        .expectNext(correctFlag).expectComplete().verify();
+        .expectNext(correctFlag)
+        .expectComplete()
+        .verify();
 
     verify(moduleService, times(1)).findById(mockModuleId);
 
@@ -149,10 +152,12 @@ public class FlagHandlerTest {
 
     final Module mockModule = mock(Module.class);
 
-    final byte[] mockedUserKey =
-        {-108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62, 9, 19};
-    final byte[] mockedServerKey =
-        {-118, 9, -7, -35, 17, -116, -94, 0, -32, -117, 65, -127, 12, 82, 9, 29};
+    final byte[] mockedUserKey = {
+      -108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62, 9, 19
+    };
+    final byte[] mockedServerKey = {
+      -118, 9, -7, -35, 17, -116, -94, 0, -32, -117, 65, -127, 12, 82, 9, 29
+    };
 
     when(mockModule.isFlagEnabled()).thenReturn(true);
 
@@ -164,42 +169,50 @@ public class FlagHandlerTest {
     when(mockModule.isFlagEnabled()).thenReturn(false);
 
     StepVerifier.create(flagHandler.getDynamicFlag(mockUserId, mockModuleId))
-        .expectError(InvalidFlagStateException.class).verify();
+        .expectError(InvalidFlagStateException.class)
+        .verify();
   }
 
   @Test
   public void getDynamicFlag_NegativeModuleId_ReturnsInvalidModuleIdException() {
     StepVerifier.create(flagHandler.getDynamicFlag(768, -1))
-        .expectError(InvalidModuleIdException.class).verify();
+        .expectError(InvalidModuleIdException.class)
+        .verify();
     StepVerifier.create(flagHandler.getDynamicFlag(768, -1000))
-        .expectError(InvalidModuleIdException.class).verify();
+        .expectError(InvalidModuleIdException.class)
+        .verify();
   }
 
   @Test
   public void getDynamicFlag_NegativeUserId_ReturnsInvalidUserIdException() {
     StepVerifier.create(flagHandler.getDynamicFlag(-1, 302))
-        .expectError(InvalidUserIdException.class).verify();
+        .expectError(InvalidUserIdException.class)
+        .verify();
     StepVerifier.create(flagHandler.getDynamicFlag(-1000, 302))
-        .expectError(InvalidUserIdException.class).verify();
+        .expectError(InvalidUserIdException.class)
+        .verify();
   }
 
   @Test
   public void getDynamicFlag_ZeroModuleId_ReturnsInvalidModuleIdException() {
     StepVerifier.create(flagHandler.getDynamicFlag(267, 0))
-        .expectError(InvalidModuleIdException.class).verify();
+        .expectError(InvalidModuleIdException.class)
+        .verify();
   }
 
   @Test
   public void getDynamicFlag_ZeroUserId_ReturnsInvalidUserIdException() {
     StepVerifier.create(flagHandler.getDynamicFlag(0, 186))
-        .expectError(InvalidUserIdException.class).verify();
+        .expectError(InvalidUserIdException.class)
+        .verify();
   }
 
   @BeforeEach
   private void setUp() {
     // Set up the system under test
-    flagHandler = new FlagHandler(moduleService, userService, configurationService, cryptoService,
-        keyService);
+    flagHandler =
+        new FlagHandler(
+            moduleService, userService, configurationService, cryptoService, keyService);
   }
 
   @Test
@@ -211,15 +224,20 @@ public class FlagHandlerTest {
     final String baseFlag = "baseFlag";
     final String validFlag = "thisisavalidflag";
 
-    final byte[] mockedUserKey =
-        {-108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62, 9, 19};
-    final byte[] mockedServerKey =
-        {-118, 9, -7, -35, 15, -116, -94, 0, -32, -117, 65, -127, 12, 82, 97, 19};
-    final byte[] mockedHmacOutput =
-        {-128, 1, -7, -35, 15, -116, -94, 0, -32, -117, 115, -127, 12, 82, 97, 19};
+    final byte[] mockedUserKey = {
+      -108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62, 9, 19
+    };
+    final byte[] mockedServerKey = {
+      -118, 9, -7, -35, 15, -116, -94, 0, -32, -117, 65, -127, 12, 82, 97, 19
+    };
+    final byte[] mockedHmacOutput = {
+      -128, 1, -7, -35, 15, -116, -94, 0, -32, -117, 115, -127, 12, 82, 97, 19
+    };
 
-    final byte[] mockedTotalKey = {-108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62,
-        9, 19, -118, 9, -7, -35, 15, -116, -94, 0, -32, -117, 65, -127, 12, 82, 97, 19};
+    final byte[] mockedTotalKey = {
+      -108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62, 9, 19, -118, 9, -7, -35, 15,
+      -116, -94, 0, -32, -117, 65, -127, 12, 82, 97, 19
+    };
 
     when(mockModule.isFlagEnabled()).thenReturn(true);
     when(mockModule.isFlagExact()).thenReturn(false);
@@ -238,7 +256,9 @@ public class FlagHandlerTest {
     when(keyService.byteFlagToString(mockedHmacOutput)).thenReturn(validFlag);
 
     StepVerifier.create(flagHandler.verifyFlag(mockUserId, mockModuleId, validFlag))
-        .expectNext(true).expectComplete().verify();
+        .expectNext(true)
+        .expectComplete()
+        .verify();
 
     verify(moduleService, atLeast(1)).findById(mockModuleId);
     verify(mockModule, atLeast(1)).isFlagEnabled();
@@ -268,7 +288,9 @@ public class FlagHandlerTest {
     when(mockModule.getFlag()).thenReturn(validExactFlag);
 
     StepVerifier.create(flagHandler.verifyFlag(mockUserId, mockModuleId, validExactFlag))
-        .expectNext(true).expectComplete().verify();
+        .expectNext(true)
+        .expectComplete()
+        .verify();
 
     verify(moduleService, times(1)).findById(mockModuleId);
 
@@ -294,9 +316,11 @@ public class FlagHandlerTest {
     when(mockModule.isFlagExact()).thenReturn(true);
     when(mockModule.getFlag()).thenReturn(validExactFlag);
 
-    StepVerifier
-        .create(flagHandler.verifyFlag(mockUserId, mockModuleId, validExactFlag.toLowerCase()))
-        .expectNext(true).expectComplete().verify();
+    StepVerifier.create(
+            flagHandler.verifyFlag(mockUserId, mockModuleId, validExactFlag.toLowerCase()))
+        .expectNext(true)
+        .expectComplete()
+        .verify();
 
     verify(moduleService, times(1)).findById(mockModuleId);
 
@@ -304,7 +328,6 @@ public class FlagHandlerTest {
     verify(mockModule, times(2)).isFlagExact();
     verify(mockModule, times(2)).getFlag();
   }
-
 
   @Test
   public void verifyFlag_CorrectUpperCaseFlag_ReturnsTrue() {
@@ -323,9 +346,11 @@ public class FlagHandlerTest {
     when(mockModule.isFlagExact()).thenReturn(true);
     when(mockModule.getFlag()).thenReturn(validExactFlag);
 
-    StepVerifier
-        .create(flagHandler.verifyFlag(mockUserId, mockModuleId, validExactFlag.toUpperCase()))
-        .expectNext(true).expectComplete().verify();
+    StepVerifier.create(
+            flagHandler.verifyFlag(mockUserId, mockModuleId, validExactFlag.toUpperCase()))
+        .expectNext(true)
+        .expectComplete()
+        .verify();
 
     verify(moduleService, times(1)).findById(mockModuleId);
 
@@ -342,15 +367,20 @@ public class FlagHandlerTest {
     final long mockModuleId = 34;
     final String validFlag = "validFlag";
 
-    final byte[] mockedUserKey =
-        {-108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62, 9, 19};
-    final byte[] mockedServerKey =
-        {-118, 9, -7, -35, 15, -116, -94, 0, -32, -117, 65, -127, 12, 82, 97, 19};
-    final byte[] mockedHmacOutput =
-        {-128, 1, -7, -35, 15, -116, -94, 0, -32, -117, 115, -127, 12, 82, 97, 19};
+    final byte[] mockedUserKey = {
+      -108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62, 9, 19
+    };
+    final byte[] mockedServerKey = {
+      -118, 9, -7, -35, 15, -116, -94, 0, -32, -117, 65, -127, 12, 82, 97, 19
+    };
+    final byte[] mockedHmacOutput = {
+      -128, 1, -7, -35, 15, -116, -94, 0, -32, -117, 115, -127, 12, 82, 97, 19
+    };
 
-    final byte[] mockedTotalKey = {-108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62,
-        9, 19, -118, 9, -7, -35, 15, -116, -94, 0, -32, -117, 65, -127, 12, 82, 97, 19};
+    final byte[] mockedTotalKey = {
+      -108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62, 9, 19, -118, 9, -7, -35, 15,
+      -116, -94, 0, -32, -117, 65, -127, 12, 82, 97, 19
+    };
 
     when(mockModule.isFlagEnabled()).thenReturn(true);
     when(mockModule.isFlagExact()).thenReturn(false);
@@ -373,7 +403,8 @@ public class FlagHandlerTest {
         // We expect this to return false
         .expectNext(false)
         //
-        .expectComplete().verify();
+        .expectComplete()
+        .verify();
 
     verify(moduleService, atLeast(1)).findById(mockModuleId);
 
@@ -405,8 +436,10 @@ public class FlagHandlerTest {
     when(userService.findDisplayNameById(mockUserId)).thenReturn(Mono.just("MockUser"));
     when(mockModule.getName()).thenReturn("TestModule");
 
-    StepVerifier.create(flagHandler.verifyFlag(mockUserId, mockModuleId, "")).expectNext(false)
-        .expectComplete().verify();
+    StepVerifier.create(flagHandler.verifyFlag(mockUserId, mockModuleId, ""))
+        .expectNext(false)
+        .expectComplete()
+        .verify();
 
     verify(moduleService, times(1)).findById(mockModuleId);
 
@@ -430,7 +463,8 @@ public class FlagHandlerTest {
     when(mockModule.getName()).thenReturn("TestModule");
 
     StepVerifier.create(flagHandler.verifyFlag(mockUserId, mockModuleId, "flag"))
-        .expectError(InvalidFlagStateException.class).verify();
+        .expectError(InvalidFlagStateException.class)
+        .verify();
   }
 
   @Test
@@ -439,7 +473,8 @@ public class FlagHandlerTest {
     final long mockModuleId = 543;
 
     StepVerifier.create(flagHandler.verifyFlag(mockUserId, mockModuleId, null))
-        .expectError(NullPointerException.class).verify();
+        .expectError(NullPointerException.class)
+        .verify();
   }
 
   @Test
@@ -448,7 +483,8 @@ public class FlagHandlerTest {
     final long mockModuleId = 941;
 
     StepVerifier.create(flagHandler.verifyFlag(mockUserId, mockModuleId, null))
-        .expectError(NullPointerException.class).verify();
+        .expectError(NullPointerException.class)
+        .verify();
   }
 
   @Test
@@ -459,15 +495,20 @@ public class FlagHandlerTest {
     final long mockModuleId = 34;
     final String validFlag = "validFlag";
 
-    final byte[] mockedUserKey =
-        {-108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62, 9, 19};
-    final byte[] mockedServerKey =
-        {-118, 9, -7, -35, 15, -116, -94, 0, -32, -117, 65, -127, 12, 82, 97, 19};
-    final byte[] mockedHmacOutput =
-        {-128, 1, -7, -35, 15, -116, -94, 0, -32, -117, 115, -127, 12, 82, 97, 19};
+    final byte[] mockedUserKey = {
+      -108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62, 9, 19
+    };
+    final byte[] mockedServerKey = {
+      -118, 9, -7, -35, 15, -116, -94, 0, -32, -117, 65, -127, 12, 82, 97, 19
+    };
+    final byte[] mockedHmacOutput = {
+      -128, 1, -7, -35, 15, -116, -94, 0, -32, -117, 115, -127, 12, 82, 97, 19
+    };
 
-    final byte[] mockedTotalKey = {-108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62,
-        9, 19, -118, 9, -7, -35, 15, -116, -94, 0, -32, -117, 65, -127, 12, 82, 97, 19};
+    final byte[] mockedTotalKey = {
+      -108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62, 9, 19, -118, 9, -7, -35, 15,
+      -116, -94, 0, -32, -117, 65, -127, 12, 82, 97, 19
+    };
 
     when(mockModule.isFlagEnabled()).thenReturn(true);
     when(mockModule.isFlagExact()).thenReturn(false);
@@ -490,7 +531,8 @@ public class FlagHandlerTest {
         //
         .expectNext(false)
         //
-        .expectComplete().verify();
+        .expectComplete()
+        .verify();
 
     verify(moduleService, atLeast(1)).findById(mockModuleId);
     verify(mockModule, atLeast(1)).isFlagEnabled();
@@ -520,7 +562,9 @@ public class FlagHandlerTest {
     when(mockModule.getName()).thenReturn("TestModule");
 
     StepVerifier.create(flagHandler.verifyFlag(mockUserId, mockModuleId, "invalidFlag"))
-        .expectNext(false).expectComplete().verify();
+        .expectNext(false)
+        .expectComplete()
+        .verify();
 
     verify(moduleService, times(1)).findById(mockModuleId);
 

@@ -1,19 +1,17 @@
 /**
  * This file is part of Security Shepherd.
  *
- * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Security Shepherd.
- * If not, see <http://www.gnu.org/licenses/>.
- * 
+ * <p>You should have received a copy of the GNU General Public License along with Security
+ * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.owasp.securityshepherd.test.model;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -34,17 +32,17 @@ public class ModulePointTest {
   public void build_ModuleIdNotGiven_ThrowsNullPointerException() {
     assertThrows(NullPointerException.class, () -> ModulePoint.builder().rank(1).points(2).build());
   }
-  
+
   @Test
   public void build_RankNotGiven_ThrowsNullPointerException() {
-    assertThrows(NullPointerException.class,
-        () -> ModulePoint.builder().moduleId(37L).points(2).build());
+    assertThrows(
+        NullPointerException.class, () -> ModulePoint.builder().moduleId(37L).points(2).build());
   }
 
   @Test
   public void build_ScoreNotGiven_ThrowsNullPointerException() {
-    assertThrows(NullPointerException.class,
-        () -> ModulePoint.builder().moduleId(22L).rank(2).build());
+    assertThrows(
+        NullPointerException.class, () -> ModulePoint.builder().moduleId(22L).rank(2).build());
   }
 
   @Test
@@ -127,7 +125,8 @@ public class ModulePointTest {
     final ModulePointBuilder builder =
         ModulePoint.builder().id(17L).moduleId(83L).rank(1).points(54);
 
-    assertThat(builder.toString(),
+    assertThat(
+        builder.toString(),
         is("ModulePoint.ModulePointBuilder(id=17, moduleId=83, rank=1, points=54)"));
   }
 
@@ -136,7 +135,8 @@ public class ModulePointTest {
     final ModulePoint testModulePoint =
         ModulePoint.builder().id(1337L).moduleId(123L).rank(6789).points(987).build();
 
-    assertThat(testModulePoint.toString(),
+    assertThat(
+        testModulePoint.toString(),
         is("ModulePoint(id=1337, moduleId=123, rank=6789, points=987)"));
   }
 
@@ -164,8 +164,9 @@ public class ModulePointTest {
   @Test
   public void withModuleId_ValidModuleId_ChangesModuleId() {
     final long originalModuleId = 1L;
-    final long[] testedModuleIds =
-        {originalModuleId, 0L, -1L, 1000L, -1000L, 123456789L, -12346789L};
+    final long[] testedModuleIds = {
+      originalModuleId, 0L, -1L, 1000L, -1000L, 123456789L, -12346789L
+    };
 
     final ModulePoint modulePoint =
         ModulePoint.builder().moduleId(originalModuleId).points(79).rank(15).id(2944L).build();
@@ -188,8 +189,14 @@ public class ModulePointTest {
     final Integer originalRank = 1;
     final Integer[] testedRanks = {originalRank, 0, -1, 1000, -1000, 123456789, -12346789};
 
-    final ModulePoint modulePoint = ModulePoint.builder().points(17).moduleId(163367L).points(5)
-        .rank(originalRank).id(291L).build();
+    final ModulePoint modulePoint =
+        ModulePoint.builder()
+            .points(17)
+            .moduleId(163367L)
+            .points(5)
+            .rank(originalRank)
+            .id(291L)
+            .build();
 
     for (Integer rank : testedRanks) {
       final ModulePoint newModulePoint = modulePoint.withRank(rank);

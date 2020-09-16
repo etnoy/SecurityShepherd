@@ -1,19 +1,17 @@
 /**
  * This file is part of Security Shepherd.
  *
- * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Security Shepherd.
- * If not, see <http://www.gnu.org/licenses/>.
- * 
+ * <p>You should have received a copy of the GNU General Public License along with Security
+ * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.owasp.securityshepherd.test.module.sql;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -61,10 +59,13 @@ public class SqlInjectionTutorialRowTest {
   @Test
   public void builderToString_ValidData_AsExpected() {
     final SqlInjectionTutorialRowBuilder testSqlInjectionTutorialRowBuilder =
-        SqlInjectionTutorialRow.builder().name("TestSqlInjectionTutorialRow")
-            .comment("This is a user").error("no error");
-    assertThat(testSqlInjectionTutorialRowBuilder.toString()).isEqualTo(
-        "SqlInjectionTutorialRow.SqlInjectionTutorialRowBuilder(name=TestSqlInjectionTutorialRow, comment=This is a user, error=no error)");
+        SqlInjectionTutorialRow.builder()
+            .name("TestSqlInjectionTutorialRow")
+            .comment("This is a user")
+            .error("no error");
+    assertThat(testSqlInjectionTutorialRowBuilder.toString())
+        .isEqualTo(
+            "SqlInjectionTutorialRow.SqlInjectionTutorialRowBuilder(name=TestSqlInjectionTutorialRow, comment=This is a user, error=no error)");
   }
 
   @Test
@@ -94,7 +95,8 @@ public class SqlInjectionTutorialRowTest {
   public void toString_ValidData_AsExpected() {
     final SqlInjectionTutorialRow testSqlInjectionTutorialRow =
         SqlInjectionTutorialRow.builder().name("TestSqlInjectionTutorialRow").build();
-    assertThat(testSqlInjectionTutorialRow.toString()).isEqualTo(
-        "SqlInjectionTutorialRow(name=TestSqlInjectionTutorialRow, comment=null, error=null)");
+    assertThat(testSqlInjectionTutorialRow.toString())
+        .isEqualTo(
+            "SqlInjectionTutorialRow(name=TestSqlInjectionTutorialRow, comment=null, error=null)");
   }
 }

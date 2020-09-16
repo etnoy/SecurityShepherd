@@ -1,19 +1,17 @@
 /**
  * This file is part of Security Shepherd.
  *
- * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Security Shepherd.
- * If not, see <http://www.gnu.org/licenses/>.
- * 
+ * <p>You should have received a copy of the GNU General Public License along with Security
+ * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.owasp.securityshepherd.service;
 
 import java.util.Base64;
@@ -46,14 +44,17 @@ public final class ConfigurationService {
   }
 
   private Mono<String> getByKey(final String key) {
-    return configurationRepository.findByKey(key)
-        .switchIfEmpty(Mono.error(
-            new ConfigurationKeyNotFoundException("Configuration key " + key + " not found")))
+    return configurationRepository
+        .findByKey(key)
+        .switchIfEmpty(
+            Mono.error(
+                new ConfigurationKeyNotFoundException("Configuration key " + key + " not found")))
         .map(Configuration::getValue);
   }
 
   public Mono<byte[]> getServerKey() {
-    return getByKey("serverKey").map(Base64.getDecoder()::decode)
+    return getByKey("serverKey")
+        .map(Base64.getDecoder()::decode)
         .onErrorResume(ConfigurationKeyNotFoundException.class, notFound -> refreshServerKey());
   }
 
@@ -62,20 +63,26 @@ public final class ConfigurationService {
     log.info("Refreshing server key");
     final String newServerKey =
         Base64.getEncoder().encodeToString(keyService.generateRandomBytes(16));
-    return existsByKey(serverKeyConfigurationKey).flatMap(exists -> {
-      if (Boolean.TRUE.equals(exists)) {
-        return setValue(serverKeyConfigurationKey, newServerKey);
-      } else {
-        return create(serverKeyConfigurationKey, newServerKey);
-      }
-    }).map(Configuration::getValue).map(Base64.getDecoder()::decode);
+    return existsByKey(serverKeyConfigurationKey)
+        .flatMap(
+            exists -> {
+              if (Boolean.TRUE.equals(exists)) {
+                return setValue(serverKeyConfigurationKey, newServerKey);
+              } else {
+                return create(serverKeyConfigurationKey, newServerKey);
+              }
+            })
+        .map(Configuration::getValue)
+        .map(Base64.getDecoder()::decode);
   }
 
   private Mono<Configuration> setValue(final String key, final String value) {
     log.debug("Setting configuration key " + key + " to value " + value);
-    return Mono.just(key).filterWhen(this::existsByKey)
-        .switchIfEmpty(Mono.error(
-            new ConfigurationKeyNotFoundException("Configuration key " + key + " not found")))
+    return Mono.just(key)
+        .filterWhen(this::existsByKey)
+        .switchIfEmpty(
+            Mono.error(
+                new ConfigurationKeyNotFoundException("Configuration key " + key + " not found")))
         .flatMap(configurationRepository::findByKey)
         .flatMap(configuration -> configurationRepository.save(configuration.withValue(value)));
   }

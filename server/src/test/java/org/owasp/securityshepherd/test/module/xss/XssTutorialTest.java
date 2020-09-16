@@ -1,19 +1,17 @@
 /**
  * This file is part of Security Shepherd.
  *
- * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Security Shepherd.
- * If not, see <http://www.gnu.org/licenses/>.
- * 
+ * <p>You should have received a copy of the GNU General Public License along with Security
+ * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.owasp.securityshepherd.test.module.xss;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,14 +51,11 @@ public class XssTutorialTest {
 
   XssTutorial xssTutorial;
 
-  @Mock
-  ModuleService moduleService;
+  @Mock ModuleService moduleService;
 
-  @Mock
-  XssService xssService;
+  @Mock XssService xssService;
 
-  @Mock
-  FlagHandler flagHandler;
+  @Mock FlagHandler flagHandler;
 
   @Test
   public void getDescription_IsNotEmpty() {
@@ -101,7 +96,8 @@ public class XssTutorialTest {
   public void initialize_DuplicateModuleName_ReturnsException() {
     when(moduleService.create(xssTutorial))
         .thenReturn(Mono.error(new DuplicateModuleNameException()));
-    StepVerifier.create(xssTutorial.initialize()).expectError(DuplicateModuleNameException.class)
+    StepVerifier.create(xssTutorial.initialize())
+        .expectError(DuplicateModuleNameException.class)
         .verify();
   }
 
@@ -110,7 +106,8 @@ public class XssTutorialTest {
     when(moduleService.create(xssTutorial))
         .thenReturn(Mono.error(new DuplicateModuleShortNameException()));
     StepVerifier.create(xssTutorial.initialize())
-        .expectError(DuplicateModuleShortNameException.class).verify();
+        .expectError(DuplicateModuleShortNameException.class)
+        .verify();
   }
 
   @Test
@@ -124,7 +121,9 @@ public class XssTutorialTest {
     when(mockModule.getId()).thenReturn(mockModuleId);
     when(moduleService.setDynamicFlag(mockModuleId)).thenReturn(Mono.just(mockModule));
 
-    StepVerifier.create(xssTutorial.initialize()).expectNext(mockModuleId).expectComplete()
+    StepVerifier.create(xssTutorial.initialize())
+        .expectNext(mockModuleId)
+        .expectComplete()
         .verify();
   }
 
@@ -157,10 +156,14 @@ public class XssTutorialTest {
 
     xssTutorial.initialize().block();
 
-    StepVerifier.create(xssTutorial.submitQuery(mockUserId, query)).assertNext(response -> {
-      assertThat(response.getResult()).contains(mockFlag);
-      assertThat(response.getAlert()).isEqualTo(mockAlertList.get(0));
-    }).expectComplete().verify();
+    StepVerifier.create(xssTutorial.submitQuery(mockUserId, query))
+        .assertNext(
+            response -> {
+              assertThat(response.getResult()).contains(mockFlag);
+              assertThat(response.getAlert()).isEqualTo(mockAlertList.get(0));
+            })
+        .expectComplete()
+        .verify();
   }
 
   @Test
@@ -192,11 +195,14 @@ public class XssTutorialTest {
 
     xssTutorial.initialize().block();
 
-    StepVerifier.create(xssTutorial.submitQuery(mockUserId, query)).assertNext(response -> {
-      assertThat(response.getResult()).contains("Sorry");
-      assertThat(response.getResult()).doesNotContain("Congratulations");
-      assertThat(response.getAlert()).isEqualTo(null);
-    }).expectComplete().verify();
+    StepVerifier.create(xssTutorial.submitQuery(mockUserId, query))
+        .assertNext(
+            response -> {
+              assertThat(response.getResult()).contains("Sorry");
+              assertThat(response.getResult()).doesNotContain("Congratulations");
+              assertThat(response.getAlert()).isEqualTo(null);
+            })
+        .expectComplete()
+        .verify();
   }
-
 }

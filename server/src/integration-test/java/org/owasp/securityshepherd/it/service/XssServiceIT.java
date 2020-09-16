@@ -1,19 +1,17 @@
 /**
  * This file is part of Security Shepherd.
  *
- * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Security Shepherd.
- * If not, see <http://www.gnu.org/licenses/>.
- * 
+ * <p>You should have received a copy of the GNU General Public License along with Security
+ * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.owasp.securityshepherd.it.service;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -37,8 +35,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @DisplayName("XssService integration test")
 public class XssServiceIT {
 
-  @Autowired
-  private XssService xssService;
+  @Autowired private XssService xssService;
 
   @Test
   public void scriptAlert_ShouldShowAlert() throws Exception {
@@ -71,37 +68,45 @@ public class XssServiceIT {
 
   @Test
   public void submitButtonOnMouseOver_ShouldShowAlert() throws Exception {
-    assertThat(executeQuery("<input type=\"submit\" onmouseover=\"alert('submit-mouseover')\"/>"),
+    assertThat(
+        executeQuery("<input type=\"submit\" onmouseover=\"alert('submit-mouseover')\"/>"),
         is("submit-mouseover"));
   }
 
   @Test
   public void submitButtonOnMouseDown_ShouldShowAlert() throws Exception {
-    assertThat(executeQuery("<input type=\"submit\" onmousedown=\"alert('submit-mousedown')\"/>"),
+    assertThat(
+        executeQuery("<input type=\"submit\" onmousedown=\"alert('submit-mousedown')\"/>"),
         is("submit-mousedown"));
   }
 
   @Test
   public void aOnBlur_ShouldShowAlert() throws Exception {
-    assertThat(executeQuery("<a onblur=alert('a-onblur') tabindex=1 id=x></a><input autofocus>"),
+    assertThat(
+        executeQuery("<a onblur=alert('a-onblur') tabindex=1 id=x></a><input autofocus>"),
         is("a-onblur"));
   }
 
   @Test
   public void submitButtonOnClick_ShouldShowAlert() throws Exception {
-    assertThat(executeQuery("<input type=\"submit\" onclick=\"alert('submit-onclick')\"/>"),
+    assertThat(
+        executeQuery("<input type=\"submit\" onclick=\"alert('submit-onclick')\"/>"),
         is("submit-onclick"));
   }
 
   @Test
   public void inputButtonOnClick_ShouldShowAlert() throws Exception {
-    assertThat(executeQuery("<input type=\"button\" onclick=\"alert('input-onclick')\"/>"),
+    assertThat(
+        executeQuery("<input type=\"button\" onclick=\"alert('input-onclick')\"/>"),
         is("input-onclick"));
   }
 
   private String executeQuery(final String query) throws IOException {
-    final List<String> alerts = xssService.doXss(
-        "<html><head><title>Alert</title></head><body><p>Result: " + query + "</p></body></html>");
+    final List<String> alerts =
+        xssService.doXss(
+            "<html><head><title>Alert</title></head><body><p>Result: "
+                + query
+                + "</p></body></html>");
     if (!alerts.isEmpty()) {
       return alerts.get(0);
     } else {

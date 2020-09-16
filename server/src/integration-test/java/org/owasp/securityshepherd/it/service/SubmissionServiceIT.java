@@ -1,19 +1,17 @@
 /**
  * This file is part of Security Shepherd.
  *
- * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Security Shepherd.
- * If not, see <http://www.gnu.org/licenses/>.
- * 
+ * <p>You should have received a copy of the GNU General Public License along with Security
+ * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.owasp.securityshepherd.it.service;
 
 import java.time.Clock;
@@ -54,35 +52,25 @@ public class SubmissionServiceIT {
     Hooks.onOperatorDebug();
   }
 
-  @Autowired
-  SubmissionService submissionService;
+  @Autowired SubmissionService submissionService;
 
-  @Autowired
-  UserService userService;
+  @Autowired UserService userService;
 
-  @Autowired
-  ModuleService moduleService;
+  @Autowired ModuleService moduleService;
 
-  @Autowired
-  Clock clock;
+  @Autowired Clock clock;
 
-  @Autowired
-  ModuleRepository moduleRepository;
+  @Autowired ModuleRepository moduleRepository;
 
-  @Autowired
-  SubmissionRepository submissionRepository;
+  @Autowired SubmissionRepository submissionRepository;
 
-  @Autowired
-  CorrectionRepository correctionRepository;
+  @Autowired CorrectionRepository correctionRepository;
 
-  @Autowired
-  UserRepository userRepository;
+  @Autowired UserRepository userRepository;
 
-  @Autowired
-  TestUtils testService;
+  @Autowired TestUtils testService;
 
-  @Autowired
-  FlagHandler flagComponent;
+  @Autowired FlagHandler flagComponent;
 
   @BeforeEach
   private void clear() {
@@ -97,14 +85,23 @@ public class SubmissionServiceIT {
     final Mono<Long> userIdMono = userService.create("TestUser");
 
     final Mono<Long> moduleIdMono =
-        moduleService.create("Test Module", "short-name").map(Module::getId)
-            .flatMap(moduleId -> moduleService.setExactFlag(moduleId, flag)).map(Module::getId);
+        moduleService
+            .create("Test Module", "short-name")
+            .map(Module::getId)
+            .flatMap(moduleId -> moduleService.setExactFlag(moduleId, flag))
+            .map(Module::getId);
 
-    StepVerifier
-        .create(Mono.zip(userIdMono, moduleIdMono)
-            .flatMapMany(tuple -> submissionService.submit(tuple.getT1(), tuple.getT2(), flag)
-                .repeat(2).map(Submission::isValid)))
-        .expectNext(true).expectError(ModuleAlreadySolvedException.class).verify();
+    StepVerifier.create(
+            Mono.zip(userIdMono, moduleIdMono)
+                .flatMapMany(
+                    tuple ->
+                        submissionService
+                            .submit(tuple.getT1(), tuple.getT2(), flag)
+                            .repeat(2)
+                            .map(Submission::isValid)))
+        .expectNext(true)
+        .expectError(ModuleAlreadySolvedException.class)
+        .verify();
   }
 
   @Test
@@ -114,12 +111,21 @@ public class SubmissionServiceIT {
     final Mono<Long> userIdMono = userService.create("TestUser");
 
     final Mono<Long> moduleIdMono =
-        moduleService.create("Test Module", "short-name").map(Module::getId)
-            .flatMap(moduleId -> moduleService.setExactFlag(moduleId, flag)).map(Module::getId);
+        moduleService
+            .create("Test Module", "short-name")
+            .map(Module::getId)
+            .flatMap(moduleId -> moduleService.setExactFlag(moduleId, flag))
+            .map(Module::getId);
 
-    StepVerifier
-        .create(Mono.zip(userIdMono, moduleIdMono).flatMap(tuple -> submissionService
-            .submit(tuple.getT1(), tuple.getT2(), flag).map(Submission::isValid)))
-        .expectNext(true).expectComplete().verify();
+    StepVerifier.create(
+            Mono.zip(userIdMono, moduleIdMono)
+                .flatMap(
+                    tuple ->
+                        submissionService
+                            .submit(tuple.getT1(), tuple.getT2(), flag)
+                            .map(Submission::isValid)))
+        .expectNext(true)
+        .expectComplete()
+        .verify();
   }
 }
