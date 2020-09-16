@@ -58,7 +58,7 @@ public class FlagControllerTest {
   }
 
   @Test
-  public void submitFlag_UserNotAuthenticated_ReturnsException() throws Exception {
+  void submitFlag_UserNotAuthenticated_ReturnsException() throws Exception {
     final long mockModuleId = 16L;
     final String flag = "validflag";
 
@@ -73,7 +73,7 @@ public class FlagControllerTest {
   }
 
   @Test
-  public void submitFlag_UserAuthenticatedAndValidFlagSubmitted_ReturnsValidSubmission()
+  void submitFlag_UserAuthenticatedAndValidFlagSubmitted_ReturnsValidSubmission()
       throws Exception {
     final long mockUserId = 417L;
     final long mockModuleId = 16L;

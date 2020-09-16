@@ -53,7 +53,7 @@ public class AuthenticationManagerTest {
   @Mock UserService userService;
 
   @Test
-  public void authenticate_InvalidAuthentication_ReturnsValidAuthentication() {
+  void authenticate_InvalidAuthentication_ReturnsValidAuthentication() {
     final Authentication mockAuthentication = mock(Authentication.class);
     final String mockToken = "token";
     when(mockAuthentication.getCredentials()).thenReturn(mockToken);
@@ -65,7 +65,7 @@ public class AuthenticationManagerTest {
   }
 
   @Test
-  public void authenticate_ValidAuthentication_ReturnsValidAuthentication() {
+  void authenticate_ValidAuthentication_ReturnsValidAuthentication() {
     final Authentication mockAuthentication = mock(Authentication.class);
     final String mockToken = "token";
     final long mockUserId = 548;

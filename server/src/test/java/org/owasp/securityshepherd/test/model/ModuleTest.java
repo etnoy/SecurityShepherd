@@ -29,7 +29,7 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 @DisplayName("Module unit test")
 public class ModuleTest {
   @Test
-  public void build_NameNotGiven_ThrowsNullPointerException() {
+  void build_NameNotGiven_ThrowsNullPointerException() {
     Throwable thrownException =
         assertThrows(
             NullPointerException.class, () -> Module.builder().shortName("test-module").build());
@@ -37,14 +37,14 @@ public class ModuleTest {
   }
 
   @Test
-  public void build_ShortNameNotGiven_ThrowsNullPointerException() {
+  void build_ShortNameNotGiven_ThrowsNullPointerException() {
     Throwable thrownException =
         assertThrows(NullPointerException.class, () -> Module.builder().name("TestModule").build());
     assertThat(thrownException.getMessage(), is("shortName is marked non-null but is null"));
   }
 
   @Test
-  public void buildDescription_ValidDescription_Builds() {
+  void buildDescription_ValidDescription_Builds() {
     final ModuleBuilder builder = Module.builder().name("TestModule").shortName("test-module");
     for (final String description : TestUtils.STRINGS_WITH_NULL) {
       builder.description(description);
@@ -54,7 +54,7 @@ public class ModuleTest {
   }
 
   @Test
-  public void buildIsExactFlag_TrueOrFalse_MatchesBuild() {
+  void buildIsExactFlag_TrueOrFalse_MatchesBuild() {
     // TODO
     for (final boolean isFlagExact : TestUtils.BOOLEANS) {
       final ModuleBuilder builder = Module.builder().name("TestModule").shortName("test-module");
@@ -67,7 +67,7 @@ public class ModuleTest {
   }
 
   @Test
-  public void buildIsFlagEnabled_TrueOrFalse_MatchesBuild() {
+  void buildIsFlagEnabled_TrueOrFalse_MatchesBuild() {
     for (final boolean isFlagEnabled : TestUtils.BOOLEANS) {
       final ModuleBuilder builder = Module.builder().name("TestModule").shortName("test-module");
 
@@ -79,7 +79,7 @@ public class ModuleTest {
   }
 
   @Test
-  public void buildIsOpen_TrueOrFalse_MatchesBuild() {
+  void buildIsOpen_TrueOrFalse_MatchesBuild() {
     for (final boolean isOpen : TestUtils.BOOLEANS) {
 
       final ModuleBuilder builder = Module.builder().name("TestModule").shortName("test-module");
@@ -92,7 +92,7 @@ public class ModuleTest {
   }
 
   @Test
-  public void buildName_NullName_ThrowsNullPointerException() {
+  void buildName_NullName_ThrowsNullPointerException() {
     final ModuleBuilder moduleBuilder = Module.builder().shortName("test-module");
     Throwable thrownException =
         assertThrows(NullPointerException.class, () -> moduleBuilder.name(null));
@@ -100,7 +100,7 @@ public class ModuleTest {
   }
 
   @Test
-  public void buildName_NullShortName_ThrowsNullPointerException() {
+  void buildName_NullShortName_ThrowsNullPointerException() {
     final ModuleBuilder moduleBuilder = Module.builder().name("TestModule");
     Throwable thrownException =
         assertThrows(NullPointerException.class, () -> moduleBuilder.shortName(null));
@@ -108,7 +108,7 @@ public class ModuleTest {
   }
 
   @Test
-  public void buildName_ValidName_Builds() {
+  void buildName_ValidName_Builds() {
     final ModuleBuilder builder = Module.builder().shortName("test-module");
     for (final String name : TestUtils.STRINGS) {
       builder.name(name);
@@ -119,7 +119,7 @@ public class ModuleTest {
   }
 
   @Test
-  public void buildShortName_ValidShortName_Builds() {
+  void buildShortName_ValidShortName_Builds() {
     final ModuleBuilder builder = Module.builder().name("TestModule");
     for (final String shortName : TestUtils.STRINGS) {
       builder.shortName(shortName);
@@ -130,12 +130,12 @@ public class ModuleTest {
   }
 
   @Test
-  public void equals_AutomaticTesting() {
+  void equals_AutomaticTesting() {
     EqualsVerifier.forClass(Module.class).withIgnoredAnnotations(NonNull.class).verify();
   }
 
   @Test
-  public void moduleBuilderToString_ValidData_AsExpected() {
+  void moduleBuilderToString_ValidData_AsExpected() {
     final ModuleBuilder builder = Module.builder();
 
     assertThat(
@@ -146,7 +146,7 @@ public class ModuleTest {
   }
 
   @Test
-  public void toString_ValidData_AsExpected() {
+  void toString_ValidData_AsExpected() {
     final Module testModule = Module.builder().name("TestModule").shortName("test-module").build();
 
     assertThat(
@@ -157,7 +157,7 @@ public class ModuleTest {
   }
 
   @Test
-  public void withDescription_ValidDescription_ChangesDescription() {
+  void withDescription_ValidDescription_ChangesDescription() {
     final String[] testedDescriptions = {
       "Description", null, "", "a", "Long Description With Spaces", "12345"
     };
@@ -177,7 +177,7 @@ public class ModuleTest {
   }
 
   @Test
-  public void withFlag_ValidFlag_ChangesFlag() {
+  void withFlag_ValidFlag_ChangesFlag() {
     // TODO: refactor
     final String originalFlag = "abc123xyz789";
     final String[] testedFlags = {originalFlag, null, "", "a", "Long Flag With Spaces", "12345"};
@@ -193,7 +193,7 @@ public class ModuleTest {
   }
 
   @Test
-  public void withFlagEnabled_ValidBoolean_ChangesIsFlagEnabled() {
+  void withFlagEnabled_ValidBoolean_ChangesIsFlagEnabled() {
     // TODO: refactor
 
     final Module testModule = Module.builder().name("TestModule").shortName("test-module").build();
@@ -207,7 +207,7 @@ public class ModuleTest {
   }
 
   @Test
-  public void withFlagExact_ValidBoolean_ChangesIsExactFlag() {
+  void withFlagExact_ValidBoolean_ChangesIsExactFlag() {
     // TODO: refactor
 
     final Module testModule = Module.builder().name("TestModule").shortName("test-module").build();
@@ -221,7 +221,7 @@ public class ModuleTest {
   }
 
   @Test
-  public void withId_ValidId_ChangesId() {
+  void withId_ValidId_ChangesId() {
     final Module testModule =
         Module.builder()
             .id(TestUtils.INITIAL_LONG)
@@ -236,7 +236,7 @@ public class ModuleTest {
   }
 
   @Test
-  public void withName_NullName_ThrowsNullPointerException() {
+  void withName_NullName_ThrowsNullPointerException() {
     final Module module = Module.builder().name("TestModule").shortName("test-module").build();
     Throwable thrownException =
         assertThrows(NullPointerException.class, () -> module.withName(null));
@@ -244,7 +244,7 @@ public class ModuleTest {
   }
 
   @Test
-  public void withName_ValidName_ChangesName() {
+  void withName_ValidName_ChangesName() {
     final Module testModule =
         Module.builder().name(TestUtils.INITIAL_STRING).shortName("test-module").build();
 
@@ -255,7 +255,7 @@ public class ModuleTest {
   }
 
   @Test
-  public void withOpen_ValidBoolean_ChangesOpen() {
+  void withOpen_ValidBoolean_ChangesOpen() {
     final Module testModule = Module.builder().name("TestModule").shortName("test-module").build();
 
     assertThat(testModule.isOpen(), is(false));
@@ -267,7 +267,7 @@ public class ModuleTest {
   }
 
   @Test
-  public void withShortName_NullShortName_ThrowsNullPointerException() {
+  void withShortName_NullShortName_ThrowsNullPointerException() {
     final Module module = Module.builder().name("TestModule").shortName("test-module").build();
     Throwable thrownException =
         assertThrows(NullPointerException.class, () -> module.withShortName(null));
@@ -275,7 +275,7 @@ public class ModuleTest {
   }
 
   @Test
-  public void withShortName_ValidShortName_ChangesName() {
+  void withShortName_ValidShortName_ChangesName() {
     final Module testModule =
         Module.builder().name("TestModule").shortName(TestUtils.INITIAL_STRING).build();
 

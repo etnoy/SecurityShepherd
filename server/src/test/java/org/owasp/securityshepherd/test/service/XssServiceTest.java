@@ -51,7 +51,7 @@ public class XssServiceTest {
   @Mock XssWebClientFactory xssWebClientFactory;
 
   @Test
-  public void doXss_AlertHandlerFindsAlerts_ReturnsCollectedAlerts() throws Exception {
+  void doXss_AlertHandlerFindsAlerts_ReturnsCollectedAlerts() throws Exception {
     final String htmlPage = "<html></html>";
     final HtmlPage mockPage = mock(HtmlPage.class);
     final DomElement mockElement1 = mock(DomElement.class);
@@ -80,7 +80,7 @@ public class XssServiceTest {
   }
 
   @Test
-  public void doXss_GetPageThrowsIOException_ThrowsXssEvaluationException()
+  void doXss_GetPageThrowsIOException_ThrowsXssEvaluationException()
       throws FailingHttpStatusCodeException, MalformedURLException, IOException {
     final String htmlPage = "<html></html>";
     final WebClient mockWebClient = mock(WebClient.class);
@@ -93,7 +93,7 @@ public class XssServiceTest {
   }
 
   @Test
-  public void doXss_PageInitializeThrowsIOException_ThrowsXssEvaluationException()
+  void doXss_PageInitializeThrowsIOException_ThrowsXssEvaluationException()
       throws Exception {
     final String htmlPage = "<html></html>";
     final HtmlPage mockPage = mock(HtmlPage.class);

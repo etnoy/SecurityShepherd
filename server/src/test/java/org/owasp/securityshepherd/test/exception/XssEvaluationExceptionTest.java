@@ -30,12 +30,12 @@ import org.owasp.securityshepherd.test.util.TestUtils;
 @DisplayName("XssEvaluationException unit test")
 public class XssEvaluationExceptionTest {
   @Test
-  public void noArgsConstructor_NoArguments_ReturnsException() {
+  void noArgsConstructor_NoArguments_ReturnsException() {
     assertThat(new XssEvaluationException(), is(instanceOf(XssEvaluationException.class)));
   }
 
   @Test
-  public void messageConstructor_ValidMessage_MessageIncluded() {
+  void messageConstructor_ValidMessage_MessageIncluded() {
     for (final String message : TestUtils.STRINGS) {
       XssEvaluationException exception = new XssEvaluationException(message);
       assertThat(exception.getMessage(), is(message));
@@ -43,7 +43,7 @@ public class XssEvaluationExceptionTest {
   }
 
   @Test
-  public void messageExceptionConstructor_ValidMessageAndException_MessageIncluded() {
+  void messageExceptionConstructor_ValidMessageAndException_MessageIncluded() {
     for (final String message : TestUtils.STRINGS) {
       XssEvaluationException exception =
           new XssEvaluationException(message, new RuntimeException());
@@ -53,7 +53,7 @@ public class XssEvaluationExceptionTest {
   }
 
   @Test
-  public void exceptionConstructor_ValidException_MessageIncluded() {
+  void exceptionConstructor_ValidException_MessageIncluded() {
     XssEvaluationException exception = new XssEvaluationException(new RuntimeException());
     assertThat(exception.getCause(), is(instanceOf(RuntimeException.class)));
   }

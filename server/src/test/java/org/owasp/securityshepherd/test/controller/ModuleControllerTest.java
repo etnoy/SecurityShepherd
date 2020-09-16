@@ -59,7 +59,7 @@ public class ModuleControllerTest {
   @Mock private ModuleSolutions moduleSolutions;
 
   @Test
-  public void findAllByUserId_IdExists_ReturnsModule() throws Exception {
+  void findAllByUserId_IdExists_ReturnsModule() throws Exception {
     final long mockUserId = 645L;
 
     final ModuleListItem mockModuleListItem1 = mock(ModuleListItem.class);
@@ -89,7 +89,7 @@ public class ModuleControllerTest {
   }
 
   @Test
-  public void findAllByUserId_NotAuthenticated_ReturnsNotAuthenticatedException() throws Exception {
+  void findAllByUserId_NotAuthenticated_ReturnsNotAuthenticatedException() throws Exception {
     when(controllerAuthentication.getUserId())
         .thenReturn(Mono.error(new NotAuthenticatedException()));
 
@@ -99,7 +99,7 @@ public class ModuleControllerTest {
   }
 
   @Test
-  public void getModuleById_IdDoesNotExist_ReturnsModule() throws Exception {
+  void getModuleById_IdDoesNotExist_ReturnsModule() throws Exception {
     final long mockModuleId = 459L;
     when(moduleService.findById(mockModuleId)).thenReturn(Mono.empty());
     StepVerifier.create(moduleController.getModuleById(mockModuleId)).expectComplete().verify();
@@ -107,7 +107,7 @@ public class ModuleControllerTest {
   }
 
   @Test
-  public void getModuleById_IdExists_ReturnsModule() throws Exception {
+  void getModuleById_IdExists_ReturnsModule() throws Exception {
     final long mockModuleId = 433L;
     final Module mockedModule = mock(Module.class);
     when(moduleService.findById(mockModuleId)).thenReturn(Mono.just(mockedModule));
@@ -119,7 +119,7 @@ public class ModuleControllerTest {
   }
 
   @Test
-  public void getModuleByShortName_ShortNameDoesNotExist_ReturnsEmpty() throws Exception {
+  void getModuleByShortName_ShortNameDoesNotExist_ReturnsEmpty() throws Exception {
     final long mockUserId = 94L;
     final String mockShortName = "shortName";
     when(controllerAuthentication.getUserId()).thenReturn(Mono.just(mockUserId));
@@ -135,7 +135,7 @@ public class ModuleControllerTest {
   }
 
   @Test
-  public void getModuleByShortName_ShortNameExists_ReturnsModule() throws Exception {
+  void getModuleByShortName_ShortNameExists_ReturnsModule() throws Exception {
     final long mockUserId = 94L;
     final String mockShortName = "shortName";
     final ModuleListItem mockModuleListItem = mock(ModuleListItem.class);

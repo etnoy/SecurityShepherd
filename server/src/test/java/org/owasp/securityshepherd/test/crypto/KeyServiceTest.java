@@ -50,27 +50,27 @@ public class KeyServiceTest {
   CryptoFactory prngFactory;
 
   @Test
-  public void byteFlagToString_ValidBytes_ReturnsString() {
+  void byteFlagToString_ValidBytes_ReturnsString() {
     assertThat(keyService
         .byteFlagToString(new byte[] {116, 104, 105, 115, 105, 115, 97, 102, 108, 97, 103}))
             .isEqualTo("74686973697361666c6167");
   }
 
   @Test
-  public void convertByteKeyToString_ValidInput_ReturnsExpectedOutput() {
+  void convertByteKeyToString_ValidInput_ReturnsExpectedOutput() {
     assertThat(keyService.convertStringFlagToBytes("thisisaflag"))
         .isEqualTo(new byte[] {116, 104, 105, 115, 105, 115, 97, 102, 108, 97, 103});
   }
 
   @Test
-  public void convertStringKeyToBytes_ValidInput_ReturnsExpectedOutput() {
+  void convertStringKeyToBytes_ValidInput_ReturnsExpectedOutput() {
     assertThat(keyService
         .convertByteKeyToString(new byte[] {116, 104, 105, 115, 105, 115, 97, 102, 108, 97, 103}))
             .isEqualTo("thisisaflag");
   }
 
   @Test
-  public void generateRandomBytes_NoSuchAlgorithmException_ThrowsRngException() throws Exception {
+  void generateRandomBytes_NoSuchAlgorithmException_ThrowsRngException() throws Exception {
     final int[] testedLengths = {0, 1, 12, 16, 128, 4096};
 
     when(prngFactory.getPrng()).thenThrow(
@@ -84,7 +84,7 @@ public class KeyServiceTest {
   }
 
   @Test
-  public void generateRandomBytes_ValidLength_ReturnsRandomBytes() throws Exception {
+  void generateRandomBytes_ValidLength_ReturnsRandomBytes() throws Exception {
     final int[] testedLengths = {0, 1, 12, 16, 128, 4096};
 
     final SecureRandom mockPrng = mock(SecureRandom.class);
@@ -99,7 +99,7 @@ public class KeyServiceTest {
   }
 
   @Test
-  public void generateRandomString_ValidLength_ReturnsRandomString() throws Exception {
+  void generateRandomString_ValidLength_ReturnsRandomString() throws Exception {
     final SecureRandom mockPrng = mock(SecureRandom.class);
 
     when(prngFactory.getPrng()).thenReturn(mockPrng);
@@ -117,7 +117,7 @@ public class KeyServiceTest {
   }
 
   @Test
-  public void stringFlagToByte_ValidString_ReturnsString() throws DecoderException {
+  void stringFlagToByte_ValidString_ReturnsString() throws DecoderException {
     assertThat(keyService.stringFlagToByte("74686973697361666c6167"))
         .isEqualTo(new byte[] {116, 104, 105, 115, 105, 115, 97, 102, 108, 97, 103});
   }

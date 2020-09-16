@@ -53,7 +53,7 @@ public class SecurityContextRepositoryTest {
   @Mock AuthenticationManager authenticationManager;
 
   @Test
-  public void load_InvalidHeader_ReturnsSecurityContext() throws Exception {
+  void load_InvalidHeader_ReturnsSecurityContext() throws Exception {
     final ServerWebExchange mockServerWebExchange = mock(ServerWebExchange.class);
     final String token = "authToken";
     final ServerHttpRequest mockServerHttpRequest = mock(ServerHttpRequest.class);
@@ -71,7 +71,7 @@ public class SecurityContextRepositoryTest {
   }
 
   @Test
-  public void load_NullHeader_ReturnsSecurityContext() throws Exception {
+  void load_NullHeader_ReturnsSecurityContext() throws Exception {
     final ServerWebExchange mockServerWebExchange = mock(ServerWebExchange.class);
 
     final ServerHttpRequest mockServerHttpRequest = mock(ServerHttpRequest.class);
@@ -89,7 +89,7 @@ public class SecurityContextRepositoryTest {
   }
 
   @Test
-  public void load_ValidHeader_ReturnsSecurityContext() throws Exception {
+  void load_ValidHeader_ReturnsSecurityContext() throws Exception {
     final Long mockUserId = 581L;
     final ServerWebExchange mockServerWebExchange = mock(ServerWebExchange.class);
 
@@ -121,7 +121,7 @@ public class SecurityContextRepositoryTest {
   }
 
   @Test
-  public void save_NotImplemented() throws Exception {
+  void save_NotImplemented() throws Exception {
     StepVerifier.create(securityContextRepository.save(null, null))
         .expectError(UnsupportedOperationException.class)
         .verify();

@@ -25,7 +25,7 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 @DisplayName("PasswordLoginDto unit test")
 public class PasswordLoginDtoTest {
   @Test
-  public void buildComment_ValidComment_Builds() {
+  void buildComment_ValidComment_Builds() {
     for (final String userName : TestUtils.STRINGS) {
       for (final String password : TestUtils.STRINGS) {
         final PasswordLoginDto passwordLoginDto = new PasswordLoginDto(userName, password);
@@ -36,12 +36,12 @@ public class PasswordLoginDtoTest {
   }
 
   @Test
-  public void equals_EqualsVerifier_AsExpected() {
+  void equals_EqualsVerifier_AsExpected() {
     EqualsVerifier.forClass(PasswordLoginDto.class).withIgnoredAnnotations(NotNull.class).verify();
   }
 
   @Test
-  public void toString_ValidData_AsExpected() {
+  void toString_ValidData_AsExpected() {
     final PasswordLoginDto passwordLoginDto = new PasswordLoginDto("loginName", "password");
     assertThat(passwordLoginDto.toString())
         .isEqualTo("PasswordLoginDto(userName=loginName, password=password)");

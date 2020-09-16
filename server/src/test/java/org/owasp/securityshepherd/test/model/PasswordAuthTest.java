@@ -28,7 +28,7 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 @DisplayName("PasswordAuth unit test")
 public class PasswordAuthTest {
   @Test
-  public void build_HashedPasswordNotGiven_ThrowsNullPointerException() {
+  void build_HashedPasswordNotGiven_ThrowsNullPointerException() {
     final PasswordAuthBuilder passwordAuthBuilder =
         PasswordAuth.builder().userId(1L).loginName("TestUser");
     final Exception thrownException =
@@ -37,7 +37,7 @@ public class PasswordAuthTest {
   }
 
   @Test
-  public void build_LoginNameNotGiven_ThrowsNullPointerException() {
+  void build_LoginNameNotGiven_ThrowsNullPointerException() {
     final PasswordAuthBuilder passwordAuthBuilder =
         PasswordAuth.builder().userId(1L).hashedPassword("hashedPass");
     final Exception thrownException =
@@ -46,7 +46,7 @@ public class PasswordAuthTest {
   }
 
   @Test
-  public void build_UserIdNotGiven_ThrowsNullPointerException() {
+  void build_UserIdNotGiven_ThrowsNullPointerException() {
     final PasswordAuthBuilder passwordAuthBuilder =
         PasswordAuth.builder().loginName("TestUser").hashedPassword("hashedPass");
     final Exception thrownException =
@@ -55,7 +55,7 @@ public class PasswordAuthTest {
   }
 
   @Test
-  public void builderToString_ValidData_AsExpected() {
+  void builderToString_ValidData_AsExpected() {
     assertThat(
         PasswordAuth.builder().loginName("TestUser").hashedPassword("987").toString(),
         is(
@@ -73,7 +73,7 @@ public class PasswordAuthTest {
   }
 
   @Test
-  public void buildHashedPassword_NullHashedPassword_ThrowsNullPointerException() {
+  void buildHashedPassword_NullHashedPassword_ThrowsNullPointerException() {
     final PasswordAuthBuilder passwordAuthBuilder = PasswordAuth.builder();
     final Exception thrownException =
         assertThrows(NullPointerException.class, () -> passwordAuthBuilder.hashedPassword(null));
@@ -81,7 +81,7 @@ public class PasswordAuthTest {
   }
 
   @Test
-  public void buildHashedPassword_ValidHashedPassword_BuildsPasswordAuth() {
+  void buildHashedPassword_ValidHashedPassword_BuildsPasswordAuth() {
     final PasswordAuthBuilder passwordAuthBuilder =
         PasswordAuth.builder().userId(555L).loginName("TestUser");
     for (final String hashedPassword : TestUtils.STRINGS) {
@@ -91,7 +91,7 @@ public class PasswordAuthTest {
   }
 
   @Test
-  public void buildId_ValidId_BuildsPasswordAuth() {
+  void buildId_ValidId_BuildsPasswordAuth() {
     final PasswordAuthBuilder passwordAuthBuilder =
         PasswordAuth.builder().userId(1L).loginName("TestUser").hashedPassword("passwordHash");
     for (final long id : TestUtils.LONGS) {
@@ -101,7 +101,7 @@ public class PasswordAuthTest {
   }
 
   @Test
-  public void buildIsPasswordExpired_TrueOrFalse_BuildsPasswordAuth() {
+  void buildIsPasswordExpired_TrueOrFalse_BuildsPasswordAuth() {
     final PasswordAuthBuilder passwordAuthBuilder =
         PasswordAuth.builder().userId(45L).loginName("TestUser").hashedPassword("passwordHash");
     for (final boolean isPasswordNonExpired : TestUtils.BOOLEANS) {
@@ -112,7 +112,7 @@ public class PasswordAuthTest {
   }
 
   @Test
-  public void buildLoginName_NullLoginName_ThrowsNullPointerException() {
+  void buildLoginName_NullLoginName_ThrowsNullPointerException() {
     final PasswordAuthBuilder passwordAuthBuilder = PasswordAuth.builder();
     final Exception thrownException =
         assertThrows(NullPointerException.class, () -> passwordAuthBuilder.loginName(null));
@@ -120,7 +120,7 @@ public class PasswordAuthTest {
   }
 
   @Test
-  public void buildLoginName_ValidLoginName_BuildsPasswordAuth() {
+  void buildLoginName_ValidLoginName_BuildsPasswordAuth() {
     final PasswordAuthBuilder passwordAuthBuilder =
         PasswordAuth.builder().userId(681L).hashedPassword("passwordHash");
     for (final String loginName : TestUtils.STRINGS) {
@@ -130,7 +130,7 @@ public class PasswordAuthTest {
   }
 
   @Test
-  public void buildUserId_NullUserId_ThrowsNullPointerException() {
+  void buildUserId_NullUserId_ThrowsNullPointerException() {
     final PasswordAuthBuilder passwordAuthBuilder = PasswordAuth.builder();
     final Exception thrownException =
         assertThrows(NullPointerException.class, () -> passwordAuthBuilder.userId(null));
@@ -138,7 +138,7 @@ public class PasswordAuthTest {
   }
 
   @Test
-  public void buildUserId_ValidUserId_BuildsPasswordAuth() {
+  void buildUserId_ValidUserId_BuildsPasswordAuth() {
     final PasswordAuthBuilder passwordAuthBuilder =
         PasswordAuth.builder().loginName("TestUser").hashedPassword("passwordHash");
     for (final long userId : TestUtils.LONGS) {
@@ -148,12 +148,12 @@ public class PasswordAuthTest {
   }
 
   @Test
-  public void equals_EqualsVerifier_AsExpected() {
+  void equals_EqualsVerifier_AsExpected() {
     EqualsVerifier.forClass(PasswordAuth.class).withIgnoredAnnotations(NonNull.class).verify();
   }
 
   @Test
-  public void toString_ValidData_AsExpected() {
+  void toString_ValidData_AsExpected() {
     assertThat(
         PasswordAuth.builder()
             .loginName("TestUser")
@@ -187,7 +187,7 @@ public class PasswordAuthTest {
   }
 
   @Test
-  public void withHashedPassword_NullHashedPassword_ThrowsNullPointerException() {
+  void withHashedPassword_NullHashedPassword_ThrowsNullPointerException() {
     final PasswordAuth passwordAuth =
         PasswordAuth.builder()
             .userId(1L)
@@ -200,7 +200,7 @@ public class PasswordAuthTest {
   }
 
   @Test
-  public void withHashedPassword_ValidHashedPassword_ChangesHashedPassword() {
+  void withHashedPassword_ValidHashedPassword_ChangesHashedPassword() {
     final PasswordAuth passwordAuth =
         PasswordAuth.builder()
             .userId(46L)
@@ -214,7 +214,7 @@ public class PasswordAuthTest {
   }
 
   @Test
-  public void withId_ValidId_ChangesId() {
+  void withId_ValidId_ChangesId() {
     final PasswordAuth passwordAuth =
         PasswordAuth.builder()
             .userId(6L)
@@ -229,7 +229,7 @@ public class PasswordAuthTest {
   }
 
   @Test
-  public void withLoginName_NullLoginName_ThrowsNullPointerException() {
+  void withLoginName_NullLoginName_ThrowsNullPointerException() {
     final PasswordAuth passwordAuth =
         PasswordAuth.builder()
             .userId(1L)
@@ -242,7 +242,7 @@ public class PasswordAuthTest {
   }
 
   @Test
-  public void withLoginName_ValidLoginName_ChangesLoginName() {
+  void withLoginName_ValidLoginName_ChangesLoginName() {
     final PasswordAuth passwordAuth =
         PasswordAuth.builder()
             .loginName(TestUtils.INITIAL_STRING)
@@ -256,7 +256,7 @@ public class PasswordAuthTest {
   }
 
   @Test
-  public void withPasswordNonExpired_ValidBoolean_ChangesPasswordNonExpired() {
+  void withPasswordNonExpired_ValidBoolean_ChangesPasswordNonExpired() {
     final PasswordAuth passwordAuth =
         PasswordAuth.builder()
             .userId(45L)
@@ -272,7 +272,7 @@ public class PasswordAuthTest {
   }
 
   @Test
-  public void withUserId_NullUserId_ThrowsNullPointerException() {
+  void withUserId_NullUserId_ThrowsNullPointerException() {
     final PasswordAuth passwordAuth =
         PasswordAuth.builder()
             .userId(1L)
@@ -285,7 +285,7 @@ public class PasswordAuthTest {
   }
 
   @Test
-  public void withUserId_ValidUserId_ChangesUserId() {
+  void withUserId_ValidUserId_ChangesUserId() {
     final PasswordAuth passwordAuth =
         PasswordAuth.builder()
             .userId(TestUtils.INITIAL_LONG)

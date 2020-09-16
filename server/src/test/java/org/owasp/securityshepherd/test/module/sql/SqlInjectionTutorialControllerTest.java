@@ -52,7 +52,7 @@ public class SqlInjectionTutorialControllerTest {
   @Mock private SqlInjectionTutorial sqlInjectionTutorial;
 
   @Test
-  public void search_Autenticated_CallsModule() {
+  void search_Autenticated_CallsModule() {
     final long mockUserId = 709L;
 
     final SqlInjectionTutorialRow sqlInjectionTutorialRow1 = mock(SqlInjectionTutorialRow.class);
@@ -78,7 +78,7 @@ public class SqlInjectionTutorialControllerTest {
   }
 
   @Test
-  public void search_NotAutenticated_CallsModule() {
+  void search_NotAutenticated_CallsModule() {
     final String query = "sql";
     when(controllerAuthentication.getUserId())
         .thenReturn(Mono.error(new NotAuthenticatedException()));

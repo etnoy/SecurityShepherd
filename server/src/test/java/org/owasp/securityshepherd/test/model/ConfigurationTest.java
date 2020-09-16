@@ -28,26 +28,26 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 @DisplayName("Configuration unit test")
 public class ConfigurationTest {
   @Test
-  public void builderToString_ValidData_AsExpected() {
+  void builderToString_ValidData_AsExpected() {
     assertThat(
         Configuration.builder().toString(),
         is("Configuration.ConfigurationBuilder(id=null, key=null, value=null)"));
   }
 
   @Test
-  public void build_KeyNotGiven_ThrowsNullPointerException() {
+  void build_KeyNotGiven_ThrowsNullPointerException() {
     final ConfigurationBuilder configurationBuilder = Configuration.builder().id(17).value("value");
     assertThrows(NullPointerException.class, () -> configurationBuilder.build());
   }
 
   @Test
-  public void build_ValueNotGiven_ThrowsNullPointerException() {
+  void build_ValueNotGiven_ThrowsNullPointerException() {
     final ConfigurationBuilder configurationBuilder = Configuration.builder().id(17).key("key");
     assertThrows(NullPointerException.class, () -> configurationBuilder.build());
   }
 
   @Test
-  public void buildId_ValidId_Builds() {
+  void buildId_ValidId_Builds() {
     final int[] idsToTest = {0, 1, -1, 1000, -1000, 1234567, -1234567, 42};
 
     for (int id : idsToTest) {
@@ -62,12 +62,12 @@ public class ConfigurationTest {
   }
 
   @Test
-  public void buildKey_NullKey_ThrowsNullPointerException() {
+  void buildKey_NullKey_ThrowsNullPointerException() {
     assertThrows(NullPointerException.class, () -> Configuration.builder().key(null));
   }
 
   @Test
-  public void buildKey_ValidKey_Builds() {
+  void buildKey_ValidKey_Builds() {
     final String[] keysToTest = {
       "", "serverKey", "timestampSetting", "\"", "$$^¨'", "åäö", "a", "1", "userName"
     };
@@ -83,12 +83,12 @@ public class ConfigurationTest {
   }
 
   @Test
-  public void buildValue_NullValue_ThrowsNullPointerException() {
+  void buildValue_NullValue_ThrowsNullPointerException() {
     assertThrows(NullPointerException.class, () -> Configuration.builder().value(null));
   }
 
   @Test
-  public void buildValue_ValidValue_Builds() {
+  void buildValue_ValidValue_Builds() {
     final String[] valuesToTest = {
       "", "serverValue", "timestampSetting", "\"", "$$^¨'", "åäö", "a", "1", "userName"
     };
@@ -105,19 +105,19 @@ public class ConfigurationTest {
   }
 
   @Test
-  public void equals_AutomaticTesting() {
+  void equals_AutomaticTesting() {
     EqualsVerifier.forClass(Configuration.class).withIgnoredAnnotations(NonNull.class).verify();
   }
 
   @Test
-  public void toString_ValidData_AsExpected() {
+  void toString_ValidData_AsExpected() {
     assertThat(
         Configuration.builder().key("serverKey").value("abc123secret").build().toString(),
         is("Configuration(id=null, key=serverKey, value=abc123secret)"));
   }
 
   @Test
-  public void withId_ValidId_ChangesId() {
+  void withId_ValidId_ChangesId() {
     final Integer originalId = 1;
     final Integer[] testedIds = {originalId, 0, null, -1, 1000, -1000, 123456789, -12346789};
 
@@ -131,14 +131,14 @@ public class ConfigurationTest {
   }
 
   @Test
-  public void withKey_NullKey_ThrowsNullPointerException() {
+  void withKey_NullKey_ThrowsNullPointerException() {
     assertThrows(
         NullPointerException.class,
         () -> Configuration.builder().key("serverKey").value("secret123").build().withKey(null));
   }
 
   @Test
-  public void withKey_ValidKey_ChangesKey() {
+  void withKey_ValidKey_ChangesKey() {
     final Configuration configuration =
         Configuration.builder().key("settingKey").value("123").build();
 
@@ -154,14 +154,14 @@ public class ConfigurationTest {
   }
 
   @Test
-  public void withValue_NullValue_ThrowsNullPointerException() {
+  void withValue_NullValue_ThrowsNullPointerException() {
     assertThrows(
         NullPointerException.class,
         () -> Configuration.builder().key("serverKey").value("secret123").build().withValue(null));
   }
 
   @Test
-  public void withValue_ValidValue_ChangesValue() {
+  void withValue_ValidValue_ChangesValue() {
     final Configuration configuration =
         Configuration.builder().key("settingKey").value("settingValue").build();
 

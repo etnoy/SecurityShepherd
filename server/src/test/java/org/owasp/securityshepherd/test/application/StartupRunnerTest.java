@@ -72,7 +72,7 @@ public class StartupRunnerTest {
   @Mock private FlagHandler flagHandler;
 
   @Test
-  public void run_MockedServices_CallsMocks() {
+  void run_MockedServices_CallsMocks() {
 
     final String flag = "itsaflag";
 

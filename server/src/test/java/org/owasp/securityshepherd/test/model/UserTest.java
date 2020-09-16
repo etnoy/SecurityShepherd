@@ -29,7 +29,7 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 @DisplayName("User unit test")
 public class UserTest {
   @Test
-  public void build_DisplayNameNotGiven_ThrowsNullPointerException() {
+  void build_DisplayNameNotGiven_ThrowsNullPointerException() {
     final UserBuilder userBuilder = User.builder();
     final Exception thrownException =
         assertThrows(NullPointerException.class, () -> userBuilder.build());
@@ -37,7 +37,7 @@ public class UserTest {
   }
 
   @Test
-  public void buildAccountCreated_ValidTime_BuildsUser() {
+  void buildAccountCreated_ValidTime_BuildsUser() {
     final UserBuilder userBuilder = User.builder().displayName("TestUser");
 
     for (final LocalDateTime accountCreated : TestUtils.LOCALDATETIMES_WITH_NULL) {
@@ -47,7 +47,7 @@ public class UserTest {
   }
 
   @Test
-  public void buildClassId_ValidClassId_BuildsUser() {
+  void buildClassId_ValidClassId_BuildsUser() {
     final UserBuilder userBuilder = User.builder().classId(1L).displayName("TestUser");
 
     for (final Long classId : TestUtils.LONGS_WITH_NULL) {
@@ -57,7 +57,7 @@ public class UserTest {
   }
 
   @Test
-  public void buildDisplayName_NullDisplayName_ThrowsNullPointerException() {
+  void buildDisplayName_NullDisplayName_ThrowsNullPointerException() {
     final UserBuilder userBuilder = User.builder();
     final Exception thrownException =
         assertThrows(NullPointerException.class, () -> userBuilder.displayName(null));
@@ -65,7 +65,7 @@ public class UserTest {
   }
 
   @Test
-  public void buildDisplayName_ValidDisplayName_BuildsUser() {
+  void buildDisplayName_ValidDisplayName_BuildsUser() {
     final UserBuilder userBuilder = User.builder();
     for (final String displayName : TestUtils.STRINGS) {
       final User user = userBuilder.displayName(displayName).build();
@@ -74,7 +74,7 @@ public class UserTest {
   }
 
   @Test
-  public void buildId_ValidId_BuildsUser() {
+  void buildId_ValidId_BuildsUser() {
     final UserBuilder userBuilder = User.builder().id(12345L).displayName("TestUser");
     for (final Long id : TestUtils.LONGS_WITH_NULL) {
       final User user = userBuilder.id(id).build();
@@ -83,7 +83,7 @@ public class UserTest {
   }
 
   @Test
-  public void buildIsNotBanned_ValidBoolean_BuildsUser() {
+  void buildIsNotBanned_ValidBoolean_BuildsUser() {
     final UserBuilder userBuilder = User.builder().displayName("TestUser");
     for (final boolean isNotBanned : TestUtils.BOOLEANS) {
       final User user = userBuilder.isNotBanned(isNotBanned).build();
@@ -92,12 +92,12 @@ public class UserTest {
   }
 
   @Test
-  public void equals_EqualsVerifier_AsExpected() {
+  void equals_EqualsVerifier_AsExpected() {
     EqualsVerifier.forClass(User.class).withIgnoredAnnotations(NonNull.class).verify();
   }
 
   @Test
-  public void toString_ValidData_AsExpected() {
+  void toString_ValidData_AsExpected() {
     final User testUser = User.builder().displayName("TestUser").build();
 
     assertThat(
@@ -108,7 +108,7 @@ public class UserTest {
   }
 
   @Test
-  public void userBuilderToString_ValidData_AsExpected() {
+  void userBuilderToString_ValidData_AsExpected() {
     final UserBuilder builder = User.builder();
 
     assertThat(
@@ -119,7 +119,7 @@ public class UserTest {
   }
 
   @Test
-  public void withAccountCreated_ValidTime_ChangesAccountCreationTime() {
+  void withAccountCreated_ValidTime_ChangesAccountCreationTime() {
     final User user =
         User.builder()
             .displayName("TestUser")
@@ -133,7 +133,7 @@ public class UserTest {
   }
 
   @Test
-  public void withClassId_ValidClassId_ChangesClassId() {
+  void withClassId_ValidClassId_ChangesClassId() {
     final User user =
         User.builder().displayName("TestUser").classId(TestUtils.INITIAL_LONG).build();
 
@@ -144,7 +144,7 @@ public class UserTest {
   }
 
   @Test
-  public void withDisplayName_NullDisplayName_ThrowsNullPointerException() {
+  void withDisplayName_NullDisplayName_ThrowsNullPointerException() {
     final User user = User.builder().displayName("TestUser").build();
     final Exception thrownException =
         assertThrows(NullPointerException.class, () -> user.withDisplayName(null));
@@ -152,7 +152,7 @@ public class UserTest {
   }
 
   @Test
-  public void withDisplayName_ValidDisplayName_ChangesDisplayName() {
+  void withDisplayName_ValidDisplayName_ChangesDisplayName() {
     final User user = User.builder().displayName(TestUtils.INITIAL_STRING).build();
 
     for (final String displayName : TestUtils.STRINGS) {
@@ -162,7 +162,7 @@ public class UserTest {
   }
 
   @Test
-  public void withEmail_ValidEmail_ChangesEmail() {
+  void withEmail_ValidEmail_ChangesEmail() {
     final User user =
         User.builder().displayName("TestUser").email(TestUtils.INITIAL_STRING).build();
 
@@ -173,7 +173,7 @@ public class UserTest {
   }
 
   @Test
-  public void withId_ValidId_ChangesId() {
+  void withId_ValidId_ChangesId() {
     final User user = User.builder().id(TestUtils.INITIAL_LONG).displayName("Test User").build();
 
     for (final Long id : TestUtils.LONGS_WITH_NULL) {
@@ -183,7 +183,7 @@ public class UserTest {
   }
 
   @Test
-  public void withKey_ValidKey_ChangesKey() {
+  void withKey_ValidKey_ChangesKey() {
     final User user =
         User.builder().displayName("TestUser").key(TestUtils.INITIAL_BYTE_ARRAY).build();
 
@@ -194,7 +194,7 @@ public class UserTest {
   }
 
   @Test
-  public void withNotBanned_ValidBoolean_ChangesIsAdmin() {
+  void withNotBanned_ValidBoolean_ChangesIsAdmin() {
     final User user =
         User.builder().isNotBanned(TestUtils.INITIAL_BOOLEAN).displayName("TestUser").build();
 

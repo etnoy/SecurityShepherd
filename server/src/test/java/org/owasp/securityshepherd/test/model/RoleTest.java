@@ -22,12 +22,12 @@ import org.owasp.securityshepherd.authentication.Role;
 @DisplayName("Role unit test")
 public class RoleTest {
   @Test
-  public void userRole_ToString_IsRoleUser() {
+  void userRole_ToString_IsRoleUser() {
     assertThat(Role.ROLE_USER.toString()).isEqualTo("ROLE_USER");
   }
 
   @Test
-  public void adminRole_ToString_IsRoleAdmin() {
+  void adminRole_ToString_IsRoleAdmin() {
     assertThat(Role.ROLE_ADMIN.toString()).isEqualTo("ROLE_ADMIN");
   }
 }

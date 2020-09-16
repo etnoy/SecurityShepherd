@@ -28,35 +28,35 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 @DisplayName("SamlAuth unit test")
 public class SamlAuthTest {
   @Test
-  public void build_SamlIdNotGiven_ThrowsNullPointerException() {
+  void build_SamlIdNotGiven_ThrowsNullPointerException() {
     assertThrows(NullPointerException.class, () -> SamlAuth.builder().userId(3).build());
   }
 
   @Test
-  public void build_UserIdNotGiven_ThrowsNullPointerException() {
+  void build_UserIdNotGiven_ThrowsNullPointerException() {
     assertThrows(
         NullPointerException.class, () -> SamlAuth.builder().samlId("me@example.com").build());
   }
 
   @Test
-  public void builderToString_ValidData_AsExpected() {
+  void builderToString_ValidData_AsExpected() {
     assertThat(
         SamlAuth.builder().id(15).userId(3).samlId("me@example.com").toString(),
         is("SamlAuth.SamlAuthBuilder(id=15, userId=3, samlId=me@example.com)"));
   }
 
   @Test
-  public void buildSamlid_NullSamlId_ThrowsNullPointerException() {
+  void buildSamlid_NullSamlId_ThrowsNullPointerException() {
     assertThrows(NullPointerException.class, () -> SamlAuth.builder().samlId(null));
   }
 
   @Test
-  public void buildUserId_NullUserId_ThrowsNullPointerException() {
+  void buildUserId_NullUserId_ThrowsNullPointerException() {
     assertThrows(NullPointerException.class, () -> SamlAuth.builder().userId(null).build());
   }
 
   @Test
-  public void buildUserId_ValidUserId_Builds() {
+  void buildUserId_ValidUserId_Builds() {
     final int[] userIdsToTest = {0, 1, -1, 1000, -1000, 123456789};
 
     for (final int userId : userIdsToTest) {
@@ -70,7 +70,7 @@ public class SamlAuthTest {
   }
 
   @Test
-  public void buildSamlId_ValidSamlId_Builds() {
+  void buildSamlId_ValidSamlId_Builds() {
     final String[] samlIdsToTest = {"", "me@example.com", "a", "1"};
 
     for (final String samlId : samlIdsToTest) {
@@ -84,19 +84,19 @@ public class SamlAuthTest {
   }
 
   @Test
-  public void equals_AutomaticTesting() {
+  void equals_AutomaticTesting() {
     EqualsVerifier.forClass(SamlAuth.class).withIgnoredAnnotations(NonNull.class).verify();
   }
 
   @Test
-  public void toString_ValidData_AsExpected() {
+  void toString_ValidData_AsExpected() {
     assertThat(
         SamlAuth.builder().id(67).samlId("TestID").userId(3).build().toString(),
         is("SamlAuth(id=67, userId=3, samlId=TestID)"));
   }
 
   @Test
-  public void withId_ValidId_ChangesId() {
+  void withId_ValidId_ChangesId() {
     final int originalId = 1;
     final int[] testedIds = {originalId, 0, -1, 1000, -1000, 123456789};
 
@@ -111,13 +111,13 @@ public class SamlAuthTest {
   }
 
   @Test
-  public void withSamlid_NullSamlId_ThrowsNullPointerException() {
+  void withSamlid_NullSamlId_ThrowsNullPointerException() {
     final SamlAuth samlAuth = SamlAuth.builder().userId(1).samlId("me@example.com").build();
     assertThrows(NullPointerException.class, () -> samlAuth.withSamlId(null));
   }
 
   @Test
-  public void withSamlId_ValidSamlId_ChangesSamlId() {
+  void withSamlId_ValidSamlId_ChangesSamlId() {
     final String originalSamlId = "me@example.com";
     final SamlAuth samlAuth = SamlAuth.builder().userId(3).samlId(originalSamlId).build();
 
@@ -132,13 +132,13 @@ public class SamlAuthTest {
   }
 
   @Test
-  public void withUserId_NullUserId_ThrowsNullPointerException() {
+  void withUserId_NullUserId_ThrowsNullPointerException() {
     final SamlAuth samlAuth = SamlAuth.builder().userId(1).samlId("me@example.com").build();
     assertThrows(NullPointerException.class, () -> samlAuth.withUserId(null));
   }
 
   @Test
-  public void withUserId_ValidUserId_ChangesUserId() {
+  void withUserId_ValidUserId_ChangesUserId() {
     final int originalUserId = 1;
     final int[] userIds = {originalUserId, 0, -1, 1000, -1000, 123456789};
 

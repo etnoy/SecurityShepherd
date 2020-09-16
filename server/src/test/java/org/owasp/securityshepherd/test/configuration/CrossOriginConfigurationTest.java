@@ -28,7 +28,7 @@ public class CrossOriginConfigurationTest {
   CrossOriginConfiguration crossOriginConfiguration;
 
   @Test
-  public void authenticate_EmptyPassword_ReturnsIllegalArgumentException() {
+  void authenticate_EmptyPassword_ReturnsIllegalArgumentException() {
     assertThatCode(() -> crossOriginConfiguration.corsConfigurationSource())
         .doesNotThrowAnyException();
   }

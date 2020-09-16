@@ -78,12 +78,12 @@ public class SqlInjectionTutorialTest {
   }
 
   @Test
-  public void getDescription_IsNotEmpty() {
+  void getDescription_IsNotEmpty() {
     assertThat(sqlInjectionTutorial.getDescription()).isNotEmpty();
   }
 
   @Test
-  public void getModuleId_ModuleIntialized_ReturnsModuleId() {
+  void getModuleId_ModuleIntialized_ReturnsModuleId() {
     final long mockModuleId = 92L;
     final Module mockModule = mock(Module.class);
 
@@ -96,24 +96,24 @@ public class SqlInjectionTutorialTest {
   }
 
   @Test
-  public void getModuleId_ModuleNotIntialized_ThrowsModuleNotInitializedException() {
+  void getModuleId_ModuleNotIntialized_ThrowsModuleNotInitializedException() {
     assertThatThrownBy(() -> sqlInjectionTutorial.getModuleId())
         .isInstanceOf(ModuleNotInitializedException.class)
         .hasMessageContaining("Module must be initialized first");
   }
 
   @Test
-  public void getName_ReturnsSqlInjectionTutorial() {
+  void getName_ReturnsSqlInjectionTutorial() {
     assertThat(sqlInjectionTutorial.getName()).isEqualTo("SQL Injection Tutorial");
   }
 
   @Test
-  public void getShortName_ReturnsSqlInjectionTutorial() {
+  void getShortName_ReturnsSqlInjectionTutorial() {
     assertThat(sqlInjectionTutorial.getShortName()).isEqualTo("sql-injection-tutorial");
   }
 
   @Test
-  public void initialize_DuplicateModuleName_ReturnsException() {
+  void initialize_DuplicateModuleName_ReturnsException() {
     when(moduleService.create(sqlInjectionTutorial))
         .thenReturn(Mono.error(new DuplicateModuleNameException()));
 
@@ -122,7 +122,7 @@ public class SqlInjectionTutorialTest {
   }
 
   @Test
-  public void initialize_DuplicateModuleShortName_ReturnsException() {
+  void initialize_DuplicateModuleShortName_ReturnsException() {
     when(moduleService.create(sqlInjectionTutorial))
         .thenReturn(Mono.error(new DuplicateModuleShortNameException()));
 
@@ -131,7 +131,7 @@ public class SqlInjectionTutorialTest {
   }
 
   @Test
-  public void initialize_ValidModuleName_InitializesModule() {
+  void initialize_ValidModuleName_InitializesModule() {
     final long mockModuleId = 572L;
 
     final Module mockModule = mock(Module.class);
@@ -153,7 +153,7 @@ public class SqlInjectionTutorialTest {
   }
 
   @Test
-  public void submitQuery_BadSqlGrammarException_ReturnsErrorToUser() {
+  void submitQuery_BadSqlGrammarException_ReturnsErrorToUser() {
     final long mockUserId = 318L;
     final Module mockModule = mock(Module.class);
     final String mockFlag = "mockedflag";
@@ -189,7 +189,7 @@ public class SqlInjectionTutorialTest {
   }
 
   @Test
-  public void submitQuery_ModuleInitialized_ReturnsSqlInjectionTutorialRow() {
+  void submitQuery_ModuleInitialized_ReturnsSqlInjectionTutorialRow() {
     final long mockUserId = 606L;
     final Module mockModule = mock(Module.class);
     final String mockFlag = "mockedflag";
@@ -222,7 +222,7 @@ public class SqlInjectionTutorialTest {
   }
 
   @Test
-  public void submitQuery_ModuleNotIntialized_ReturnsModuleNotInitializedException() {
+  void submitQuery_ModuleNotIntialized_ReturnsModuleNotInitializedException() {
     final long mockUserId = 419L;
     final String query = "username";
     StepVerifier.create(sqlInjectionTutorial.submitQuery(mockUserId, query))
@@ -230,7 +230,7 @@ public class SqlInjectionTutorialTest {
   }
 
   @Test
-  public void submitQuery_OtherException_ThrowsException() {
+  void submitQuery_OtherException_ThrowsException() {
     final long mockUserId = 810L;
     final Module mockModule = mock(Module.class);
     final String mockFlag = "mockedflag";

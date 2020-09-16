@@ -26,7 +26,7 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 @DisplayName("AuthResponse unit test")
 public class AuthResponseTest {
   @Test
-  public void buildComment_ValidComment_Builds() {
+  void buildComment_ValidComment_Builds() {
     for (final String token : TestUtils.STRINGS) {
       for (final String userName : TestUtils.STRINGS) {
         final AuthResponse authResponse = new AuthResponse(token, userName);
@@ -37,12 +37,12 @@ public class AuthResponseTest {
   }
 
   @Test
-  public void equals_EqualsVerifier_AsExpected() {
+  void equals_EqualsVerifier_AsExpected() {
     EqualsVerifier.forClass(AuthResponse.class).verify();
   }
 
   @Test
-  public void toString_ValidData_AsExpected() {
+  void toString_ValidData_AsExpected() {
     final AuthResponse authResponse = new AuthResponse("token", "loginName");
     assertThat(authResponse.toString())
         .isEqualTo("AuthResponse(token=token, userName=loginName)");

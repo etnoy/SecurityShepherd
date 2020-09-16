@@ -79,21 +79,21 @@ public class UserServiceTest {
   @Mock private KeyService keyService;
 
   @Test
-  public void authenticate_EmptyPassword_ReturnsIllegalArgumentException() {
+  void authenticate_EmptyPassword_ReturnsIllegalArgumentException() {
     StepVerifier.create(userService.authenticate("username", ""))
         .expectError(IllegalArgumentException.class)
         .verify();
   }
 
   @Test
-  public void authenticate_EmptyUsername_ReturnsIllegalArgumentException() {
+  void authenticate_EmptyUsername_ReturnsIllegalArgumentException() {
     StepVerifier.create(userService.authenticate("", "password"))
         .expectError(IllegalArgumentException.class)
         .verify();
   }
 
   @Test
-  public void authenticate_InvalidUsername_ReturnsFalse() {
+  void authenticate_InvalidUsername_ReturnsFalse() {
     final String mockedLoginName = "MockUser";
     final String mockedPassword = "MockPassword";
 
@@ -106,21 +106,21 @@ public class UserServiceTest {
   }
 
   @Test
-  public void authenticate_NullPassword_ReturnsNullPointerException() {
+  void authenticate_NullPassword_ReturnsNullPointerException() {
     StepVerifier.create(userService.authenticate("username", null))
         .expectError(NullPointerException.class)
         .verify();
   }
 
   @Test
-  public void authenticate_NullUsername_ReturnsNullPointerException() {
+  void authenticate_NullUsername_ReturnsNullPointerException() {
     StepVerifier.create(userService.authenticate(null, "password"))
         .expectError(NullPointerException.class)
         .verify();
   }
 
   @Test
-  public void authenticate_ValidUsernameAndPassword_ReturnsTrue() {
+  void authenticate_ValidUsernameAndPassword_ReturnsTrue() {
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
     final String mockedLoginName = "MockUser";
     final String mockedPassword = "MockPassword";
@@ -138,7 +138,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void authenticate_ValidUsernameButInvalidPassword_ReturnsTrue() {
+  void authenticate_ValidUsernameButInvalidPassword_ReturnsTrue() {
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
     final String mockedLoginName = "MockUser";
     final String wrongPassword = "WrongPassword";
@@ -158,7 +158,7 @@ public class UserServiceTest {
 
   @Test
   @DisplayName("count() should call repository and return user count")
-  public void count_NoArgument_ReturnsCount() {
+  void count_NoArgument_ReturnsCount() {
     final long mockedUserCount = 11L;
     when(userRepository.count()).thenReturn(Mono.just(mockedUserCount));
     StepVerifier.create(userService.count()).expectNext(mockedUserCount).expectComplete().verify();
@@ -167,7 +167,7 @@ public class UserServiceTest {
 
   @Test
   @DisplayName("create() must return exception if display name already exists")
-  public void create_DisplayNameAlreadyExists_ReturnsDuplicateUserDisplayNameException() {
+  void create_DisplayNameAlreadyExists_ReturnsDuplicateUserDisplayNameException() {
     final String displayName = "createPasswordUser_DuplicateDisplayName";
 
     final User mockUser = mock(User.class);
@@ -183,19 +183,19 @@ public class UserServiceTest {
 
   @Test
   @DisplayName("create() must return exception if display name already exists")
-  public void create_EmptyArgument_ReturnsIllegalArgumentException() {
+  void create_EmptyArgument_ReturnsIllegalArgumentException() {
     StepVerifier.create(userService.create(""))
         .expectError(IllegalArgumentException.class)
         .verify();
   }
 
   @Test
-  public void create_NullArgument_ReturnsNullPointerException() {
+  void create_NullArgument_ReturnsNullPointerException() {
     StepVerifier.create(userService.create(null)).expectError(NullPointerException.class).verify();
   }
 
   @Test
-  public void create_ValidDisplayName_CreatesUser() {
+  void create_ValidDisplayName_CreatesUser() {
     final String displayName = "TestUser";
     final Long mockUserId = 651L;
 
@@ -218,7 +218,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void createPasswordUser_DuplicateDisplayName_ReturnsDuplicateUserDisplayNameException() {
+  void createPasswordUser_DuplicateDisplayName_ReturnsDuplicateUserDisplayNameException() {
     final String displayName = "createPasswordUser_DuplicateDisplayName";
     final String loginName = "_createPasswordUser_DuplicateDisplayName_";
 
@@ -236,7 +236,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void createPasswordUser_DuplicateLoginName_ReturnsDuplicateClassNameException() {
+  void createPasswordUser_DuplicateLoginName_ReturnsDuplicateClassNameException() {
     final String displayName = "createPasswordUser_DuplicateLoginName";
     final String loginName = "_createPasswordUser_DuplicateLoginName_";
 
@@ -256,49 +256,49 @@ public class UserServiceTest {
   }
 
   @Test
-  public void createPasswordUser_EmptyDisplayName_ReturnsIllegalArgumentException() {
+  void createPasswordUser_EmptyDisplayName_ReturnsIllegalArgumentException() {
     StepVerifier.create(userService.createPasswordUser("", "loginName", "passwordHash"))
         .expectError(IllegalArgumentException.class)
         .verify();
   }
 
   @Test
-  public void createPasswordUser_EmptyLoginName_ReturnsIllegalArgumentException() {
+  void createPasswordUser_EmptyLoginName_ReturnsIllegalArgumentException() {
     StepVerifier.create(userService.createPasswordUser("displayName", "", "passwordHash"))
         .expectError(IllegalArgumentException.class)
         .verify();
   }
 
   @Test
-  public void createPasswordUser_EmptyPasswordHash_ReturnsIllegalArgumentException() {
+  void createPasswordUser_EmptyPasswordHash_ReturnsIllegalArgumentException() {
     StepVerifier.create(userService.createPasswordUser("displayName", "loginName", ""))
         .expectError(IllegalArgumentException.class)
         .verify();
   }
 
   @Test
-  public void createPasswordUser_NullDisplayName_ReturnsNullPointerException() {
+  void createPasswordUser_NullDisplayName_ReturnsNullPointerException() {
     StepVerifier.create(userService.createPasswordUser(null, "loginName", "passwordHash"))
         .expectError(NullPointerException.class)
         .verify();
   }
 
   @Test
-  public void createPasswordUser_NullLoginName_ReturnsNullPointerException() {
+  void createPasswordUser_NullLoginName_ReturnsNullPointerException() {
     StepVerifier.create(userService.createPasswordUser("displayName", null, "passwordHash"))
         .expectError(NullPointerException.class)
         .verify();
   }
 
   @Test
-  public void createPasswordUser_NullPasswordHash_ReturnsNullPointerException() {
+  void createPasswordUser_NullPasswordHash_ReturnsNullPointerException() {
     StepVerifier.create(userService.createPasswordUser("displayName", "loginName", null))
         .expectError(NullPointerException.class)
         .verify();
   }
 
   @Test
-  public void createPasswordUser_ValidData_Succeeds() {
+  void createPasswordUser_ValidData_Succeeds() {
     final String displayName = "createPasswordUser_ValidData";
     final String loginName = "_createPasswordUser_ValidData_";
 
@@ -348,7 +348,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void deleteById_InvalidUserId_ReturnsInvalidUserIdException() {
+  void deleteById_InvalidUserId_ReturnsInvalidUserIdException() {
     for (final Long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.deleteById(userId))
           .expectError(InvalidUserIdException.class)
@@ -357,7 +357,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void deleteById_ValidUserId_CallsRepository() {
+  void deleteById_ValidUserId_CallsRepository() {
     final long mockUserId = 358L;
     when(passwordAuthRepository.deleteByUserId(mockUserId)).thenReturn(Mono.empty());
     when(userAuthRepository.deleteByUserId(mockUserId)).thenReturn(Mono.empty());
@@ -374,7 +374,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void demote_InvalidUserId_ReturnsInvalidUserIdException() {
+  void demote_InvalidUserId_ReturnsInvalidUserIdException() {
     for (final Long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.demote(userId))
           .expectError(InvalidUserIdException.class)
@@ -383,7 +383,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void demote_UserIsAdmin_Demoted() {
+  void demote_UserIsAdmin_Demoted() {
     final long mockUserId = 933;
     final long mockAuthId = 46;
 
@@ -420,7 +420,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void demote_UserIsNotAdmin_StaysNotAdmin() {
+  void demote_UserIsNotAdmin_StaysNotAdmin() {
     final long mockUserId = 933;
     final long mockAuthId = 80;
 
@@ -458,14 +458,14 @@ public class UserServiceTest {
   }
 
   @Test
-  public void findAll_NoUsersExist_ReturnsEmpty() {
+  void findAll_NoUsersExist_ReturnsEmpty() {
     when(userRepository.findAll()).thenReturn(Flux.empty());
     StepVerifier.create(userService.findAll()).expectComplete().verify();
     verify(userRepository, times(1)).findAll();
   }
 
   @Test
-  public void findAll_UsersExist_ReturnsUsers() {
+  void findAll_UsersExist_ReturnsUsers() {
     final User mockUser1 = mock(User.class);
     final User mockUser2 = mock(User.class);
     final User mockUser3 = mock(User.class);
@@ -483,7 +483,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void findById_ExistingUserId_ReturnsUserEntity() {
+  void findById_ExistingUserId_ReturnsUserEntity() {
     final User mockUser = mock(User.class);
 
     final long mockUserId = 910;
@@ -499,7 +499,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void findById_InvalidUserId_ReturnsInvalidUserIdException() {
+  void findById_InvalidUserId_ReturnsInvalidUserIdException() {
     for (final long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.findById(userId))
           .expectError(InvalidUserIdException.class)
@@ -508,7 +508,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void findById_NonExistentUserId_ReturnsEmpty() {
+  void findById_NonExistentUserId_ReturnsEmpty() {
     final long nonExistentUserId = 248;
     when(userRepository.findById(nonExistentUserId)).thenReturn(Mono.empty());
     StepVerifier.create(userService.findById(nonExistentUserId)).expectComplete().verify();
@@ -516,14 +516,14 @@ public class UserServiceTest {
   }
 
   @Test
-  public void findByLoginName_EmptyLoginName_ReturnsIllegalArgumentException() {
+  void findByLoginName_EmptyLoginName_ReturnsIllegalArgumentException() {
     StepVerifier.create(userService.findUserIdByLoginName(""))
         .expectError(IllegalArgumentException.class)
         .verify();
   }
 
   @Test
-  public void findByLoginName_LoginNameDoesNotExist_ReturnsEmptyMono() {
+  void findByLoginName_LoginNameDoesNotExist_ReturnsEmptyMono() {
     final String nonExistentLoginName = "NonExistentUser";
     when(passwordAuthRepository.findByLoginName(nonExistentLoginName)).thenReturn(Mono.empty());
     StepVerifier.create(userService.findUserIdByLoginName(nonExistentLoginName))
@@ -533,14 +533,14 @@ public class UserServiceTest {
   }
 
   @Test
-  public void findByLoginName_NullLoginName_ReturnsNullPointerException() {
+  void findByLoginName_NullLoginName_ReturnsNullPointerException() {
     StepVerifier.create(userService.findUserIdByLoginName(null))
         .expectError(NullPointerException.class)
         .verify();
   }
 
   @Test
-  public void findByLoginName_UserExists_ReturnsUser() {
+  void findByLoginName_UserExists_ReturnsUser() {
     final PasswordAuth mockPasswordAuth = mock(PasswordAuth.class);
     final String loginName = "MockUser";
     final long mockUserId = 117;
@@ -556,7 +556,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void findDisplayNameById_InvalidUserId_ReturnsInvalidUserIdExceptio() {
+  void findDisplayNameById_InvalidUserId_ReturnsInvalidUserIdExceptio() {
     for (final long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.findDisplayNameById(userId))
           .expectError(InvalidUserIdException.class)
@@ -565,7 +565,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void findDisplayNameById_NoUserExists_ReturnsEmpty() {
+  void findDisplayNameById_NoUserExists_ReturnsEmpty() {
     final long mockUserId = 294;
     when(userRepository.findById(mockUserId)).thenReturn(Mono.empty());
     StepVerifier.create(userService.findDisplayNameById(mockUserId)).expectComplete().verify();
@@ -573,7 +573,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void findDisplayNameById_UserExists_ReturnsDisplayName() {
+  void findDisplayNameById_UserExists_ReturnsDisplayName() {
     final User mockUser = mock(User.class);
     final long mockUserId = 490;
     final String mockDisplayName = "mockDisplayName";
@@ -591,14 +591,14 @@ public class UserServiceTest {
   }
 
   @Test
-  public void findPasswordAuthByLoginName_EmptyLoginName_ReturnsIllegalArgumentException() {
+  void findPasswordAuthByLoginName_EmptyLoginName_ReturnsIllegalArgumentException() {
     StepVerifier.create(userService.findPasswordAuthByLoginName(""))
         .expectError(IllegalArgumentException.class)
         .verify();
   }
 
   @Test
-  public void findPasswordAuthByLoginName_ExistingLoginName_ReturnsPasswordAuth() {
+  void findPasswordAuthByLoginName_ExistingLoginName_ReturnsPasswordAuth() {
     final PasswordAuth mockPasswordAuth = mock(PasswordAuth.class);
 
     final String mockLoginName = "loginName";
@@ -614,7 +614,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void findPasswordAuthByLoginName_NonExistentLoginName_ReturnsEmpty() {
+  void findPasswordAuthByLoginName_NonExistentLoginName_ReturnsEmpty() {
     final String mockLoginName = "loginName";
     when(passwordAuthRepository.findByLoginName(mockLoginName)).thenReturn(Mono.empty());
     StepVerifier.create(userService.findPasswordAuthByLoginName(mockLoginName))
@@ -624,14 +624,14 @@ public class UserServiceTest {
   }
 
   @Test
-  public void findPasswordAuthByLoginName_NullLoginName_ReturnsNullPointerException() {
+  void findPasswordAuthByLoginName_NullLoginName_ReturnsNullPointerException() {
     StepVerifier.create(userService.findPasswordAuthByLoginName(null))
         .expectError(NullPointerException.class)
         .verify();
   }
 
   @Test
-  public void findPasswordAuthByUserId_InvalidUserId_ReturnsInvalidUserIdException() {
+  void findPasswordAuthByUserId_InvalidUserId_ReturnsInvalidUserIdException() {
     for (final long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.findPasswordAuthByUserId(userId))
           .expectError(InvalidUserIdException.class)
@@ -640,7 +640,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void findPasswordAuthByUserId_NoPasswordAuthExists_ReturnsEmpty() {
+  void findPasswordAuthByUserId_NoPasswordAuthExists_ReturnsEmpty() {
     final long mockUserId = 999;
 
     when(passwordAuthRepository.findByUserId(mockUserId)).thenReturn(Mono.empty());
@@ -651,7 +651,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void findPasswordAuthByUserId_PasswordAuthExists_ReturnsPasswordAuth() {
+  void findPasswordAuthByUserId_PasswordAuthExists_ReturnsPasswordAuth() {
     final PasswordAuth mockPasswordAuth = mock(PasswordAuth.class);
     final long mockUserId = 974;
 
@@ -666,7 +666,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void findUserAuthByUserId_ExistingUserId_ReturnsUserAuth() {
+  void findUserAuthByUserId_ExistingUserId_ReturnsUserAuth() {
     final UserAuth mockUserAuth = mock(UserAuth.class);
 
     final long mockUserId = 841;
@@ -684,7 +684,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void findUserAuthByUserId_InvalidUserId_ReturnsInvalidUserIdException() {
+  void findUserAuthByUserId_InvalidUserId_ReturnsInvalidUserIdException() {
     for (final long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.findUserAuthByUserId(userId))
           .expectError(InvalidUserIdException.class)
@@ -693,7 +693,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void findUserAuthByUserId_NonExistentUserId_ReturnsEmpty() {
+  void findUserAuthByUserId_NonExistentUserId_ReturnsEmpty() {
     final long nonExistentUserId = 547;
     when(userAuthRepository.findByUserId(nonExistentUserId)).thenReturn(Mono.empty());
     StepVerifier.create(userService.findUserAuthByUserId(nonExistentUserId))
@@ -703,7 +703,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void getAuthoritiesByUserId_InvalidUserId_ReturnsInvalidUserIdException() {
+  void getAuthoritiesByUserId_InvalidUserId_ReturnsInvalidUserIdException() {
     for (final long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.getAuthoritiesByUserId(userId))
           .expectError(InvalidUserIdException.class)
@@ -712,7 +712,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void getAuthoritiesByUserId_UserIsAdmin_ReturnsAdminAuthority() {
+  void getAuthoritiesByUserId_UserIsAdmin_ReturnsAdminAuthority() {
     final long mockedUserId = 158L;
     final UserAuth mockedUserAuth = mock(UserAuth.class);
     when(userAuthRepository.findByUserId(mockedUserId)).thenReturn(Mono.just(mockedUserAuth));
@@ -726,7 +726,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void getAuthoritiesByUserId_UserIsNotAdmin_ReturnsUserAuthority() {
+  void getAuthoritiesByUserId_UserIsNotAdmin_ReturnsUserAuthority() {
     final long mockedUserId = 158L;
     final UserAuth mockedUserAuth = mock(UserAuth.class);
     when(userAuthRepository.findByUserId(mockedUserId)).thenReturn(Mono.just(mockedUserAuth));
@@ -739,7 +739,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void getKeyById_InvalidUserId_ReturnsInvalidUserIdException() {
+  void getKeyById_InvalidUserId_ReturnsInvalidUserIdException() {
     for (final long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.findKeyById(userId))
           .expectError(InvalidUserIdException.class)
@@ -748,7 +748,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void getKeyById_KeyExists_ReturnsKey() {
+  void getKeyById_KeyExists_ReturnsKey() {
     // Establish a random key
     final byte[] testRandomBytes = {
       -108, 101, -7, -36, 17, -26, -24, 0, -32, -117, 75, -127, 22, 62, 9, 19
@@ -775,7 +775,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void getKeyById_NoKeyExists_GeneratesKey() {
+  void getKeyById_NoKeyExists_GeneratesKey() {
     // Establish a random key
     final byte[] testRandomBytes = {
       -108, 101, -7, -36, 17, -26, -24, 0, -32, -117, 75, -127, 22, 62, 9, 19
@@ -822,7 +822,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void promote_InvalidUserId_ReturnsInvalidUserIdException() {
+  void promote_InvalidUserId_ReturnsInvalidUserIdException() {
     for (final long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.promote(userId))
           .expectError(InvalidUserIdException.class)
@@ -831,7 +831,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void promote_UserIsAdmin_StaysAdmin() {
+  void promote_UserIsAdmin_StaysAdmin() {
     final long mockUserId = 899;
     final long mockAuthId = 551;
 
@@ -866,7 +866,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void setClassId_InvalidClassId_ReturnsInvalidClassIdException() {
+  void setClassId_InvalidClassId_ReturnsInvalidClassIdException() {
     for (final long classId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.setClassId(10L, classId))
           .expectError(InvalidClassIdException.class)
@@ -875,7 +875,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void setClassId_InvalidUserId_ReturnsInvalidUserIdException() {
+  void setClassId_InvalidUserId_ReturnsInvalidUserIdException() {
     for (final long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.setClassId(userId, 61))
           .expectError(InvalidUserIdException.class)
@@ -884,7 +884,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void setClassId_NonExistentClassId_ReturnsClassIdNotFoundException() {
+  void setClassId_NonExistentClassId_ReturnsClassIdNotFoundException() {
     final long mockUserId = 16;
     final long mockClassId = 638;
 
@@ -902,7 +902,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void setClassId_ValidClassId_Succeeds() {
+  void setClassId_ValidClassId_Succeeds() {
     final long mockUserId = 875;
     final long mockClassId = 213;
 
@@ -930,14 +930,14 @@ public class UserServiceTest {
   }
 
   @Test
-  public void setDisplayName_EmptyDisplayName_ReturnsIllegalArgumentException() {
+  void setDisplayName_EmptyDisplayName_ReturnsIllegalArgumentException() {
     StepVerifier.create(userService.setDisplayName(725, ""))
         .expectError(IllegalArgumentException.class)
         .verify();
   }
 
   @Test
-  public void setDisplayName_InvalidUserId_ReturnsInvalidUserIdException() {
+  void setDisplayName_InvalidUserId_ReturnsInvalidUserIdException() {
     for (final long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(userService.setDisplayName(userId, "displayName"))
           .expectError(InvalidUserIdException.class)
@@ -946,14 +946,14 @@ public class UserServiceTest {
   }
 
   @Test
-  public void setDisplayName_NullDisplayName_ReturnsNullPointerException() {
+  void setDisplayName_NullDisplayName_ReturnsNullPointerException() {
     StepVerifier.create(userService.setDisplayName(480, null))
         .expectError(NullPointerException.class)
         .verify();
   }
 
   @Test
-  public void setDisplayName_UserIdDoesNotExist_ReturnsUserIdNotFoundException() {
+  void setDisplayName_UserIdDoesNotExist_ReturnsUserIdNotFoundException() {
     final String newDisplayName = "newName";
 
     final long mockUserId = 550;
@@ -967,7 +967,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void setDisplayName_ValidArguments_DisplayNameIsSet() {
+  void setDisplayName_ValidArguments_DisplayNameIsSet() {
     User mockUser = mock(User.class);
     String newDisplayName = "newDisplayName";
 

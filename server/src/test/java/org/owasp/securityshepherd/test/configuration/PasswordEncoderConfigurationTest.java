@@ -30,7 +30,7 @@ public class PasswordEncoderConfigurationTest {
   PasswordEncoderConfiguration passwordEncoderConfiguration;
 
   @Test
-  public void passwordEncoder_NoArgument_ReturnsBcryptPasswordEncoder() {
+  void passwordEncoder_NoArgument_ReturnsBcryptPasswordEncoder() {
     final PasswordEncoder passwordEncoder = passwordEncoderConfiguration.passwordEncoder();
     assertThat(passwordEncoder).isInstanceOf(BCryptPasswordEncoder.class);
   }

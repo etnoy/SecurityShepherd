@@ -40,23 +40,23 @@ public class CryptoFactoryTest {
   CryptoFactory cryptoFactory;
 
   @Test
-  public void getPrng_ReturnsSecureRandomInstance() throws Exception {
+  void getPrng_ReturnsSecureRandomInstance() throws Exception {
     assertThat(cryptoFactory.getPrng()).isInstanceOf(SecureRandom.class);
   }
 
   @Test
-  public void getHmac_ReturnsMacInstance() throws Exception {
+  void getHmac_ReturnsMacInstance() throws Exception {
     assertThat(cryptoFactory.getHmac()).isInstanceOf(Mac.class);
   }
 
   @Test
-  public void getHmacKey_ValidKey_ReturnsMacInstance() throws Exception {
+  void getHmacKey_ValidKey_ReturnsMacInstance() throws Exception {
     final byte[] key = {-91, -79, 67};
     assertThat(cryptoFactory.getHmacKey(key)).isInstanceOf(Key.class);
   }
 
   @Test
-  public void getHmacKey_NullKey_ThrowsIllegalArgumentException() throws Exception {
+  void getHmacKey_NullKey_ThrowsIllegalArgumentException() throws Exception {
     assertThatExceptionOfType(IllegalArgumentException.class)
         .isThrownBy(() -> cryptoFactory.getHmacKey(null));
   }

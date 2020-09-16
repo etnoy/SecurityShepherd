@@ -68,7 +68,7 @@ public class CorrectionServiceTest {
   }
 
   @Test
-  public void submit_InvalidUserId_ReturnsInvalidUserIdException() {
+  void submit_InvalidUserId_ReturnsInvalidUserIdException() {
     for (final long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(correctionService.submit(userId, 500, ""))
           .expectError(InvalidUserIdException.class).verify();
@@ -76,7 +76,7 @@ public class CorrectionServiceTest {
   }
 
   @Test
-  public void submit_ValidUserId_ReturnsCorrection() throws Exception {
+  void submit_ValidUserId_ReturnsCorrection() throws Exception {
     final long mockUserId = 609L;
     final int amount = 1000;
     final String description = "Bonus";

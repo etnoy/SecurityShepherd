@@ -60,7 +60,7 @@ public class ControllerAuthenticationTest {
   }
 
   @Test
-  public void getUserId_UserAuthenticated_ReturnsUserId() throws Exception {
+  void getUserId_UserAuthenticated_ReturnsUserId() throws Exception {
     final long mockUserId = 633L;
     when(authentication.getPrincipal()).thenReturn(mockUserId);
     StepVerifier.create(controllerAuthentication.getUserId())
@@ -70,7 +70,7 @@ public class ControllerAuthenticationTest {
   }
 
   @Test
-  public void getUserId_UserNotAuthenticated_ReturnsNotAuthenticatedException() throws Exception {
+  void getUserId_UserNotAuthenticated_ReturnsNotAuthenticatedException() throws Exception {
     StepVerifier.create(controllerAuthentication.getUserId())
         .expectError(NotAuthenticatedException.class)
         .verify();

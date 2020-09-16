@@ -46,7 +46,7 @@ public class UserIT {
   @Autowired TestUtils testService;
 
   @Test
-  public void createPasswordUser_ValidData_ReturnsCorrectUser() {
+  void createPasswordUser_ValidData_ReturnsCorrectUser() {
     final long userId =
         userService
             .createPasswordUser(
@@ -62,7 +62,7 @@ public class UserIT {
   }
 
   @Test
-  public void createUser_NaughtyUsernames_RepositoryFindsCorrectUser() {
+  void createUser_NaughtyUsernames_RepositoryFindsCorrectUser() {
     for (final String displayName : TestUtils.STRINGS) {
       if (!displayName.isEmpty()) {
         StepVerifier.create(

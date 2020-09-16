@@ -61,7 +61,7 @@ public class ScoreServiceTest {
   }
 
   @Test
-  public void setModuleScore_ValidModuleIdAndRank_ReturnsScore() throws Exception {
+  void setModuleScore_ValidModuleIdAndRank_ReturnsScore() throws Exception {
     final long mockModuleId = 884L;
     final int rank = 3;
     final int points = 1000;
@@ -81,7 +81,7 @@ public class ScoreServiceTest {
   }
 
   @Test
-  public void submit_InvalidUserId_ReturnsInvalidUserIdException() {
+  void submit_InvalidUserId_ReturnsInvalidUserIdException() {
     for (final long moduleId : TestUtils.INVALID_IDS) {
       StepVerifier.create(scoreService.setModuleScore(moduleId, 1, 1))
           .expectError(InvalidModuleIdException.class)
@@ -90,7 +90,7 @@ public class ScoreServiceTest {
   }
 
   @Test
-  public void submit_InvalidRank_ReturnsRankException() {
+  void submit_InvalidRank_ReturnsRankException() {
     for (final int rank : new int[] {-1, -123, -999999}) {
       StepVerifier.create(scoreService.setModuleScore(1, rank, 1))
           .expectError(InvalidRankException.class)
@@ -99,7 +99,7 @@ public class ScoreServiceTest {
   }
 
   @Test
-  public void getScoreboard_NoArguments_CallsRepository() throws Exception {
+  void getScoreboard_NoArguments_CallsRepository() throws Exception {
     final ScoreboardEntry mockScoreboardEntry1 = mock(ScoreboardEntry.class);
     final ScoreboardEntry mockScoreboardEntry2 = mock(ScoreboardEntry.class);
     final ScoreboardEntry mockScoreboardEntry3 = mock(ScoreboardEntry.class);

@@ -27,7 +27,7 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 @DisplayName("XssTutorialResponse unit test")
 public class XssTutorialResponseTest {
   @Test
-  public void build_NullResult_ThrowsNullPointerException() {
+  void build_NullResult_ThrowsNullPointerException() {
     final XssTutorialResponseBuilder xssTutorialResponseBuilder =
         XssTutorialResponse.builder().alert("xss");
     assertThatExceptionOfType(NullPointerException.class)
@@ -36,7 +36,7 @@ public class XssTutorialResponseTest {
   }
 
   @Test
-  public void buildAlert_ValidAlert_Builds() {
+  void buildAlert_ValidAlert_Builds() {
     final XssTutorialResponseBuilder xssTutorialResponseBuilder = XssTutorialResponse.builder();
     for (final String alert : TestUtils.STRINGS_WITH_NULL) {
       final XssTutorialResponse xssTutorialResponse =
@@ -46,7 +46,7 @@ public class XssTutorialResponseTest {
   }
 
   @Test
-  public void builderToString_ValidData_AsExpected() {
+  void builderToString_ValidData_AsExpected() {
     final XssTutorialResponseBuilder testXssTutorialResponseBuilder =
         XssTutorialResponse.builder().result("TestXssTutorialResponse").alert("xss");
     assertThat(testXssTutorialResponseBuilder.toString())
@@ -55,7 +55,7 @@ public class XssTutorialResponseTest {
   }
 
   @Test
-  public void buildResult_NullResult_ThrowsNullPointerException() {
+  void buildResult_NullResult_ThrowsNullPointerException() {
     final XssTutorialResponseBuilder xssTutorialResponseBuilder = XssTutorialResponse.builder();
     assertThatExceptionOfType(NullPointerException.class)
         .isThrownBy(() -> xssTutorialResponseBuilder.result(null))
@@ -63,7 +63,7 @@ public class XssTutorialResponseTest {
   }
 
   @Test
-  public void buildResult_ValidResult_Builds() {
+  void buildResult_ValidResult_Builds() {
     final XssTutorialResponseBuilder xssTutorialResponseBuilder = XssTutorialResponse.builder();
     for (final String result : TestUtils.STRINGS) {
       final XssTutorialResponse xssTutorialResponse =
@@ -73,14 +73,14 @@ public class XssTutorialResponseTest {
   }
 
   @Test
-  public void equals_EqualsVerifier_AsExpected() {
+  void equals_EqualsVerifier_AsExpected() {
     EqualsVerifier.forClass(XssTutorialResponse.class)
         .withIgnoredAnnotations(NonNull.class)
         .verify();
   }
 
   @Test
-  public void toString_ValidData_AsExpected() {
+  void toString_ValidData_AsExpected() {
     final XssTutorialResponse testXssTutorialResponse =
         XssTutorialResponse.builder().result("result is good").alert("xss warning").build();
     assertThat(testXssTutorialResponse.toString())

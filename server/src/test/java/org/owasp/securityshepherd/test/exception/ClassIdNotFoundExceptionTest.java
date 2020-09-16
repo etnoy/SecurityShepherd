@@ -36,7 +36,7 @@ public class ClassIdNotFoundExceptionTest {
   }
 
   @Test
-  public void messageConstructor_ValidMessage_MessageIncluded() throws Exception {
+  void messageConstructor_ValidMessage_MessageIncluded() throws Exception {
     for (final String message : TestUtils.STRINGS) {
       ClassIdNotFoundException exception = new ClassIdNotFoundException(message);
       assertThat(exception.getMessage(), is(message));

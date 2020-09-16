@@ -32,28 +32,28 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 @DisplayName("Submission unit test")
 public class SubmissionTest {
   @Test
-  public void build_ModuleIdNotGiven_ThrowsNullPointerException() {
+  void build_ModuleIdNotGiven_ThrowsNullPointerException() {
     final SubmissionBuilder submissionBuilder =
         Submission.builder().userId(1L).time(LocalDateTime.MIN);
     assertThrows(NullPointerException.class, () -> submissionBuilder.build());
   }
 
   @Test
-  public void build_timeNotGiven_ThrowsNullPointerException() {
+  void build_timeNotGiven_ThrowsNullPointerException() {
     final SubmissionBuilder submissionBuilder =
         Submission.builder().moduleId(1L).userId(1L).flag("TestFlag");
     assertThrows(NullPointerException.class, () -> submissionBuilder.build());
   }
 
   @Test
-  public void build_UserIdNotGiven_ThrowsNullPointerException() {
+  void build_UserIdNotGiven_ThrowsNullPointerException() {
     final SubmissionBuilder submissionBuilder =
         Submission.builder().moduleId(1L).time(LocalDateTime.MIN);
     assertThrows(NullPointerException.class, () -> submissionBuilder.build());
   }
 
   @Test
-  public void buildFlag_ValidFlag_Builds() {
+  void buildFlag_ValidFlag_Builds() {
     final String originalFlag = "flag";
     final String[] flagsToTest = {originalFlag, "myflag", "", "anotherflag_123", "a", "12345", " "};
 
@@ -72,7 +72,7 @@ public class SubmissionTest {
   }
 
   @Test
-  public void buildId_ValidId_Builds() {
+  void buildId_ValidId_Builds() {
     final long[] idsToTest = {0, 1, -1, 1000, -1000, 1234567, -1234567, 42};
 
     final SubmissionBuilder submissionBuilder =
@@ -89,7 +89,7 @@ public class SubmissionTest {
   }
 
   @Test
-  public void buildIsValid_TrueOrFalse_MatchesBuild() {
+  void buildIsValid_TrueOrFalse_MatchesBuild() {
     final SubmissionBuilder submissionBuilder =
         Submission.builder().userId(1231L).flag("flag").moduleId(811L).time(LocalDateTime.MIN);
 
@@ -103,13 +103,13 @@ public class SubmissionTest {
   }
 
   @Test
-  public void buildModuleId_NullModuleId_ThrowsNullPointerException() {
+  void buildModuleId_NullModuleId_ThrowsNullPointerException() {
     final SubmissionBuilder submissionBuilder = Submission.builder();
     assertThrows(NullPointerException.class, () -> submissionBuilder.moduleId(null));
   }
 
   @Test
-  public void buildModuleId_ValidModuleId_Builds() {
+  void buildModuleId_ValidModuleId_Builds() {
     final SubmissionBuilder submissionBuilder =
         Submission.builder().flag("flag").userId(456L).time(LocalDateTime.MIN);
 
@@ -123,13 +123,13 @@ public class SubmissionTest {
   }
 
   @Test
-  public void buildTime_NullTime_ThrowsNullPointerException() {
+  void buildTime_NullTime_ThrowsNullPointerException() {
     final SubmissionBuilder submissionBuilder = Submission.builder();
     assertThrows(NullPointerException.class, () -> submissionBuilder.time(null));
   }
 
   @Test
-  public void buildTime_ValidTime_Builds() {
+  void buildTime_ValidTime_Builds() {
     final long[] timesToTest = {0, 1, 2, 1000, 4000, 1581806000, 42};
     for (final long time : timesToTest) {
       final SubmissionBuilder submissionBuilder =
@@ -145,13 +145,13 @@ public class SubmissionTest {
   }
 
   @Test
-  public void buildUserId_NullUserId_ThrowsNullPointerException() {
+  void buildUserId_NullUserId_ThrowsNullPointerException() {
     final SubmissionBuilder submissionBuilder = Submission.builder();
     assertThrows(NullPointerException.class, () -> submissionBuilder.userId(null));
   }
 
   @Test
-  public void buildUserId_ValidUserId_Builds() {
+  void buildUserId_ValidUserId_Builds() {
     final long[] userIdsToTest = {0, 1, -1, 1000, -1000, 1234567, -1234567, 42};
 
     final SubmissionBuilder builder =
@@ -166,12 +166,12 @@ public class SubmissionTest {
   }
 
   @Test
-  public void equals_AutomaticTesting() {
+  void equals_AutomaticTesting() {
     EqualsVerifier.forClass(Submission.class).withIgnoredAnnotations(NonNull.class).verify();
   }
 
   @Test
-  public void submissionBuilderToString_ValidData_AsExpected() {
+  void submissionBuilderToString_ValidData_AsExpected() {
     final SubmissionBuilder builder = Submission.builder();
     assertThat(
         builder.toString(),
@@ -180,7 +180,7 @@ public class SubmissionTest {
   }
 
   @Test
-  public void toString_ValidData_AsExpected() {
+  void toString_ValidData_AsExpected() {
     final Submission testSubmission =
         Submission.builder()
             .moduleId(11234L)
@@ -198,7 +198,7 @@ public class SubmissionTest {
   }
 
   @Test
-  public void withFlag_ValidFlag_ChangesFlag() {
+  void withFlag_ValidFlag_ChangesFlag() {
     final String originalFlag = "flag";
     final String[] testedFlags = {
       originalFlag, "abc123xyz789", "", "a", "Long Flag With Spaces", "12345"
@@ -219,7 +219,7 @@ public class SubmissionTest {
   }
 
   @Test
-  public void withId_ValidId_ChangesId() {
+  void withId_ValidId_ChangesId() {
     final long originalId = 1;
     final Long[] testedIds = {originalId, null, 0L, -1L, 1000L, -1000L, 123456789L, -12346789L};
 
@@ -238,7 +238,7 @@ public class SubmissionTest {
   }
 
   @Test
-  public void withModuleId_NullModuleId_ThrowsNullPointerException() {
+  void withModuleId_NullModuleId_ThrowsNullPointerException() {
     final Submission submission =
         Submission.builder()
             .userId(1L)
@@ -250,7 +250,7 @@ public class SubmissionTest {
   }
 
   @Test
-  public void withModuleId_ValidModuleId_ChangesModuleId() {
+  void withModuleId_ValidModuleId_ChangesModuleId() {
     final long originalId = 1;
     final long[] testedIds = {originalId, 0, -1, 1000, -1000, 123456789, -12346789};
 
@@ -269,7 +269,7 @@ public class SubmissionTest {
   }
 
   @Test
-  public void withTime_NullTime_ThrowsNullPointerException() {
+  void withTime_NullTime_ThrowsNullPointerException() {
     final Submission submission =
         Submission.builder()
             .userId(TestUtils.INITIAL_LONG)
@@ -281,7 +281,7 @@ public class SubmissionTest {
   }
 
   @Test
-  public void withTime_ValidTime_ChangesTime() {
+  void withTime_ValidTime_ChangesTime() {
     final Submission testSubmission =
         Submission.builder()
             .userId(4L)
@@ -298,7 +298,7 @@ public class SubmissionTest {
   }
 
   @Test
-  public void withUserId_NullUserId_ThrowsNullPointerException() {
+  void withUserId_NullUserId_ThrowsNullPointerException() {
     final Submission submission =
         Submission.builder()
             .userId(TestUtils.INITIAL_LONG)
@@ -310,7 +310,7 @@ public class SubmissionTest {
   }
 
   @Test
-  public void withUserId_ValidUserId_ChangesUserId() {
+  void withUserId_ValidUserId_ChangesUserId() {
     final Submission submission =
         Submission.builder()
             .userId(TestUtils.INITIAL_LONG)
@@ -327,7 +327,7 @@ public class SubmissionTest {
   }
 
   @Test
-  public void withValid_ValidBoolean_ChangesIsValid() {
+  void withValid_ValidBoolean_ChangesIsValid() {
     final Submission testSubmission =
         Submission.builder()
             .userId(15123L)

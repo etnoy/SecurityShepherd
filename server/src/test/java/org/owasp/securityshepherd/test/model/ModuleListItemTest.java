@@ -29,7 +29,7 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 @DisplayName("ModuleListItem unit test")
 public class ModuleListItemTest {
   @Test
-  public void build_IdNotGiven_ThrowsNullPointerException() {
+  void build_IdNotGiven_ThrowsNullPointerException() {
     Throwable thrownException =
         assertThrows(
             NullPointerException.class,
@@ -38,7 +38,7 @@ public class ModuleListItemTest {
   }
 
   @Test
-  public void build_NameNotGiven_ThrowsNullPointerException() {
+  void build_NameNotGiven_ThrowsNullPointerException() {
     Throwable thrownException =
         assertThrows(
             NullPointerException.class,
@@ -47,7 +47,7 @@ public class ModuleListItemTest {
   }
 
   @Test
-  public void build_ShortNameNotGiven_ThrowsNullPointerException() {
+  void build_ShortNameNotGiven_ThrowsNullPointerException() {
     Throwable thrownException =
         assertThrows(
             NullPointerException.class,
@@ -56,7 +56,7 @@ public class ModuleListItemTest {
   }
 
   @Test
-  public void buildId_ValidId_BuildsModuleListItem() {
+  void buildId_ValidId_BuildsModuleListItem() {
     final ModuleListItemBuilder moduleListItemBuilder =
         ModuleListItem.builder().name("TestModule").shortName("test-module");
     for (final long id : TestUtils.LONGS) {
@@ -66,7 +66,7 @@ public class ModuleListItemTest {
   }
 
   @Test
-  public void buildDescription_ValidDescription_Builds() {
+  void buildDescription_ValidDescription_Builds() {
     final ModuleListItemBuilder builder =
         ModuleListItem.builder().id(1L).name("TestModuleListItem").shortName("test-module");
     for (final String description : TestUtils.STRINGS_WITH_NULL) {
@@ -77,7 +77,7 @@ public class ModuleListItemTest {
   }
 
   @Test
-  public void buildIsSolved_TrueOrFalse_MatchesBuild() {
+  void buildIsSolved_TrueOrFalse_MatchesBuild() {
     final ModuleListItemBuilder builder =
         ModuleListItem.builder().id(1L).name("TestModule").shortName("test-module");
     for (final Boolean isSolved : TestUtils.BOOLEANS_WITH_NULL) {
@@ -91,7 +91,7 @@ public class ModuleListItemTest {
   }
 
   @Test
-  public void buildId_NullId_ThrowsNullPointerException() {
+  void buildId_NullId_ThrowsNullPointerException() {
     final ModuleListItemBuilder moduleBuilder =
         ModuleListItem.builder().name("TestModule").shortName("test-module");
     Throwable thrownException =
@@ -100,7 +100,7 @@ public class ModuleListItemTest {
   }
 
   @Test
-  public void buildName_NullName_ThrowsNullPointerException() {
+  void buildName_NullName_ThrowsNullPointerException() {
     final ModuleListItemBuilder moduleBuilder = ModuleListItem.builder().shortName("test-module");
     Throwable thrownException =
         assertThrows(NullPointerException.class, () -> moduleBuilder.name(null));
@@ -108,7 +108,7 @@ public class ModuleListItemTest {
   }
 
   @Test
-  public void buildName_NullShortName_ThrowsNullPointerException() {
+  void buildName_NullShortName_ThrowsNullPointerException() {
     final ModuleListItemBuilder moduleBuilder = ModuleListItem.builder().name("TestModuleListItem");
     Throwable thrownException =
         assertThrows(NullPointerException.class, () -> moduleBuilder.shortName(null));
@@ -116,7 +116,7 @@ public class ModuleListItemTest {
   }
 
   @Test
-  public void buildName_ValidName_Builds() {
+  void buildName_ValidName_Builds() {
     final ModuleListItemBuilder builder = ModuleListItem.builder().id(1L).shortName("test-module");
     for (final String name : TestUtils.STRINGS) {
       builder.name(name);
@@ -127,7 +127,7 @@ public class ModuleListItemTest {
   }
 
   @Test
-  public void buildShortName_ValidShortName_Builds() {
+  void buildShortName_ValidShortName_Builds() {
     final ModuleListItemBuilder builder =
         ModuleListItem.builder().id(1L).name("TestModuleListItem");
     for (final String shortName : TestUtils.STRINGS) {
@@ -139,12 +139,12 @@ public class ModuleListItemTest {
   }
 
   @Test
-  public void equals_AutomaticTesting() {
+  void equals_AutomaticTesting() {
     EqualsVerifier.forClass(ModuleListItem.class).withIgnoredAnnotations(NonNull.class).verify();
   }
 
   @Test
-  public void moduleListItemBuilderToString_ValidData_AsExpected() {
+  void moduleListItemBuilderToString_ValidData_AsExpected() {
     final ModuleListItemBuilder builder = ModuleListItem.builder();
 
     assertThat(
@@ -155,7 +155,7 @@ public class ModuleListItemTest {
   }
 
   @Test
-  public void toString_ValidData_AsExpected() {
+  void toString_ValidData_AsExpected() {
     final ModuleListItem testModuleListItem =
         ModuleListItem.builder().id(1L).name("TestModuleListItem").shortName("test-module").build();
 

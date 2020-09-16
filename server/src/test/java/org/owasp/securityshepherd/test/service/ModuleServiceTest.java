@@ -71,7 +71,7 @@ public class ModuleServiceTest {
   private KeyService keyService;
 
   @Test
-  public void count_NoArgument_ReturnsCount() {
+  void count_NoArgument_ReturnsCount() {
     final long mockedModuleCount = 75L;
 
     when(moduleRepository.count()).thenReturn(Mono.just(mockedModuleCount));
@@ -82,7 +82,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void create_DuplicateName_ReturnsDuplicateModuleNameException() {
+  void create_DuplicateName_ReturnsDuplicateModuleNameException() {
     final String name = "TestModule";
     final String shortName = "test-module";
 
@@ -99,7 +99,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void create_EmptyName_ReturnsIllegalArgumentException() {
+  void create_EmptyName_ReturnsIllegalArgumentException() {
     StepVerifier.create(moduleService.create("", "shortName"))
         .expectErrorMatches(throwable -> throwable instanceof EmptyModuleNameException
             && throwable.getMessage().equals("Module name cannot be empty"))
@@ -107,13 +107,13 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void create_NullName_ReturnsNullPointerException() {
+  void create_NullName_ReturnsNullPointerException() {
     StepVerifier.create(moduleService.create(null, "shortName"))
         .expectError(NullPointerException.class).verify();
   }
 
   @Test
-  public void create_NameAndShortnameAndDescription_Succeeds() {
+  void create_NameAndShortnameAndDescription_Succeeds() {
     final String name = "TestModule";
     final String shortName = "test-module";
     final String description = "This is a module";
@@ -140,7 +140,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void create_NameAndShortnameSucceeds() {
+  void create_NameAndShortnameSucceeds() {
     final String name = "TestModule";
     final String shortName = "test-module";
 
@@ -166,7 +166,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void create_ValidSubmittableModule_Succeeds() {
+  void create_ValidSubmittableModule_Succeeds() {
     final String name = "TestModule";
     final String shortName = "test-module";
     final String description = "description";
@@ -200,7 +200,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void findAll_ModulesExist_ReturnsModules() {
+  void findAll_ModulesExist_ReturnsModules() {
     final Module mockModule1 = mock(Module.class);
     final Module mockModule2 = mock(Module.class);
     final Module mockModule3 = mock(Module.class);
@@ -214,21 +214,21 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void findAll_NoModulesExist_ReturnsEmpty() {
+  void findAll_NoModulesExist_ReturnsEmpty() {
     when(moduleRepository.findAll()).thenReturn(Flux.empty());
     StepVerifier.create(moduleService.findAll()).expectComplete().verify();
     verify(moduleRepository, times(1)).findAll();
   }
 
   @Test
-  public void findAllOpen_NoModulesExist_ReturnsEmpty() {
+  void findAllOpen_NoModulesExist_ReturnsEmpty() {
     when(moduleRepository.findAllOpen()).thenReturn(Flux.empty());
     StepVerifier.create(moduleService.findAllOpen()).expectComplete().verify();
     verify(moduleRepository, times(1)).findAllOpen();
   }
 
   @Test
-  public void findAllOpen_OpenModulesExist_ReturnsOpenModules() {
+  void findAllOpen_OpenModulesExist_ReturnsOpenModules() {
     final Module mockModule1 = mock(Module.class);
     final Module mockModule2 = mock(Module.class);
     final Module mockModule3 = mock(Module.class);
@@ -243,7 +243,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void findById_InvalidModuleId_ReturnsInvalidModuleIdException() {
+  void findById_InvalidModuleId_ReturnsInvalidModuleIdException() {
     for (final long moduleId : TestUtils.INVALID_IDS) {
       StepVerifier.create(moduleService.findById(moduleId))
           .expectError(InvalidModuleIdException.class).verify();
@@ -251,7 +251,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void findById_ModuleIdExists_ReturnsInvalidModuleIdException() {
+  void findById_ModuleIdExists_ReturnsInvalidModuleIdException() {
     final Module mockModule = mock(Module.class);
     final long mockModuleId = 750L;
 
@@ -262,7 +262,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void findById_NonExistentModuleId_ReturnsEmpty() {
+  void findById_NonExistentModuleId_ReturnsEmpty() {
     final long mockModuleId = 286;
     when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.empty());
     StepVerifier.create(moduleService.findById(mockModuleId)).expectComplete().verify();
@@ -270,7 +270,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void findByShortName_EmptyShortName_ReturnsInvalidShortNameException() {
+  void findByShortName_EmptyShortName_ReturnsInvalidShortNameException() {
     StepVerifier.create(moduleService.findByShortName(""))
         .expectErrorMatches(throwable -> throwable instanceof EmptyModuleShortNameException
             && throwable.getMessage().equals("Module short name cannot be empty"))
@@ -278,7 +278,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void findByShortName_ExistingShortName_ReturnsModule() {
+  void findByShortName_ExistingShortName_ReturnsModule() {
     final String mockModuleShortName = "a-name";
     final Module mockModule = mock(Module.class);
     when(moduleRepository.findByShortName(mockModuleShortName)).thenReturn(Mono.just(mockModule));
@@ -288,7 +288,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void findByShortName_NonExistentShortName_ReturnsEmpty() {
+  void findByShortName_NonExistentShortName_ReturnsEmpty() {
     final String mockModuleShortName = "a-name";
     when(moduleRepository.findByShortName(mockModuleShortName)).thenReturn(Mono.empty());
     StepVerifier.create(moduleService.findByShortName(mockModuleShortName)).expectComplete()
@@ -297,7 +297,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void findByShortName_NullShortName_ReturnsNullPointerException() {
+  void findByShortName_NullShortName_ReturnsNullPointerException() {
     StepVerifier.create(moduleService.findByShortName(null))
         .expectErrorMatches(throwable -> throwable instanceof NullPointerException
             && throwable.getMessage().equals("Module short name cannot be null"))
@@ -305,7 +305,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void findNameById_ExistingModuleId_ReturnsUserEntity() {
+  void findNameById_ExistingModuleId_ReturnsUserEntity() {
     final Module mockModule = mock(Module.class);
     final String mockModuleName = "MockName";
     final long mockModuleId = 21;
@@ -321,7 +321,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void findNameById_InvalidModuleId_ReturnsInvalidModuleIdException() {
+  void findNameById_InvalidModuleId_ReturnsInvalidModuleIdException() {
     for (final long invalidId : TestUtils.INVALID_IDS) {
       StepVerifier.create(moduleService.findNameById(invalidId))
           .expectErrorMatches(throwable -> throwable instanceof InvalidModuleIdException
@@ -331,7 +331,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void findNameById_NonExistentModuleId_ReturnsEmpty() {
+  void findNameById_NonExistentModuleId_ReturnsEmpty() {
     final long nonExistentModuleId = 248;
     when(moduleRepository.findById(nonExistentModuleId)).thenReturn(Mono.empty());
     StepVerifier.create(moduleService.findNameById(nonExistentModuleId)).expectComplete().verify();
@@ -339,7 +339,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void setDynamicFlag_FlagPreviouslySet_ReturnPreviousFlag() {
+  void setDynamicFlag_FlagPreviouslySet_ReturnPreviousFlag() {
     final String newFlag = "uVR6jeaKqtMD6CPg";
 
     final Module mockModuleWithoutExactFlag = mock(Module.class);
@@ -371,7 +371,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void setDynamicFlag_NegativeModuleId_ReturnsInvalidModuleIdException() {
+  void setDynamicFlag_NegativeModuleId_ReturnsInvalidModuleIdException() {
     StepVerifier.create(moduleService.setDynamicFlag(-1))
         .expectError(InvalidModuleIdException.class).verify();
     StepVerifier.create(moduleService.setDynamicFlag(-1000))
@@ -379,7 +379,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void setDynamicFlag_NoPreviousFlag_GeneratesNewFlag() {
+  void setDynamicFlag_NoPreviousFlag_GeneratesNewFlag() {
     final String newFlag = "uVR6jeaKqtMD6CPg";
 
     final Module mockModuleWithoutDynamicFlag = mock(Module.class);
@@ -421,19 +421,19 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void setDynamicFlag_ZeroModuleId_ReturnsInvalidModuleIdException() {
+  void setDynamicFlag_ZeroModuleId_ReturnsInvalidModuleIdException() {
     StepVerifier.create(moduleService.setDynamicFlag(0)).expectError(InvalidModuleIdException.class)
         .verify();
   }
 
   @Test
-  public void setExactFlag_EmptyExactFlag_ReturnsInvalidFlagException() {
+  void setExactFlag_EmptyExactFlag_ReturnsInvalidFlagException() {
     StepVerifier.create(moduleService.setExactFlag(1, "")).expectError(InvalidFlagException.class)
         .verify();
   }
 
   @Test
-  public void setExactFlag_InvalidModuleId_ReturnsInvalidModuleIdException() {
+  void setExactFlag_InvalidModuleId_ReturnsInvalidModuleIdException() {
     StepVerifier.create(moduleService.setExactFlag(0, "flag"))
         .expectError(InvalidModuleIdException.class).verify();
     StepVerifier.create(moduleService.setExactFlag(-1, "flag"))
@@ -443,7 +443,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void setExactFlag_NullExactFlag_ReturnsNulPointerException() {
+  void setExactFlag_NullExactFlag_ReturnsNulPointerException() {
     StepVerifier.create(moduleService.setExactFlag(1, null))
         .expectErrorMatches(throwable -> throwable instanceof NullPointerException
             && throwable.getMessage().equals("Flag cannot be null"))
@@ -451,7 +451,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void setExactFlag_ValidFlag_SetsFlagToExact() {
+  void setExactFlag_ValidFlag_SetsFlagToExact() {
     final String exactFlag = "setExactFlag_ValidFlag_flag";
 
     final Module mockModuleWithoutFlag = mock(Module.class);
@@ -490,7 +490,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void setName_EmptyName_ReturnsEmptyModuleNameException() {
+  void setName_EmptyName_ReturnsEmptyModuleNameException() {
     StepVerifier.create(moduleService.setName(847L, ""))
         .expectErrorMatches(throwable -> throwable instanceof EmptyModuleNameException
             && throwable.getMessage().equals("Module name cannot be empty"))
@@ -498,7 +498,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void setName_InvalidModuleId_ReturnsInvalidModuleIdException() {
+  void setName_InvalidModuleId_ReturnsInvalidModuleIdException() {
     for (final long moduleId : TestUtils.INVALID_IDS) {
       StepVerifier.create(moduleService.setName(moduleId, "name"))
           .expectErrorMatches(throwable -> throwable instanceof InvalidModuleIdException
@@ -508,7 +508,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void setName_NullName_ReturnsNullPointerException() {
+  void setName_NullName_ReturnsNullPointerException() {
     StepVerifier.create(moduleService.setName(204L, null))
         .expectErrorMatches(throwable -> throwable instanceof NullPointerException
             && throwable.getMessage().equals("Module name cannot be null"))
@@ -516,7 +516,7 @@ public class ModuleServiceTest {
   }
 
   @Test
-  public void setName_ValidName_Succeeds() {
+  void setName_ValidName_Succeeds() {
     Module mockModule = mock(Module.class);
     String newName = "newName";
 
