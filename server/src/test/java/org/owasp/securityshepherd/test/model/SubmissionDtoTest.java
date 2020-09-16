@@ -43,6 +43,6 @@ class SubmissionDtoTest {
   @Test
   void toString_ValidData_AsExpected() {
     final SubmissionDto submissionDto = new SubmissionDto(16L, "flag");
-    assertThat(submissionDto.toString()).isEqualTo("SubmissionDto(moduleId=16, flag=flag)");
+    assertThat(submissionDto.toString()).hasToString("SubmissionDto(moduleId=16, flag=flag)");
   }
 }

@@ -39,7 +39,8 @@ class UserAuthTest {
 
   @Test
   void build_UserIdNotGiven_ThrowsNullPointerException() {
-    assertThrows(NullPointerException.class, () -> UserAuth.builder().build());
+    final UserAuthBuilder userAuthBuilder = UserAuth.builder();
+    assertThrows(NullPointerException.class, () -> userAuthBuilder.build());
   }
 
   @Test

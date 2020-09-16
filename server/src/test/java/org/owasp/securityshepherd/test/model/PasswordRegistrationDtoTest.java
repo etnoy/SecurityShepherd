@@ -51,7 +51,7 @@ class PasswordRegistrationDtoTest {
     final PasswordRegistrationDto passwordRegistrationDto =
         new PasswordRegistrationDto("displayName", "loginName", "password");
     assertThat(passwordRegistrationDto.toString())
-        .isEqualTo(
+        .hasToString(
             "PasswordRegistrationDto(displayName=displayName, userName=loginName, password=password)");
   }
 }

@@ -29,13 +29,14 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 class SamlAuthTest {
   @Test
   void build_SamlIdNotGiven_ThrowsNullPointerException() {
-    assertThrows(NullPointerException.class, () -> SamlAuth.builder().userId(3).build());
+    final SamlAuthBuilder samlAuthBuilder = SamlAuth.builder().userId(3);
+    assertThrows(NullPointerException.class, () -> samlAuthBuilder.build());
   }
 
   @Test
   void build_UserIdNotGiven_ThrowsNullPointerException() {
-    assertThrows(
-        NullPointerException.class, () -> SamlAuth.builder().samlId("me@example.com").build());
+    final SamlAuthBuilder samlAuthBuilder = SamlAuth.builder().samlId("me@example.com");
+    assertThrows(NullPointerException.class, () -> samlAuthBuilder.build());
   }
 
   @Test
@@ -47,25 +48,27 @@ class SamlAuthTest {
 
   @Test
   void buildSamlid_NullSamlId_ThrowsNullPointerException() {
-    assertThrows(NullPointerException.class, () -> SamlAuth.builder().samlId(null));
+    final SamlAuthBuilder samlAuthBuilder = SamlAuth.builder();
+    assertThrows(NullPointerException.class, () -> samlAuthBuilder.samlId(null));
   }
 
   @Test
   void buildUserId_NullUserId_ThrowsNullPointerException() {
-    assertThrows(NullPointerException.class, () -> SamlAuth.builder().userId(null).build());
+    final SamlAuthBuilder samlAuthBuilder = SamlAuth.builder();
+    assertThrows(NullPointerException.class, () -> samlAuthBuilder.userId(null));
   }
 
   @Test
   void buildUserId_ValidUserId_Builds() {
     final int[] userIdsToTest = {0, 1, -1, 1000, -1000, 123456789};
 
+    final SamlAuthBuilder samlAuthBuilder = SamlAuth.builder().samlId("me@example.com");
+
     for (final int userId : userIdsToTest) {
-      final SamlAuthBuilder builder = SamlAuth.builder().samlId("me@example.com");
+      samlAuthBuilder.userId(userId);
 
-      builder.userId(userId);
-
-      assertThat(builder.build(), instanceOf(SamlAuth.class));
-      assertThat(builder.build().getUserId(), is(userId));
+      assertThat(samlAuthBuilder.build(), instanceOf(SamlAuth.class));
+      assertThat(samlAuthBuilder.build().getUserId(), is(userId));
     }
   }
 

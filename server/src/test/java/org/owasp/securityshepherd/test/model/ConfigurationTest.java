@@ -22,6 +22,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.owasp.securityshepherd.model.Configuration;
 import org.owasp.securityshepherd.model.Configuration.ConfigurationBuilder;
+import org.owasp.securityshepherd.test.util.TestUtils;
+
 import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
@@ -91,16 +93,10 @@ class ConfigurationTest {
 
   @Test
   void buildValue_ValidValue_Builds() {
-    final String[] valuesToTest = {
-      "", "serverValue", "timestampSetting", "\"", "$$^¨'", "åäö", "a", "1", "userName"
-    };
+    final ConfigurationBuilder configurationBuilder = Configuration.builder().key("TestKey");
 
-    for (String value : valuesToTest) {
-
-      final ConfigurationBuilder configurationBuilder = Configuration.builder().key("TestKey");
-
+    for (String value : TestUtils.STRINGS) {
       configurationBuilder.value(value);
-
       assertThat(configurationBuilder.build(), instanceOf(Configuration.class));
       assertThat(configurationBuilder.build().getValue(), is(value));
     }
@@ -121,6 +117,8 @@ class ConfigurationTest {
   @Test
   void withId_ValidId_ChangesId() {
     final Integer originalId = 1;
+
+    // TODO: create new list in TestUtils
     final Integer[] testedIds = {originalId, 0, null, -1, 1000, -1000, 123456789, -12346789};
 
     final Configuration configuration =
@@ -157,9 +155,9 @@ class ConfigurationTest {
 
   @Test
   void withValue_NullValue_ThrowsNullPointerException() {
-    assertThrows(
-        NullPointerException.class,
-        () -> Configuration.builder().key("serverKey").value("secret123").build().withValue(null));
+    final Configuration configuration =
+        Configuration.builder().key("serverKey").value("secret123").build();
+    assertThrows(NullPointerException.class, () -> configuration.withValue(null));
   }
 
   @Test

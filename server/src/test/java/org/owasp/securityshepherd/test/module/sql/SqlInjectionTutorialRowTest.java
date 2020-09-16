@@ -96,7 +96,7 @@ class SqlInjectionTutorialRowTest {
     final SqlInjectionTutorialRow testSqlInjectionTutorialRow =
         SqlInjectionTutorialRow.builder().name("TestSqlInjectionTutorialRow").build();
     assertThat(testSqlInjectionTutorialRow.toString())
-        .isEqualTo(
+        .hasToString(
             "SqlInjectionTutorialRow(name=TestSqlInjectionTutorialRow, comment=null, error=null)");
   }
 }
