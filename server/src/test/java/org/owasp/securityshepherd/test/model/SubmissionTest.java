@@ -30,7 +30,7 @@ import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 @DisplayName("Submission unit test")
-public class SubmissionTest {
+class SubmissionTest {
   @Test
   void build_ModuleIdNotGiven_ThrowsNullPointerException() {
     final SubmissionBuilder submissionBuilder =

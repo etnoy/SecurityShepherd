@@ -36,7 +36,7 @@ import reactor.test.StepVerifier;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("XssTutorialController unit test")
-public class XssTutorialControllerTest {
+class XssTutorialControllerTest {
   @BeforeAll
   private static void reactorVerbose() {
     // Tell Reactor to print verbose error messages

@@ -40,7 +40,7 @@ import reactor.test.StepVerifier;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("ModuleController unit test")
-public class ModuleControllerTest {
+class ModuleControllerTest {
 
   @BeforeAll
   private static void reactorVerbose() {

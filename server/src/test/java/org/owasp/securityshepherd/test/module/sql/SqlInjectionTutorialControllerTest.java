@@ -37,7 +37,7 @@ import reactor.test.StepVerifier;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("SqlInjectionTutorialController unit test")
-public class SqlInjectionTutorialControllerTest {
+class SqlInjectionTutorialControllerTest {
 
   @BeforeAll
   private static void reactorVerbose() {

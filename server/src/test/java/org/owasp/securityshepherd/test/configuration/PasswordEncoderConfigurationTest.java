@@ -26,7 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("PasswordEncoderConfiguration unit test")
-public class PasswordEncoderConfigurationTest {
+class PasswordEncoderConfigurationTest {
   PasswordEncoderConfiguration passwordEncoderConfiguration;
 
   @Test

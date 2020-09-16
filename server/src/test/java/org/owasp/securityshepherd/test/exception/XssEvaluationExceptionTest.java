@@ -28,7 +28,7 @@ import org.owasp.securityshepherd.test.util.TestUtils;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("XssEvaluationException unit test")
-public class XssEvaluationExceptionTest {
+class XssEvaluationExceptionTest {
   @Test
   void noArgsConstructor_NoArguments_ReturnsException() {
     assertThat(new XssEvaluationException(), is(instanceOf(XssEvaluationException.class)));

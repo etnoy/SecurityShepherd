@@ -28,7 +28,7 @@ import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 @DisplayName("ClassEntity unit test")
-public class ClassTest {
+class ClassTest {
   @Test
   void build_NullName_ThrowsNullPointerException() {
     final ClassBuilder classBuilder = ClassEntity.builder();

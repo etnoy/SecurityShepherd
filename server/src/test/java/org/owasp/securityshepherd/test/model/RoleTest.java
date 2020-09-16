@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.owasp.securityshepherd.authentication.Role;
 
 @DisplayName("Role unit test")
-public class RoleTest {
+class RoleTest {
   @Test
   void userRole_ToString_IsRoleUser() {
     assertThat(Role.ROLE_USER.toString()).isEqualTo("ROLE_USER");

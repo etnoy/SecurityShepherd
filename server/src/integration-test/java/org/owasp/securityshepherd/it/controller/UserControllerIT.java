@@ -49,7 +49,7 @@ import reactor.test.StepVerifier;
 @AutoConfigureWebTestClient
 @Execution(ExecutionMode.SAME_THREAD)
 @DisplayName("UserController integration test")
-public class UserControllerIT {
+class UserControllerIT {
   @BeforeAll
   private static void reactorVerbose() {
     // Tell Reactor to print verbose error messages

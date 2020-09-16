@@ -37,7 +37,7 @@ import reactor.core.publisher.Hooks;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("KeyService unit test")
-public class KeyServiceTest {
+class KeyServiceTest {
   @BeforeAll
   private static void reactorVerbose() {
     // Tell Reactor to print verbose error messages

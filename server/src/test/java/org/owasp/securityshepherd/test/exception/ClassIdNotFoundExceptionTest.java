@@ -28,7 +28,7 @@ import reactor.core.publisher.Hooks;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("ClassIdNotFoundException unit test")
-public class ClassIdNotFoundExceptionTest {
+class ClassIdNotFoundExceptionTest {
   @BeforeAll
   private static void reactorVerbose() {
     // Tell Reactor to print verbose error messages

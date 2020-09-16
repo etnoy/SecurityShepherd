@@ -26,7 +26,7 @@ import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 @DisplayName("SamlAuth unit test")
-public class SamlAuthTest {
+class SamlAuthTest {
   @Test
   void build_SamlIdNotGiven_ThrowsNullPointerException() {
     assertThrows(NullPointerException.class, () -> SamlAuth.builder().userId(3).build());

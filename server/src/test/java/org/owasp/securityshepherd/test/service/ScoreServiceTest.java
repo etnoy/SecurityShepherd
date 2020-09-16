@@ -40,7 +40,7 @@ import reactor.test.StepVerifier;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("ScoreService unit test")
-public class ScoreServiceTest {
+class ScoreServiceTest {
 
   @BeforeAll
   private static void reactorVerbose() {

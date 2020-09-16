@@ -53,7 +53,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("SubmissionService unit test")
-public class SubmissonServiceTest {
+class SubmissonServiceTest {
   @BeforeAll
   private static void reactorVerbose() {
     // Tell Reactor to print verbose error messages

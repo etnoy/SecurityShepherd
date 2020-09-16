@@ -39,7 +39,7 @@ import reactor.test.StepVerifier;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("AuthenticationManager unit test")
-public class AuthenticationManagerTest {
+class AuthenticationManagerTest {
   @BeforeAll
   private static void reactorVerbose() {
     // Tell Reactor to print verbose error messages

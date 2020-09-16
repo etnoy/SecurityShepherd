@@ -34,7 +34,7 @@ import reactor.test.StepVerifier;
 @SpringBootTest(properties = {"application.runner.enabled=false"})
 @Execution(ExecutionMode.SAME_THREAD)
 @DisplayName("User integration test")
-public class UserIT {
+class UserIT {
   @BeforeAll
   private static void reactorVerbose() {
     // Tell Reactor to print verbose error messages

@@ -49,7 +49,7 @@ import reactor.test.StepVerifier;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("SqlInjectionTutorial unit test")
-public class SqlInjectionTutorialTest {
+class SqlInjectionTutorialTest {
   @BeforeAll
   private static void reactorVerbose() {
     // Tell Reactor to print verbose error messages

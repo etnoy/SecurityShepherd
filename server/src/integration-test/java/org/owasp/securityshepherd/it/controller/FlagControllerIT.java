@@ -51,7 +51,7 @@ import reactor.test.StepVerifier;
 @AutoConfigureWebTestClient
 @Execution(ExecutionMode.SAME_THREAD)
 @DisplayName("FlagController integration test")
-public class FlagControllerIT {
+class FlagControllerIT {
   @BeforeAll
   private static void reactorVerbose() {
     // Tell Reactor to print verbose error messages

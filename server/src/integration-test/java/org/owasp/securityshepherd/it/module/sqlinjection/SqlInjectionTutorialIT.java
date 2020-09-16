@@ -40,7 +40,7 @@ import reactor.test.StepVerifier;
 @SpringBootTest(properties = {"application.runner.enabled=false"})
 @Execution(ExecutionMode.SAME_THREAD)
 @DisplayName("SqlInjectionTutorial integration test")
-public class SqlInjectionTutorialIT {
+class SqlInjectionTutorialIT {
 
   @Autowired SqlInjectionTutorial sqlInjectionTutorial;
 

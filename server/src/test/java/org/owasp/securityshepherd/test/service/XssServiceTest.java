@@ -44,7 +44,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("XssService unit test")
-public class XssServiceTest {
+class XssServiceTest {
 
   XssService xssService;
 

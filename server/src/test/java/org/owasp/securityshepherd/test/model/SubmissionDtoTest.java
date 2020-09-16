@@ -23,7 +23,7 @@ import org.owasp.securityshepherd.test.util.TestUtils;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 @DisplayName("SubmissionDto unit test")
-public class SubmissionDtoTest {
+class SubmissionDtoTest {
   @Test
   void buildComment_ValidComment_Builds() {
     for (final long moduleId : TestUtils.LONGS) {

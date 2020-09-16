@@ -26,7 +26,7 @@ import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 @DisplayName("ModulePoint unit test")
-public class ModulePointTest {
+class ModulePointTest {
 
   @Test
   void build_ModuleIdNotGiven_ThrowsNullPointerException() {

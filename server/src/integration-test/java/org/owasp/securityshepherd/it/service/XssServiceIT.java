@@ -33,7 +33,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(properties = {"application.runner.enabled=false"})
 @DisplayName("XssService integration test")
-public class XssServiceIT {
+class XssServiceIT {
 
   @Autowired private XssService xssService;
 

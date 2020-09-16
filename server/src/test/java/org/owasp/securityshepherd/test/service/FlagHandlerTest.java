@@ -43,7 +43,7 @@ import reactor.test.StepVerifier;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("FlagHandler unit test")
-public class FlagHandlerTest {
+class FlagHandlerTest {
 
   @BeforeAll
   private static void reactorVerbose() {

@@ -43,7 +43,7 @@ import reactor.core.publisher.Mono;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("StartupRunner unit test")
-public class StartupRunnerTest {
+class StartupRunnerTest {
 
   @BeforeAll
   private static void reactorVerbose() {

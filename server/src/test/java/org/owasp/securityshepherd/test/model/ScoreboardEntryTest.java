@@ -27,7 +27,7 @@ import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 @DisplayName("ScoreboardEntry unit test")
-public class ScoreboardEntryTest {
+class ScoreboardEntryTest {
 
   @Test
   void build_RankNotGiven_ThrowsNullPointerException() {

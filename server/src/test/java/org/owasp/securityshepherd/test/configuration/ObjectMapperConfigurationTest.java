@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("ObjectMapperConfiguration unit test")
-public class ObjectMapperConfigurationTest {
+class ObjectMapperConfigurationTest {
   ObjectMapperConfiguration objectMapperConfiguration;
 
   @Test

@@ -25,7 +25,7 @@ import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 @DisplayName("XssTutorialResponse unit test")
-public class XssTutorialResponseTest {
+class XssTutorialResponseTest {
   @Test
   void build_NullResult_ThrowsNullPointerException() {
     final XssTutorialResponseBuilder xssTutorialResponseBuilder =

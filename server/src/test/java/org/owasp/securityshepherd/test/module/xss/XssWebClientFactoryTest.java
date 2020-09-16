@@ -26,7 +26,7 @@ import com.gargoylesoftware.htmlunit.WebClient;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("XssWebClientFactory unit test")
-public class XssWebClientFactoryTest {
+class XssWebClientFactoryTest {
   XssWebClientFactory xssWebClientFactory;
 
   @Test

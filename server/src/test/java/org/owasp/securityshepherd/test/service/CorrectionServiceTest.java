@@ -41,7 +41,7 @@ import reactor.test.StepVerifier;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("CorrectionService unit test")
-public class CorrectionServiceTest {
+class CorrectionServiceTest {
 
   @BeforeAll
   private static void reactorVerbose() {

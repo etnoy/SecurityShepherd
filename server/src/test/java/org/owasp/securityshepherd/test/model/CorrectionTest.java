@@ -28,7 +28,7 @@ import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 @DisplayName("Correction unit test")
-public class CorrectionTest {
+class CorrectionTest {
 
   @Test
   void build_AmountNotGiven_ThrowsNullPointerException() {

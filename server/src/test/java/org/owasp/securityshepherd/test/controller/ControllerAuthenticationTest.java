@@ -36,7 +36,7 @@ import reactor.test.StepVerifier;
 @ExtendWith(MockitoExtension.class)
 @Execution(ExecutionMode.SAME_THREAD)
 @DisplayName("ControllerAuthentication unit test")
-public class ControllerAuthenticationTest {
+class ControllerAuthenticationTest {
 
   @BeforeAll
   private static void reactorVerbose() {

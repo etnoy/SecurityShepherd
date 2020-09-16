@@ -24,7 +24,7 @@ import org.owasp.securityshepherd.test.util.TestUtils;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 @DisplayName("AuthResponse unit test")
-public class AuthResponseTest {
+class AuthResponseTest {
   @Test
   void buildComment_ValidComment_Builds() {
     for (final String token : TestUtils.STRINGS) {

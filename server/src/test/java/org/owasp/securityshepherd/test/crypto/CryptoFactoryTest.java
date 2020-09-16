@@ -30,7 +30,7 @@ import reactor.core.publisher.Hooks;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("CryptoFactory unit test")
-public class CryptoFactoryTest {
+class CryptoFactoryTest {
   @BeforeAll
   private static void reactorVerbose() {
     // Tell Reactor to print verbose error messages

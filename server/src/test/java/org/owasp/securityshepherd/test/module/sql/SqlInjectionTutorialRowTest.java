@@ -24,7 +24,7 @@ import org.owasp.securityshepherd.test.util.TestUtils;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 @DisplayName("SqlInjectionTutorialRow unit test")
-public class SqlInjectionTutorialRowTest {
+class SqlInjectionTutorialRowTest {
   @Test
   void build_NullNameCommentAndError_ThrowsNullPointerException() {
     final SqlInjectionTutorialRowBuilder sqlInjectionTutorialRowBuilder =

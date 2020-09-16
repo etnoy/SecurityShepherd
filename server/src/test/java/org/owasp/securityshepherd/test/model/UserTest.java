@@ -27,7 +27,7 @@ import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 @DisplayName("User unit test")
-public class UserTest {
+class UserTest {
   @Test
   void build_DisplayNameNotGiven_ThrowsNullPointerException() {
     final UserBuilder userBuilder = User.builder();

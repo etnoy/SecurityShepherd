@@ -35,7 +35,7 @@ import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 @DisplayName("UserAuth unit test")
-public class UserAuthTest {
+class UserAuthTest {
 
   @Test
   void build_UserIdNotGiven_ThrowsNullPointerException() {

@@ -26,7 +26,7 @@ import reactor.core.publisher.Hooks;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("SqlInjectionDatabaseClientFactory unit test")
-public class SqlInjectionDatabaseClientFactoryTest {
+class SqlInjectionDatabaseClientFactoryTest {
   @BeforeAll
   private static void reactorVerbose() {
     // Tell Reactor to print verbose error messages

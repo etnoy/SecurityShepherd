@@ -26,7 +26,7 @@ import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 @DisplayName("PasswordAuth unit test")
-public class PasswordAuthTest {
+class PasswordAuthTest {
   @Test
   void build_HashedPasswordNotGiven_ThrowsNullPointerException() {
     final PasswordAuthBuilder passwordAuthBuilder =

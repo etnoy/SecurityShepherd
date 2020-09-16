@@ -26,7 +26,7 @@ import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 @DisplayName("Configuration unit test")
-public class ConfigurationTest {
+class ConfigurationTest {
   @Test
   void builderToString_ValidData_AsExpected() {
     assertThat(

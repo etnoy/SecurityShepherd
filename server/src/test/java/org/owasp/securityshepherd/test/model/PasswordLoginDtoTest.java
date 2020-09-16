@@ -23,7 +23,7 @@ import org.owasp.securityshepherd.test.util.TestUtils;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 @DisplayName("PasswordLoginDto unit test")
-public class PasswordLoginDtoTest {
+class PasswordLoginDtoTest {
   @Test
   void buildComment_ValidComment_Builds() {
     for (final String userName : TestUtils.STRINGS) {
