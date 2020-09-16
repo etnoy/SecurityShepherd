@@ -1,19 +1,17 @@
 /**
  * This file is part of Security Shepherd.
  *
- * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Security Shepherd.
- * If not, see <http://www.gnu.org/licenses/>.
- * 
+ * <p>You should have received a copy of the GNU General Public License along with Security
+ * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.owasp.securityshepherd.test.model;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -62,10 +60,12 @@ public class UserAuthTest {
   public void builderToString_ValidData_AsExpected() {
     final UserAuthBuilder builder = UserAuth.builder();
 
-    assertThat(builder.toString(),
-        is("UserAuth.UserAuthBuilder(id=null, userId=null, isEnabled=false, "
-            + "badLoginCount=0, isAdmin=false, suspendedUntil=null, suspensionMessage=null, "
-            + "lastLogin=null, lastLoginMethod=null)"));
+    assertThat(
+        builder.toString(),
+        is(
+            "UserAuth.UserAuthBuilder(id=null, userId=null, isEnabled=false, "
+                + "badLoginCount=0, isAdmin=false, suspendedUntil=null, suspensionMessage=null, "
+                + "lastLogin=null, lastLoginMethod=null)"));
   }
 
   @Test
@@ -97,8 +97,12 @@ public class UserAuthTest {
   public void buildLastLogin_ValidTime_Builds() {
     final int originalTime = 77;
     final int[] timesToTest = {originalTime, 0, 1, 2, 1000, 4000, 1581806000, 42};
-    final UserAuthBuilder userAuthBuilder = UserAuth.builder().userId(87L).lastLogin(
-        LocalDateTime.ofInstant(Instant.ofEpochMilli(originalTime), ZoneId.systemDefault()));
+    final UserAuthBuilder userAuthBuilder =
+        UserAuth.builder()
+            .userId(87L)
+            .lastLogin(
+                LocalDateTime.ofInstant(
+                    Instant.ofEpochMilli(originalTime), ZoneId.systemDefault()));
 
     for (final int millis : timesToTest) {
       final LocalDateTime time =
@@ -113,8 +117,9 @@ public class UserAuthTest {
 
   @Test
   public void buildLastLoginMethod_ValidLastLoginMethod_Builds() {
-    final String[] lastLoginMethodsToTest =
-        {"password", "saml", "ldap", null, "", "a", "login method with spaces", "_+^"};
+    final String[] lastLoginMethodsToTest = {
+      "password", "saml", "ldap", null, "", "a", "login method with spaces", "_+^"
+    };
     final UserAuthBuilder userAuthBuilder = UserAuth.builder().userId(6926L);
 
     for (final String lastLoginMethod : lastLoginMethodsToTest) {
@@ -148,9 +153,16 @@ public class UserAuthTest {
   @Test
   public void buildSuspensionMessage_ValidSuspensionMessage_Builds() {
     final String originalSuspensionMessage = "suspended";
-    final String[] suspensionMessagesToTest =
-        {originalSuspensionMessage, "You are suspended!", null, "", "banned",
-            "Long  With     Whitespace", "12345", "You tried to hack the server, fool!"};
+    final String[] suspensionMessagesToTest = {
+      originalSuspensionMessage,
+      "You are suspended!",
+      null,
+      "",
+      "banned",
+      "Long  With     Whitespace",
+      "12345",
+      "You tried to hack the server, fool!"
+    };
     final UserAuthBuilder userAuthBuilder = UserAuth.builder().userId(269L);
 
     for (final String suspensionMessage : suspensionMessagesToTest) {
@@ -193,10 +205,12 @@ public class UserAuthTest {
   public void toString_ValidData_AsExpected() {
     final UserAuth testAuth = UserAuth.builder().userId(14L).build();
 
-    assertThat(testAuth.toString(),
-        is("UserAuth(id=null, userId=14, isEnabled=false, badLoginCount=0, "
-            + "isAdmin=false, suspendedUntil=null, suspensionMessage=null, "
-            + "lastLogin=null, lastLoginMethod=null)"));
+    assertThat(
+        testAuth.toString(),
+        is(
+            "UserAuth(id=null, userId=14, isEnabled=false, badLoginCount=0, "
+                + "isAdmin=false, suspendedUntil=null, suspensionMessage=null, "
+                + "lastLogin=null, lastLoginMethod=null)"));
   }
 
   @Test
@@ -213,8 +227,9 @@ public class UserAuthTest {
   @Test
   public void withBadLoginCount_ValidBadLoginCount_ChangesBadLoginCount() {
     final int originalBadLoginCount = 0;
-    final int[] testedBadLoginCounts =
-        {originalBadLoginCount, 1, -1, 1000, -1000, 123456789, -12346789};
+    final int[] testedBadLoginCounts = {
+      originalBadLoginCount, 1, -1, 1000, -1000, 123456789, -12346789
+    };
 
     final UserAuth userAuth = UserAuth.builder().userId(4963L).build();
 
@@ -257,9 +272,13 @@ public class UserAuthTest {
     final List<Long> timesToTest =
         Arrays.asList(originalTime, 1L, 2L, 1000L, 5000L, 9000990909L, 12398234987345983L);
 
-    final List<LocalDateTime> dateTimesToTest = timesToTest.stream()
-        .map(epoch -> LocalDateTime.ofInstant(Instant.ofEpochMilli(epoch), ZoneId.systemDefault()))
-        .collect(Collectors.toCollection(ArrayList::new));
+    final List<LocalDateTime> dateTimesToTest =
+        timesToTest
+            .stream()
+            .map(
+                epoch ->
+                    LocalDateTime.ofInstant(Instant.ofEpochMilli(epoch), ZoneId.systemDefault()))
+            .collect(Collectors.toCollection(ArrayList::new));
 
     final UserAuth testAuth =
         UserAuth.builder().userId(5L).lastLogin(dateTimesToTest.get(0)).build();
@@ -276,8 +295,9 @@ public class UserAuthTest {
   public void withLastLoginMethod_ValidLastLoginMethod_ChangesLastLoginMethod() {
     final UserAuth userAuth = UserAuth.builder().userId(95L).build();
 
-    final String[] testedLastLoginMethods =
-        {null, "", "password", "saml", "ldap", "Long  With     Whitespace", "12345"};
+    final String[] testedLastLoginMethods = {
+      null, "", "password", "saml", "ldap", "Long  With     Whitespace", "12345"
+    };
 
     for (final String lastLoginMethod : testedLastLoginMethods) {
 
@@ -294,9 +314,13 @@ public class UserAuthTest {
     final List<Long> timesToTest =
         Arrays.asList(originalTime, 1L, 2L, 1000L, 5000L, 9000990909L, 12398234987345983L);
 
-    final List<LocalDateTime> dateTimesToTest = timesToTest.stream()
-        .map(epoch -> LocalDateTime.ofInstant(Instant.ofEpochMilli(epoch), ZoneId.systemDefault()))
-        .collect(Collectors.toCollection(ArrayList::new));
+    final List<LocalDateTime> dateTimesToTest =
+        timesToTest
+            .stream()
+            .map(
+                epoch ->
+                    LocalDateTime.ofInstant(Instant.ofEpochMilli(epoch), ZoneId.systemDefault()))
+            .collect(Collectors.toCollection(ArrayList::new));
 
     final UserAuth testAuth =
         UserAuth.builder().userId(6L).lastLogin(dateTimesToTest.get(0)).build();
@@ -316,8 +340,14 @@ public class UserAuthTest {
   public void withSuspensionMessage_ValidSuspensionMessage_ChangesSuspensionMessage() {
     final UserAuth userAuth = UserAuth.builder().userId(591L).build();
     assertThat(userAuth.getSuspensionMessage(), is(nullValue()));
-    final String[] testedSuspensionMessages = {null, "", "banned", "Long  With     Whitespace",
-        "12345", "You tried to hack the server, fool!"};
+    final String[] testedSuspensionMessages = {
+      null,
+      "",
+      "banned",
+      "Long  With     Whitespace",
+      "12345",
+      "You tried to hack the server, fool!"
+    };
 
     for (final String suspensionMessage : testedSuspensionMessages) {
       final UserAuth changedAuth = userAuth.withSuspensionMessage(suspensionMessage);

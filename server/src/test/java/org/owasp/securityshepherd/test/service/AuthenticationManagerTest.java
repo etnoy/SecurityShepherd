@@ -1,19 +1,17 @@
 /**
  * This file is part of Security Shepherd.
  *
- * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Security Shepherd.
- * If not, see <http://www.gnu.org/licenses/>.
- * 
+ * <p>You should have received a copy of the GNU General Public License along with Security
+ * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.owasp.securityshepherd.test.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,11 +48,9 @@ public class AuthenticationManagerTest {
 
   AuthenticationManager authenticationManager;
 
-  @Mock
-  WebTokenService webTokenService;
+  @Mock WebTokenService webTokenService;
 
-  @Mock
-  UserService userService;
+  @Mock UserService userService;
 
   @Test
   public void authenticate_InvalidAuthentication_ReturnsValidAuthentication() {
@@ -63,7 +59,8 @@ public class AuthenticationManagerTest {
     when(mockAuthentication.getCredentials()).thenReturn(mockToken);
     when(webTokenService.validateToken(mockToken)).thenReturn(false);
 
-    StepVerifier.create(authenticationManager.authenticate(mockAuthentication)).expectComplete()
+    StepVerifier.create(authenticationManager.authenticate(mockAuthentication))
+        .expectComplete()
         .verify();
   }
 
@@ -79,17 +76,25 @@ public class AuthenticationManagerTest {
     final SimpleGrantedAuthority mockSimpleGrantedAuthority2 = mock(SimpleGrantedAuthority.class);
     final SimpleGrantedAuthority mockSimpleGrantedAuthority3 = mock(SimpleGrantedAuthority.class);
 
-    final Flux<SimpleGrantedAuthority> authorityFlux = Flux.just(mockSimpleGrantedAuthority1,
-        mockSimpleGrantedAuthority2, mockSimpleGrantedAuthority3);
-    final List<SimpleGrantedAuthority> authorities = Stream
-        .of(mockSimpleGrantedAuthority1, mockSimpleGrantedAuthority2, mockSimpleGrantedAuthority3)
-        .collect(Collectors.toList());
+    final Flux<SimpleGrantedAuthority> authorityFlux =
+        Flux.just(
+            mockSimpleGrantedAuthority1, mockSimpleGrantedAuthority2, mockSimpleGrantedAuthority3);
+    final List<SimpleGrantedAuthority> authorities =
+        Stream.of(
+                mockSimpleGrantedAuthority1,
+                mockSimpleGrantedAuthority2,
+                mockSimpleGrantedAuthority3)
+            .collect(Collectors.toList());
     when(userService.getAuthoritiesByUserId(mockUserId)).thenReturn(authorityFlux);
-    StepVerifier.create(authenticationManager.authenticate(mockAuthentication)).assertNext(auth -> {
-      assertThat(auth).isInstanceOf(UsernamePasswordAuthenticationToken.class);
-      assertThat(auth.getPrincipal()).isEqualTo(mockUserId);
-      assertThat(auth.getAuthorities()).isEqualTo(authorities);
-    }).expectComplete().verify();
+    StepVerifier.create(authenticationManager.authenticate(mockAuthentication))
+        .assertNext(
+            auth -> {
+              assertThat(auth).isInstanceOf(UsernamePasswordAuthenticationToken.class);
+              assertThat(auth.getPrincipal()).isEqualTo(mockUserId);
+              assertThat(auth.getAuthorities()).isEqualTo(authorities);
+            })
+        .expectComplete()
+        .verify();
   }
 
   @BeforeEach

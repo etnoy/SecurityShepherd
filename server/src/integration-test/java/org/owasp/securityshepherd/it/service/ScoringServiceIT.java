@@ -1,19 +1,17 @@
 /**
  * This file is part of Security Shepherd.
  *
- * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Security Shepherd.
- * If not, see <http://www.gnu.org/licenses/>.
- * 
+ * <p>You should have received a copy of the GNU General Public License along with Security
+ * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.owasp.securityshepherd.it.service;
 
 import java.time.Clock;
@@ -64,50 +62,35 @@ public class ScoringServiceIT {
     Hooks.onOperatorDebug();
   }
 
-  @Autowired
-  ModuleService moduleService;
+  @Autowired ModuleService moduleService;
 
-  @Autowired
-  UserService userService;
+  @Autowired UserService userService;
 
-  @Autowired
-  SubmissionService submissionService;
+  @Autowired SubmissionService submissionService;
 
-  @Autowired
-  CorrectionService correctionService;
+  @Autowired CorrectionService correctionService;
 
-  @Autowired
-  ScoreService scoringService;
+  @Autowired ScoreService scoringService;
 
-  @Autowired
-  CorrectionRepository correctionRepository;
+  @Autowired CorrectionRepository correctionRepository;
 
-  @Autowired
-  ModuleRepository moduleRepository;
+  @Autowired ModuleRepository moduleRepository;
 
-  @Autowired
-  SubmissionRepository submissionRepository;
+  @Autowired SubmissionRepository submissionRepository;
 
-  @Autowired
-  ModulePointRepository modulePointRepository;
+  @Autowired ModulePointRepository modulePointRepository;
 
-  @Autowired
-  FlagHandler flagComponent;
+  @Autowired FlagHandler flagComponent;
 
-  @Autowired
-  Clock clock;
+  @Autowired Clock clock;
 
-  @Autowired
-  TestUtils testService;
+  @Autowired TestUtils testService;
 
-  @Autowired
-  ConfigurationService configurationService;
+  @Autowired ConfigurationService configurationService;
 
-  @Autowired
-  KeyService keyService;
+  @Autowired KeyService keyService;
 
-  @Autowired
-  CryptoService cryptoService;
+  @Autowired CryptoService cryptoService;
 
   @Test
   public void computeScoreForModule_SubmittedScores_ReturnsCorrectScoresForUsers()
@@ -166,8 +149,12 @@ public class ScoringServiceIT {
     List<Integer> timeOffsets = Arrays.asList(3, 4, 1, 2, 3, 1, 0, 5);
 
     // The duration between times should be 1 day
-    final List<Clock> clocks = timeOffsets.stream().map(Duration::ofDays)
-        .map(duration -> Clock.offset(startTime, duration)).collect(Collectors.toList());
+    final List<Clock> clocks =
+        timeOffsets
+            .stream()
+            .map(Duration::ofDays)
+            .map(duration -> Clock.offset(startTime, duration))
+            .collect(Collectors.toList());
 
     final List<String> flags =
         Arrays.asList(flag, flag, flag, wrongFlag, flag, flag, flag, wrongFlag);
@@ -198,23 +185,80 @@ public class ScoringServiceIT {
     correctionService.submit(userIds.get(1), 100, "Thanks for the bribe").block();
 
     StepVerifier.create(scoringService.getScoreboard())
-        .expectNext(ScoreboardEntry.builder().rank(1L).userId(userIds.get(1)).score(251L)
-            .goldMedals(0L).silverMedals(0L).bronzeMedals(0L).build())
-        .expectNext(ScoreboardEntry.builder().rank(2L).userId(userIds.get(6)).score(231L)
-            .goldMedals(3L).silverMedals(0L).bronzeMedals(0L).build())
-        .expectNext(ScoreboardEntry.builder().rank(3L).userId(userIds.get(5)).score(201L)
-            .goldMedals(0L).silverMedals(3L).bronzeMedals(0L).build())
-        .expectNext(ScoreboardEntry.builder().rank(4L).userId(userIds.get(0)).score(171L)
-            .goldMedals(0L).silverMedals(0L).bronzeMedals(0L).build())
-        .expectNext(ScoreboardEntry.builder().rank(4L).userId(userIds.get(4)).score(171L)
-            .goldMedals(0L).silverMedals(0L).bronzeMedals(0L).build())
-        .expectNext(ScoreboardEntry.builder().rank(6L).userId(userIds.get(3)).score(0L)
-            .goldMedals(0L).silverMedals(0L).bronzeMedals(0L).build())
-        .expectNext(ScoreboardEntry.builder().rank(6L).userId(userIds.get(7)).score(0L)
-            .goldMedals(0L).silverMedals(0L).bronzeMedals(0L).build())
-        .expectNext(ScoreboardEntry.builder().rank(8L).userId(userIds.get(2)).score(-799L)
-            .goldMedals(0L).silverMedals(3L).bronzeMedals(0L).build())
-        .expectComplete().verify();
+        .expectNext(
+            ScoreboardEntry.builder()
+                .rank(1L)
+                .userId(userIds.get(1))
+                .score(251L)
+                .goldMedals(0L)
+                .silverMedals(0L)
+                .bronzeMedals(0L)
+                .build())
+        .expectNext(
+            ScoreboardEntry.builder()
+                .rank(2L)
+                .userId(userIds.get(6))
+                .score(231L)
+                .goldMedals(3L)
+                .silverMedals(0L)
+                .bronzeMedals(0L)
+                .build())
+        .expectNext(
+            ScoreboardEntry.builder()
+                .rank(3L)
+                .userId(userIds.get(5))
+                .score(201L)
+                .goldMedals(0L)
+                .silverMedals(3L)
+                .bronzeMedals(0L)
+                .build())
+        .expectNext(
+            ScoreboardEntry.builder()
+                .rank(4L)
+                .userId(userIds.get(0))
+                .score(171L)
+                .goldMedals(0L)
+                .silverMedals(0L)
+                .bronzeMedals(0L)
+                .build())
+        .expectNext(
+            ScoreboardEntry.builder()
+                .rank(4L)
+                .userId(userIds.get(4))
+                .score(171L)
+                .goldMedals(0L)
+                .silverMedals(0L)
+                .bronzeMedals(0L)
+                .build())
+        .expectNext(
+            ScoreboardEntry.builder()
+                .rank(6L)
+                .userId(userIds.get(3))
+                .score(0L)
+                .goldMedals(0L)
+                .silverMedals(0L)
+                .bronzeMedals(0L)
+                .build())
+        .expectNext(
+            ScoreboardEntry.builder()
+                .rank(6L)
+                .userId(userIds.get(7))
+                .score(0L)
+                .goldMedals(0L)
+                .silverMedals(0L)
+                .bronzeMedals(0L)
+                .build())
+        .expectNext(
+            ScoreboardEntry.builder()
+                .rank(8L)
+                .userId(userIds.get(2))
+                .score(-799L)
+                .goldMedals(0L)
+                .silverMedals(3L)
+                .bronzeMedals(0L)
+                .build())
+        .expectComplete()
+        .verify();
   }
 
   @BeforeEach

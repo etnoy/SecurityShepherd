@@ -1,19 +1,17 @@
 /**
  * This file is part of Security Shepherd.
  *
- * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Security Shepherd.
- * If not, see <http://www.gnu.org/licenses/>.
- * 
+ * <p>You should have received a copy of the GNU General Public License along with Security
+ * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.owasp.securityshepherd.test.model;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -32,8 +30,9 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 public class ModuleTest {
   @Test
   public void build_NameNotGiven_ThrowsNullPointerException() {
-    Throwable thrownException = assertThrows(NullPointerException.class,
-        () -> Module.builder().shortName("test-module").build());
+    Throwable thrownException =
+        assertThrows(
+            NullPointerException.class, () -> Module.builder().shortName("test-module").build());
     assertThat(thrownException.getMessage(), is("name is marked non-null but is null"));
   }
 
@@ -56,7 +55,7 @@ public class ModuleTest {
 
   @Test
   public void buildIsExactFlag_TrueOrFalse_MatchesBuild() {
-    //TODO
+    // TODO
     for (final boolean isFlagExact : TestUtils.BOOLEANS) {
       final ModuleBuilder builder = Module.builder().name("TestModule").shortName("test-module");
 
@@ -139,27 +138,36 @@ public class ModuleTest {
   public void moduleBuilderToString_ValidData_AsExpected() {
     final ModuleBuilder builder = Module.builder();
 
-    assertThat(builder.toString(), is(
-        "Module.ModuleBuilder(id=null, name=null, shortName=null, description=null, isFlagEnabled=false, "
-            + "isFlagExact=false, flag=null, isOpen=false)"));
+    assertThat(
+        builder.toString(),
+        is(
+            "Module.ModuleBuilder(id=null, name=null, shortName=null, description=null, isFlagEnabled=false, "
+                + "isFlagExact=false, flag=null, isOpen=false)"));
   }
 
   @Test
   public void toString_ValidData_AsExpected() {
     final Module testModule = Module.builder().name("TestModule").shortName("test-module").build();
 
-    assertThat(testModule.toString(), is(
-        "Module(id=null, name=TestModule, shortName=test-module, description=null, isFlagEnabled=false, isFlagExact=false, "
-            + "flag=null, isOpen=false)"));
+    assertThat(
+        testModule.toString(),
+        is(
+            "Module(id=null, name=TestModule, shortName=test-module, description=null, isFlagEnabled=false, isFlagExact=false, "
+                + "flag=null, isOpen=false)"));
   }
 
   @Test
   public void withDescription_ValidDescription_ChangesDescription() {
-    final String[] testedDescriptions =
-        {"Description", null, "", "a", "Long Description With Spaces", "12345"};
+    final String[] testedDescriptions = {
+      "Description", null, "", "a", "Long Description With Spaces", "12345"
+    };
 
-    final Module testModule = Module.builder().name("TestModule").shortName("test-module")
-        .description("Description").build();
+    final Module testModule =
+        Module.builder()
+            .name("TestModule")
+            .shortName("test-module")
+            .description("Description")
+            .build();
 
     assertThat(testModule.getDescription(), is("Description"));
 
@@ -214,8 +222,12 @@ public class ModuleTest {
 
   @Test
   public void withId_ValidId_ChangesId() {
-    final Module testModule = Module.builder().id(TestUtils.INITIAL_LONG).name("TestModule")
-        .shortName("test-module").build();
+    final Module testModule =
+        Module.builder()
+            .id(TestUtils.INITIAL_LONG)
+            .name("TestModule")
+            .shortName("test-module")
+            .build();
 
     for (final long id : TestUtils.LONGS) {
       final Module withModule = testModule.withId(id);

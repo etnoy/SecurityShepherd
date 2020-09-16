@@ -1,19 +1,17 @@
 /**
  * This file is part of Security Shepherd.
  *
- * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Security Shepherd.
- * If not, see <http://www.gnu.org/licenses/>.
- * 
+ * <p>You should have received a copy of the GNU General Public License along with Security
+ * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.owasp.securityshepherd.it.module.sqlinjection;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -44,23 +42,17 @@ import reactor.test.StepVerifier;
 @DisplayName("SqlInjectionTutorial integration test")
 public class SqlInjectionTutorialIT {
 
-  @Autowired
-  SqlInjectionTutorial sqlInjectionTutorial;
+  @Autowired SqlInjectionTutorial sqlInjectionTutorial;
 
-  @Autowired
-  TestUtils testUtils;
+  @Autowired TestUtils testUtils;
 
-  @Autowired
-  UserService userService;
+  @Autowired UserService userService;
 
-  @Autowired
-  ModuleService moduleService;
+  @Autowired ModuleService moduleService;
 
-  @Autowired
-  SubmissionService submissionService;
+  @Autowired SubmissionService submissionService;
 
-  @Autowired
-  ScoreService scoreService;
+  @Autowired ScoreService scoreService;
 
   @BeforeAll
   private static void reactorVerbose() {
@@ -86,7 +78,9 @@ public class SqlInjectionTutorialIT {
     sqlInjectionTutorial.initialize().block();
 
     StepVerifier.create(sqlInjectionTutorial.submitQuery(userId, "' OR '1' = '1"))
-        .expectNextCount(6).expectComplete().verify();
+        .expectNextCount(6)
+        .expectComplete()
+        .verify();
   }
 
   @Test
@@ -94,15 +88,17 @@ public class SqlInjectionTutorialIT {
     final Long userId = userService.create("TestUser1").block();
     sqlInjectionTutorial.initialize().block();
 
-    final String errorMessage = "io.r2dbc.spi.R2dbcBadGrammarException: [42000] [42000] "
-        + "Syntax error in SQL statement \"SELECT * FROM sqlinjection.users "
-        + "WHERE name = ''[*]'\"; SQL statement:\n"
-        + "SELECT * FROM sqlinjection.users WHERE name = ''' [42000-200]";
+    final String errorMessage =
+        "io.r2dbc.spi.R2dbcBadGrammarException: [42000] [42000] "
+            + "Syntax error in SQL statement \"SELECT * FROM sqlinjection.users "
+            + "WHERE name = ''[*]'\"; SQL statement:\n"
+            + "SELECT * FROM sqlinjection.users WHERE name = ''' [42000-200]";
 
-    StepVerifier
-        .create(
+    StepVerifier.create(
             sqlInjectionTutorial.submitQuery(userId, "'").map(SqlInjectionTutorialRow::getError))
-        .expectNext(errorMessage).expectComplete().verify();
+        .expectNext(errorMessage)
+        .expectComplete()
+        .verify();
   }
 
   @Test
@@ -110,12 +106,21 @@ public class SqlInjectionTutorialIT {
     final Long userId = userService.create("TestUser1").block();
     final Long moduleId = sqlInjectionTutorial.initialize().block();
 
-    final Mono<String> flagMono = sqlInjectionTutorial.submitQuery(userId, "' OR '1' = '1").skip(5)
-        .next().map(this::extractFlagFromRow);
+    final Mono<String> flagMono =
+        sqlInjectionTutorial
+            .submitQuery(userId, "' OR '1' = '1")
+            .skip(5)
+            .next()
+            .map(this::extractFlagFromRow);
 
     // Submit the flag we got from the sql injection and make sure it validates
-    StepVerifier.create(flagMono.flatMap(flag -> submissionService.submit(userId, moduleId, flag))
-        .map(Submission::isValid)).expectNext(true).expectComplete().verify();
+    StepVerifier.create(
+            flagMono
+                .flatMap(flag -> submissionService.submit(userId, moduleId, flag))
+                .map(Submission::isValid))
+        .expectNext(true)
+        .expectComplete()
+        .verify();
   }
 
   @Test
@@ -125,19 +130,27 @@ public class SqlInjectionTutorialIT {
 
     moduleService.setDynamicFlag(moduleId).block();
 
-    final Mono<String> flagVerificationMono = sqlInjectionTutorial
-        .submitQuery(userId, "' OR '1' = '1").skip(5).next().map(this::extractFlagFromRow);
+    final Mono<String> flagVerificationMono =
+        sqlInjectionTutorial
+            .submitQuery(userId, "' OR '1' = '1")
+            .skip(5)
+            .next()
+            .map(this::extractFlagFromRow);
 
     // Take the flag we got from the tutorial, modify it, and expect validation to fail
-    StepVerifier.create(flagVerificationMono
-        .flatMap(flag -> submissionService.submit(userId, moduleId, flag + "wrong"))
-        .map(Submission::isValid)).expectNext(false).expectComplete().verify();
+    StepVerifier.create(
+            flagVerificationMono
+                .flatMap(flag -> submissionService.submit(userId, moduleId, flag + "wrong"))
+                .map(Submission::isValid))
+        .expectNext(false)
+        .expectComplete()
+        .verify();
   }
 
-  // TODO: 
-  
+  // TODO:
+
   // ' OR '1=1 gives numberformatexception
-  
+
   @BeforeEach
   private void clear() {
     testUtils.deleteAll().block();

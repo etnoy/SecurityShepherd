@@ -1,19 +1,17 @@
 /**
  * This file is part of Security Shepherd.
  *
- * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Security Shepherd.
- * If not, see <http://www.gnu.org/licenses/>.
- * 
+ * <p>You should have received a copy of the GNU General Public License along with Security
+ * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.owasp.securityshepherd.test.application;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -55,40 +53,32 @@ public class StartupRunnerTest {
 
   private StartupRunner startupRunner;
 
-  @Mock
-  private UserService userService;
+  @Mock private UserService userService;
 
-  @Mock
-  private ModuleService moduleService;
+  @Mock private ModuleService moduleService;
 
-  @Mock
-  private XssTutorial xssTutorial;
+  @Mock private XssTutorial xssTutorial;
 
-  @Mock
-  private SqlInjectionTutorial sqlInjectionTutorial;
+  @Mock private SqlInjectionTutorial sqlInjectionTutorial;
 
-  @Mock
-  private SubmissionService submissionService;
+  @Mock private SubmissionService submissionService;
 
-  @Mock
-  private CorrectionService correctionService;
+  @Mock private CorrectionService correctionService;
 
-  @Mock
-  private ScoreService scoringService;
+  @Mock private ScoreService scoringService;
 
-  @Mock
-  private SubmissionRepository submissionRepository;
+  @Mock private SubmissionRepository submissionRepository;
 
-  @Mock
-  private FlagHandler flagHandler;
+  @Mock private FlagHandler flagHandler;
 
   @Test
   public void run_MockedServices_CallsMocks() {
 
     final String flag = "itsaflag";
 
-    when(userService.createPasswordUser("Admin", "admin",
-        "$2y$08$WpfUVZLcXNNpmM2VwSWlbe25dae.eEC99AOAVUiU5RaJmfFsE9B5G")).thenReturn(Mono.just(1L));
+    when(userService.createPasswordUser(
+            "Admin", "admin", "$2y$08$WpfUVZLcXNNpmM2VwSWlbe25dae.eEC99AOAVUiU5RaJmfFsE9B5G"))
+        .thenReturn(Mono.just(1L));
 
     when(xssTutorial.initialize()).thenReturn(Mono.just(1L));
     when(sqlInjectionTutorial.initialize()).thenReturn(Mono.just(2L));
@@ -185,8 +175,14 @@ public class StartupRunnerTest {
   @BeforeEach
   private void setUp() throws Exception {
     // Set up the system under test
-    startupRunner = new StartupRunner(userService, moduleService, xssTutorial, sqlInjectionTutorial,
-        submissionService, correctionService, scoringService);
+    startupRunner =
+        new StartupRunner(
+            userService,
+            moduleService,
+            xssTutorial,
+            sqlInjectionTutorial,
+            submissionService,
+            correctionService,
+            scoringService);
   }
-
 }

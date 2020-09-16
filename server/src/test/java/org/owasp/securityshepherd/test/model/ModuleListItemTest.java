@@ -1,19 +1,17 @@
 /**
  * This file is part of Security Shepherd.
  *
- * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Security Shepherd.
- * If not, see <http://www.gnu.org/licenses/>.
- * 
+ * <p>You should have received a copy of the GNU General Public License along with Security
+ * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.owasp.securityshepherd.test.model;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -32,22 +30,28 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 public class ModuleListItemTest {
   @Test
   public void build_IdNotGiven_ThrowsNullPointerException() {
-    Throwable thrownException = assertThrows(NullPointerException.class,
-        () -> ModuleListItem.builder().name("TestModule").shortName("test-module").build());
+    Throwable thrownException =
+        assertThrows(
+            NullPointerException.class,
+            () -> ModuleListItem.builder().name("TestModule").shortName("test-module").build());
     assertThat(thrownException.getMessage(), is("id is marked non-null but is null"));
   }
 
   @Test
   public void build_NameNotGiven_ThrowsNullPointerException() {
-    Throwable thrownException = assertThrows(NullPointerException.class,
-        () -> ModuleListItem.builder().id(1L).shortName("test-module").build());
+    Throwable thrownException =
+        assertThrows(
+            NullPointerException.class,
+            () -> ModuleListItem.builder().id(1L).shortName("test-module").build());
     assertThat(thrownException.getMessage(), is("name is marked non-null but is null"));
   }
 
   @Test
   public void build_ShortNameNotGiven_ThrowsNullPointerException() {
-    Throwable thrownException = assertThrows(NullPointerException.class,
-        () -> ModuleListItem.builder().id(1L).name("TestModuleListItem").build());
+    Throwable thrownException =
+        assertThrows(
+            NullPointerException.class,
+            () -> ModuleListItem.builder().id(1L).name("TestModuleListItem").build());
     assertThat(thrownException.getMessage(), is("shortName is marked non-null but is null"));
   }
 
@@ -143,9 +147,11 @@ public class ModuleListItemTest {
   public void moduleListItemBuilderToString_ValidData_AsExpected() {
     final ModuleListItemBuilder builder = ModuleListItem.builder();
 
-    assertThat(builder.toString(),
-        is("ModuleListItem.ModuleListItemBuilder(id=null, name=null, shortName=null, "
-            + "description=null, isSolved=null)"));
+    assertThat(
+        builder.toString(),
+        is(
+            "ModuleListItem.ModuleListItemBuilder(id=null, name=null, shortName=null, "
+                + "description=null, isSolved=null)"));
   }
 
   @Test
@@ -153,7 +159,9 @@ public class ModuleListItemTest {
     final ModuleListItem testModuleListItem =
         ModuleListItem.builder().id(1L).name("TestModuleListItem").shortName("test-module").build();
 
-    assertThat(testModuleListItem.toString(), is(
-        "ModuleListItem(id=1, name=TestModuleListItem, shortName=test-module, description=null, isSolved=null)"));
+    assertThat(
+        testModuleListItem.toString(),
+        is(
+            "ModuleListItem(id=1, name=TestModuleListItem, shortName=test-module, description=null, isSolved=null)"));
   }
 }

@@ -1,19 +1,17 @@
 /**
  * This file is part of Security Shepherd.
  *
- * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Security Shepherd.
- * If not, see <http://www.gnu.org/licenses/>.
- * 
+ * <p>You should have received a copy of the GNU General Public License along with Security
+ * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.owasp.securityshepherd.test.service;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -53,8 +51,7 @@ public class ClassServiceTest {
 
   private ClassService classService;
 
-  @Mock
-  private ClassRepository classRepository;
+  @Mock private ClassRepository classRepository;
 
   @Test
   @DisplayName("count() call the count function of ClassRepository and return its same value")
@@ -63,13 +60,16 @@ public class ClassServiceTest {
 
     when(classRepository.count()).thenReturn(Mono.just(mockedClassCount));
 
-    StepVerifier.create(classService.count()).expectNext(mockedClassCount).expectComplete()
+    StepVerifier.create(classService.count())
+        .expectNext(mockedClassCount)
+        .expectComplete()
         .verify();
     verify(classRepository, times(1)).count();
   }
 
   @Test
-  @DisplayName("create() should return DuplicateClassNameException when the given name is already taken")
+  @DisplayName(
+      "create() should return DuplicateClassNameException when the given name is already taken")
   public void create_DuplicateName_ReturnsDuplicateClassNameException() {
     final String mockClassName = "TestClass";
     final ClassEntity mockClass = mock(ClassEntity.class);
@@ -77,13 +77,15 @@ public class ClassServiceTest {
     when(classRepository.findByName(mockClassName)).thenReturn(Mono.just(mockClass));
 
     StepVerifier.create(classService.create(mockClassName))
-        .expectError(DuplicateClassNameException.class).verify();
+        .expectError(DuplicateClassNameException.class)
+        .verify();
   }
 
   @Test
   @DisplayName("create() should return IllegalArgumentException when called with an empty name")
   public void create_EmptyArgument_ReturnsIllegalArgumentException() {
-    StepVerifier.create(classService.create("")).expectError(IllegalArgumentException.class)
+    StepVerifier.create(classService.create(""))
+        .expectError(IllegalArgumentException.class)
         .verify();
   }
 
@@ -104,10 +106,14 @@ public class ClassServiceTest {
     when(classRepository.save(any(ClassEntity.class)))
         .thenAnswer(user -> Mono.just(user.getArgument(0, ClassEntity.class).withId(mockClassId)));
 
-    StepVerifier.create(classService.create(mockClassName)).assertNext(createdClass -> {
-      assertThat(createdClass, is(instanceOf(ClassEntity.class)));
-      assertThat(createdClass.getName(), is(mockClassName));
-    }).expectComplete().verify();
+    StepVerifier.create(classService.create(mockClassName))
+        .assertNext(
+            createdClass -> {
+              assertThat(createdClass, is(instanceOf(ClassEntity.class)));
+              assertThat(createdClass.getName(), is(mockClassName));
+            })
+        .expectComplete()
+        .verify();
 
     verify(classRepository, times(1)).findByName(mockClassName);
     verify(classRepository, times(1)).save(any(ClassEntity.class));
@@ -120,7 +126,9 @@ public class ClassServiceTest {
 
     when(classRepository.existsById(mockClassId)).thenReturn(Mono.just(true));
 
-    StepVerifier.create(classService.existsById(mockClassId)).expectNext(true).expectComplete()
+    StepVerifier.create(classService.existsById(mockClassId))
+        .expectNext(true)
+        .expectComplete()
         .verify();
     verify(classRepository, times(1)).existsById(mockClassId);
   }
@@ -132,7 +140,9 @@ public class ClassServiceTest {
 
     when(classRepository.existsById(mockClassId)).thenReturn(Mono.just(false));
 
-    StepVerifier.create(classService.existsById(mockClassId)).expectNext(false).expectComplete()
+    StepVerifier.create(classService.existsById(mockClassId))
+        .expectNext(false)
+        .expectComplete()
         .verify();
 
     verify(classRepository, times(1)).existsById(mockClassId);
@@ -141,9 +151,11 @@ public class ClassServiceTest {
   @Test
   @DisplayName("Getting an invalid class id should return InvalidClassIdException")
   public void getById_InvalidClassId_ReturnsInvalidClassIdException() {
-    StepVerifier.create(classService.getById(-1)).expectError(InvalidClassIdException.class)
+    StepVerifier.create(classService.getById(-1))
+        .expectError(InvalidClassIdException.class)
         .verify();
-    StepVerifier.create(classService.getById(0)).expectError(InvalidClassIdException.class)
+    StepVerifier.create(classService.getById(0))
+        .expectError(InvalidClassIdException.class)
         .verify();
   }
 
@@ -160,15 +172,20 @@ public class ClassServiceTest {
     when(mockClass.getName()).thenReturn(mockName);
     when(classRepository.findById(mockId)).thenReturn(Mono.just(mockClass));
 
-    StepVerifier.create(classService.getById(mockId)).assertNext(classEntity -> {
-      assertThat(classEntity.getName(), is(mockName));
-    }).expectComplete().verify();
+    StepVerifier.create(classService.getById(mockId))
+        .assertNext(
+            classEntity -> {
+              assertThat(classEntity.getName(), is(mockName));
+            })
+        .expectComplete()
+        .verify();
 
     verify(classRepository, times(1)).findById(mockId);
   }
 
   @Test
-  @DisplayName("Setting a class name to a name that is taken should return DuplicateClassNameException")
+  @DisplayName(
+      "Setting a class name to a name that is taken should return DuplicateClassNameException")
   public void setName_DuplicateName_ReturnsDuplicateClassNameException() {
     final ClassEntity mockClass = mock(ClassEntity.class);
     final String newName = "newTestClass";
@@ -181,7 +198,8 @@ public class ClassServiceTest {
     when(classRepository.findByName(newName)).thenReturn(Mono.just(mockClass));
 
     StepVerifier.create(classService.setName(mockClassId, newName))
-        .expectError(DuplicateClassNameException.class).verify();
+        .expectError(DuplicateClassNameException.class)
+        .verify();
   }
 
   @Test
@@ -192,12 +210,14 @@ public class ClassServiceTest {
 
     for (final long id : idsToTest) {
       StepVerifier.create(classService.setName(id, newName))
-          .expectError(InvalidClassIdException.class).verify();
+          .expectError(InvalidClassIdException.class)
+          .verify();
     }
   }
 
   @Test
-  @DisplayName("Setting the name of a class that does not exist should return ClassIdNotFoundException")
+  @DisplayName(
+      "Setting the name of a class that does not exist should return ClassIdNotFoundException")
   public void setName_NonExistentId_ReturnsClassIdNotFoundException() {
     final String newName = "newTestClass";
 
@@ -206,13 +226,15 @@ public class ClassServiceTest {
     when(classRepository.existsById(mockId)).thenReturn(Mono.just(false));
 
     StepVerifier.create(classService.setName(mockId, newName))
-        .expectError(ClassIdNotFoundException.class).verify();
+        .expectError(ClassIdNotFoundException.class)
+        .verify();
   }
 
   @Test
   @DisplayName("Setting the name of a class to null should return IllegalArgumentException")
   public void setName_NullName_ReturnsIllegalArgumentException() {
-    StepVerifier.create(classService.setName(1, null)).expectError(IllegalArgumentException.class)
+    StepVerifier.create(classService.setName(1, null))
+        .expectError(IllegalArgumentException.class)
         .verify();
   }
 
@@ -235,9 +257,13 @@ public class ClassServiceTest {
 
     when(classRepository.save(mockClassWithName)).thenReturn(Mono.just(mockClassWithName));
 
-    StepVerifier.create(classService.setName(mockId, newName)).assertNext(classEntity -> {
-      assertThat(classEntity.getName(), is(newName));
-    }).expectComplete().verify();
+    StepVerifier.create(classService.setName(mockId, newName))
+        .assertNext(
+            classEntity -> {
+              assertThat(classEntity.getName(), is(newName));
+            })
+        .expectComplete()
+        .verify();
     verify(classRepository, times(1)).findById(mockId);
     verify(classRepository, times(1)).findByName(newName);
   }
@@ -246,5 +272,4 @@ public class ClassServiceTest {
   private void setUp() {
     classService = new ClassService(classRepository);
   }
-
 }

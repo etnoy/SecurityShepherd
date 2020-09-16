@@ -1,19 +1,17 @@
 /**
  * This file is part of Security Shepherd.
  *
- * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Security Shepherd.
- * If not, see <http://www.gnu.org/licenses/>.
- * 
+ * <p>You should have received a copy of the GNU General Public License along with Security
+ * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.owasp.securityshepherd.test.model;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -102,23 +100,31 @@ public class UserTest {
   public void toString_ValidData_AsExpected() {
     final User testUser = User.builder().displayName("TestUser").build();
 
-    assertThat(testUser.toString(),
-        is("User(id=null, displayName=TestUser, classId=null, email=null, "
-            + "isNotBanned=false, accountCreated=null, key=null)"));
+    assertThat(
+        testUser.toString(),
+        is(
+            "User(id=null, displayName=TestUser, classId=null, email=null, "
+                + "isNotBanned=false, accountCreated=null, key=null)"));
   }
 
   @Test
   public void userBuilderToString_ValidData_AsExpected() {
     final UserBuilder builder = User.builder();
 
-    assertThat(builder.toString(), is("User.UserBuilder(id=null, displayName=null, classId=null, "
-        + "email=null, isNotBanned=false, accountCreated=null, key=null)"));
+    assertThat(
+        builder.toString(),
+        is(
+            "User.UserBuilder(id=null, displayName=null, classId=null, "
+                + "email=null, isNotBanned=false, accountCreated=null, key=null)"));
   }
 
   @Test
   public void withAccountCreated_ValidTime_ChangesAccountCreationTime() {
-    final User user = User.builder().displayName("TestUser")
-        .accountCreated(TestUtils.INITIAL_LOCALDATETIME).build();
+    final User user =
+        User.builder()
+            .displayName("TestUser")
+            .accountCreated(TestUtils.INITIAL_LOCALDATETIME)
+            .build();
 
     for (final LocalDateTime accountCreated : TestUtils.LOCALDATETIMES_WITH_NULL) {
       final User withUser = user.withAccountCreated(accountCreated);
