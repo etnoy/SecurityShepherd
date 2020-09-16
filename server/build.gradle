@@ -5,6 +5,7 @@ plugins {
 	id 'eclipse'
 	id 'jacoco'
 	id "io.freefair.lombok" version "5.2.1"
+	id "org.sonarqube" version "2.7.1"
 }
 
 group = 'org.owasp.securityshepherd'
@@ -122,5 +123,12 @@ test {
 	testLogging {
 		events "failed"
 		exceptionFormat "full"
+	}
+}
+
+sonarqube {
+	properties {
+		property "sonar.projectName", "Security Shepherd"
+		property "sonar.projectKey", "etnoy_SecurityShepherd"
 	}
 }
