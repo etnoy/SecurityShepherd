@@ -17,6 +17,12 @@ repositories {
 	mavenLocal()
 }
 
+jacocoTestReport {
+	reports {
+		xml.enabled = true
+	}
+}
+
 sourceSets {
 	integrationTest {
 		compileClasspath += sourceSets.main.output + sourceSets.test.output
@@ -120,6 +126,8 @@ integrationTest {
 test {
 	useJUnitPlatform()
 
+	finalizedBy jacocoTestReport
+	
 	testLogging {
 		events "failed"
 		exceptionFormat "full"
