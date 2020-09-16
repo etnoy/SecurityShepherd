@@ -17,8 +17,7 @@ jobs:
         - cd server
         - git fetch --unshallow
       script:
-        - ./gradlew test 
-        - ./gradlew sonarqube
+        - ./gradlew test jacocoTestReport sonarqube
     - stage: test
       name: Backend integration tests
       services: mysql
