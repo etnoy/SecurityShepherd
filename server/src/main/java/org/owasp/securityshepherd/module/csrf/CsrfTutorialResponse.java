@@ -12,39 +12,17 @@
  * <p>You should have received a copy of the GNU General Public License along with Security
  * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.owasp.securityshepherd.user;
+package org.owasp.securityshepherd.module.csrf;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
-import lombok.With;
 
 @Value
-@AllArgsConstructor
 @Builder
-@With
-public final class User implements Serializable {
-  private static final long serialVersionUID = 3097353498257801154L;
-
-  @Id private Long id;
-
-  @NonNull private String displayName;
-
-  private Long classId;
-
-  private String email;
-
-  @JsonProperty("isNotBanned")
-  private boolean isNotBanned;
-
-  private LocalDateTime accountCreated;
-
-  @Column("user_key")
-  private byte[] key;
+public class CsrfTutorialResponse implements Serializable {
+  private static final long serialVersionUID = -4198798937863388090L;
+  @NonNull private String parameter;
+  private String flag;
 }

@@ -14,26 +14,36 @@
  */
 package org.owasp.securityshepherd.module.csrf;
 
-import javax.validation.constraints.Min;
 import org.owasp.securityshepherd.authentication.ControllerAuthentication;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = "/api/v1/module/csrf-tutorial")
+@RequestMapping(path = "/api/v1/module/csrf/tutorial")
 public class CsrfTutorialController {
+  private final CsrfTutorial csrfTutorial;
 
   private final ControllerAuthentication controllerAuthentication;
 
-  @GetMapping(path = "csrf/{userId}")
+  @GetMapping(path = "/")
   @PreAuthorize("hasRole('ROLE_USER')")
-  public Mono<Long> csrfTarget(@Min(1) @PathVariable final long userId) {
-    return controllerAuthentication.getUserId(); // TODO: csrf handling
+  public Mono<CsrfTutorialResponse> tutorial() {
+    return controllerAuthentication.getUserId().flatMap(csrfTutorial::getTutorial);
+  }
+
+  @PostMapping(path = "increment")
+  @PreAuthorize("hasRole('ROLE_USER')")
+  public Mono<Boolean> target(@RequestBody final long targetUserId) {
+    return controllerAuthentication
+        .getUserId()
+        .flatMap(userId -> csrfTutorial.increment(userId, targetUserId));
   }
 }

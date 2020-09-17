@@ -14,28 +14,12 @@
  */
 package org.owasp.securityshepherd.module.csrf;
 
-import java.io.Serializable;
-import lombok.Builder;
-import lombok.Value;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import org.springframework.stereotype.Repository;
 
-@Value
-@Builder
-public class CsrfTutorialResult implements Serializable {
+import reactor.core.publisher.Mono;
 
-  private static final long serialVersionUID = 6619669574336403439L;
-
-  private String name;
-
-  private String comment;
-
-  private String error;
-
-  CsrfTutorialResult(final String name, final String comment, final String error) {
-    if (name == null && comment == null && error == null) {
-      throw new NullPointerException("Name, comment, and error can't all be null");
-    }
-    this.name = name;
-    this.comment = comment;
-    this.error = error;
-  }
+@Repository
+public interface CsrfVoteCounterRepository extends ReactiveCrudRepository<CsrfVoteCounter, Long> {
+  public Mono<CsrfVoteCounter> findByUserIdAndModuleId(final Long userId, final Long moduleId);
 }
