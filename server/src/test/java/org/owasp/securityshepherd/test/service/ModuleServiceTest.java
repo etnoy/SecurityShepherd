@@ -16,8 +16,6 @@ package org.owasp.securityshepherd.test.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atMost;
 import static org.mockito.Mockito.inOrder;
@@ -597,7 +595,7 @@ class ModuleServiceTest {
     when(mockModule.getName()).thenReturn(newName);
 
     StepVerifier.create(moduleService.setName(mockModuleId, newName))
-        .assertNext(module -> assertThat(module.getName(), is(newName)))
+        .assertNext(module -> assertThat(module.getName()).isEqualTo(newName))
         .expectComplete()
         .verify();
 
