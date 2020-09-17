@@ -43,7 +43,7 @@ class PasswordLoginDtoTest {
   @Test
   void toString_ValidData_AsExpected() {
     final PasswordLoginDto passwordLoginDto = new PasswordLoginDto("loginName", "password");
-    assertThat(passwordLoginDto.toString())
+    assertThat(passwordLoginDto)
         .hasToString("PasswordLoginDto(userName=loginName, password=password)");
   }
 }

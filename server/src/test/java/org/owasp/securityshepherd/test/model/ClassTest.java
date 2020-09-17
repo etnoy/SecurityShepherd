@@ -55,9 +55,9 @@ class ClassTest {
 
   @Test
   void classBuildertoString_ValidData_NotNull() {
-    assertThat(ClassEntity.builder().name("TestClass").toString())
+    assertThat(ClassEntity.builder().name("TestClass"))
         .hasToString("ClassEntity.ClassBuilder(id=null, name=TestClass)");
-    assertThat(ClassEntity.builder().id(379).name("AnotherTestClass").toString())
+    assertThat(ClassEntity.builder().id(379).name("AnotherTestClass"))
         .hasToString("ClassEntity.ClassBuilder(id=379, name=AnotherTestClass)");
   }
 
@@ -68,7 +68,7 @@ class ClassTest {
 
   @Test
   void toString_ValidData_AsExpected() {
-    assertThat(ClassEntity.builder().name("TestClass").build().toString())
+    assertThat(ClassEntity.builder().name("TestClass").build())
         .hasToString("ClassEntity(id=null, name=TestClass)");
   }
 

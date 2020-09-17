@@ -63,7 +63,7 @@ class SqlInjectionTutorialRowTest {
             .name("TestSqlInjectionTutorialRow")
             .comment("This is a user")
             .error("no error");
-    assertThat(testSqlInjectionTutorialRowBuilder.toString())
+    assertThat(testSqlInjectionTutorialRowBuilder)
         .hasToString(
             "SqlInjectionTutorialRow.SqlInjectionTutorialRowBuilder(name=TestSqlInjectionTutorialRow, comment=This is a user, error=no error)");
   }
@@ -95,7 +95,7 @@ class SqlInjectionTutorialRowTest {
   void toString_ValidData_AsExpected() {
     final SqlInjectionTutorialRow testSqlInjectionTutorialRow =
         SqlInjectionTutorialRow.builder().name("TestSqlInjectionTutorialRow").build();
-    assertThat(testSqlInjectionTutorialRow.toString())
+    assertThat(testSqlInjectionTutorialRow)
         .hasToString(
             "SqlInjectionTutorialRow(name=TestSqlInjectionTutorialRow, comment=null, error=null)");
   }

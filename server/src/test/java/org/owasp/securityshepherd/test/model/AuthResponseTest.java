@@ -42,7 +42,7 @@ class AuthResponseTest {
   @Test
   void toString_ValidData_AsExpected() {
     final AuthResponse authResponse = new AuthResponse("token", "loginName");
-    assertThat(authResponse.toString())
+    assertThat(authResponse)
         .hasToString("AuthResponse(token=token, userName=loginName)");
   }
 }

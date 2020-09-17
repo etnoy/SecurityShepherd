@@ -30,8 +30,8 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 class ConfigurationTest {
   @Test
   void builderToString_ValidData_AsExpected() {
-    assertThat(Configuration.builder().toString())
-        .isEqualTo("Configuration.ConfigurationBuilder(id=null, key=null, value=null)");
+    assertThat(Configuration.builder())
+        .hasToString("Configuration.ConfigurationBuilder(id=null, key=null, value=null)");
   }
 
   @Test
@@ -107,7 +107,7 @@ class ConfigurationTest {
 
   @Test
   void toString_ValidData_AsExpected() {
-    assertThat(Configuration.builder().key("serverKey").value("abc123secret").build().toString())
+    assertThat(Configuration.builder().key("serverKey").value("abc123secret").build())
         .hasToString("Configuration(id=null, key=serverKey, value=abc123secret)");
   }
 

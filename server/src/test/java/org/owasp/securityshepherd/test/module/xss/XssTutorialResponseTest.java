@@ -49,7 +49,7 @@ class XssTutorialResponseTest {
   void builderToString_ValidData_AsExpected() {
     final XssTutorialResponseBuilder testXssTutorialResponseBuilder =
         XssTutorialResponse.builder().result("TestXssTutorialResponse").alert("xss");
-    assertThat(testXssTutorialResponseBuilder.toString())
+    assertThat(testXssTutorialResponseBuilder)
         .hasToString(
             "XssTutorialResponse.XssTutorialResponseBuilder(result=TestXssTutorialResponse, alert=xss)");
   }
@@ -83,7 +83,7 @@ class XssTutorialResponseTest {
   void toString_ValidData_AsExpected() {
     final XssTutorialResponse testXssTutorialResponse =
         XssTutorialResponse.builder().result("result is good").alert("xss warning").build();
-    assertThat(testXssTutorialResponse.toString())
+    assertThat(testXssTutorialResponse)
         .hasToString("XssTutorialResponse(result=result is good, alert=xss warning)");
   }
 }

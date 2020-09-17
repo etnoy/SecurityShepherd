@@ -23,11 +23,11 @@ import org.owasp.securityshepherd.authentication.Role;
 class RoleTest {
   @Test
   void userRole_ToString_IsRoleUser() {
-    assertThat(Role.ROLE_USER.toString()).hasToString("ROLE_USER");
+    assertThat(Role.ROLE_USER).hasToString("ROLE_USER");
   }
 
   @Test
   void adminRole_ToString_IsRoleAdmin() {
-    assertThat(Role.ROLE_ADMIN.toString()).hasToString("ROLE_ADMIN");
+    assertThat(Role.ROLE_ADMIN).hasToString("ROLE_ADMIN");
   }
 }

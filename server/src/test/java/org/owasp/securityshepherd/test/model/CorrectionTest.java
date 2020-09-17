@@ -124,7 +124,7 @@ class CorrectionTest {
     final CorrectionBuilder builder =
         Correction.builder().time(LocalDateTime.MIN).amount(1L).userId(83L);
 
-    assertThat(builder.toString())
+    assertThat(builder)
         .hasToString(
             "Correction.CorrectionBuilder(id=null, userId=83, amount=1, "
                 + "time=-999999999-01-01T00:00, description=null)");
@@ -140,7 +140,7 @@ class CorrectionTest {
     final Correction testCorrection =
         Correction.builder().time(LocalDateTime.MIN).amount(1L).userId(83L).build();
 
-    assertThat(testCorrection.toString())
+    assertThat(testCorrection)
         .hasToString(
             "Correction(id=null, userId=83, amount=1, "
             + "time=-999999999-01-01T00:00, description=null)");

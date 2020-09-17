@@ -50,7 +50,7 @@ class PasswordRegistrationDtoTest {
   void toString_ValidData_AsExpected() {
     final PasswordRegistrationDto passwordRegistrationDto =
         new PasswordRegistrationDto("displayName", "loginName", "password");
-    assertThat(passwordRegistrationDto.toString())
+    assertThat(passwordRegistrationDto)
         .hasToString(
             "PasswordRegistrationDto(displayName=displayName, userName=loginName, password=password)");
   }
