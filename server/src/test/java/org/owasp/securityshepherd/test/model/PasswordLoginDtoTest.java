@@ -23,27 +23,27 @@ import org.owasp.securityshepherd.test.util.TestUtils;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 @DisplayName("PasswordLoginDto unit test")
-public class PasswordLoginDtoTest {
+class PasswordLoginDtoTest {
   @Test
-  public void buildComment_ValidComment_Builds() {
+  void buildComment_ValidComment_Builds() {
     for (final String userName : TestUtils.STRINGS) {
       for (final String password : TestUtils.STRINGS) {
         final PasswordLoginDto passwordLoginDto = new PasswordLoginDto(userName, password);
-        assertThat(passwordLoginDto.getUserName()).isEqualTo(userName);
-        assertThat(passwordLoginDto.getPassword()).isEqualTo(password);
+        assertThat(passwordLoginDto.getUserName()).hasToString(userName);
+        assertThat(passwordLoginDto.getPassword()).hasToString(password);
       }
     }
   }
 
   @Test
-  public void equals_EqualsVerifier_AsExpected() {
+  void equals_EqualsVerifier_AsExpected() {
     EqualsVerifier.forClass(PasswordLoginDto.class).withIgnoredAnnotations(NotNull.class).verify();
   }
 
   @Test
-  public void toString_ValidData_AsExpected() {
+  void toString_ValidData_AsExpected() {
     final PasswordLoginDto passwordLoginDto = new PasswordLoginDto("loginName", "password");
-    assertThat(passwordLoginDto.toString())
-        .isEqualTo("PasswordLoginDto(userName=loginName, password=password)");
+    assertThat(passwordLoginDto)
+        .hasToString("PasswordLoginDto(userName=loginName, password=password)");
   }
 }

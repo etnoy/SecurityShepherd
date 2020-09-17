@@ -14,10 +14,8 @@
  */
 package org.owasp.securityshepherd.test.model;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -35,15 +33,16 @@ import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 @DisplayName("UserAuth unit test")
-public class UserAuthTest {
+class UserAuthTest {
 
   @Test
-  public void build_UserIdNotGiven_ThrowsNullPointerException() {
-    assertThrows(NullPointerException.class, () -> UserAuth.builder().build());
+  void build_UserIdNotGiven_ThrowsNullPointerException() {
+    final UserAuthBuilder userAuthBuilder = UserAuth.builder();
+    assertThrows(NullPointerException.class, () -> userAuthBuilder.build());
   }
 
   @Test
-  public void buildBadLoginCount_ValidBadLoginCount_Builds() {
+  void buildBadLoginCount_ValidBadLoginCount_Builds() {
     final int[] badLoginCountsToTest = {0, 1, 1000, -1, 999999, 42, 567890, -1234567};
     final UserAuthBuilder userAuthBuilder = UserAuth.builder().userId(100L);
 
@@ -51,50 +50,49 @@ public class UserAuthTest {
       userAuthBuilder.badLoginCount(badLoginCount);
       final UserAuth userAuth = userAuthBuilder.build();
 
-      assertThat(userAuth, instanceOf(UserAuth.class));
-      assertThat(userAuth.getBadLoginCount(), is(badLoginCount));
+      assertThat(userAuth).isInstanceOf(UserAuth.class);
+      assertThat(userAuth.getBadLoginCount()).isEqualTo(badLoginCount);
     }
   }
 
   @Test
-  public void builderToString_ValidData_AsExpected() {
+  void builderToString_ValidData_AsExpected() {
     final UserAuthBuilder builder = UserAuth.builder();
 
-    assertThat(
-        builder.toString(),
-        is(
+    assertThat(builder)
+        .hasToString(
             "UserAuth.UserAuthBuilder(id=null, userId=null, isEnabled=false, "
                 + "badLoginCount=0, isAdmin=false, suspendedUntil=null, suspensionMessage=null, "
-                + "lastLogin=null, lastLoginMethod=null)"));
+                + "lastLogin=null, lastLoginMethod=null)");
   }
 
   @Test
-  public void buildIsAdmin_TrueOrFalse_MatchesBuild() {
+  void buildIsAdmin_TrueOrFalse_MatchesBuild() {
     final UserAuthBuilder builder = UserAuth.builder().userId(79L);
 
     for (final boolean isAdmin : TestUtils.BOOLEANS) {
       builder.isAdmin(isAdmin);
 
-      assertThat(builder.build(), instanceOf(UserAuth.class));
-      assertThat(builder.build().isAdmin(), is(isAdmin));
+      assertThat(builder.build()).isInstanceOf(UserAuth.class);
+      assertThat(builder.build().isAdmin()).isEqualTo(isAdmin);
     }
   }
 
   @Test
-  public void buildIsEnabled_TrueOrFalse_MatchesBuild() {
+  void buildIsEnabled_TrueOrFalse_MatchesBuild() {
     final UserAuthBuilder userAuthBuilder = UserAuth.builder().userId(100L);
 
     for (final boolean isEnabled : TestUtils.BOOLEANS) {
       userAuthBuilder.isEnabled(isEnabled);
       final UserAuth userAuth = userAuthBuilder.build();
 
-      assertThat(userAuth, instanceOf(UserAuth.class));
-      assertThat(userAuth.isEnabled(), is(isEnabled));
+      assertThat(userAuth).isInstanceOf(UserAuth.class);
+      assertThat(userAuth.isEnabled()).isEqualTo(isEnabled);
     }
   }
 
   @Test
-  public void buildLastLogin_ValidTime_Builds() {
+  void buildLastLogin_ValidTime_Builds() {
     final int originalTime = 77;
     final int[] timesToTest = {originalTime, 0, 1, 2, 1000, 4000, 1581806000, 42};
     final UserAuthBuilder userAuthBuilder =
@@ -110,13 +108,13 @@ public class UserAuthTest {
 
       userAuthBuilder.lastLogin(time);
 
-      assertThat(userAuthBuilder.build(), instanceOf(UserAuth.class));
-      assertThat(userAuthBuilder.build().getLastLogin(), is(time));
+      assertThat(userAuthBuilder.build()).isInstanceOf(UserAuth.class);
+      assertThat(userAuthBuilder.build().getLastLogin()).isEqualTo(time);
     }
   }
 
   @Test
-  public void buildLastLoginMethod_ValidLastLoginMethod_Builds() {
+  void buildLastLoginMethod_ValidLastLoginMethod_Builds() {
     final String[] lastLoginMethodsToTest = {
       "password", "saml", "ldap", null, "", "a", "login method with spaces", "_+^"
     };
@@ -127,13 +125,13 @@ public class UserAuthTest {
 
       final UserAuth userAuth = userAuthBuilder.build();
 
-      assertThat(userAuth, instanceOf(UserAuth.class));
-      assertThat(userAuth.getLastLoginMethod(), is(lastLoginMethod));
+      assertThat(userAuth).isInstanceOf(UserAuth.class);
+      assertThat(userAuth.getLastLoginMethod()).isEqualTo(lastLoginMethod);
     }
   }
 
   @Test
-  public void buildSuspendedUntil_ValidTime_Builds() {
+  void buildSuspendedUntil_ValidTime_Builds() {
     final long[] timesToTest = {0, 1, 2, 1000, 4000, 1581806000, 42000043450000L};
 
     final UserAuthBuilder userAuthBuilder = UserAuth.builder().userId(25L);
@@ -145,13 +143,13 @@ public class UserAuthTest {
       userAuthBuilder.suspendedUntil(time);
       final UserAuth userAuth = userAuthBuilder.build();
 
-      assertThat(userAuth, instanceOf(UserAuth.class));
-      assertThat(userAuth.getSuspendedUntil(), is(time));
+      assertThat(userAuth).isInstanceOf(UserAuth.class);
+      assertThat(userAuth.getSuspendedUntil()).isEqualTo(time);
     }
   }
 
   @Test
-  public void buildSuspensionMessage_ValidSuspensionMessage_Builds() {
+  void buildSuspensionMessage_ValidSuspensionMessage_Builds() {
     final String originalSuspensionMessage = "suspended";
     final String[] suspensionMessagesToTest = {
       originalSuspensionMessage,
@@ -169,19 +167,19 @@ public class UserAuthTest {
       userAuthBuilder.suspensionMessage(suspensionMessage);
       final UserAuth userAuth = userAuthBuilder.build();
 
-      assertThat(userAuth, instanceOf(UserAuth.class));
-      assertThat(userAuth.getSuspensionMessage(), is(suspensionMessage));
+      assertThat(userAuth).isInstanceOf(UserAuth.class);
+      assertThat(userAuth.getSuspensionMessage()).isEqualTo(suspensionMessage);
     }
   }
 
   @Test
-  public void buildUserId_NullUserId_ThrowsNullPointerException() {
+  void buildUserId_NullUserId_ThrowsNullPointerException() {
     final UserAuthBuilder userAuthBuilder = UserAuth.builder();
     assertThrows(NullPointerException.class, () -> userAuthBuilder.userId(null));
   }
 
   @Test
-  public void buildUserId_ValidUserId_Builds() {
+  void buildUserId_ValidUserId_Builds() {
     final long[] idsToTest = {0, 1, -1, 1000, -1000, 1234567, -1234567, 42};
 
     for (final long userId : idsToTest) {
@@ -191,41 +189,40 @@ public class UserAuthTest {
 
       final UserAuth userAuth = userAuthBuilder.build();
 
-      assertThat(userAuth, instanceOf(UserAuth.class));
-      assertThat(userAuth.getUserId(), is(userId));
+      assertThat(userAuth).isInstanceOf(UserAuth.class);
+      assertThat(userAuth.getUserId()).isEqualTo(userId);
     }
   }
 
   @Test
-  public void equals_AutomaticTesting() {
+  void equals_AutomaticTesting() {
     EqualsVerifier.forClass(UserAuth.class).withIgnoredAnnotations(NonNull.class).verify();
   }
 
   @Test
-  public void toString_ValidData_AsExpected() {
+  void toString_ValidData_AsExpected() {
     final UserAuth testAuth = UserAuth.builder().userId(14L).build();
 
-    assertThat(
-        testAuth.toString(),
-        is(
+    assertThat(testAuth)
+        .hasToString(
             "UserAuth(id=null, userId=14, isEnabled=false, badLoginCount=0, "
                 + "isAdmin=false, suspendedUntil=null, suspensionMessage=null, "
-                + "lastLogin=null, lastLoginMethod=null)"));
+                + "lastLogin=null, lastLoginMethod=null)");
   }
 
   @Test
-  public void withAdmin_ValidBoolean_ChangesIsAdmin() {
+  void withAdmin_ValidBoolean_ChangesIsAdmin() {
     final UserAuth testAuth = UserAuth.builder().userId(100L).build();
 
     for (final boolean isAdmin : TestUtils.BOOLEANS) {
       final UserAuth changedAuth = testAuth.withAdmin(isAdmin);
-      assertThat(changedAuth, instanceOf(UserAuth.class));
-      assertThat(changedAuth.isAdmin(), is(isAdmin));
+      assertThat(changedAuth).isInstanceOf(UserAuth.class);
+      assertThat(changedAuth.isAdmin()).isEqualTo(isAdmin);
     }
   }
 
   @Test
-  public void withBadLoginCount_ValidBadLoginCount_ChangesBadLoginCount() {
+  void withBadLoginCount_ValidBadLoginCount_ChangesBadLoginCount() {
     final int originalBadLoginCount = 0;
     final int[] testedBadLoginCounts = {
       originalBadLoginCount, 1, -1, 1000, -1000, 123456789, -12346789
@@ -236,24 +233,24 @@ public class UserAuthTest {
     for (final int badLoginCount : testedBadLoginCounts) {
       final UserAuth changedAuth = userAuth.withBadLoginCount(badLoginCount);
 
-      assertThat(changedAuth, instanceOf(UserAuth.class));
-      assertThat(changedAuth.getBadLoginCount(), is(badLoginCount));
+      assertThat(changedAuth).isInstanceOf(UserAuth.class);
+      assertThat(changedAuth.getBadLoginCount()).isEqualTo(badLoginCount);
     }
   }
 
   @Test
-  public void withEnabled_ValidBoolean_ChangesIsEnabled() {
+  void withEnabled_ValidBoolean_ChangesIsEnabled() {
     final UserAuth testAuth = UserAuth.builder().userId(123L).build();
 
     for (final boolean isEnabled : TestUtils.BOOLEANS) {
       final UserAuth changedAuth = testAuth.withEnabled(isEnabled);
-      assertThat(changedAuth, instanceOf(UserAuth.class));
-      assertThat(changedAuth.isEnabled(), is(isEnabled));
+      assertThat(changedAuth).isInstanceOf(UserAuth.class);
+      assertThat(changedAuth.isEnabled()).isEqualTo(isEnabled);
     }
   }
 
   @Test
-  public void withId_ValidId_ChangesId() {
+  void withId_ValidId_ChangesId() {
     final Long originalId = 1991L;
     final Long[] testedIds = {originalId, 55L, -7993L, 0L, -1L, 1000L, -1000L, 123456789L};
 
@@ -261,13 +258,13 @@ public class UserAuthTest {
 
     for (final Long newId : testedIds) {
       final UserAuth changedAuth = newAuth.withId(newId);
-      assertThat(changedAuth, instanceOf(UserAuth.class));
-      assertThat(changedAuth.getId(), is(newId));
+      assertThat(changedAuth).isInstanceOf(UserAuth.class);
+      assertThat(changedAuth.getId()).isEqualTo(newId);
     }
   }
 
   @Test
-  public void withLastLogin_ValidTime_ChangesLastLoginTime() {
+  void withLastLogin_ValidTime_ChangesLastLoginTime() {
     final long originalTime = 0L;
     final List<Long> timesToTest =
         Arrays.asList(originalTime, 1L, 2L, 1000L, 5000L, 9000990909L, 12398234987345983L);
@@ -285,14 +282,14 @@ public class UserAuthTest {
 
     for (final LocalDateTime time : dateTimesToTest) {
       final UserAuth changedAuth = testAuth.withLastLogin(time);
-      assertThat(changedAuth, instanceOf(UserAuth.class));
+      assertThat(changedAuth).isInstanceOf(UserAuth.class);
 
-      assertThat(changedAuth.getLastLogin(), is(time));
+      assertThat(changedAuth.getLastLogin()).isEqualTo(time);
     }
   }
 
   @Test
-  public void withLastLoginMethod_ValidLastLoginMethod_ChangesLastLoginMethod() {
+  void withLastLoginMethod_ValidLastLoginMethod_ChangesLastLoginMethod() {
     final UserAuth userAuth = UserAuth.builder().userId(95L).build();
 
     final String[] testedLastLoginMethods = {
@@ -302,13 +299,13 @@ public class UserAuthTest {
     for (final String lastLoginMethod : testedLastLoginMethods) {
 
       final UserAuth changedAuth = userAuth.withLastLoginMethod(lastLoginMethod);
-      assertThat(changedAuth, instanceOf(UserAuth.class));
-      assertThat(changedAuth.getLastLoginMethod(), is(lastLoginMethod));
+      assertThat(changedAuth).isInstanceOf(UserAuth.class);
+      assertThat(changedAuth.getLastLoginMethod()).isEqualTo(lastLoginMethod);
     }
   }
 
   @Test
-  public void withSuspendedUntil_ValidLocalDateTime_ChangesSuspendedUntil() {
+  void withSuspendedUntil_ValidLocalDateTime_ChangesSuspendedUntil() {
     final long originalTime = 0L;
 
     final List<Long> timesToTest =
@@ -327,19 +324,19 @@ public class UserAuthTest {
 
     for (final LocalDateTime time : dateTimesToTest) {
       final UserAuth changedAuth = testAuth.withSuspendedUntil(time);
-      assertThat(changedAuth, instanceOf(UserAuth.class));
-      assertThat(changedAuth.getSuspendedUntil(), is(time));
+      assertThat(changedAuth).isInstanceOf(UserAuth.class);
+      assertThat(changedAuth.getSuspendedUntil()).isEqualTo(time);
     }
 
     final UserAuth changedAuth = testAuth.withSuspendedUntil(null);
 
-    assertThat(changedAuth.getSuspendedUntil(), is(nullValue()));
+    assertThat(changedAuth.getSuspendedUntil()).isNull();
   }
 
   @Test
-  public void withSuspensionMessage_ValidSuspensionMessage_ChangesSuspensionMessage() {
+  void withSuspensionMessage_ValidSuspensionMessage_ChangesSuspensionMessage() {
     final UserAuth userAuth = UserAuth.builder().userId(591L).build();
-    assertThat(userAuth.getSuspensionMessage(), is(nullValue()));
+    assertThat(userAuth.getSuspensionMessage()).isNull();
     final String[] testedSuspensionMessages = {
       null,
       "",
@@ -351,25 +348,25 @@ public class UserAuthTest {
 
     for (final String suspensionMessage : testedSuspensionMessages) {
       final UserAuth changedAuth = userAuth.withSuspensionMessage(suspensionMessage);
-      assertThat(changedAuth, instanceOf(UserAuth.class));
-      assertThat(changedAuth.getSuspensionMessage(), is(suspensionMessage));
+      assertThat(changedAuth).isInstanceOf(UserAuth.class);
+      assertThat(changedAuth.getSuspensionMessage()).isEqualTo(suspensionMessage);
     }
   }
 
   @Test
-  public void withUserId_NullUserId_ThrowsNullPointerException() {
+  void withUserId_NullUserId_ThrowsNullPointerException() {
     final UserAuth userAuth = UserAuth.builder().userId(1L).build();
     assertThrows(NullPointerException.class, () -> userAuth.withUserId(null));
   }
 
   @Test
-  public void withUserId_ValidUserId_ChangesUserId() {
+  void withUserId_ValidUserId_ChangesUserId() {
     final UserAuth userAuth = UserAuth.builder().userId(TestUtils.INITIAL_LONG).build();
 
     for (final Long userId : TestUtils.LONGS) {
       final UserAuth newUserAuth = userAuth.withUserId(userId);
-      assertThat(newUserAuth, is(instanceOf(UserAuth.class)));
-      assertThat(newUserAuth.getUserId(), is(userId));
+      assertThat(newUserAuth).isInstanceOf(UserAuth.class);
+      assertThat(newUserAuth.getUserId()).isEqualTo(userId);
     }
   }
 }

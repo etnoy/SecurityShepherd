@@ -14,8 +14,8 @@
  */
 package org.owasp.securityshepherd.test.service;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
@@ -42,7 +42,7 @@ import reactor.test.StepVerifier;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("ConfigurationService unit test")
-public class ConfigurationServiceTest {
+class ConfigurationServiceTest {
 
   @BeforeAll
   private static void reactorVerbose() {
@@ -57,7 +57,7 @@ public class ConfigurationServiceTest {
   @Mock private KeyService keyService;
 
   @Test
-  public void getServerKey_KeyExists_ReturnsExistingKey() throws Exception {
+  void getServerKey_KeyExists_ReturnsExistingKey() throws Exception {
     final String serverKeyConfigurationKey = "serverKey";
     final Configuration mockedConfiguration = mock(Configuration.class);
 
@@ -73,7 +73,7 @@ public class ConfigurationServiceTest {
     StepVerifier.create(configurationService.getServerKey())
         .assertNext(
             serverKey -> {
-              assertThat(serverKey, is(mockedServerKey));
+              assertThat(serverKey).isEqualTo(mockedServerKey);
               verify(configurationRepository).findByKey(serverKeyConfigurationKey);
               verify(keyService, never()).generateRandomBytes(16);
               verify(configurationRepository, never()).save(any(Configuration.class));
@@ -83,7 +83,7 @@ public class ConfigurationServiceTest {
   }
 
   @Test
-  public void getServerKey_NoKeyExists_ReturnsNewKey() throws Exception {
+  void getServerKey_NoKeyExists_ReturnsNewKey() throws Exception {
     final String serverKeyConfigurationKey = "serverKey";
     final byte[] mockedServerKey = {
       -118, 9, -7, -35, 17, -116, -94, 0, -32, -117, 65, -127, 12, 82, 9, 29
@@ -97,7 +97,7 @@ public class ConfigurationServiceTest {
     StepVerifier.create(configurationService.getServerKey())
         .assertNext(
             serverKey -> {
-              assertThat(serverKey, is(mockedServerKey));
+              assertThat(serverKey).isEqualTo(mockedServerKey);
 
               verify(configurationRepository, atLeast(1)).findByKey(serverKeyConfigurationKey);
               verify(keyService).generateRandomBytes(16);
@@ -108,7 +108,7 @@ public class ConfigurationServiceTest {
   }
 
   @Test
-  public void refreshServerKey_KeyDoesNotExist_GeneratesNewKey() throws Exception {
+  void refreshServerKey_KeyDoesNotExist_GeneratesNewKey() throws Exception {
     final String serverKeyConfigurationKey = "serverKey";
     final byte[] newServerKey = {
       -118, 9, -7, -35, 17, -116, -94, 0, -32, -117, 65, -127, 12, 82, 9, 29
@@ -123,7 +123,7 @@ public class ConfigurationServiceTest {
     StepVerifier.create(configurationService.refreshServerKey())
         .assertNext(
             serverKey -> {
-              assertThat(serverKey, is(newServerKey));
+              assertThat(serverKey).isEqualTo(newServerKey);
 
               verify(configurationRepository, atLeast(1)).findByKey(serverKeyConfigurationKey);
               verify(keyService).generateRandomBytes(16);
@@ -132,14 +132,14 @@ public class ConfigurationServiceTest {
 
               verify(configurationRepository).save(argument.capture());
 
-              assertThat(argument.getValue().getValue(), is(encodedNewServerKey));
+              assertThat(argument.getValue().getValue()).isEqualTo(encodedNewServerKey);
             })
         .expectComplete()
         .verify();
   }
 
   @Test
-  public void refreshServerKey_KeyExists_GeneratesNewKey() throws Exception {
+  void refreshServerKey_KeyExists_GeneratesNewKey() throws Exception {
     final String serverKeyConfigurationKey = "serverKey";
     final Configuration mockedConfiguration = mock(Configuration.class);
     final Configuration mockedConfigurationNewKey = mock(Configuration.class);
@@ -163,7 +163,7 @@ public class ConfigurationServiceTest {
     StepVerifier.create(configurationService.refreshServerKey())
         .assertNext(
             serverKey -> {
-              assertThat(serverKey, is(newServerKey));
+              assertThat(serverKey).isEqualTo(newServerKey);
               verify(configurationRepository, atLeast(1)).findByKey(serverKeyConfigurationKey);
               verify(keyService).generateRandomBytes(16);
 
@@ -173,8 +173,8 @@ public class ConfigurationServiceTest {
 
               verify(configurationRepository).save(argument.capture());
 
-              assertThat(argument.getValue(), is(mockedConfigurationNewKey));
-              assertThat(argument.getValue().getValue(), is(encodedNewServerKey));
+              assertThat(argument.getValue()).isEqualTo(mockedConfigurationNewKey);
+              assertThat(argument.getValue().getValue()).isEqualTo(encodedNewServerKey);
             })
         .expectComplete()
         .verify();

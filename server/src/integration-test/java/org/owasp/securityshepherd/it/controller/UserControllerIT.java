@@ -14,8 +14,8 @@
  */
 package org.owasp.securityshepherd.it.controller;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.HashSet;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,7 +49,7 @@ import reactor.test.StepVerifier;
 @AutoConfigureWebTestClient
 @Execution(ExecutionMode.SAME_THREAD)
 @DisplayName("UserController integration test")
-public class UserControllerIT {
+class UserControllerIT {
   @BeforeAll
   private static void reactorVerbose() {
     // Tell Reactor to print verbose error messages
@@ -63,7 +63,7 @@ public class UserControllerIT {
   @Autowired TestUtils testService;
 
   @Test
-  public void getUserList_AuthenticatedUser_Forbidden() {
+  void getUserList_AuthenticatedUser_Forbidden() {
     final String loginName = "test";
     final String hashedPassword = "$2y$12$53B6QcsGwF3Os1GVFUFSQOhIPXnWFfuEkRJdbknFWnkXfUBMUKhaW";
 
@@ -102,7 +102,7 @@ public class UserControllerIT {
   }
 
   @Test
-  public void getUserList_UserPromotedToAdmin_Success() {
+  void getUserList_UserPromotedToAdmin_Success() {
     final String loginName = "test";
     final String hashedPassword = "$2y$12$53B6QcsGwF3Os1GVFUFSQOhIPXnWFfuEkRJdbknFWnkXfUBMUKhaW";
 
@@ -155,7 +155,7 @@ public class UserControllerIT {
   }
 
   @Test
-  public void listUsers_UsersExist_ReturnsUserList() throws Exception {
+  void listUsers_UsersExist_ReturnsUserList() throws Exception {
     final String loginName = "test";
     final String password = "paLswOrdha17£@£sh";
 
@@ -257,7 +257,7 @@ public class UserControllerIT {
   }
 
   @Test
-  public void register_ValidData_ReturnsValidUser() throws Exception {
+  void register_ValidData_ReturnsValidUser() throws Exception {
     final String loginName = "test";
     final String password = "paLswOrdha17£@£sh";
 
@@ -327,7 +327,7 @@ public class UserControllerIT {
     StepVerifier.create(getResult.getResponseBody())
         .assertNext(
             getData -> {
-              assertThat(getData, is(userService.findById(userId).block()));
+              assertThat(getData).isEqualTo(userService.findById(userId).block());
             })
         .expectComplete()
         .verify();

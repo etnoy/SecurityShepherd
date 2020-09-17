@@ -14,9 +14,8 @@
  */
 package org.owasp.securityshepherd.it.service;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.IOException;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -33,72 +32,68 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(properties = {"application.runner.enabled=false"})
 @DisplayName("XssService integration test")
-public class XssServiceIT {
+class XssServiceIT {
 
   @Autowired private XssService xssService;
 
   @Test
-  public void scriptAlert_ShouldShowAlert() throws Exception {
-    assertThat(executeQuery("<script>alert('script-xss')</script>"), is("script-xss"));
+  void scriptAlert_ShouldShowAlert() throws Exception {
+    assertThat(executeQuery("<script>alert('script-xss')</script>")).isEqualTo("script-xss");
   }
 
   @Test
-  public void noXss_ShouldNotShowAlert() throws Exception {
-    assertThat(executeQuery(""), is(nullValue()));
+  void noXss_ShouldNotShowAlert() throws Exception {
+    assertThat(executeQuery("")).isNull();
   }
 
   @Test
-  public void noXss_PreviousFailure_ShouldShowAlert() throws Exception {
-    assertThat(executeQuery(""), is(nullValue()));
+  void noXss_PreviousFailure_ShouldShowAlert() throws Exception {
+    assertThat(executeQuery("")).isNull();
     // Test for the gotcha that previous versions of xssservice didn't clear between invocations
-    assertThat(executeQuery("<script>alert('previousfail')</script>"), is("previousfail"));
+    assertThat(executeQuery("<script>alert('previousfail')</script>")).isEqualTo("previousfail");
   }
 
   @Test
-  public void noXss_PreviousSuccess_ShouldNotShowAlert() throws Exception {
-    assertThat(executeQuery("<script>alert('success')</script>"), is("success"));
+  void noXss_PreviousSuccess_ShouldNotShowAlert() throws Exception {
+    assertThat(executeQuery("<script>alert('success')</script>")).isEqualTo("success");
     // Test for the gotcha that previous versions of xssservice didn't clear between invocations
-    assertThat(executeQuery(""), is(nullValue()));
+    assertThat(executeQuery("")).isNull();
   }
 
   @Test
-  public void imgOnLoad_ShouldShowAlert() throws Exception {
-    assertThat(executeQuery("<img src=\"#\" onload=\"alert('img-onload')\" />"), is("img-onload"));
+  void imgOnLoad_ShouldShowAlert() throws Exception {
+    assertThat(executeQuery("<img src=\"#\" onload=\"alert('img-onload')\" />"))
+        .isEqualTo("img-onload");
   }
 
   @Test
-  public void submitButtonOnMouseOver_ShouldShowAlert() throws Exception {
-    assertThat(
-        executeQuery("<input type=\"submit\" onmouseover=\"alert('submit-mouseover')\"/>"),
-        is("submit-mouseover"));
+  void submitButtonOnMouseOver_ShouldShowAlert() throws Exception {
+    assertThat(executeQuery("<input type=\"submit\" onmouseover=\"alert('submit-mouseover')\"/>"))
+        .isEqualTo("submit-mouseover");
   }
 
   @Test
-  public void submitButtonOnMouseDown_ShouldShowAlert() throws Exception {
-    assertThat(
-        executeQuery("<input type=\"submit\" onmousedown=\"alert('submit-mousedown')\"/>"),
-        is("submit-mousedown"));
+  void submitButtonOnMouseDown_ShouldShowAlert() throws Exception {
+    assertThat(executeQuery("<input type=\"submit\" onmousedown=\"alert('submit-mousedown')\"/>"))
+        .isEqualTo("submit-mousedown");
   }
 
   @Test
-  public void aOnBlur_ShouldShowAlert() throws Exception {
-    assertThat(
-        executeQuery("<a onblur=alert('a-onblur') tabindex=1 id=x></a><input autofocus>"),
-        is("a-onblur"));
+  void aOnBlur_ShouldShowAlert() throws Exception {
+    assertThat(executeQuery("<a onblur=alert('a-onblur') tabindex=1 id=x></a><input autofocus>"))
+        .isEqualTo("a-onblur");
   }
 
   @Test
-  public void submitButtonOnClick_ShouldShowAlert() throws Exception {
-    assertThat(
-        executeQuery("<input type=\"submit\" onclick=\"alert('submit-onclick')\"/>"),
-        is("submit-onclick"));
+  void submitButtonOnClick_ShouldShowAlert() throws Exception {
+    assertThat(executeQuery("<input type=\"submit\" onclick=\"alert('submit-onclick')\"/>"))
+        .isEqualTo("submit-onclick");
   }
 
   @Test
-  public void inputButtonOnClick_ShouldShowAlert() throws Exception {
-    assertThat(
-        executeQuery("<input type=\"button\" onclick=\"alert('input-onclick')\"/>"),
-        is("input-onclick"));
+  void inputButtonOnClick_ShouldShowAlert() throws Exception {
+    assertThat(executeQuery("<input type=\"button\" onclick=\"alert('input-onclick')\"/>"))
+        .isEqualTo("input-onclick");
   }
 
   private String executeQuery(final String query) throws IOException {

@@ -47,7 +47,7 @@ import reactor.core.publisher.Mono;
 @AutoConfigureWebTestClient
 @Execution(ExecutionMode.SAME_THREAD)
 @DisplayName("ModuleController integration test")
-public class ModuleControllerIT {
+class ModuleControllerIT {
   @BeforeAll
   private static void reactorVerbose() {
     // Tell Reactor to print verbose error messages
@@ -68,7 +68,7 @@ public class ModuleControllerIT {
 
   @Test
   @Validated
-  public void getModuleById_InvalidId_ReturnsError() throws Exception {
+  void getModuleById_InvalidId_ReturnsError() throws Exception {
 
     final String loginName = "testUser";
     final String password = "paLswOrdha17£@£sh";

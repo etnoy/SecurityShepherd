@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 class SecurityShepherdApplicationIT {
   @Test
   @DisplayName("Application context loads")
-  public void main_ApplicationStartup_ContextLoads() {
+  void main_ApplicationStartup_ContextLoads() {
     // We just test that no exception is thrown
     assertDoesNotThrow(() -> SecurityShepherdApplication.main(new String[] {}));
     ;

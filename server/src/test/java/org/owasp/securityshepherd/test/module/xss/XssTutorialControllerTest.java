@@ -36,7 +36,7 @@ import reactor.test.StepVerifier;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("XssTutorialController unit test")
-public class XssTutorialControllerTest {
+class XssTutorialControllerTest {
   @BeforeAll
   private static void reactorVerbose() {
     // Tell Reactor to print verbose error messages
@@ -50,7 +50,7 @@ public class XssTutorialControllerTest {
   @Mock private XssTutorial xssTutorial;
 
   @Test
-  public void search_Autenticated_CallsModule() {
+  void search_Autenticated_CallsModule() {
     final long mockUserId = 527L;
 
     final XssTutorialResponse xssTutorialRow = mock(XssTutorialResponse.class);
@@ -69,7 +69,7 @@ public class XssTutorialControllerTest {
   }
 
   @Test
-  public void search_NotAutenticated_CallsModule() {
+  void search_NotAutenticated_CallsModule() {
     final String query = "xss";
     when(controllerAuthentication.getUserId())
         .thenReturn(Mono.error(new NotAuthenticatedException()));

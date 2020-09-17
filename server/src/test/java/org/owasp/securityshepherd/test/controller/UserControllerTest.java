@@ -35,7 +35,7 @@ import reactor.test.StepVerifier;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("UserController unit test")
-public class UserControllerTest {
+class UserControllerTest {
 
   @BeforeAll
   private static void reactorVerbose() {
@@ -48,7 +48,7 @@ public class UserControllerTest {
   @Mock private UserService userService;
 
   @Test
-  public void deleteById_ValidId_CallsUserService() {
+  void deleteById_ValidId_CallsUserService() {
     final long mockUserId = 317L;
     when(userService.deleteById(mockUserId)).thenReturn(Mono.empty());
     StepVerifier.create(userController.deleteById(mockUserId)).expectComplete().verify();
@@ -56,14 +56,14 @@ public class UserControllerTest {
   }
 
   @Test
-  public void findAll_NoUsersExist_ReturnsEmpty() {
+  void findAll_NoUsersExist_ReturnsEmpty() {
     when(userService.findAll()).thenReturn(Flux.empty());
     StepVerifier.create(userController.findAll()).expectComplete().verify();
     verify(userService, times(1)).findAll();
   }
 
   @Test
-  public void findById_UserIdDoesNotExist_ReturnsUser() {
+  void findById_UserIdDoesNotExist_ReturnsUser() {
     final long mockUserId = 559L;
     when(userService.findById(mockUserId)).thenReturn(Mono.empty());
     StepVerifier.create(userController.findById(mockUserId)).expectComplete().verify();
@@ -71,7 +71,7 @@ public class UserControllerTest {
   }
 
   @Test
-  public void findById_UserIdExists_ReturnsUser() {
+  void findById_UserIdExists_ReturnsUser() {
     final long mockUserId = 380L;
     final User user = mock(User.class);
 
@@ -84,7 +84,7 @@ public class UserControllerTest {
   }
 
   @Test
-  public void findAll_UsersExist_ReturnsUsers() {
+  void findAll_UsersExist_ReturnsUsers() {
     final User user1 = mock(User.class);
     final User user2 = mock(User.class);
     final User user3 = mock(User.class);

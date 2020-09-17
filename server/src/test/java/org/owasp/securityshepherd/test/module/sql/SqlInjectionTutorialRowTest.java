@@ -24,9 +24,9 @@ import org.owasp.securityshepherd.test.util.TestUtils;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 @DisplayName("SqlInjectionTutorialRow unit test")
-public class SqlInjectionTutorialRowTest {
+class SqlInjectionTutorialRowTest {
   @Test
-  public void build_NullNameCommentAndError_ThrowsNullPointerException() {
+  void build_NullNameCommentAndError_ThrowsNullPointerException() {
     final SqlInjectionTutorialRowBuilder sqlInjectionTutorialRowBuilder =
         SqlInjectionTutorialRow.builder();
     assertThatExceptionOfType(NullPointerException.class)
@@ -35,7 +35,7 @@ public class SqlInjectionTutorialRowTest {
   }
 
   @Test
-  public void buildComment_ValidComment_Builds() {
+  void buildComment_ValidComment_Builds() {
     final SqlInjectionTutorialRowBuilder sqlInjectionTutorialRowBuilder =
         SqlInjectionTutorialRow.builder();
     for (final String comment : TestUtils.STRINGS) {
@@ -46,7 +46,7 @@ public class SqlInjectionTutorialRowTest {
   }
 
   @Test
-  public void buildError_ValidError_Builds() {
+  void buildError_ValidError_Builds() {
     final SqlInjectionTutorialRowBuilder sqlInjectionTutorialRowBuilder =
         SqlInjectionTutorialRow.builder();
     for (final String error : TestUtils.STRINGS) {
@@ -57,19 +57,19 @@ public class SqlInjectionTutorialRowTest {
   }
 
   @Test
-  public void builderToString_ValidData_AsExpected() {
+  void builderToString_ValidData_AsExpected() {
     final SqlInjectionTutorialRowBuilder testSqlInjectionTutorialRowBuilder =
         SqlInjectionTutorialRow.builder()
             .name("TestSqlInjectionTutorialRow")
             .comment("This is a user")
             .error("no error");
-    assertThat(testSqlInjectionTutorialRowBuilder.toString())
-        .isEqualTo(
+    assertThat(testSqlInjectionTutorialRowBuilder)
+        .hasToString(
             "SqlInjectionTutorialRow.SqlInjectionTutorialRowBuilder(name=TestSqlInjectionTutorialRow, comment=This is a user, error=no error)");
   }
 
   @Test
-  public void buildName_ValidName_Builds() {
+  void buildName_ValidName_Builds() {
     final SqlInjectionTutorialRowBuilder sqlInjectionTutorialRowBuilder =
         SqlInjectionTutorialRow.builder();
     for (final String name : TestUtils.STRINGS) {
@@ -80,23 +80,23 @@ public class SqlInjectionTutorialRowTest {
   }
 
   @Test
-  public void buildName_ValidName_BuildsSqlInjectionTutorialRow() {
+  void buildName_ValidName_BuildsSqlInjectionTutorialRow() {
     final SqlInjectionTutorialRow sqlInjectionTutorialRow =
         SqlInjectionTutorialRow.builder().name("TestSqlInjectionTutorialRow").build();
     assertThat(sqlInjectionTutorialRow.getName()).isEqualTo("TestSqlInjectionTutorialRow");
   }
 
   @Test
-  public void equals_EqualsVerifier_AsExpected() {
+  void equals_EqualsVerifier_AsExpected() {
     EqualsVerifier.forClass(SqlInjectionTutorialRow.class).verify();
   }
 
   @Test
-  public void toString_ValidData_AsExpected() {
+  void toString_ValidData_AsExpected() {
     final SqlInjectionTutorialRow testSqlInjectionTutorialRow =
         SqlInjectionTutorialRow.builder().name("TestSqlInjectionTutorialRow").build();
-    assertThat(testSqlInjectionTutorialRow.toString())
-        .isEqualTo(
+    assertThat(testSqlInjectionTutorialRow)
+        .hasToString(
             "SqlInjectionTutorialRow(name=TestSqlInjectionTutorialRow, comment=null, error=null)");
   }
 }

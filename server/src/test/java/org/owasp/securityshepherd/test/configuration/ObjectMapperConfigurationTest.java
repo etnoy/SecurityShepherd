@@ -25,11 +25,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("ObjectMapperConfiguration unit test")
-public class ObjectMapperConfigurationTest {
+class ObjectMapperConfigurationTest {
   ObjectMapperConfiguration objectMapperConfiguration;
 
   @Test
-  public void buildObjectMapper_NoArgument_ContainsRegisteredJavaTimeModule() {
+  void buildObjectMapper_NoArgument_ContainsRegisteredJavaTimeModule() {
     final ObjectMapper objectMapper = objectMapperConfiguration.buildObjectMapper();
     assertThat(objectMapper.getRegisteredModuleIds())
         .contains("com.fasterxml.jackson.datatype.jsr310.JavaTimeModule");

@@ -23,9 +23,9 @@ import org.owasp.securityshepherd.test.util.TestUtils;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 @DisplayName("SubmissionDto unit test")
-public class SubmissionDtoTest {
+class SubmissionDtoTest {
   @Test
-  public void buildComment_ValidComment_Builds() {
+  void buildComment_ValidComment_Builds() {
     for (final long moduleId : TestUtils.LONGS) {
       for (final String flag : TestUtils.STRINGS) {
         final SubmissionDto submissionDto = new SubmissionDto(moduleId, flag);
@@ -36,13 +36,13 @@ public class SubmissionDtoTest {
   }
 
   @Test
-  public void equals_EqualsVerifier_AsExpected() {
+  void equals_EqualsVerifier_AsExpected() {
     EqualsVerifier.forClass(SubmissionDto.class).withIgnoredAnnotations(NotNull.class).verify();
   }
 
   @Test
-  public void toString_ValidData_AsExpected() {
+  void toString_ValidData_AsExpected() {
     final SubmissionDto submissionDto = new SubmissionDto(16L, "flag");
-    assertThat(submissionDto.toString()).isEqualTo("SubmissionDto(moduleId=16, flag=flag)");
+    assertThat(submissionDto).hasToString("SubmissionDto(moduleId=16, flag=flag)");
   }
 }

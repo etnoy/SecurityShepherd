@@ -46,7 +46,7 @@ import reactor.test.StepVerifier;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("ModuleSolutions unit test")
-public class ModuleSolutionsTest {
+class ModuleSolutionsTest {
 
   @BeforeAll
   private static void reactorVerbose() {
@@ -61,7 +61,7 @@ public class ModuleSolutionsTest {
   @Mock private SubmissionService submissionService;
 
   @Test
-  public void
+  void
       findOpenModuleByShortNameWithSolutionStatus_EmptyShortName_ReturnsInvalidModuleShortNameException() {
     final long mockUserId = 690L;
     StepVerifier.create(moduleSolutions.findOpenModuleByShortNameWithSolutionStatus(mockUserId, ""))
@@ -73,8 +73,7 @@ public class ModuleSolutionsTest {
   }
 
   @Test
-  public void
-      findOpenModuleByShortNameWithSolutionStatus_InvalidUserid_ReturnsInvalidUserIdException() {
+  void findOpenModuleByShortNameWithSolutionStatus_InvalidUserid_ReturnsInvalidUserIdException() {
     final String mockModuleShortName = "shortName";
     for (final long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(
@@ -91,8 +90,7 @@ public class ModuleSolutionsTest {
   }
 
   @Test
-  public void
-      findOpenModuleByShortNameWithSolutionStatus_ModuleIsClosedAndHasSolution_ReturnsEmpty() {
+  void findOpenModuleByShortNameWithSolutionStatus_ModuleIsClosedAndHasSolution_ReturnsEmpty() {
     final long mockModuleId = 782L;
     final String mockModuleShortName = "test-module";
 
@@ -121,8 +119,7 @@ public class ModuleSolutionsTest {
   }
 
   @Test
-  public void
-      findOpenModuleByShortNameWithSolutionStatus_ModuleIsOpenAndHasSolution_ReturnsModule() {
+  void findOpenModuleByShortNameWithSolutionStatus_ModuleIsOpenAndHasSolution_ReturnsModule() {
     final long mockModuleId = 782L;
     final String mockModuleName = "Test Module";
     final String mockModuleShortName = "test-module";
@@ -174,8 +171,7 @@ public class ModuleSolutionsTest {
   }
 
   @Test
-  public void
-      findOpenModuleByShortNameWithSolutionStatus_ModuleIsOpenAndHasNoSolution_ReturnsModule() {
+  void findOpenModuleByShortNameWithSolutionStatus_ModuleIsOpenAndHasNoSolution_ReturnsModule() {
     final long mockModuleId = 782L;
     final String mockModuleName = "Test Module";
     final String mockModuleShortName = "test-module";
@@ -225,7 +221,7 @@ public class ModuleSolutionsTest {
   }
 
   @Test
-  public void
+  void
       findOpenModuleByShortNameWithSolutionStatus_NullShortName_ReturnsInvalidModuleShortNameException() {
     final long mockUserId = 398L;
     StepVerifier.create(
@@ -238,8 +234,7 @@ public class ModuleSolutionsTest {
   }
 
   @Test
-  public void
-      findOpenModulesByUserIdWithSolutionStatus_InvalidUserid_ReturnsInvalidUserIdException() {
+  void findOpenModulesByUserIdWithSolutionStatus_InvalidUserid_ReturnsInvalidUserIdException() {
     for (final long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(moduleSolutions.findOpenModulesByUserIdWithSolutionStatus(userId))
           .expectError(InvalidUserIdException.class)
@@ -248,7 +243,7 @@ public class ModuleSolutionsTest {
   }
 
   @Test
-  public void findOpenModulesByUserIdWithSolutionStatus_NoModulesOrSubmissions_ReturnsEmpty() {
+  void findOpenModulesByUserIdWithSolutionStatus_NoModulesOrSubmissions_ReturnsEmpty() {
     final long mockUserId = 1000L;
 
     when(submissionService.findAllValidIdsByUserId(mockUserId)).thenReturn(Mono.empty());
@@ -262,7 +257,7 @@ public class ModuleSolutionsTest {
   }
 
   @Test
-  public void findOpenModulesByUserIdWithSolutionStatus_ValidSubmissions_ReturnsModules() {
+  void findOpenModulesByUserIdWithSolutionStatus_ValidSubmissions_ReturnsModules() {
     final long mockModule1Id = 315L;
     final String mockModule1Name = "Module 1";
     final String mockModule1ShortName = "module-1";

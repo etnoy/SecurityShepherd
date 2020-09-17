@@ -51,7 +51,7 @@ import reactor.test.StepVerifier;
 @AutoConfigureWebTestClient
 @Execution(ExecutionMode.SAME_THREAD)
 @DisplayName("FlagController integration test")
-public class FlagControllerIT {
+class FlagControllerIT {
   @BeforeAll
   private static void reactorVerbose() {
     // Tell Reactor to print verbose error messages
@@ -77,7 +77,7 @@ public class FlagControllerIT {
 
   @Test
   @DisplayName("Submitting an invalid exact flag should return false")
-  public void submitFlag_InvalidExactFlag_Success() throws Exception {
+  void submitFlag_InvalidExactFlag_Success() throws Exception {
     final String loginName = "testUser";
     final String password = "paLswOrdha17£@£sh";
     final String moduleName = "test-module";
@@ -145,7 +145,7 @@ public class FlagControllerIT {
 
   @Test
   @DisplayName("Submitting a flag should return HTTP Unauthorized if not logged in")
-  public void submitFlag_NotAuthenticated_ReturnsUnauthorized() throws Exception {
+  void submitFlag_NotAuthenticated_ReturnsUnauthorized() throws Exception {
     final String moduleName = "test-module";
     final String moduleShortName = "test-module";
 
@@ -171,7 +171,7 @@ public class FlagControllerIT {
 
   @Test
   @DisplayName("Submitting a valid exact flag should return true")
-  public void submitFlag_ValidExactFlag_Success() throws Exception {
+  void submitFlag_ValidExactFlag_Success() throws Exception {
     final String loginName = "testUser";
     final String password = "paLswOrdha17£@£sh";
     final String moduleName = "test-module";

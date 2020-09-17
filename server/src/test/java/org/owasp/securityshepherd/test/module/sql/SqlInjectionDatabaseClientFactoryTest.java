@@ -26,7 +26,7 @@ import reactor.core.publisher.Hooks;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("SqlInjectionDatabaseClientFactory unit test")
-public class SqlInjectionDatabaseClientFactoryTest {
+class SqlInjectionDatabaseClientFactoryTest {
   @BeforeAll
   private static void reactorVerbose() {
     // Tell Reactor to print verbose error messages
@@ -37,7 +37,7 @@ public class SqlInjectionDatabaseClientFactoryTest {
       new SqlInjectionDatabaseClientFactory();
 
   @Test
-  public void create_ValidConnectionUrl_ReturnsDatabaseClient() {
+  void create_ValidConnectionUrl_ReturnsDatabaseClient() {
     final String connectionUrl = "r2dbc:h2:mem:///db";
     final DatabaseClient client = sqlInjectionDatabaseClientFactory.create(connectionUrl);
     assertThat(client).isInstanceOf(DatabaseClient.class);

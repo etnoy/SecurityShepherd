@@ -5,6 +5,7 @@ plugins {
 	id 'eclipse'
 	id 'jacoco'
 	id "io.freefair.lombok" version "5.2.1"
+	id "org.sonarqube" version "2.7.1"
 }
 
 group = 'org.owasp.securityshepherd'
@@ -16,13 +17,19 @@ repositories {
 	mavenLocal()
 }
 
+jacocoTestReport {
+	reports {
+		xml.enabled = true
+	}
+}
+
 sourceSets {
 	integrationTest {
 		compileClasspath += sourceSets.main.output + sourceSets.test.output
 		runtimeClasspath += sourceSets.main.output + sourceSets.test.output
-
-		java.srcDir 'src/integration-test/java'
-		resources.srcDir 'src/integration-test/resources'
+		
+		java.srcDir file('src/integration-test/java')
+		resources.srcDir file('src/integration-test/resources')
 	}
 }
 
@@ -109,6 +116,8 @@ task integrationTest(type: Test) {
 
 integrationTest {
 	useJUnitPlatform()
+	
+	finalizedBy jacocoTestReport
 
 	testLogging {
 		events "failed"
@@ -119,8 +128,19 @@ integrationTest {
 test {
 	useJUnitPlatform()
 
+	finalizedBy jacocoTestReport
+	
 	testLogging {
 		events "failed"
 		exceptionFormat "full"
+	}
+}
+
+sonarqube {
+	properties {
+		property "sonar.projectName", "Security Shepherd"
+		property "sonar.projectKey", "etnoy_SecurityShepherd"
+		//properties["sonar.tests"] += sourceSets.integrationTest.allSource.srcDirs
+		properties["sonar.tests"] += "src/integration-test/java"
 	}
 }

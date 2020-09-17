@@ -26,16 +26,16 @@ import com.gargoylesoftware.htmlunit.WebClient;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("XssWebClientFactory unit test")
-public class XssWebClientFactoryTest {
+class XssWebClientFactoryTest {
   XssWebClientFactory xssWebClientFactory;
 
   @Test
-  public void createAlertHandler_ReturnsAlertHandler() {
+  void createAlertHandler_ReturnsAlertHandler() {
     assertThat(xssWebClientFactory.createAlertHandler()).isInstanceOf(CollectingAlertHandler.class);
   }
 
   @Test
-  public void createWebClient_ReturnsWebClient() {
+  void createWebClient_ReturnsWebClient() {
     assertThat(xssWebClientFactory.createWebClient()).isInstanceOf(WebClient.class);
   }
 

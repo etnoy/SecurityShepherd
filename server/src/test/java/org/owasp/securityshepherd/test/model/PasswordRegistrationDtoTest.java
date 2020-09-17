@@ -23,9 +23,9 @@ import org.owasp.securityshepherd.test.util.TestUtils;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 @DisplayName("PasswordRegistrationDto unit test")
-public class PasswordRegistrationDtoTest {
+class PasswordRegistrationDtoTest {
   @Test
-  public void buildComment_ValidComment_Builds() {
+  void buildComment_ValidComment_Builds() {
     for (final String displayName : TestUtils.STRINGS) {
       for (final String userName : TestUtils.STRINGS) {
         for (final String password : TestUtils.STRINGS) {
@@ -40,18 +40,18 @@ public class PasswordRegistrationDtoTest {
   }
 
   @Test
-  public void equals_EqualsVerifier_AsExpected() {
+  void equals_EqualsVerifier_AsExpected() {
     EqualsVerifier.forClass(PasswordRegistrationDto.class)
         .withIgnoredAnnotations(NotNull.class)
         .verify();
   }
 
   @Test
-  public void toString_ValidData_AsExpected() {
+  void toString_ValidData_AsExpected() {
     final PasswordRegistrationDto passwordRegistrationDto =
         new PasswordRegistrationDto("displayName", "loginName", "password");
-    assertThat(passwordRegistrationDto.toString())
-        .isEqualTo(
+    assertThat(passwordRegistrationDto)
+        .hasToString(
             "PasswordRegistrationDto(displayName=displayName, userName=loginName, password=password)");
   }
 }

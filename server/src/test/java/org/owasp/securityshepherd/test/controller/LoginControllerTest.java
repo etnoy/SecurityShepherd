@@ -37,7 +37,7 @@ import reactor.test.StepVerifier;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("LoginController unit test")
-public class LoginControllerTest {
+class LoginControllerTest {
 
   @BeforeAll
   private static void reactorVerbose() {
@@ -54,7 +54,7 @@ public class LoginControllerTest {
   @Mock PasswordEncoder passwordEncoder;
 
   @Test
-  public void login_InvalidCredentials_ReturnsJWT() {
+  void login_InvalidCredentials_ReturnsJWT() {
     final String userName = "user";
     final String password = "password";
     final PasswordLoginDto passwordLoginDto = new PasswordLoginDto(userName, password);
@@ -68,7 +68,7 @@ public class LoginControllerTest {
   }
 
   @Test
-  public void login_ValidCredentials_ReturnsJWT() {
+  void login_ValidCredentials_ReturnsJWT() {
     final String userName = "user";
     final String password = "password";
     final PasswordLoginDto passwordLoginDto = new PasswordLoginDto(userName, password);
@@ -85,7 +85,7 @@ public class LoginControllerTest {
   }
 
   @Test
-  public void register_ValidData_ReturnsUserid() {
+  void register_ValidData_ReturnsUserid() {
     final String displayName = "displayName";
     final String userName = "user";
     final String password = "password";

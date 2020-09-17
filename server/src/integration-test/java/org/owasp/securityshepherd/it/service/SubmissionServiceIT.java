@@ -45,7 +45,7 @@ import reactor.test.StepVerifier;
 @SpringBootTest(properties = {"application.runner.enabled=false"})
 @Execution(ExecutionMode.SAME_THREAD)
 @DisplayName("SubmissionService integration test")
-public class SubmissionServiceIT {
+class SubmissionServiceIT {
   @BeforeAll
   private static void reactorVerbose() {
     // Tell Reactor to print verbose error messages
@@ -79,7 +79,7 @@ public class SubmissionServiceIT {
   }
 
   @Test
-  public void submitFlag_DuplicateValidExactFlag_ReturnModuleAlreadySolvedException() {
+  void submitFlag_DuplicateValidExactFlag_ReturnModuleAlreadySolvedException() {
     final String flag = "thisisaflag";
 
     final Mono<Long> userIdMono = userService.create("TestUser");
@@ -105,7 +105,7 @@ public class SubmissionServiceIT {
   }
 
   @Test
-  public void submitFlag_ValidExactFlag_Success() {
+  void submitFlag_ValidExactFlag_Success() {
     final String flag = "thisisaflag";
 
     final Mono<Long> userIdMono = userService.create("TestUser");

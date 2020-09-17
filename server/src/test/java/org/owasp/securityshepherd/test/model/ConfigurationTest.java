@@ -14,40 +14,40 @@
  */
 package org.owasp.securityshepherd.test.model;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.owasp.securityshepherd.model.Configuration;
 import org.owasp.securityshepherd.model.Configuration.ConfigurationBuilder;
+import org.owasp.securityshepherd.test.util.TestUtils;
+
 import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 @DisplayName("Configuration unit test")
-public class ConfigurationTest {
+class ConfigurationTest {
   @Test
-  public void builderToString_ValidData_AsExpected() {
-    assertThat(
-        Configuration.builder().toString(),
-        is("Configuration.ConfigurationBuilder(id=null, key=null, value=null)"));
+  void builderToString_ValidData_AsExpected() {
+    assertThat(Configuration.builder())
+        .hasToString("Configuration.ConfigurationBuilder(id=null, key=null, value=null)");
   }
 
   @Test
-  public void build_KeyNotGiven_ThrowsNullPointerException() {
+  void build_KeyNotGiven_ThrowsNullPointerException() {
     final ConfigurationBuilder configurationBuilder = Configuration.builder().id(17).value("value");
     assertThrows(NullPointerException.class, () -> configurationBuilder.build());
   }
 
   @Test
-  public void build_ValueNotGiven_ThrowsNullPointerException() {
+  void build_ValueNotGiven_ThrowsNullPointerException() {
     final ConfigurationBuilder configurationBuilder = Configuration.builder().id(17).key("key");
     assertThrows(NullPointerException.class, () -> configurationBuilder.build());
   }
 
   @Test
-  public void buildId_ValidId_Builds() {
+  void buildId_ValidId_Builds() {
     final int[] idsToTest = {0, 1, -1, 1000, -1000, 1234567, -1234567, 42};
 
     for (int id : idsToTest) {
@@ -56,18 +56,19 @@ public class ConfigurationTest {
 
       builder.id(id);
 
-      assertThat(builder.build(), instanceOf(Configuration.class));
-      assertThat(builder.build().getId(), is(id));
+      assertThat(builder.build()).isInstanceOf(Configuration.class);
+      assertThat(builder.build().getId()).isEqualTo(id);
     }
   }
 
   @Test
-  public void buildKey_NullKey_ThrowsNullPointerException() {
-    assertThrows(NullPointerException.class, () -> Configuration.builder().key(null));
+  void buildKey_NullKey_ThrowsNullPointerException() {
+    final ConfigurationBuilder configurationBuilder = Configuration.builder();
+    assertThrows(NullPointerException.class, () -> configurationBuilder.key(null));
   }
 
   @Test
-  public void buildKey_ValidKey_Builds() {
+  void buildKey_ValidKey_Builds() {
     final String[] keysToTest = {
       "", "serverKey", "timestampSetting", "\"", "$$^¨'", "åäö", "a", "1", "userName"
     };
@@ -77,48 +78,44 @@ public class ConfigurationTest {
 
       builder.key(key);
 
-      assertThat(builder.build(), instanceOf(Configuration.class));
-      assertThat(builder.build().getKey(), is(key));
+      assertThat(builder.build()).isInstanceOf(Configuration.class);
+      assertThat(builder.build().getKey()).isEqualTo(key);
     }
   }
 
   @Test
-  public void buildValue_NullValue_ThrowsNullPointerException() {
-    assertThrows(NullPointerException.class, () -> Configuration.builder().value(null));
+  void buildValue_NullValue_ThrowsNullPointerException() {
+    final ConfigurationBuilder configurationBuilder = Configuration.builder();
+    assertThrows(NullPointerException.class, () -> configurationBuilder.value(null));
   }
 
   @Test
-  public void buildValue_ValidValue_Builds() {
-    final String[] valuesToTest = {
-      "", "serverValue", "timestampSetting", "\"", "$$^¨'", "åäö", "a", "1", "userName"
-    };
+  void buildValue_ValidValue_Builds() {
+    final ConfigurationBuilder configurationBuilder = Configuration.builder().key("TestKey");
 
-    for (String value : valuesToTest) {
-
-      final ConfigurationBuilder builder = Configuration.builder().key("TestKey");
-
-      builder.value(value);
-
-      assertThat(builder.build(), instanceOf(Configuration.class));
-      assertThat(builder.build().getValue(), is(value));
+    for (String value : TestUtils.STRINGS) {
+      configurationBuilder.value(value);
+      assertThat(configurationBuilder.build()).isInstanceOf(Configuration.class);
+      assertThat(configurationBuilder.build().getValue()).isEqualTo(value);
     }
   }
 
   @Test
-  public void equals_AutomaticTesting() {
+  void equals_AutomaticTesting() {
     EqualsVerifier.forClass(Configuration.class).withIgnoredAnnotations(NonNull.class).verify();
   }
 
   @Test
-  public void toString_ValidData_AsExpected() {
-    assertThat(
-        Configuration.builder().key("serverKey").value("abc123secret").build().toString(),
-        is("Configuration(id=null, key=serverKey, value=abc123secret)"));
+  void toString_ValidData_AsExpected() {
+    assertThat(Configuration.builder().key("serverKey").value("abc123secret").build())
+        .hasToString("Configuration(id=null, key=serverKey, value=abc123secret)");
   }
 
   @Test
-  public void withId_ValidId_ChangesId() {
+  void withId_ValidId_ChangesId() {
     final Integer originalId = 1;
+
+    // TODO: create new list in TestUtils
     final Integer[] testedIds = {originalId, 0, null, -1, 1000, -1000, 123456789, -12346789};
 
     final Configuration configuration =
@@ -126,52 +123,44 @@ public class ConfigurationTest {
 
     for (Integer id : testedIds) {
       final Configuration newConfiguration = configuration.withId(id);
-      assertThat(newConfiguration.getId(), is(id));
+      assertThat(newConfiguration.getId()).isEqualTo(id);
     }
   }
 
   @Test
-  public void withKey_NullKey_ThrowsNullPointerException() {
-    assertThrows(
-        NullPointerException.class,
-        () -> Configuration.builder().key("serverKey").value("secret123").build().withKey(null));
+  void withKey_NullKey_ThrowsNullPointerException() {
+    final Configuration configuration =
+        Configuration.builder().key("serverKey").value("secret123").build();
+
+    assertThrows(NullPointerException.class, () -> configuration.withKey(null));
   }
 
   @Test
-  public void withKey_ValidKey_ChangesKey() {
+  void withKey_ValidKey_ChangesKey() {
     final Configuration configuration =
-        Configuration.builder().key("settingKey").value("123").build();
+        Configuration.builder().key(TestUtils.INITIAL_STRING).value("123").build();
 
-    final String[] testedKeys = {
-      "settingKey", "", "\"", "!\"+,-", "serverKey", "Long  With     Whitespace", "12345"
-    };
-
-    for (String key : testedKeys) {
-
+    for (String key : TestUtils.STRINGS) {
       final Configuration changedConfiguration = configuration.withKey(key);
-      assertThat(changedConfiguration.getKey(), is(key));
+      assertThat(changedConfiguration.getKey()).hasToString(key);
     }
   }
 
   @Test
-  public void withValue_NullValue_ThrowsNullPointerException() {
-    assertThrows(
-        NullPointerException.class,
-        () -> Configuration.builder().key("serverKey").value("secret123").build().withValue(null));
+  void withValue_NullValue_ThrowsNullPointerException() {
+    final Configuration configuration =
+        Configuration.builder().key("serverKey").value("secret123").build();
+    assertThrows(NullPointerException.class, () -> configuration.withValue(null));
   }
 
   @Test
-  public void withValue_ValidValue_ChangesValue() {
+  void withValue_ValidValue_ChangesValue() {
     final Configuration configuration =
-        Configuration.builder().key("settingKey").value("settingValue").build();
+        Configuration.builder().key("settingKey").value(TestUtils.INITIAL_STRING).build();
 
-    final String[] testedValues = {
-      "settingValue", "", "\"", "!\"+,-", "serverValue", "Long  With     Whitespace", "12345"
-    };
-
-    for (String value : testedValues) {
+    for (String value : TestUtils.STRINGS) {
       final Configuration changedConfiguration = configuration.withValue(value);
-      assertThat(changedConfiguration.getValue(), is(value));
+      assertThat(changedConfiguration.getValue()).isEqualTo(value);
     }
   }
 }

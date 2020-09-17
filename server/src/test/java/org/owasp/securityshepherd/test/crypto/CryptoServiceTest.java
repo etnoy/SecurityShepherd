@@ -37,7 +37,7 @@ import reactor.core.publisher.Hooks;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("CryptoService unit test")
-public class CryptoServiceTest {
+class CryptoServiceTest {
   @BeforeAll
   private static void reactorVerbose() {
     // Tell Reactor to print verbose error messages
@@ -49,8 +49,7 @@ public class CryptoServiceTest {
   @Mock CryptoFactory cryptoFactory;
 
   @Test
-  public void hmac_GetHmacThrowsNoSuchAlgorithmException_ThrowsCryptographicException()
-      throws Exception {
+  void hmac_GetHmacThrowsNoSuchAlgorithmException_ThrowsCryptographicException() throws Exception {
     final byte[] key = {-91, -79, 67};
     final byte[] message = {120, 56};
     when(cryptoFactory.getHmac()).thenThrow(new NoSuchAlgorithmException());
@@ -59,7 +58,7 @@ public class CryptoServiceTest {
   }
 
   @Test
-  public void hmac_InvalidKeyException_ThrowsCryptographicException() throws Exception {
+  void hmac_InvalidKeyException_ThrowsCryptographicException() throws Exception {
     final byte[] key = {-91};
     final byte[] message = {120, 56, 111};
 
@@ -76,7 +75,7 @@ public class CryptoServiceTest {
   }
 
   @Test
-  public void hmac_NullKey_ThrowsNullPointerException() {
+  void hmac_NullKey_ThrowsNullPointerException() {
     final byte[] message = {120, 56, 111, -98, -118, 44, -65, -127, 39, 35};
 
     assertThatExceptionOfType(NullPointerException.class)
@@ -84,7 +83,7 @@ public class CryptoServiceTest {
   }
 
   @Test
-  public void hmac_NullMessage_ThrowsNullPointerException() {
+  void hmac_NullMessage_ThrowsNullPointerException() {
     final byte[] key = {-91, -79, 67, -107, 9, 91, 62, -95, 80, 78};
 
     assertThatExceptionOfType(NullPointerException.class)
@@ -92,7 +91,7 @@ public class CryptoServiceTest {
   }
 
   @Test
-  public void hmac_ValidData_ReturnsHash() throws Exception {
+  void hmac_ValidData_ReturnsHash() throws Exception {
     final byte[] key = {-91};
     final byte[] message = {120, 56, 111};
     final byte[] expectedHash = {46};

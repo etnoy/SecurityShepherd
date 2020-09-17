@@ -14,8 +14,8 @@
  */
 package org.owasp.securityshepherd.test.service;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
@@ -44,14 +44,14 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("XssService unit test")
-public class XssServiceTest {
+class XssServiceTest {
 
   XssService xssService;
 
   @Mock XssWebClientFactory xssWebClientFactory;
 
   @Test
-  public void doXss_AlertHandlerFindsAlerts_ReturnsCollectedAlerts() throws Exception {
+  void doXss_AlertHandlerFindsAlerts_ReturnsCollectedAlerts() throws Exception {
     final String htmlPage = "<html></html>";
     final HtmlPage mockPage = mock(HtmlPage.class);
     final DomElement mockElement1 = mock(DomElement.class);
@@ -74,13 +74,13 @@ public class XssServiceTest {
     when(mockWebClient.getPage(any(String.class))).thenReturn(mockPage);
     when(mockPage.getDomElementDescendants()).thenReturn(mockDomElements);
     when(mockAlertHandler.getCollectedAlerts()).thenReturn(alerts);
-    assertThat(xssService.doXss(htmlPage), is(alerts));
+    assertThat(xssService.doXss(htmlPage)).isEqualTo(alerts);
     verify(mockWebClient, times(1)).getPage(any(String.class));
     verify(mockAlertHandler, times(1)).getCollectedAlerts();
   }
 
   @Test
-  public void doXss_GetPageThrowsIOException_ThrowsXssEvaluationException()
+  void doXss_GetPageThrowsIOException_ThrowsXssEvaluationException()
       throws FailingHttpStatusCodeException, MalformedURLException, IOException {
     final String htmlPage = "<html></html>";
     final WebClient mockWebClient = mock(WebClient.class);
@@ -93,8 +93,7 @@ public class XssServiceTest {
   }
 
   @Test
-  public void doXss_PageInitializeThrowsIOException_ThrowsXssEvaluationException()
-      throws Exception {
+  void doXss_PageInitializeThrowsIOException_ThrowsXssEvaluationException() throws Exception {
     final String htmlPage = "<html></html>";
     final HtmlPage mockPage = mock(HtmlPage.class);
     final WebClient mockWebClient = mock(WebClient.class);

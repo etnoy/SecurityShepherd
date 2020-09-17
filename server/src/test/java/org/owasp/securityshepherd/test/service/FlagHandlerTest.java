@@ -43,7 +43,7 @@ import reactor.test.StepVerifier;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("FlagHandler unit test")
-public class FlagHandlerTest {
+class FlagHandlerTest {
 
   @BeforeAll
   private static void reactorVerbose() {
@@ -64,7 +64,7 @@ public class FlagHandlerTest {
   @Mock private CryptoService cryptoService;
 
   @Test
-  public void getDynamicFlag_FlagIsExact_ReturnsInvalidFlagStateException() {
+  void getDynamicFlag_FlagIsExact_ReturnsInvalidFlagStateException() {
     final Module mockModule = mock(Module.class);
 
     final long mockModuleId = 18;
@@ -92,7 +92,7 @@ public class FlagHandlerTest {
   }
 
   @Test
-  public void getDynamicFlag_FlagIsSet_ReturnsFlag() {
+  void getDynamicFlag_FlagIsSet_ReturnsFlag() {
     final Module mockModule = mock(Module.class);
 
     final long mockModuleId = 76;
@@ -146,7 +146,7 @@ public class FlagHandlerTest {
   }
 
   @Test
-  public void getDynamicFlag_FlagNotEnabled_ReturnsInvalidFlagStateException() {
+  void getDynamicFlag_FlagNotEnabled_ReturnsInvalidFlagStateException() {
     final long mockModuleId = 440;
     final long mockUserId = 332;
 
@@ -174,7 +174,7 @@ public class FlagHandlerTest {
   }
 
   @Test
-  public void getDynamicFlag_NegativeModuleId_ReturnsInvalidModuleIdException() {
+  void getDynamicFlag_NegativeModuleId_ReturnsInvalidModuleIdException() {
     StepVerifier.create(flagHandler.getDynamicFlag(768, -1))
         .expectError(InvalidModuleIdException.class)
         .verify();
@@ -184,7 +184,7 @@ public class FlagHandlerTest {
   }
 
   @Test
-  public void getDynamicFlag_NegativeUserId_ReturnsInvalidUserIdException() {
+  void getDynamicFlag_NegativeUserId_ReturnsInvalidUserIdException() {
     StepVerifier.create(flagHandler.getDynamicFlag(-1, 302))
         .expectError(InvalidUserIdException.class)
         .verify();
@@ -194,14 +194,14 @@ public class FlagHandlerTest {
   }
 
   @Test
-  public void getDynamicFlag_ZeroModuleId_ReturnsInvalidModuleIdException() {
+  void getDynamicFlag_ZeroModuleId_ReturnsInvalidModuleIdException() {
     StepVerifier.create(flagHandler.getDynamicFlag(267, 0))
         .expectError(InvalidModuleIdException.class)
         .verify();
   }
 
   @Test
-  public void getDynamicFlag_ZeroUserId_ReturnsInvalidUserIdException() {
+  void getDynamicFlag_ZeroUserId_ReturnsInvalidUserIdException() {
     StepVerifier.create(flagHandler.getDynamicFlag(0, 186))
         .expectError(InvalidUserIdException.class)
         .verify();
@@ -216,7 +216,7 @@ public class FlagHandlerTest {
   }
 
   @Test
-  public void verifyFlag_CorrectDynamicFlag_ReturnsTrue() {
+  void verifyFlag_CorrectDynamicFlag_ReturnsTrue() {
     final Module mockModule = mock(Module.class);
 
     final long mockUserId = 158;
@@ -271,7 +271,7 @@ public class FlagHandlerTest {
   }
 
   @Test
-  public void verifyFlag_CorrectExactFlag_ReturnsTrue() {
+  void verifyFlag_CorrectExactFlag_ReturnsTrue() {
     final long mockUserId = 225;
     final long mockModuleId = 201;
     final String validExactFlag = "validFlag";
@@ -300,7 +300,7 @@ public class FlagHandlerTest {
   }
 
   @Test
-  public void verifyFlag_CorrectLowerCaseFlag_ReturnsTrue() {
+  void verifyFlag_CorrectLowerCaseFlag_ReturnsTrue() {
     final long mockUserId = 594;
     final long mockModuleId = 769;
     final String validExactFlag = "validFlagWithUPPERCASEandlowercase";
@@ -330,7 +330,7 @@ public class FlagHandlerTest {
   }
 
   @Test
-  public void verifyFlag_CorrectUpperCaseFlag_ReturnsTrue() {
+  void verifyFlag_CorrectUpperCaseFlag_ReturnsTrue() {
     final long mockUserId = 594;
     final long mockModuleId = 769;
     final String validExactFlag = "validFlagWithUPPERCASEandlowercase";
@@ -360,7 +360,7 @@ public class FlagHandlerTest {
   }
 
   @Test
-  public void verifyFlag_EmptyDynamicFlag_ReturnsFalse() {
+  void verifyFlag_EmptyDynamicFlag_ReturnsFalse() {
     final Module mockModule = mock(Module.class);
 
     final long mockUserId = 193;
@@ -420,7 +420,7 @@ public class FlagHandlerTest {
   }
 
   @Test
-  public void verifyFlag_EmptyExactFlag_ReturnsFalse() {
+  void verifyFlag_EmptyExactFlag_ReturnsFalse() {
     final long mockUserId = 709;
     final long mockModuleId = 677;
     final String validExactFlag = "validFlag";
@@ -449,7 +449,7 @@ public class FlagHandlerTest {
   }
 
   @Test
-  public void verifyFlag_FlagNotEnabled_ReturnsInvalidFlagStateException() {
+  void verifyFlag_FlagNotEnabled_ReturnsInvalidFlagStateException() {
     final long mockUserId = 515;
     final long mockModuleId = 161;
 
@@ -468,7 +468,7 @@ public class FlagHandlerTest {
   }
 
   @Test
-  public void verifyFlag_NullDynamicFlag_ReturnsFalse() {
+  void verifyFlag_NullDynamicFlag_ReturnsFalse() {
     final long mockUserId = 756;
     final long mockModuleId = 543;
 
@@ -478,7 +478,7 @@ public class FlagHandlerTest {
   }
 
   @Test
-  public void verifyFlag_NullExactFlag_ReturnsFalse() {
+  void verifyFlag_NullExactFlag_ReturnsFalse() {
     final long mockUserId = 487;
     final long mockModuleId = 941;
 
@@ -488,7 +488,7 @@ public class FlagHandlerTest {
   }
 
   @Test
-  public void verifyFlag_WrongDynamicFlag_ReturnsFalse() {
+  void verifyFlag_WrongDynamicFlag_ReturnsFalse() {
     final Module mockModule = mock(Module.class);
 
     final long mockUserId = 193;
@@ -545,7 +545,7 @@ public class FlagHandlerTest {
   }
 
   @Test
-  public void verifyFlag_WrongExactFlag_ReturnsFalse() {
+  void verifyFlag_WrongExactFlag_ReturnsFalse() {
     final long mockUserId = 709;
     final long mockModuleId = 677;
     final String validExactFlag = "validFlag";

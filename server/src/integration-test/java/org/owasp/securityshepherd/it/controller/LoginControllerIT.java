@@ -14,8 +14,8 @@
  */
 package org.owasp.securityshepherd.it.controller;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Base64;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,7 +46,7 @@ import reactor.core.publisher.Mono;
 @AutoConfigureWebTestClient
 @Execution(ExecutionMode.SAME_THREAD)
 @DisplayName("LoginController integration test")
-public class LoginControllerIT {
+class LoginControllerIT {
   @BeforeAll
   private static void reactorVerbose() {
     // Tell Reactor to print verbose error messages
@@ -61,7 +61,7 @@ public class LoginControllerIT {
 
   @Test
   @DisplayName("Logging in with correct credentials should return a valid token")
-  public void login_CorrectCredentials_ReturnsToken() {
+  void login_CorrectCredentials_ReturnsToken() {
     final String loginName = "test";
     final String hashedPassword = "$2y$12$53B6QcsGwF3Os1GVFUFSQOhIPXnWFfuEkRJdbknFWnkXfUBMUKhaW";
 
@@ -101,12 +101,12 @@ public class LoginControllerIT {
 
     final long userId = Long.parseLong(jsonBody.read("$.sub"));
 
-    assertThat(userId, is(createdUserId));
+    assertThat(userId).isEqualTo(createdUserId);
   }
 
   @Test
   @DisplayName("Logging in with an incorrect password should return HTTP Unauthorized")
-  public void login_WrongPassword_ReturnsUnauthorized() {
+  void login_WrongPassword_ReturnsUnauthorized() {
     final String loginName = "test";
     final String hashedPassword = "$2y$12$53B6QcsGwF3Os1GVFUFSQOhIPXnWFfuEkRJdbknFWnkXfUBMUKhaW";
 
@@ -127,7 +127,7 @@ public class LoginControllerIT {
 
   @Test
   @DisplayName("Logging in with an incorrect username should return HTTP Unauthorized")
-  public void login_WrongUserName_ReturnsUnauthorized() {
+  void login_WrongUserName_ReturnsUnauthorized() {
 
     final String loginName = "test";
     final String hashedPassword = "$2y$12$53B6QcsGwF3Os1GVFUFSQOhIPXnWFfuEkRJdbknFWnkXfUBMUKhaW";

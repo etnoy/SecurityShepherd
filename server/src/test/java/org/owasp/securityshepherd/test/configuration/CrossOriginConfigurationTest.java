@@ -24,11 +24,11 @@ import org.owasp.securityshepherd.configuration.CrossOriginConfiguration;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("CrossOriginConfiguration unit test")
-public class CrossOriginConfigurationTest {
+class CrossOriginConfigurationTest {
   CrossOriginConfiguration crossOriginConfiguration;
 
   @Test
-  public void authenticate_EmptyPassword_ReturnsIllegalArgumentException() {
+  void authenticate_EmptyPassword_ReturnsIllegalArgumentException() {
     assertThatCode(() -> crossOriginConfiguration.corsConfigurationSource())
         .doesNotThrowAnyException();
   }

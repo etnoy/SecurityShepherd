@@ -42,7 +42,7 @@ import reactor.test.StepVerifier;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("XssTutorial unit test")
-public class XssTutorialTest {
+class XssTutorialTest {
   @BeforeAll
   private static void reactorVerbose() {
     // Tell Reactor to print verbose error messages
@@ -58,12 +58,12 @@ public class XssTutorialTest {
   @Mock FlagHandler flagHandler;
 
   @Test
-  public void getDescription_IsNotEmpty() {
+  void getDescription_IsNotEmpty() {
     assertThat(xssTutorial.getDescription()).isNotEmpty();
   }
 
   @Test
-  public void getModuleId_ModuleIntialized_ReturnsModuleId() {
+  void getModuleId_ModuleIntialized_ReturnsModuleId() {
     final long mockModuleId = 254L;
     final Module mockModule = mock(Module.class);
 
@@ -76,24 +76,24 @@ public class XssTutorialTest {
   }
 
   @Test
-  public void getModuleId_ModuleNotIntialized_ThrowsModuleNotInitializedException() {
+  void getModuleId_ModuleNotIntialized_ThrowsModuleNotInitializedException() {
     assertThatThrownBy(() -> xssTutorial.getModuleId())
         .isInstanceOf(ModuleNotInitializedException.class)
         .hasMessageContaining("Module must be initialized first");
   }
 
   @Test
-  public void getName_ReturnsXssTutorial() {
+  void getName_ReturnsXssTutorial() {
     assertThat(xssTutorial.getName()).isEqualTo("XSS Tutorial");
   }
 
   @Test
-  public void getShortName_ReturnsXssTutorial() {
+  void getShortName_ReturnsXssTutorial() {
     assertThat(xssTutorial.getShortName()).isEqualTo("xss-tutorial");
   }
 
   @Test
-  public void initialize_DuplicateModuleName_ReturnsException() {
+  void initialize_DuplicateModuleName_ReturnsException() {
     when(moduleService.create(xssTutorial))
         .thenReturn(Mono.error(new DuplicateModuleNameException()));
     StepVerifier.create(xssTutorial.initialize())
@@ -102,7 +102,7 @@ public class XssTutorialTest {
   }
 
   @Test
-  public void initialize_DuplicateModuleShortName_ReturnsException() {
+  void initialize_DuplicateModuleShortName_ReturnsException() {
     when(moduleService.create(xssTutorial))
         .thenReturn(Mono.error(new DuplicateModuleShortNameException()));
     StepVerifier.create(xssTutorial.initialize())
@@ -111,7 +111,7 @@ public class XssTutorialTest {
   }
 
   @Test
-  public void initialize_ValidModuleName_InitializesModule() {
+  void initialize_ValidModuleName_InitializesModule() {
     final long mockModuleId = 125L;
 
     final Module mockModule = mock(Module.class);
@@ -134,7 +134,7 @@ public class XssTutorialTest {
   }
 
   @Test
-  public void submitQuery_MakesAlert_ReturnsFlag() {
+  void submitQuery_MakesAlert_ReturnsFlag() {
     final long mockUserId = 606L;
     final Module mockModule = mock(Module.class);
     final String mockFlag = "mockedflag";
@@ -167,7 +167,7 @@ public class XssTutorialTest {
   }
 
   @Test
-  public void submitQuery_ModuleNotIntialized_ReturnsModuleNotInitializedException() {
+  void submitQuery_ModuleNotIntialized_ReturnsModuleNotInitializedException() {
     final long mockUserId = 419L;
     final String query = "username";
     StepVerifier.create(xssTutorial.submitQuery(mockUserId, query))
@@ -175,7 +175,7 @@ public class XssTutorialTest {
   }
 
   @Test
-  public void submitQuery_NoAlert_ReturnsQuery() {
+  void submitQuery_NoAlert_ReturnsQuery() {
     final long mockUserId = 606L;
     final Module mockModule = mock(Module.class);
     final String query = "username";
@@ -200,7 +200,7 @@ public class XssTutorialTest {
             response -> {
               assertThat(response.getResult()).contains("Sorry");
               assertThat(response.getResult()).doesNotContain("Congratulations");
-              assertThat(response.getAlert()).isEqualTo(null);
+              assertThat(response.getAlert()).isNull();
             })
         .expectComplete()
         .verify();

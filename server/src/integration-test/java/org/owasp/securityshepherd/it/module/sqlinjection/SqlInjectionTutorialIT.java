@@ -40,7 +40,7 @@ import reactor.test.StepVerifier;
 @SpringBootTest(properties = {"application.runner.enabled=false"})
 @Execution(ExecutionMode.SAME_THREAD)
 @DisplayName("SqlInjectionTutorial integration test")
-public class SqlInjectionTutorialIT {
+class SqlInjectionTutorialIT {
 
   @Autowired SqlInjectionTutorial sqlInjectionTutorial;
 
@@ -65,7 +65,7 @@ public class SqlInjectionTutorialIT {
   }
 
   @Test
-  public void submitSql_QueryWithNoMatches_EmptyResultSet() {
+  void submitSql_QueryWithNoMatches_EmptyResultSet() {
     final Long userId = userService.create("TestUser1").block();
     sqlInjectionTutorial.initialize().block();
 
@@ -73,7 +73,7 @@ public class SqlInjectionTutorialIT {
   }
 
   @Test
-  public void submitSql_CorrectAttackQuery_ReturnsWholeDatabase() {
+  void submitSql_CorrectAttackQuery_ReturnsWholeDatabase() {
     final Long userId = userService.create("TestUser1").block();
     sqlInjectionTutorial.initialize().block();
 
@@ -84,7 +84,7 @@ public class SqlInjectionTutorialIT {
   }
 
   @Test
-  public void submitSql_SqlSyntaxError_ReturnsError() {
+  void submitSql_SqlSyntaxError_ReturnsError() {
     final Long userId = userService.create("TestUser1").block();
     sqlInjectionTutorial.initialize().block();
 
@@ -102,7 +102,7 @@ public class SqlInjectionTutorialIT {
   }
 
   @Test
-  public void submitSql_CorrectAttackQuery_ReturnedFlagIsCorrect() {
+  void submitSql_CorrectAttackQuery_ReturnedFlagIsCorrect() {
     final Long userId = userService.create("TestUser1").block();
     final Long moduleId = sqlInjectionTutorial.initialize().block();
 
@@ -124,7 +124,7 @@ public class SqlInjectionTutorialIT {
   }
 
   @Test
-  public void submitSql_CorrectAttackQuery_ModifiedFlagIsWrong() {
+  void submitSql_CorrectAttackQuery_ModifiedFlagIsWrong() {
     final Long userId = userService.create("TestUser1").block();
     final Long moduleId = sqlInjectionTutorial.initialize().block();
 

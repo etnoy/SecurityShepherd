@@ -26,11 +26,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("PasswordEncoderConfiguration unit test")
-public class PasswordEncoderConfigurationTest {
+class PasswordEncoderConfigurationTest {
   PasswordEncoderConfiguration passwordEncoderConfiguration;
 
   @Test
-  public void passwordEncoder_NoArgument_ReturnsBcryptPasswordEncoder() {
+  void passwordEncoder_NoArgument_ReturnsBcryptPasswordEncoder() {
     final PasswordEncoder passwordEncoder = passwordEncoderConfiguration.passwordEncoder();
     assertThat(passwordEncoder).isInstanceOf(BCryptPasswordEncoder.class);
   }
