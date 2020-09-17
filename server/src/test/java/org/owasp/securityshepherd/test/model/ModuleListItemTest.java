@@ -66,11 +66,11 @@ class ModuleListItemTest {
 
   @Test
   void buildDescription_ValidDescription_Builds() {
-    final ModuleListItemBuilder builder =
+    final ModuleListItemBuilder moduleListItemBuilder =
         ModuleListItem.builder().id(1L).name("TestModuleListItem").shortName("test-module");
     for (final String description : TestUtils.STRINGS_WITH_NULL) {
-      builder.description(description);
-      final ModuleListItem moduleListItem = builder.build();
+      moduleListItemBuilder.description(description);
+      final ModuleListItem moduleListItem = moduleListItemBuilder.build();
       assertThat(moduleListItem.getDescription()).isEqualTo(description);
     }
   }
@@ -91,35 +91,35 @@ class ModuleListItemTest {
 
   @Test
   void buildId_NullId_ThrowsNullPointerException() {
-    final ModuleListItemBuilder moduleBuilder =
+    final ModuleListItemBuilder moduleListItemBuilder =
         ModuleListItem.builder().name("TestModule").shortName("test-module");
     Throwable thrownException =
-        assertThrows(NullPointerException.class, () -> moduleBuilder.id(null));
+        assertThrows(NullPointerException.class, () -> moduleListItemBuilder.id(null));
     assertThat(thrownException.getMessage()).isEqualTo("id is marked non-null but is null");
   }
 
   @Test
   void buildName_NullName_ThrowsNullPointerException() {
-    final ModuleListItemBuilder moduleBuilder = ModuleListItem.builder().shortName("test-module");
+    final ModuleListItemBuilder moduleListItemBuilder = ModuleListItem.builder().shortName("test-module");
     Throwable thrownException =
-        assertThrows(NullPointerException.class, () -> moduleBuilder.name(null));
+        assertThrows(NullPointerException.class, () -> moduleListItemBuilder.name(null));
     assertThat(thrownException.getMessage()).isEqualTo("name is marked non-null but is null");
   }
 
   @Test
   void buildName_NullShortName_ThrowsNullPointerException() {
-    final ModuleListItemBuilder moduleBuilder = ModuleListItem.builder().name("TestModuleListItem");
+    final ModuleListItemBuilder moduleListItemBuilder = ModuleListItem.builder().name("TestModuleListItem");
     Throwable thrownException =
-        assertThrows(NullPointerException.class, () -> moduleBuilder.shortName(null));
+        assertThrows(NullPointerException.class, () -> moduleListItemBuilder.shortName(null));
     assertThat(thrownException.getMessage()).isEqualTo("shortName is marked non-null but is null");
   }
 
   @Test
   void buildName_ValidName_Builds() {
-    final ModuleListItemBuilder builder = ModuleListItem.builder().id(1L).shortName("test-module");
+    final ModuleListItemBuilder moduleListItemBuilder = ModuleListItem.builder().id(1L).shortName("test-module");
     for (final String name : TestUtils.STRINGS) {
-      builder.name(name);
-      final ModuleListItem moduleListItem = builder.build();
+      moduleListItemBuilder.name(name);
+      final ModuleListItem moduleListItem = moduleListItemBuilder.build();
       assertThat(moduleListItem).isInstanceOf(ModuleListItem.class);
       assertThat(moduleListItem.getName()).isEqualTo(name);
     }
@@ -127,11 +127,11 @@ class ModuleListItemTest {
 
   @Test
   void buildShortName_ValidShortName_Builds() {
-    final ModuleListItemBuilder builder =
+    final ModuleListItemBuilder moduleListItemBuilder =
         ModuleListItem.builder().id(1L).name("TestModuleListItem");
     for (final String shortName : TestUtils.STRINGS) {
-      builder.shortName(shortName);
-      final ModuleListItem moduleListItem = builder.build();
+      moduleListItemBuilder.shortName(shortName);
+      final ModuleListItem moduleListItem = moduleListItemBuilder.build();
       assertThat(moduleListItem).isInstanceOf(ModuleListItem.class);
       assertThat(moduleListItem.getShortName()).isEqualTo(shortName);
     }
@@ -144,19 +144,22 @@ class ModuleListItemTest {
 
   @Test
   void moduleListItemBuilderToString_ValidData_AsExpected() {
-    final ModuleListItemBuilder builder = ModuleListItem.builder();
+    final ModuleListItemBuilder moduleListItemBuilder = ModuleListItem.builder();
 
-    assertThat(builder.toString()).isEqualTo(
+    assertThat(moduleListItemBuilder)
+        .hasToString(
             "ModuleListItem.ModuleListItemBuilder(id=null, name=null, shortName=null, "
                 + "description=null, isSolved=null)");
   }
 
   @Test
   void toString_ValidData_AsExpected() {
-    final ModuleListItem testModuleListItem =
+    final ModuleListItem moduleListItem =
         ModuleListItem.builder().id(1L).name("TestModuleListItem").shortName("test-module").build();
 
-    assertThat(testModuleListItem.toString()).isEqualTo(
-            "ModuleListItem(id=1, name=TestModuleListItem, shortName=test-module, description=null, isSolved=null)");
+    assertThat(moduleListItem)
+        .hasToString(
+            "ModuleListItem(id=1, name=TestModuleListItem, shortName=test-module, "
+                + "description=null, isSolved=null)");
   }
 }

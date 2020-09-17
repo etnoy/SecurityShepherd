@@ -49,8 +49,7 @@ class CryptoServiceTest {
   @Mock CryptoFactory cryptoFactory;
 
   @Test
-  void hmac_GetHmacThrowsNoSuchAlgorithmException_ThrowsCryptographicException()
-      throws Exception {
+  void hmac_GetHmacThrowsNoSuchAlgorithmException_ThrowsCryptographicException() throws Exception {
     final byte[] key = {-91, -79, 67};
     final byte[] message = {120, 56};
     when(cryptoFactory.getHmac()).thenThrow(new NoSuchAlgorithmException());

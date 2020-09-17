@@ -40,7 +40,8 @@ class SamlAuthTest {
 
   @Test
   void builderToString_ValidData_AsExpected() {
-    assertThat(SamlAuth.builder().id(15).userId(3).samlId("me@example.com").toString()).isEqualTo("SamlAuth.SamlAuthBuilder(id=15, userId=3, samlId=me@example.com)");
+    assertThat(SamlAuth.builder().id(15).userId(3).samlId("me@example.com"))
+        .hasToString("SamlAuth.SamlAuthBuilder(id=15, userId=3, samlId=me@example.com)");
   }
 
   @Test
@@ -90,7 +91,8 @@ class SamlAuthTest {
 
   @Test
   void toString_ValidData_AsExpected() {
-    assertThat(SamlAuth.builder().id(67).samlId("TestID").userId(3).build().toString()).isEqualTo("SamlAuth(id=67, userId=3, samlId=TestID)");
+    assertThat(SamlAuth.builder().id(67).samlId("TestID").userId(3).build())
+        .hasToString("SamlAuth(id=67, userId=3, samlId=TestID)");
   }
 
   @Test

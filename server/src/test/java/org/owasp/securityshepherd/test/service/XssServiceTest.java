@@ -93,8 +93,7 @@ class XssServiceTest {
   }
 
   @Test
-  void doXss_PageInitializeThrowsIOException_ThrowsXssEvaluationException()
-      throws Exception {
+  void doXss_PageInitializeThrowsIOException_ThrowsXssEvaluationException() throws Exception {
     final String htmlPage = "<html></html>";
     final HtmlPage mockPage = mock(HtmlPage.class);
     final WebClient mockWebClient = mock(WebClient.class);

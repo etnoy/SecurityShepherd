@@ -30,7 +30,8 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 class ConfigurationTest {
   @Test
   void builderToString_ValidData_AsExpected() {
-    assertThat(Configuration.builder().toString()).isEqualTo("Configuration.ConfigurationBuilder(id=null, key=null, value=null)");
+    assertThat(Configuration.builder().toString())
+        .isEqualTo("Configuration.ConfigurationBuilder(id=null, key=null, value=null)");
   }
 
   @Test
@@ -106,7 +107,8 @@ class ConfigurationTest {
 
   @Test
   void toString_ValidData_AsExpected() {
-    assertThat(Configuration.builder().key("serverKey").value("abc123secret").build().toString()).isEqualTo("Configuration(id=null, key=serverKey, value=abc123secret)");
+    assertThat(Configuration.builder().key("serverKey").value("abc123secret").build().toString())
+        .hasToString("Configuration(id=null, key=serverKey, value=abc123secret)");
   }
 
   @Test
@@ -138,13 +140,9 @@ class ConfigurationTest {
     final Configuration configuration =
         Configuration.builder().key("settingKey").value("123").build();
 
-    final String[] testedKeys = {
-      "settingKey", "", "\"", "!\"+,-", "serverKey", "Long  With     Whitespace", "12345"
-    };
-
-    for (String key : testedKeys) {
+    for (String key : TestUtils.STRINGS) {
       final Configuration changedConfiguration = configuration.withKey(key);
-      assertThat(changedConfiguration.getKey()).isEqualTo(key);
+      assertThat(changedConfiguration.getKey()).hasToString(key);
     }
   }
 

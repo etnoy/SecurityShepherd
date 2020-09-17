@@ -1,19 +1,17 @@
 /**
  * This file is part of Security Shepherd.
  *
- * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Security Shepherd.
- * If not, see <http://www.gnu.org/licenses/>.
- * 
+ * <p>You should have received a copy of the GNU General Public License along with Security
+ * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.owasp.securityshepherd.test.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -65,11 +63,9 @@ class ModuleServiceTest {
 
   private ModuleService moduleService;
 
-  @Mock
-  private ModuleRepository moduleRepository;
+  @Mock private ModuleRepository moduleRepository;
 
-  @Mock
-  private KeyService keyService;
+  @Mock private KeyService keyService;
 
   @Test
   void count_NoArgument_ReturnsCount() {
@@ -77,7 +73,9 @@ class ModuleServiceTest {
 
     when(moduleRepository.count()).thenReturn(Mono.just(mockedModuleCount));
 
-    StepVerifier.create(moduleService.count()).expectNext(mockedModuleCount).expectComplete()
+    StepVerifier.create(moduleService.count())
+        .expectNext(mockedModuleCount)
+        .expectComplete()
         .verify();
     verify(moduleRepository, times(1)).count();
   }
@@ -92,8 +90,10 @@ class ModuleServiceTest {
     when(moduleRepository.findByName(name)).thenReturn(Mono.just(mockModule));
 
     StepVerifier.create(moduleService.create(name, shortName))
-        .expectErrorMatches(throwable -> throwable instanceof DuplicateModuleNameException
-            && throwable.getMessage().equals("Module name TestModule already exists"))
+        .expectErrorMatches(
+            throwable ->
+                throwable instanceof DuplicateModuleNameException
+                    && throwable.getMessage().equals("Module name TestModule already exists"))
         .verify();
 
     verify(moduleRepository, times(1)).findByName(name);
@@ -102,15 +102,18 @@ class ModuleServiceTest {
   @Test
   void create_EmptyName_ReturnsIllegalArgumentException() {
     StepVerifier.create(moduleService.create("", "shortName"))
-        .expectErrorMatches(throwable -> throwable instanceof EmptyModuleNameException
-            && throwable.getMessage().equals("Module name cannot be empty"))
+        .expectErrorMatches(
+            throwable ->
+                throwable instanceof EmptyModuleNameException
+                    && throwable.getMessage().equals("Module name cannot be empty"))
         .verify();
   }
 
   @Test
   void create_NullName_ReturnsNullPointerException() {
     StepVerifier.create(moduleService.create(null, "shortName"))
-        .expectError(NullPointerException.class).verify();
+        .expectError(NullPointerException.class)
+        .verify();
   }
 
   @Test
@@ -126,11 +129,15 @@ class ModuleServiceTest {
 
     when(moduleRepository.findByName(name)).thenReturn(Mono.empty());
 
-    StepVerifier.create(moduleService.create(name, shortName, description)).assertNext(module -> {
-      assertThat(module.getName()).isEqualTo(name);
-      assertThat(module.getShortName()).isEqualTo(shortName);
-      assertThat(module.getDescription()).isEqualTo(description);
-    }).expectComplete().verify();
+    StepVerifier.create(moduleService.create(name, shortName, description))
+        .assertNext(
+            module -> {
+              assertThat(module.getName()).isEqualTo(name);
+              assertThat(module.getShortName()).isEqualTo(shortName);
+              assertThat(module.getDescription()).isEqualTo(description);
+            })
+        .expectComplete()
+        .verify();
 
     ArgumentCaptor<Module> argument = ArgumentCaptor.forClass(Module.class);
 
@@ -152,11 +159,15 @@ class ModuleServiceTest {
 
     when(moduleRepository.findByName(name)).thenReturn(Mono.empty());
 
-    StepVerifier.create(moduleService.create(name, shortName)).assertNext(module -> {
-      assertThat(module.getName()).isEqualTo(name);
-      assertThat(module.getShortName()).isEqualTo(shortName);
-      assertThat(module.getDescription()).isNull();
-    }).expectComplete().verify();
+    StepVerifier.create(moduleService.create(name, shortName))
+        .assertNext(
+            module -> {
+              assertThat(module.getName()).isEqualTo(name);
+              assertThat(module.getShortName()).isEqualTo(shortName);
+              assertThat(module.getDescription()).isNull();
+            })
+        .expectComplete()
+        .verify();
 
     ArgumentCaptor<Module> argument = ArgumentCaptor.forClass(Module.class);
 
@@ -185,12 +196,15 @@ class ModuleServiceTest {
     when(mockSubmittableModule.getShortName()).thenReturn(shortName);
     when(mockSubmittableModule.getDescription()).thenReturn(description);
 
-    StepVerifier.create(moduleService.create(mockSubmittableModule)).assertNext(module -> {
-      assertThat(module.getName()).isEqualTo(name);
-      assertThat(module.getShortName()).isEqualTo(shortName);
-      assertThat(module.getDescription()).isEqualTo(description);
-
-    }).expectComplete().verify();
+    StepVerifier.create(moduleService.create(mockSubmittableModule))
+        .assertNext(
+            module -> {
+              assertThat(module.getName()).isEqualTo(name);
+              assertThat(module.getShortName()).isEqualTo(shortName);
+              assertThat(module.getDescription()).isEqualTo(description);
+            })
+        .expectComplete()
+        .verify();
 
     ArgumentCaptor<Module> argument = ArgumentCaptor.forClass(Module.class);
 
@@ -208,8 +222,12 @@ class ModuleServiceTest {
 
     when(moduleRepository.findAll()).thenReturn(Flux.just(mockModule1, mockModule2, mockModule3));
 
-    StepVerifier.create(moduleService.findAll()).expectNext(mockModule1).expectNext(mockModule2)
-        .expectNext(mockModule3).expectComplete().verify();
+    StepVerifier.create(moduleService.findAll())
+        .expectNext(mockModule1)
+        .expectNext(mockModule2)
+        .expectNext(mockModule3)
+        .expectComplete()
+        .verify();
 
     verify(moduleRepository, times(1)).findAll();
   }
@@ -237,8 +255,12 @@ class ModuleServiceTest {
     when(moduleRepository.findAllOpen())
         .thenReturn(Flux.just(mockModule1, mockModule2, mockModule3));
 
-    StepVerifier.create(moduleService.findAllOpen()).expectNext(mockModule1).expectNext(mockModule2)
-        .expectNext(mockModule3).expectComplete().verify();
+    StepVerifier.create(moduleService.findAllOpen())
+        .expectNext(mockModule1)
+        .expectNext(mockModule2)
+        .expectNext(mockModule3)
+        .expectComplete()
+        .verify();
 
     verify(moduleRepository, times(1)).findAllOpen();
   }
@@ -247,7 +269,8 @@ class ModuleServiceTest {
   void findById_InvalidModuleId_ReturnsInvalidModuleIdException() {
     for (final long moduleId : TestUtils.INVALID_IDS) {
       StepVerifier.create(moduleService.findById(moduleId))
-          .expectError(InvalidModuleIdException.class).verify();
+          .expectError(InvalidModuleIdException.class)
+          .verify();
     }
   }
 
@@ -257,8 +280,10 @@ class ModuleServiceTest {
     final long mockModuleId = 750L;
 
     when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
-    StepVerifier.create(moduleService.findById(mockModuleId)).expectNext(mockModule)
-        .expectComplete().verify();
+    StepVerifier.create(moduleService.findById(mockModuleId))
+        .expectNext(mockModule)
+        .expectComplete()
+        .verify();
     verify(moduleRepository, times(1)).findById(mockModuleId);
   }
 
@@ -273,8 +298,10 @@ class ModuleServiceTest {
   @Test
   void findByShortName_EmptyShortName_ReturnsInvalidShortNameException() {
     StepVerifier.create(moduleService.findByShortName(""))
-        .expectErrorMatches(throwable -> throwable instanceof EmptyModuleShortNameException
-            && throwable.getMessage().equals("Module short name cannot be empty"))
+        .expectErrorMatches(
+            throwable ->
+                throwable instanceof EmptyModuleShortNameException
+                    && throwable.getMessage().equals("Module short name cannot be empty"))
         .verify();
   }
 
@@ -283,8 +310,10 @@ class ModuleServiceTest {
     final String mockModuleShortName = "a-name";
     final Module mockModule = mock(Module.class);
     when(moduleRepository.findByShortName(mockModuleShortName)).thenReturn(Mono.just(mockModule));
-    StepVerifier.create(moduleService.findByShortName(mockModuleShortName)).expectNext(mockModule)
-        .expectComplete().verify();
+    StepVerifier.create(moduleService.findByShortName(mockModuleShortName))
+        .expectNext(mockModule)
+        .expectComplete()
+        .verify();
     verify(moduleRepository, times(1)).findByShortName(mockModuleShortName);
   }
 
@@ -292,7 +321,8 @@ class ModuleServiceTest {
   void findByShortName_NonExistentShortName_ReturnsEmpty() {
     final String mockModuleShortName = "a-name";
     when(moduleRepository.findByShortName(mockModuleShortName)).thenReturn(Mono.empty());
-    StepVerifier.create(moduleService.findByShortName(mockModuleShortName)).expectComplete()
+    StepVerifier.create(moduleService.findByShortName(mockModuleShortName))
+        .expectComplete()
         .verify();
     verify(moduleRepository, times(1)).findByShortName(mockModuleShortName);
   }
@@ -300,8 +330,10 @@ class ModuleServiceTest {
   @Test
   void findByShortName_NullShortName_ReturnsNullPointerException() {
     StepVerifier.create(moduleService.findByShortName(null))
-        .expectErrorMatches(throwable -> throwable instanceof NullPointerException
-            && throwable.getMessage().equals("Module short name cannot be null"))
+        .expectErrorMatches(
+            throwable ->
+                throwable instanceof NullPointerException
+                    && throwable.getMessage().equals("Module short name cannot be null"))
         .verify();
   }
 
@@ -314,8 +346,10 @@ class ModuleServiceTest {
     when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
     when(mockModule.getName()).thenReturn(mockModuleName);
 
-    StepVerifier.create(moduleService.findNameById(mockModuleId)).expectNext(mockModuleName)
-        .expectComplete().verify();
+    StepVerifier.create(moduleService.findNameById(mockModuleId))
+        .expectNext(mockModuleName)
+        .expectComplete()
+        .verify();
 
     verify(moduleRepository, times(1)).findById(mockModuleId);
     verify(mockModule, times(1)).getName();
@@ -325,8 +359,12 @@ class ModuleServiceTest {
   void findNameById_InvalidModuleId_ReturnsInvalidModuleIdException() {
     for (final long invalidId : TestUtils.INVALID_IDS) {
       StepVerifier.create(moduleService.findNameById(invalidId))
-          .expectErrorMatches(throwable -> throwable instanceof InvalidModuleIdException
-              && throwable.getMessage().equals("Module id must be a strictly positive integer"))
+          .expectErrorMatches(
+              throwable ->
+                  throwable instanceof InvalidModuleIdException
+                      && throwable
+                          .getMessage()
+                          .equals("Module id must be a strictly positive integer"))
           .verify();
     }
   }
@@ -359,9 +397,13 @@ class ModuleServiceTest {
     when(moduleRepository.save(mockModuleWithDynamicFlag))
         .thenReturn(Mono.just(mockModuleWithDynamicFlag));
 
-    StepVerifier.create(moduleService.setDynamicFlag(mockModuleId)).assertNext(module -> {
-      assertThat(module.getFlag()).isEqualTo(newFlag);
-    }).expectComplete().verify();
+    StepVerifier.create(moduleService.setDynamicFlag(mockModuleId))
+        .assertNext(
+            module -> {
+              assertThat(module.getFlag()).isEqualTo(newFlag);
+            })
+        .expectComplete()
+        .verify();
 
     verify(moduleRepository, times(1)).save(any(Module.class));
     verify(keyService, never()).generateRandomString(any(Integer.class));
@@ -374,9 +416,11 @@ class ModuleServiceTest {
   @Test
   void setDynamicFlag_NegativeModuleId_ReturnsInvalidModuleIdException() {
     StepVerifier.create(moduleService.setDynamicFlag(-1))
-        .expectError(InvalidModuleIdException.class).verify();
+        .expectError(InvalidModuleIdException.class)
+        .verify();
     StepVerifier.create(moduleService.setDynamicFlag(-1000))
-        .expectError(InvalidModuleIdException.class).verify();
+        .expectError(InvalidModuleIdException.class)
+        .verify();
   }
 
   @Test
@@ -404,11 +448,15 @@ class ModuleServiceTest {
 
     when(moduleRepository.save(mockModuleWithFlag)).thenReturn(Mono.just(mockModuleWithFlag));
 
-    StepVerifier.create(moduleService.setDynamicFlag(mockModuleId)).assertNext(module -> {
-      assertThat(module.isFlagEnabled()).isTrue();
-      assertThat(module.isFlagExact()).isFalse();
-      assertThat(module.getFlag()).isEqualTo(newFlag);
-    }).expectComplete().verify();
+    StepVerifier.create(moduleService.setDynamicFlag(mockModuleId))
+        .assertNext(
+            module -> {
+              assertThat(module.isFlagEnabled()).isTrue();
+              assertThat(module.isFlagExact()).isFalse();
+              assertThat(module.getFlag()).isEqualTo(newFlag);
+            })
+        .expectComplete()
+        .verify();
 
     verify(mockModuleWithoutExactFlag, atMost(1)).withFlagEnabled(true);
     verify(mockModuleWithExactFlag, atMost(1)).withFlagExact(false);
@@ -423,31 +471,38 @@ class ModuleServiceTest {
 
   @Test
   void setDynamicFlag_ZeroModuleId_ReturnsInvalidModuleIdException() {
-    StepVerifier.create(moduleService.setDynamicFlag(0)).expectError(InvalidModuleIdException.class)
+    StepVerifier.create(moduleService.setDynamicFlag(0))
+        .expectError(InvalidModuleIdException.class)
         .verify();
   }
 
   @Test
   void setExactFlag_EmptyExactFlag_ReturnsInvalidFlagException() {
-    StepVerifier.create(moduleService.setExactFlag(1, "")).expectError(InvalidFlagException.class)
+    StepVerifier.create(moduleService.setExactFlag(1, ""))
+        .expectError(InvalidFlagException.class)
         .verify();
   }
 
   @Test
   void setExactFlag_InvalidModuleId_ReturnsInvalidModuleIdException() {
     StepVerifier.create(moduleService.setExactFlag(0, "flag"))
-        .expectError(InvalidModuleIdException.class).verify();
+        .expectError(InvalidModuleIdException.class)
+        .verify();
     StepVerifier.create(moduleService.setExactFlag(-1, "flag"))
-        .expectError(InvalidModuleIdException.class).verify();
+        .expectError(InvalidModuleIdException.class)
+        .verify();
     StepVerifier.create(moduleService.setExactFlag(-9999, "flag"))
-        .expectError(InvalidModuleIdException.class).verify();
+        .expectError(InvalidModuleIdException.class)
+        .verify();
   }
 
   @Test
   void setExactFlag_NullExactFlag_ReturnsNulPointerException() {
     StepVerifier.create(moduleService.setExactFlag(1, null))
-        .expectErrorMatches(throwable -> throwable instanceof NullPointerException
-            && throwable.getMessage().equals("Flag cannot be null"))
+        .expectErrorMatches(
+            throwable ->
+                throwable instanceof NullPointerException
+                    && throwable.getMessage().equals("Flag cannot be null"))
         .verify();
   }
 
@@ -475,11 +530,15 @@ class ModuleServiceTest {
     when(moduleRepository.save(mockModuleWithExactFlagEnabledAndSet))
         .thenReturn(Mono.just(mockModuleWithExactFlagEnabledAndSet));
 
-    StepVerifier.create(moduleService.setExactFlag(mockModuleId, exactFlag)).assertNext(module -> {
-      assertThat(module.isFlagEnabled()).isTrue();
-      assertThat(module.isFlagExact()).isTrue();
-      assertThat(module.getFlag()).isEqualTo(exactFlag);
-    }).expectComplete().verify();
+    StepVerifier.create(moduleService.setExactFlag(mockModuleId, exactFlag))
+        .assertNext(
+            module -> {
+              assertThat(module.isFlagEnabled()).isTrue();
+              assertThat(module.isFlagExact()).isTrue();
+              assertThat(module.getFlag()).isEqualTo(exactFlag);
+            })
+        .expectComplete()
+        .verify();
 
     ArgumentCaptor<Long> findArgument = ArgumentCaptor.forClass(Long.class);
     verify(moduleRepository, times(1)).findById(findArgument.capture());
@@ -493,8 +552,10 @@ class ModuleServiceTest {
   @Test
   void setName_EmptyName_ReturnsEmptyModuleNameException() {
     StepVerifier.create(moduleService.setName(847L, ""))
-        .expectErrorMatches(throwable -> throwable instanceof EmptyModuleNameException
-            && throwable.getMessage().equals("Module name cannot be empty"))
+        .expectErrorMatches(
+            throwable ->
+                throwable instanceof EmptyModuleNameException
+                    && throwable.getMessage().equals("Module name cannot be empty"))
         .verify();
   }
 
@@ -502,8 +563,12 @@ class ModuleServiceTest {
   void setName_InvalidModuleId_ReturnsInvalidModuleIdException() {
     for (final long moduleId : TestUtils.INVALID_IDS) {
       StepVerifier.create(moduleService.setName(moduleId, "name"))
-          .expectErrorMatches(throwable -> throwable instanceof InvalidModuleIdException
-              && throwable.getMessage().equals("Module id must be a strictly positive integer"))
+          .expectErrorMatches(
+              throwable ->
+                  throwable instanceof InvalidModuleIdException
+                      && throwable
+                          .getMessage()
+                          .equals("Module id must be a strictly positive integer"))
           .verify();
     }
   }
@@ -511,8 +576,10 @@ class ModuleServiceTest {
   @Test
   void setName_NullName_ReturnsNullPointerException() {
     StepVerifier.create(moduleService.setName(204L, null))
-        .expectErrorMatches(throwable -> throwable instanceof NullPointerException
-            && throwable.getMessage().equals("Module name cannot be null"))
+        .expectErrorMatches(
+            throwable ->
+                throwable instanceof NullPointerException
+                    && throwable.getMessage().equals("Module name cannot be null"))
         .verify();
   }
 
@@ -530,7 +597,9 @@ class ModuleServiceTest {
     when(mockModule.getName()).thenReturn(newName);
 
     StepVerifier.create(moduleService.setName(mockModuleId, newName))
-        .assertNext(module -> assertThat(module.getName(), is(newName))).expectComplete().verify();
+        .assertNext(module -> assertThat(module.getName(), is(newName)))
+        .expectComplete()
+        .verify();
 
     InOrder order = inOrder(mockModule, moduleRepository);
 

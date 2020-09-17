@@ -73,8 +73,7 @@ class ModuleSolutionsTest {
   }
 
   @Test
-  void
-      findOpenModuleByShortNameWithSolutionStatus_InvalidUserid_ReturnsInvalidUserIdException() {
+  void findOpenModuleByShortNameWithSolutionStatus_InvalidUserid_ReturnsInvalidUserIdException() {
     final String mockModuleShortName = "shortName";
     for (final long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(
@@ -91,8 +90,7 @@ class ModuleSolutionsTest {
   }
 
   @Test
-  void
-      findOpenModuleByShortNameWithSolutionStatus_ModuleIsClosedAndHasSolution_ReturnsEmpty() {
+  void findOpenModuleByShortNameWithSolutionStatus_ModuleIsClosedAndHasSolution_ReturnsEmpty() {
     final long mockModuleId = 782L;
     final String mockModuleShortName = "test-module";
 
@@ -121,8 +119,7 @@ class ModuleSolutionsTest {
   }
 
   @Test
-  void
-      findOpenModuleByShortNameWithSolutionStatus_ModuleIsOpenAndHasSolution_ReturnsModule() {
+  void findOpenModuleByShortNameWithSolutionStatus_ModuleIsOpenAndHasSolution_ReturnsModule() {
     final long mockModuleId = 782L;
     final String mockModuleName = "Test Module";
     final String mockModuleShortName = "test-module";
@@ -174,8 +171,7 @@ class ModuleSolutionsTest {
   }
 
   @Test
-  void
-      findOpenModuleByShortNameWithSolutionStatus_ModuleIsOpenAndHasNoSolution_ReturnsModule() {
+  void findOpenModuleByShortNameWithSolutionStatus_ModuleIsOpenAndHasNoSolution_ReturnsModule() {
     final long mockModuleId = 782L;
     final String mockModuleName = "Test Module";
     final String mockModuleShortName = "test-module";
@@ -238,8 +234,7 @@ class ModuleSolutionsTest {
   }
 
   @Test
-  void
-      findOpenModulesByUserIdWithSolutionStatus_InvalidUserid_ReturnsInvalidUserIdException() {
+  void findOpenModulesByUserIdWithSolutionStatus_InvalidUserid_ReturnsInvalidUserIdException() {
     for (final long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(moduleSolutions.findOpenModulesByUserIdWithSolutionStatus(userId))
           .expectError(InvalidUserIdException.class)

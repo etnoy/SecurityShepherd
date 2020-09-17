@@ -33,7 +33,8 @@ class PasswordAuthTest {
         PasswordAuth.builder().userId(1L).loginName("TestUser");
     final Exception thrownException =
         assertThrows(NullPointerException.class, () -> passwordAuthBuilder.build());
-    assertThat(thrownException.getMessage()).isEqualTo("hashedPassword is marked non-null but is null");
+    assertThat(thrownException.getMessage())
+        .isEqualTo("hashedPassword is marked non-null but is null");
   }
 
   @Test
@@ -56,16 +57,21 @@ class PasswordAuthTest {
 
   @Test
   void builderToString_ValidData_AsExpected() {
-    assertThat(PasswordAuth.builder().loginName("TestUser").hashedPassword("987").toString()).isEqualTo(
-            "PasswordAuth.PasswordAuthBuilder(id=null, userId=null, loginName=TestUser, hashedPassword=987, isPasswordNonExpired=false)");
-    assertThat(PasswordAuth.builder()
-            .id(3L)
-            .userId(4L)
-            .loginName("TestUser2")
-            .hashedPassword("123")
-            .isPasswordNonExpired(true)
-            .toString()).isEqualTo(
-            "PasswordAuth.PasswordAuthBuilder(id=3, userId=4, loginName=TestUser2, hashedPassword=123, isPasswordNonExpired=true)");
+    assertThat(PasswordAuth.builder().loginName("TestUser").hashedPassword("987"))
+        .hasToString(
+            "PasswordAuth.PasswordAuthBuilder(id=null, userId=null, loginName=TestUser, "
+                + "hashedPassword=987, isPasswordNonExpired=false)");
+
+    assertThat(
+            PasswordAuth.builder()
+                .id(3L)
+                .userId(4L)
+                .loginName("TestUser2")
+                .hashedPassword("123")
+                .isPasswordNonExpired(true))
+        .hasToString(
+            "PasswordAuth.PasswordAuthBuilder(id=3, userId=4, loginName=TestUser2, "
+                + "hashedPassword=123, isPasswordNonExpired=true)");
   }
 
   @Test
@@ -73,7 +79,8 @@ class PasswordAuthTest {
     final PasswordAuthBuilder passwordAuthBuilder = PasswordAuth.builder();
     final Exception thrownException =
         assertThrows(NullPointerException.class, () -> passwordAuthBuilder.hashedPassword(null));
-    assertThat(thrownException.getMessage()).isEqualTo("hashedPassword is marked non-null but is null");
+    assertThat(thrownException.getMessage())
+        .isEqualTo("hashedPassword is marked non-null but is null");
   }
 
   @Test
@@ -150,30 +157,36 @@ class PasswordAuthTest {
 
   @Test
   void toString_ValidData_AsExpected() {
-    assertThat(PasswordAuth.builder()
-            .loginName("TestUser")
-            .hashedPassword("hashedPassword")
-            .userId(1278L)
-            .build()
-            .toString()).isEqualTo(
-            "PasswordAuth(id=null, userId=1278, loginName=TestUser, hashedPassword=hashedPassword, isPasswordNonExpired=false)");
-    assertThat(PasswordAuth.builder()
-            .id(5L)
-            .userId(95L)
-            .loginName("TestUser3")
-            .hashedPassword("hashedPassword2")
-            .build()
-            .toString()).isEqualTo(
-            "PasswordAuth(id=5, userId=95, loginName=TestUser3, hashedPassword=hashedPassword2, isPasswordNonExpired=false)");
-    assertThat(PasswordAuth.builder()
-            .id(14L)
-            .userId(35L)
-            .loginName("TestUser4")
-            .hashedPassword("hashedPassword3")
-            .isPasswordNonExpired(true)
-            .build()
-            .toString()).isEqualTo(
-            "PasswordAuth(id=14, userId=35, loginName=TestUser4, hashedPassword=hashedPassword3, isPasswordNonExpired=true)");
+    assertThat(
+            PasswordAuth.builder()
+                .loginName("TestUser")
+                .hashedPassword("hashedPassword")
+                .userId(1278L)
+                .build())
+        .hasToString(
+            "PasswordAuth(id=null, userId=1278, loginName=TestUser, "
+                + "hashedPassword=hashedPassword, isPasswordNonExpired=false)");
+    assertThat(
+            PasswordAuth.builder()
+                .id(5L)
+                .userId(95L)
+                .loginName("TestUser3")
+                .hashedPassword("hashedPassword2")
+                .build())
+        .hasToString(
+            "PasswordAuth(id=5, userId=95, loginName=TestUser3, "
+                + "hashedPassword=hashedPassword2, isPasswordNonExpired=false)");
+    assertThat(
+            PasswordAuth.builder()
+                .id(14L)
+                .userId(35L)
+                .loginName("TestUser4")
+                .hashedPassword("hashedPassword3")
+                .isPasswordNonExpired(true)
+                .build())
+        .hasToString(
+            "PasswordAuth(id=14, userId=35, loginName=TestUser4, "
+                + "hashedPassword=hashedPassword3, isPasswordNonExpired=true)");
   }
 
   @Test
@@ -186,7 +199,8 @@ class PasswordAuthTest {
             .build();
     final Exception thrownException =
         assertThrows(NullPointerException.class, () -> passwordAuth.withHashedPassword(null));
-    assertThat(thrownException.getMessage()).isEqualTo("hashedPassword is marked non-null but is null");
+    assertThat(thrownException.getMessage())
+        .isEqualTo("hashedPassword is marked non-null but is null");
   }
 
   @Test
@@ -198,8 +212,8 @@ class PasswordAuthTest {
             .hashedPassword(TestUtils.INITIAL_STRING)
             .build();
     for (final String hashedPassword : TestUtils.STRINGS) {
-      final PasswordAuth withPasswordAuth = passwordAuth.withHashedPassword(hashedPassword);
-      assertThat(withPasswordAuth.getHashedPassword()).isEqualTo(hashedPassword);
+      assertThat(passwordAuth.withHashedPassword(hashedPassword).getHashedPassword())
+          .isEqualTo(hashedPassword);
     }
   }
 
@@ -213,8 +227,7 @@ class PasswordAuthTest {
             .hashedPassword("HashedPassword")
             .build();
     for (final Long id : TestUtils.LONGS_WITH_NULL) {
-      final PasswordAuth withPasswordAuth = passwordAuth.withId(id);
-      assertThat(withPasswordAuth.getId()).isEqualTo(id);
+      assertThat(passwordAuth.withId(id).getId()).isEqualTo(id);
     }
   }
 
@@ -240,8 +253,7 @@ class PasswordAuthTest {
             .hashedPassword("passwordHash")
             .build();
     for (final String loginName : TestUtils.STRINGS) {
-      final PasswordAuth changedPasswordAuth = passwordAuth.withLoginName(loginName);
-      assertThat(changedPasswordAuth.getLoginName()).isEqualTo(loginName);
+      assertThat(passwordAuth.withLoginName(loginName).getLoginName()).isEqualTo(loginName);
     }
   }
 
@@ -255,9 +267,8 @@ class PasswordAuthTest {
             .isPasswordNonExpired(TestUtils.INITIAL_BOOLEAN)
             .build();
     for (final boolean isPasswordNonExpired : TestUtils.BOOLEANS) {
-      final PasswordAuth withPasswordAuth =
-          passwordAuth.withPasswordNonExpired(isPasswordNonExpired);
-      assertThat(withPasswordAuth.isPasswordNonExpired()).isEqualTo(isPasswordNonExpired);
+      assertThat(passwordAuth.withPasswordNonExpired(isPasswordNonExpired).isPasswordNonExpired())
+          .isEqualTo(isPasswordNonExpired);
     }
   }
 
@@ -283,8 +294,7 @@ class PasswordAuthTest {
             .hashedPassword("TestPassword")
             .build();
     for (final Long userId : TestUtils.LONGS) {
-      final PasswordAuth newPasswordAuth = passwordAuth.withUserId(userId);
-      assertThat(newPasswordAuth.getUserId()).isEqualTo(userId);
+      assertThat(passwordAuth.withUserId(userId).getUserId()).isEqualTo(userId);
     }
   }
 }

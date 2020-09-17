@@ -62,32 +62,38 @@ class XssServiceIT {
 
   @Test
   void imgOnLoad_ShouldShowAlert() throws Exception {
-    assertThat(executeQuery("<img src=\"#\" onload=\"alert('img-onload')\" />")).isEqualTo("img-onload");
+    assertThat(executeQuery("<img src=\"#\" onload=\"alert('img-onload')\" />"))
+        .isEqualTo("img-onload");
   }
 
   @Test
   void submitButtonOnMouseOver_ShouldShowAlert() throws Exception {
-    assertThat(executeQuery("<input type=\"submit\" onmouseover=\"alert('submit-mouseover')\"/>")).isEqualTo("submit-mouseover");
+    assertThat(executeQuery("<input type=\"submit\" onmouseover=\"alert('submit-mouseover')\"/>"))
+        .isEqualTo("submit-mouseover");
   }
 
   @Test
   void submitButtonOnMouseDown_ShouldShowAlert() throws Exception {
-    assertThat(executeQuery("<input type=\"submit\" onmousedown=\"alert('submit-mousedown')\"/>")).isEqualTo("submit-mousedown");
+    assertThat(executeQuery("<input type=\"submit\" onmousedown=\"alert('submit-mousedown')\"/>"))
+        .isEqualTo("submit-mousedown");
   }
 
   @Test
   void aOnBlur_ShouldShowAlert() throws Exception {
-    assertThat(executeQuery("<a onblur=alert('a-onblur') tabindex=1 id=x></a><input autofocus>")).isEqualTo("a-onblur");
+    assertThat(executeQuery("<a onblur=alert('a-onblur') tabindex=1 id=x></a><input autofocus>"))
+        .isEqualTo("a-onblur");
   }
 
   @Test
   void submitButtonOnClick_ShouldShowAlert() throws Exception {
-    assertThat(executeQuery("<input type=\"submit\" onclick=\"alert('submit-onclick')\"/>")).isEqualTo("submit-onclick");
+    assertThat(executeQuery("<input type=\"submit\" onclick=\"alert('submit-onclick')\"/>"))
+        .isEqualTo("submit-onclick");
   }
 
   @Test
   void inputButtonOnClick_ShouldShowAlert() throws Exception {
-    assertThat(executeQuery("<input type=\"button\" onclick=\"alert('input-onclick')\"/>")).isEqualTo("input-onclick");
+    assertThat(executeQuery("<input type=\"button\" onclick=\"alert('input-onclick')\"/>"))
+        .isEqualTo("input-onclick");
   }
 
   private String executeQuery(final String query) throws IOException {

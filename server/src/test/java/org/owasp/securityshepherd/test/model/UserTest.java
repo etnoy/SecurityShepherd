@@ -33,7 +33,8 @@ class UserTest {
     final UserBuilder userBuilder = User.builder();
     final Exception thrownException =
         assertThrows(NullPointerException.class, () -> userBuilder.build());
-    assertThat(thrownException.getMessage()).isEqualTo("displayName is marked non-null but is null");
+    assertThat(thrownException.getMessage())
+        .isEqualTo("displayName is marked non-null but is null");
   }
 
   @Test
@@ -61,7 +62,8 @@ class UserTest {
     final UserBuilder userBuilder = User.builder();
     final Exception thrownException =
         assertThrows(NullPointerException.class, () -> userBuilder.displayName(null));
-    assertThat(thrownException.getMessage()).isEqualTo("displayName is marked non-null but is null");
+    assertThat(thrownException.getMessage())
+        .isEqualTo("displayName is marked non-null but is null");
   }
 
   @Test
@@ -98,18 +100,20 @@ class UserTest {
 
   @Test
   void toString_ValidData_AsExpected() {
-    final User testUser = User.builder().displayName("TestUser").build();
+    final User user = User.builder().displayName("TestUser").build();
 
-    assertThat(testUser.toString()).isEqualTo(
+    assertThat(user)
+        .hasToString(
             "User(id=null, displayName=TestUser, classId=null, email=null, "
                 + "isNotBanned=false, accountCreated=null, key=null)");
   }
 
   @Test
   void userBuilderToString_ValidData_AsExpected() {
-    final UserBuilder builder = User.builder();
+    final UserBuilder userBuilder = User.builder();
 
-    assertThat(builder.toString()).isEqualTo(
+    assertThat(userBuilder)
+        .hasToString(
             "User.UserBuilder(id=null, displayName=null, classId=null, "
                 + "email=null, isNotBanned=false, accountCreated=null, key=null)");
   }
@@ -144,7 +148,8 @@ class UserTest {
     final User user = User.builder().displayName("TestUser").build();
     final Exception thrownException =
         assertThrows(NullPointerException.class, () -> user.withDisplayName(null));
-    assertThat(thrownException.getMessage()).isEqualTo("displayName is marked non-null but is null");
+    assertThat(thrownException.getMessage())
+        .isEqualTo("displayName is marked non-null but is null");
   }
 
   @Test

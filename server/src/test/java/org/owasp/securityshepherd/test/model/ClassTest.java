@@ -1,19 +1,17 @@
 /**
  * This file is part of Security Shepherd.
  *
- * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Security Shepherd.
- * If not, see <http://www.gnu.org/licenses/>.
- * 
+ * <p>You should have received a copy of the GNU General Public License along with Security
+ * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.owasp.securityshepherd.test.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -57,8 +55,10 @@ class ClassTest {
 
   @Test
   void classBuildertoString_ValidData_NotNull() {
-    assertThat(ClassEntity.builder().name("TestClass").toString()).isEqualTo("ClassEntity.ClassBuilder(id=null, name=TestClass)");
-    assertThat(ClassEntity.builder().id(379).name("AnotherTestClass").toString()).isEqualTo("ClassEntity.ClassBuilder(id=379, name=AnotherTestClass)");
+    assertThat(ClassEntity.builder().name("TestClass").toString())
+        .hasToString("ClassEntity.ClassBuilder(id=null, name=TestClass)");
+    assertThat(ClassEntity.builder().id(379).name("AnotherTestClass").toString())
+        .hasToString("ClassEntity.ClassBuilder(id=379, name=AnotherTestClass)");
   }
 
   @Test
@@ -68,7 +68,8 @@ class ClassTest {
 
   @Test
   void toString_ValidData_AsExpected() {
-    assertThat(ClassEntity.builder().name("TestClass").build().toString()).isEqualTo("ClassEntity(id=null, name=TestClass)");
+    assertThat(ClassEntity.builder().name("TestClass").build().toString())
+        .hasToString("ClassEntity(id=null, name=TestClass)");
   }
 
   @Test
@@ -99,7 +100,9 @@ class ClassTest {
 
     final ClassEntity classEntity = ClassEntity.builder().name(originalName).build();
 
-    final String[] testedNames = {originalName, "", "newClass", "Long  With     Whitespace", "12345"};
+    final String[] testedNames = {
+      originalName, "", "newClass", "Long  With     Whitespace", "12345"
+    };
 
     for (final String newName : testedNames) {
       final ClassEntity changedClass = classEntity.withName(newName);

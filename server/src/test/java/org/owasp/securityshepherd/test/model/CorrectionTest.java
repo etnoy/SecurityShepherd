@@ -124,8 +124,10 @@ class CorrectionTest {
     final CorrectionBuilder builder =
         Correction.builder().time(LocalDateTime.MIN).amount(1L).userId(83L);
 
-    assertThat(builder.toString()).isEqualTo(
-            "Correction.CorrectionBuilder(id=null, userId=83, amount=1, time=-999999999-01-01T00:00, description=null)");
+    assertThat(builder.toString())
+        .hasToString(
+            "Correction.CorrectionBuilder(id=null, userId=83, amount=1, "
+                + "time=-999999999-01-01T00:00, description=null)");
   }
 
   @Test
@@ -138,8 +140,10 @@ class CorrectionTest {
     final Correction testCorrection =
         Correction.builder().time(LocalDateTime.MIN).amount(1L).userId(83L).build();
 
-    assertThat(testCorrection.toString()).isEqualTo(
-            "Correction(id=null, userId=83, amount=1, time=-999999999-01-01T00:00, description=null)");
+    assertThat(testCorrection.toString())
+        .hasToString(
+            "Correction(id=null, userId=83, amount=1, "
+            + "time=-999999999-01-01T00:00, description=null)");
   }
 
   @Test

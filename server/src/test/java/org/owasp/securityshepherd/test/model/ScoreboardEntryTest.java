@@ -128,8 +128,11 @@ class ScoreboardEntryTest {
     final ScoreboardEntryBuilder builder =
         ScoreboardEntry.builder().rank(17L).userId(83L).score(1L);
 
-    assertThat(builder.toString()).isEqualTo(
-            "ScoreboardEntry.ScoreboardEntryBuilder(rank=17, userId=83, score=1, goldMedals=null, silverMedals=null, bronzeMedals=null)");
+    assertThat(builder)
+        .hasToString(
+            "ScoreboardEntry.ScoreboardEntryBuilder(rank=17, "
+                + "userId=83, score=1, goldMedals=null, "
+                + "silverMedals=null, bronzeMedals=null)");
   }
 
   @Test
@@ -144,7 +147,8 @@ class ScoreboardEntryTest {
             .score(1L)
             .build();
 
-    assertThat(testScoreboard.toString()).isEqualTo(
+    assertThat(testScoreboard)
+        .hasToString(
             "ScoreboardEntry(rank=17, userId=83, score=1, "
                 + "goldMedals=0, silverMedals=0, bronzeMedals=0)");
   }

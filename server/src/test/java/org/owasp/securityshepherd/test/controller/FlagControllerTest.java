@@ -73,8 +73,7 @@ class FlagControllerTest {
   }
 
   @Test
-  void submitFlag_UserAuthenticatedAndValidFlagSubmitted_ReturnsValidSubmission()
-      throws Exception {
+  void submitFlag_UserAuthenticatedAndValidFlagSubmitted_ReturnsValidSubmission() throws Exception {
     final long mockUserId = 417L;
     final long mockModuleId = 16L;
     final String flag = "validflag";

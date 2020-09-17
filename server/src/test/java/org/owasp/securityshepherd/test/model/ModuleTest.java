@@ -30,7 +30,7 @@ class ModuleTest {
   @Test
   void build_NameNotGiven_ThrowsNullPointerException() {
     final ModuleBuilder moduleBuilder = Module.builder().shortName("test-module");
-    
+
     Throwable thrownException =
         assertThrows(NullPointerException.class, () -> moduleBuilder.build());
     assertThat(thrownException.getMessage()).isEqualTo("name is marked non-null but is null");
@@ -140,8 +140,10 @@ class ModuleTest {
   void moduleBuilderToString_ValidData_AsExpected() {
     final ModuleBuilder builder = Module.builder();
 
-    assertThat(builder.toString()).isEqualTo(
-            "Module.ModuleBuilder(id=null, name=null, shortName=null, description=null, isFlagEnabled=false, "
+    assertThat(builder)
+        .hasToString(
+            "Module.ModuleBuilder(id=null, name=null, shortName=null, "
+                + "description=null, isFlagEnabled=false, "
                 + "isFlagExact=false, flag=null, isOpen=false)");
   }
 
@@ -149,65 +151,55 @@ class ModuleTest {
   void toString_ValidData_AsExpected() {
     final Module testModule = Module.builder().name("TestModule").shortName("test-module").build();
 
-    assertThat(testModule.toString()).isEqualTo(
-            "Module(id=null, name=TestModule, shortName=test-module, description=null, isFlagEnabled=false, isFlagExact=false, "
+    assertThat(testModule)
+        .hasToString(
+            "Module(id=null, name=TestModule, shortName=test-module, "
+                + "description=null, isFlagEnabled=false, isFlagExact=false, "
                 + "flag=null, isOpen=false)");
   }
 
   @Test
   void withDescription_ValidDescription_ChangesDescription() {
-    final String[] testedDescriptions = {
-      "Description", null, "", "a", "Long Description With Spaces", "12345"
-    };
-
     final Module testModule =
         Module.builder()
             .name("TestModule")
             .shortName("test-module")
-            .description("Description")
+            .description(TestUtils.INITIAL_STRING)
             .build();
 
-    assertThat(testModule.getDescription()).isEqualTo("Description");
-
-    for (final String newDescription : testedDescriptions) {
-      assertThat(testModule.withDescription(newDescription).getDescription()).isEqualTo(newDescription);
+    for (final String newDescription : TestUtils.STRINGS_WITH_NULL) {
+      assertThat(testModule.withDescription(newDescription).getDescription())
+          .isEqualTo(newDescription);
     }
   }
 
   @Test
   void withFlag_ValidFlag_ChangesFlag() {
-    // TODO: refactor
-    final String originalFlag = "abc123xyz789";
-    final String[] testedFlags = {originalFlag, null, "", "a", "Long Flag With Spaces", "12345"};
-
     final Module module =
-        Module.builder().name("TestModule").shortName("test-module").flag("abc123xyz789").build();
+        Module.builder()
+            .name("TestModule")
+            .shortName("test-module")
+            .flag(TestUtils.INITIAL_STRING)
+            .build();
 
-    assertThat(module.getFlag()).isEqualTo(originalFlag);
-
-    for (final String newFlag : testedFlags) {
+    for (final String newFlag : TestUtils.STRINGS_WITH_NULL) {
       assertThat(module.withFlag(newFlag).getFlag()).isEqualTo(newFlag);
     }
   }
 
   @Test
   void withFlagEnabled_ValidBoolean_ChangesIsFlagEnabled() {
-    // TODO: refactor
+    final Module module =
+        Module.builder().isFlagEnabled(false).name("TestModule").shortName("test-module").build();
 
-    final Module testModule = Module.builder().name("TestModule").shortName("test-module").build();
-
-    assertThat(testModule.isFlagEnabled()).isFalse();
-
-    Module changedModule = testModule.withFlagEnabled(false);
-    assertThat(changedModule.isFlagEnabled()).isFalse();
-    changedModule = testModule.withFlagEnabled(true);
-    assertThat(changedModule.isFlagEnabled()).isTrue();
+    for (final Boolean isFlagEnabled : TestUtils.BOOLEANS) {
+      assertThat(module.withFlagEnabled(isFlagEnabled).isFlagEnabled()).isEqualTo(isFlagEnabled);
+    }
   }
 
   @Test
   void withFlagExact_ValidBoolean_ChangesIsExactFlag() {
-    // TODO: refactor
-
+    // TODO: Refactor
     final Module testModule = Module.builder().name("TestModule").shortName("test-module").build();
 
     assertThat(testModule.isFlagExact()).isFalse();
@@ -220,7 +212,7 @@ class ModuleTest {
 
   @Test
   void withId_ValidId_ChangesId() {
-    final Module testModule =
+    final Module module =
         Module.builder()
             .id(TestUtils.INITIAL_LONG)
             .name("TestModule")
@@ -228,8 +220,7 @@ class ModuleTest {
             .build();
 
     for (final long id : TestUtils.LONGS) {
-      final Module withModule = testModule.withId(id);
-      assertThat(withModule.getId()).isEqualTo(id);
+      assertThat(module.withId(id).getId()).isEqualTo(id);
     }
   }
 

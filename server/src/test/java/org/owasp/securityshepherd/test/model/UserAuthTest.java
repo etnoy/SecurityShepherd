@@ -59,7 +59,8 @@ class UserAuthTest {
   void builderToString_ValidData_AsExpected() {
     final UserAuthBuilder builder = UserAuth.builder();
 
-    assertThat(builder.toString()).isEqualTo(
+    assertThat(builder)
+        .hasToString(
             "UserAuth.UserAuthBuilder(id=null, userId=null, isEnabled=false, "
                 + "badLoginCount=0, isAdmin=false, suspendedUntil=null, suspensionMessage=null, "
                 + "lastLogin=null, lastLoginMethod=null)");
@@ -202,7 +203,8 @@ class UserAuthTest {
   void toString_ValidData_AsExpected() {
     final UserAuth testAuth = UserAuth.builder().userId(14L).build();
 
-    assertThat(testAuth.toString()).isEqualTo(
+    assertThat(testAuth)
+        .hasToString(
             "UserAuth(id=null, userId=14, isEnabled=false, badLoginCount=0, "
                 + "isAdmin=false, suspendedUntil=null, suspensionMessage=null, "
                 + "lastLogin=null, lastLoginMethod=null)");

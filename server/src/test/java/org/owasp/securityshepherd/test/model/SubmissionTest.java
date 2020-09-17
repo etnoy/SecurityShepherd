@@ -172,8 +172,10 @@ class SubmissionTest {
   @Test
   void submissionBuilderToString_ValidData_AsExpected() {
     final SubmissionBuilder builder = Submission.builder();
-    assertThat(builder.toString()).isEqualTo(
-            "Submission.SubmissionBuilder(id=null, userId=null, moduleId=null, time=null, isValid=false, flag=null)");
+    assertThat(builder)
+        .hasToString(
+            "Submission.SubmissionBuilder(id=null, userId=null, "
+                + "moduleId=null, time=null, isValid=false, flag=null)");
   }
 
   @Test
@@ -186,7 +188,8 @@ class SubmissionTest {
             .time(LocalDateTime.MIN)
             .build();
 
-    assertThat(testSubmission.toString()).isEqualTo(
+    assertThat(testSubmission)
+        .hasToString(
             "Submission(id=null, userId=67898, moduleId=11234, time="
                 + LocalDateTime.MIN
                 + ", isValid=false, flag=flag)");

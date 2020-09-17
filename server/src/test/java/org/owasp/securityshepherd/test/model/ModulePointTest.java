@@ -21,6 +21,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.owasp.securityshepherd.scoring.ModulePoint;
 import org.owasp.securityshepherd.scoring.ModulePoint.ModulePointBuilder;
+import org.owasp.securityshepherd.test.util.TestUtils;
+
 import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
@@ -127,7 +129,8 @@ class ModulePointTest {
     final ModulePointBuilder builder =
         ModulePoint.builder().id(17L).moduleId(83L).rank(1).points(54);
 
-    assertThat(builder.toString()).isEqualTo("ModulePoint.ModulePointBuilder(id=17, moduleId=83, rank=1, points=54)");
+    assertThat(builder)
+        .hasToString("ModulePoint.ModulePointBuilder(id=17, moduleId=83, rank=1, points=54)");
   }
 
   @Test
@@ -135,18 +138,17 @@ class ModulePointTest {
     final ModulePoint testModulePoint =
         ModulePoint.builder().id(1337L).moduleId(123L).rank(6789).points(987).build();
 
-    assertThat(testModulePoint.toString()).isEqualTo("ModulePoint(id=1337, moduleId=123, rank=6789, points=987)");
+    assertThat(testModulePoint)
+        .hasToString("ModulePoint(id=1337, moduleId=123, rank=6789, points=987)");
   }
 
   @Test
   void withId_ValidId_ChangesId() {
     final long originalId = 1;
-    final Long[] testedIds = {originalId, 0L, null, -1L, 1000L, -1000L, 123456789L, -12346789L};
-
     final ModulePoint modulePoint =
         ModulePoint.builder().id(originalId).moduleId(163L).rank(15).points(29).build();
 
-    for (final Long id : testedIds) {
+    for (final Long id : TestUtils.LONGS_WITH_NULL) {
       final ModulePoint newModulePoint = modulePoint.withId(id);
       assertThat(newModulePoint.getId()).isEqualTo(id);
     }
@@ -162,14 +164,11 @@ class ModulePointTest {
   @Test
   void withModuleId_ValidModuleId_ChangesModuleId() {
     final long originalModuleId = 1L;
-    final long[] testedModuleIds = {
-      originalModuleId, 0L, -1L, 1000L, -1000L, 123456789L, -12346789L
-    };
 
     final ModulePoint modulePoint =
         ModulePoint.builder().moduleId(originalModuleId).points(79).rank(15).id(2944L).build();
 
-    for (final long moduleId : testedModuleIds) {
+    for (final long moduleId : TestUtils.LONGS) {
       final ModulePoint newModulePoint = modulePoint.withModuleId(moduleId);
       assertThat(newModulePoint.getModuleId()).isEqualTo(moduleId);
     }
