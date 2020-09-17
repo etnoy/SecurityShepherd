@@ -138,7 +138,7 @@ class ConfigurationTest {
   @Test
   void withKey_ValidKey_ChangesKey() {
     final Configuration configuration =
-        Configuration.builder().key("settingKey").value("123").build();
+        Configuration.builder().key(TestUtils.INITIAL_STRING).value("123").build();
 
     for (String key : TestUtils.STRINGS) {
       final Configuration changedConfiguration = configuration.withKey(key);
@@ -156,13 +156,9 @@ class ConfigurationTest {
   @Test
   void withValue_ValidValue_ChangesValue() {
     final Configuration configuration =
-        Configuration.builder().key("settingKey").value("settingValue").build();
+        Configuration.builder().key("settingKey").value(TestUtils.INITIAL_STRING).build();
 
-    final String[] testedValues = {
-      "settingValue", "", "\"", "!\"+,-", "serverValue", "Long  With     Whitespace", "12345"
-    };
-
-    for (String value : testedValues) {
+    for (String value : TestUtils.STRINGS) {
       final Configuration changedConfiguration = configuration.withValue(value);
       assertThat(changedConfiguration.getValue()).isEqualTo(value);
     }
