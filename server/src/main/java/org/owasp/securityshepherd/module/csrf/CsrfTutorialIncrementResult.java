@@ -14,21 +14,14 @@
  */
 package org.owasp.securityshepherd.module.csrf;
 
-import org.springframework.data.annotation.Id;
-
-import lombok.AllArgsConstructor;
+import java.io.Serializable;
 import lombok.Builder;
-import lombok.NonNull;
 import lombok.Value;
-import lombok.With;
 
 @Value
-@AllArgsConstructor
 @Builder
-@With
-public final class CsrfVoteCounter {
-  @Id private Long id;
-  @NonNull private String userId;
-  @NonNull private Long moduleId;
-  @NonNull private Long count;
+public class CsrfTutorialIncrementResult implements Serializable {
+  private static final long serialVersionUID = -6737772337605789261L;
+  private String message;
+  private String error;
 }

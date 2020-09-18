@@ -87,12 +87,9 @@ export class ModuleItemComponent implements OnInit {
               break;
             }
           }
-          console.log(currentModule);
           const componentFactory = this.componentFactoryResolver.resolveComponentFactory(
             currentModule
           );
-
-          console.log(componentFactory);
 
           const viewContainerRef = this.moduleDirective.viewContainerRef;
           viewContainerRef.clear();

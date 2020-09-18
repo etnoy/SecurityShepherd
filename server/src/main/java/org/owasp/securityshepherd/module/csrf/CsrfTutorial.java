@@ -70,7 +70,7 @@ public class CsrfTutorial extends AbstractModule {
         CsrfTutorialResult.builder().parameter(String.valueOf(userId));
 
     return csrfService
-        .isIncremented(userId, this.moduleId)
+        .isIncremented(String.valueOf(userId), this.moduleId)
         .filterWhen(isIncremented -> Mono.just(true))
         .flatMap(
             isIncremented ->
@@ -81,7 +81,7 @@ public class CsrfTutorial extends AbstractModule {
         .map(builder -> builder.build());
   }
 
-  public Mono<CsrfTutorialIncrementResult> increment(final long userId, final long targetUserId) {
+  public Mono<CsrfTutorialIncrementResult> increment(final long userId, final String targetUserId) {
     if (this.moduleId == null) {
       return Mono.error(new RuntimeException("Must initialize module first"));
     }
@@ -89,7 +89,7 @@ public class CsrfTutorial extends AbstractModule {
     CsrfTutorialIncrementResultBuilder csrfTutorialIncrementResultBuilder =
         CsrfTutorialIncrementResult.builder();
 
-    if (userId == targetUserId) {
+    if (String.valueOf(userId) == targetUserId) {
       return Mono.just(
           csrfTutorialIncrementResultBuilder
               .error("You cannot increment your own counter")

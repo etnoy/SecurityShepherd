@@ -17,9 +17,9 @@ package org.owasp.securityshepherd.module.csrf;
 import org.owasp.securityshepherd.authentication.ControllerAuthentication;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -39,9 +39,12 @@ public class CsrfTutorialController {
     return controllerAuthentication.getUserId().flatMap(csrfTutorial::getTutorial);
   }
 
-  @PostMapping(path = "increment")
+  @RequestMapping(
+      value = {"/increment/{userId}"},
+      method = RequestMethod.GET)
   @PreAuthorize("hasRole('ROLE_USER')")
-  public Mono<CsrfTutorialIncrementResult> target(@RequestBody final long targetUserId) {
+  public Mono<CsrfTutorialIncrementResult> increment(
+      @PathVariable(value = "userId") String targetUserId) {
     return controllerAuthentication
         .getUserId()
         .flatMap(userId -> csrfTutorial.increment(userId, targetUserId));

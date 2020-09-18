@@ -24,7 +24,7 @@ import reactor.core.publisher.Mono;
 public class CsrfService {
   private final CsrfVoteCounterRepository csrfVoteCounterRepository;
 
-  public Mono<Void> incrementCounter(final long userId, final long moduleId) {
+  public Mono<Void> incrementCounter(final String userId, final long moduleId) {
     return csrfVoteCounterRepository
         .findByUserIdAndModuleId(userId, moduleId)
         .switchIfEmpty(
@@ -35,7 +35,7 @@ public class CsrfService {
         .then(Mono.empty());
   }
 
-  public Mono<Void> resetCounter(final long userId, final long moduleId) {
+  public Mono<Void> resetCounter(final String userId, final long moduleId) {
     return csrfVoteCounterRepository
         .findByUserIdAndModuleId(userId, moduleId)
         .switchIfEmpty(
@@ -46,7 +46,7 @@ public class CsrfService {
         .then(Mono.empty());
   }
 
-  public Mono<Boolean> isIncremented(final long userId, final long moduleId) {
+  public Mono<Boolean> isIncremented(final String userId, final long moduleId) {
     return csrfVoteCounterRepository
         .findByUserIdAndModuleId(userId, moduleId)
         .map(counter -> counter.getCount() > 0)

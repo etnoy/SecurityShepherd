@@ -21,5 +21,5 @@ import reactor.core.publisher.Mono;
 
 @Repository
 public interface CsrfVoteCounterRepository extends ReactiveCrudRepository<CsrfVoteCounter, Long> {
-  public Mono<CsrfVoteCounter> findByUserIdAndModuleId(final Long userId, final Long moduleId);
+  public Mono<CsrfVoteCounter> findByUserIdAndModuleId(final String userId, final Long moduleId);
 }
