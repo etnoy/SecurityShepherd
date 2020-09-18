@@ -27,7 +27,7 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = "/api/v1/module/csrf/tutorial")
+@RequestMapping(path = "/api/v1/module/csrf-tutorial")
 public class CsrfTutorialController {
   private final CsrfTutorial csrfTutorial;
 
@@ -35,13 +35,13 @@ public class CsrfTutorialController {
 
   @GetMapping(path = "/")
   @PreAuthorize("hasRole('ROLE_USER')")
-  public Mono<CsrfTutorialResponse> tutorial() {
+  public Mono<CsrfTutorialResult> tutorial() {
     return controllerAuthentication.getUserId().flatMap(csrfTutorial::getTutorial);
   }
 
   @PostMapping(path = "increment")
   @PreAuthorize("hasRole('ROLE_USER')")
-  public Mono<Boolean> target(@RequestBody final long targetUserId) {
+  public Mono<CsrfTutorialIncrementResult> target(@RequestBody final long targetUserId) {
     return controllerAuthentication
         .getUserId()
         .flatMap(userId -> csrfTutorial.increment(userId, targetUserId));

@@ -37,6 +37,17 @@ CREATE TABLE module (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
+CREATE TABLE csrf_vote_counter (
+	id INT AUTO_INCREMENT,
+	user_id INT NOT NULL,
+	module_id INT NOT NULL,
+	count INT NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (`user_id`) REFERENCES user(id),
+FOREIGN KEY (`module_id`) REFERENCES module(id))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4;
+
 CREATE TABLE correction (
 	id INT AUTO_INCREMENT,
 	user_id INT NOT NULL,

@@ -23,9 +23,12 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorial;
 import org.owasp.securityshepherd.module.xss.XssTutorial;
+import org.owasp.securityshepherd.module.csrf.CsrfService;
+import org.owasp.securityshepherd.module.csrf.CsrfTutorial;
 import org.owasp.securityshepherd.scoring.CorrectionService;
 import org.owasp.securityshepherd.scoring.ScoreService;
 import org.owasp.securityshepherd.scoring.SubmissionService;
@@ -55,7 +58,9 @@ public class StartupRunner implements ApplicationRunner {
   private final XssTutorial xssTutorial;
 
   private final SqlInjectionTutorial sqlInjectionTutorial;
-
+  
+  private final CsrfTutorial csrfTutorial;
+  
   private final SubmissionService submissionService;
 
   private final CorrectionService correctionService;
@@ -72,10 +77,16 @@ public class StartupRunner implements ApplicationRunner {
         .createPasswordUser(
             "Admin", "admin", "$2y$08$WpfUVZLcXNNpmM2VwSWlbe25dae.eEC99AOAVUiU5RaJmfFsE9B5G")
         .block();
+    
+    userService
+    .createPasswordUser(
+        "Csrf dummy", "dummy", "$2y$08$WpfUVZLcXNNpmM2VwSWlbe25dae.eEC99AOAVUiU5RaJmfFsE9B5G")
+    .block();
 
     xssTutorial.initialize().block();
     sqlInjectionTutorial.initialize().block();
-
+    csrfTutorial.initialize().block();
+    
     // We'll use this exact flag
     final String flag = "itsaflag";
 

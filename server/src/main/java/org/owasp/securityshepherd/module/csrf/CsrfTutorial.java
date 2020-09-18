@@ -18,7 +18,8 @@ import org.owasp.securityshepherd.module.AbstractModule;
 import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleService;
-import org.owasp.securityshepherd.module.csrf.CsrfTutorialResponse.CsrfTutorialResponseBuilder;
+import org.owasp.securityshepherd.module.csrf.CsrfTutorialIncrementResult.CsrfTutorialIncrementResultBuilder;
+import org.owasp.securityshepherd.module.csrf.CsrfTutorialResult.CsrfTutorialResultBuilder;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
@@ -37,7 +38,7 @@ public class CsrfTutorial extends AbstractModule {
 
   @Override
   public String getDescription() {
-    return "Tutorial cross-site request forgery (CSRF)";
+    return "Tutorial on cross-site request forgery (CSRF)";
   }
 
   @Override
@@ -60,13 +61,13 @@ public class CsrfTutorial extends AbstractModule {
         });
   }
 
-  public Mono<CsrfTutorialResponse> getTutorial(final long userId) {
+  public Mono<CsrfTutorialResult> getTutorial(final long userId) {
     if (this.moduleId == null) {
       return Mono.error(new RuntimeException("Must initialize module first"));
     }
 
-    final CsrfTutorialResponseBuilder csrfTutorialResponseBuilder =
-        CsrfTutorialResponse.builder().parameter(String.valueOf(userId));
+    final CsrfTutorialResultBuilder csrfTutorialResultBuilder =
+        CsrfTutorialResult.builder().parameter(String.valueOf(userId));
 
     return csrfService
         .isIncremented(userId, this.moduleId)
@@ -75,20 +76,30 @@ public class CsrfTutorial extends AbstractModule {
             isIncremented ->
                 flagHandler
                     .getDynamicFlag(userId, this.moduleId)
-                    .map(csrfTutorialResponseBuilder::flag))
-        .defaultIfEmpty(csrfTutorialResponseBuilder)
+                    .map(csrfTutorialResultBuilder::flag))
+        .defaultIfEmpty(csrfTutorialResultBuilder)
         .map(builder -> builder.build());
   }
 
-  public Mono<Boolean> increment(final long userId, final long targetUserId) {
+  public Mono<CsrfTutorialIncrementResult> increment(final long userId, final long targetUserId) {
     if (this.moduleId == null) {
       return Mono.error(new RuntimeException("Must initialize module first"));
     }
 
+    CsrfTutorialIncrementResultBuilder csrfTutorialIncrementResultBuilder =
+        CsrfTutorialIncrementResult.builder();
+
     if (userId == targetUserId) {
-      return Mono.just(false);
+      return Mono.just(
+          csrfTutorialIncrementResultBuilder
+              .error("You cannot increment your own counter")
+              .build());
     } else {
-      return csrfService.incrementCounter(targetUserId, this.moduleId).then(Mono.just(true));
+      return csrfService
+          .incrementCounter(targetUserId, this.moduleId)
+          .then(
+              Mono.just(
+                  csrfTutorialIncrementResultBuilder.message("Thank you for voting").build()));
     }
   }
 }
