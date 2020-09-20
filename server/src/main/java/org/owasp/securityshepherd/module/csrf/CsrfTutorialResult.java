@@ -15,6 +15,7 @@
 package org.owasp.securityshepherd.module.csrf;
 
 import java.io.Serializable;
+
 import lombok.Builder;
 import lombok.Value;
 
@@ -22,7 +23,7 @@ import lombok.Value;
 @Builder
 public class CsrfTutorialResult implements Serializable {
   private static final long serialVersionUID = -4198798937863388090L;
-  private String parameter;
+  private String pseudonym;
   private String flag;
   private String error;
 }

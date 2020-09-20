@@ -15,11 +15,11 @@
 package org.owasp.securityshepherd.crypto;
 
 import java.nio.charset.StandardCharsets;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
-
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.owasp.securityshepherd.exception.RngException;
 import org.springframework.stereotype.Service;
 
@@ -40,16 +40,12 @@ public final class KeyService {
     return new String(keyBytes, StandardCharsets.US_ASCII);
   }
 
-  public String byteFlagToString(final byte[] bytes) {
+  public String bytesToHexString(final byte[] bytes) {
     return Hex.encodeHexString(bytes, true);
   }
 
-  public byte[] stringFlagToByte(final String stringFlag) throws DecoderException {
+  public byte[] hexStringToBytes(final String stringFlag) throws DecoderException {
     return Hex.decodeHex(stringFlag);
-  }
-
-  public byte[] convertStringFlagToBytes(final String keyString) {
-    return keyString.getBytes();
   }
 
   public byte[] generateRandomBytes(final int numberOfBytes) {

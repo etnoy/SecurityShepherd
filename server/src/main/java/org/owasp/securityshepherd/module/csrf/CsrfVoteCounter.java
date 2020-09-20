@@ -14,6 +14,8 @@
  */
 package org.owasp.securityshepherd.module.csrf;
 
+import java.time.LocalDateTime;
+
 import org.springframework.data.annotation.Id;
 
 import lombok.AllArgsConstructor;
@@ -28,7 +30,8 @@ import lombok.With;
 @With
 public final class CsrfVoteCounter {
   @Id private Long id;
-  @NonNull private Long userId;
+  @NonNull private String pseudonym;
+  @NonNull private LocalDateTime initialized;
   @NonNull private Long moduleId;
-  @NonNull private Long count;
+  @NonNull private Boolean isActivated;
 }

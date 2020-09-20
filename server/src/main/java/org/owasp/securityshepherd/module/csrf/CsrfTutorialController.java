@@ -40,13 +40,13 @@ public class CsrfTutorialController {
   }
 
   @RequestMapping(
-      value = {"/increment/{userId}"},
+      value = {"/activate/{pseudonym}"},
       method = RequestMethod.GET)
   @PreAuthorize("hasRole('ROLE_USER')")
-  public Mono<CsrfTutorialIncrementResult> increment(
-      @PathVariable(value = "userId") String targetUserId) {
+  public Mono<CsrfTutorialIncrementResult> activate(
+      @PathVariable(value = "userId") String pseudonym) {
     return controllerAuthentication
         .getUserId()
-        .flatMap(userId -> csrfTutorial.increment(userId, targetUserId));
+        .flatMap(userId -> csrfTutorial.activate(userId, pseudonym));
   }
 }

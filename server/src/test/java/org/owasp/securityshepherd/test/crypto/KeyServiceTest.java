@@ -18,8 +18,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+
 import org.apache.commons.codec.DecoderException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,9 +30,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.owasp.securityshepherd.crypto.KeyService;
 import org.owasp.securityshepherd.crypto.CryptoFactory;
+import org.owasp.securityshepherd.crypto.KeyService;
 import org.owasp.securityshepherd.exception.RngException;
+
 import reactor.core.publisher.Hooks;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,15 +52,9 @@ class KeyServiceTest {
   @Test
   void byteFlagToString_ValidBytes_ReturnsString() {
     assertThat(
-            keyService.byteFlagToString(
+            keyService.bytesToHexString(
                 new byte[] {116, 104, 105, 115, 105, 115, 97, 102, 108, 97, 103}))
         .isEqualTo("74686973697361666c6167");
-  }
-
-  @Test
-  void convertByteKeyToString_ValidInput_ReturnsExpectedOutput() {
-    assertThat(keyService.convertStringFlagToBytes("thisisaflag"))
-        .isEqualTo(new byte[] {116, 104, 105, 115, 105, 115, 97, 102, 108, 97, 103});
   }
 
   @Test
@@ -119,7 +116,7 @@ class KeyServiceTest {
 
   @Test
   void stringFlagToByte_ValidString_ReturnsString() throws DecoderException {
-    assertThat(keyService.stringFlagToByte("74686973697361666c6167"))
+    assertThat(keyService.hexStringToBytes("74686973697361666c6167"))
         .isEqualTo(new byte[] {116, 104, 105, 115, 105, 115, 97, 102, 108, 97, 103});
   }
 }

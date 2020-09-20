@@ -15,15 +15,17 @@
 package org.owasp.securityshepherd.module.xss;
 
 import java.util.List;
+
 import org.owasp.securityshepherd.module.AbstractModule;
 import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleService;
+import org.owasp.securityshepherd.module.xss.XssTutorialResponse.XssTutorialResponseBuilder;
 import org.springframework.stereotype.Component;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
-import org.owasp.securityshepherd.module.xss.XssTutorialResponse.XssTutorialResponseBuilder;
 
 @Component
 @Slf4j
@@ -33,7 +35,7 @@ public class XssTutorial extends AbstractModule {
 
   private final ModuleService moduleService;
 
-  private final FlagHandler flagComponent;
+  private final FlagHandler flagHandler;
 
   @Override
   public String getDescription() {
@@ -78,7 +80,7 @@ public class XssTutorial extends AbstractModule {
     } else {
       xssTutorialResponseBuilder.alert(alerts.get(0));
 
-      return flagComponent
+      return flagHandler
           .getDynamicFlag(userId, this.moduleId)
           .map(flag -> String.format("Congratulations, flag is %s", flag))
           .map(xssTutorialResponseBuilder::result)

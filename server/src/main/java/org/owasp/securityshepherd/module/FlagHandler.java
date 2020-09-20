@@ -23,7 +23,9 @@ import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
 import org.owasp.securityshepherd.service.ConfigurationService;
 import org.owasp.securityshepherd.user.UserService;
 import org.springframework.stereotype.Service;
+
 import com.google.common.primitives.Bytes;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
@@ -42,6 +44,43 @@ public final class FlagHandler {
   private final CryptoService cryptoService;
 
   private final KeyService keyService;
+
+  public Mono<String> getSaltedHmac(
+      final long userId, final long moduleId, final String prefix, final String algorithm) {
+    if (userId <= 0) {
+      return Mono.error(new InvalidUserIdException());
+    }
+
+    if (moduleId <= 0) {
+      return Mono.error(new InvalidModuleIdException());
+    }
+
+    final Mono<byte[]> moduleKey =
+        // Find the module in the repo
+        moduleService
+            .findById(moduleId)
+            // Return error if module wasn't found
+            .switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
+            // Make sure that the flag isn't static
+            .filter(foundModule -> !foundModule.isFlagStatic())
+            .switchIfEmpty(
+                Mono.error(
+                    new InvalidFlagStateException("Cannot get dynamic flag if flag is static")))
+            // Get module key and convert to bytes
+            .map(Module::getKey)
+            .map(String::getBytes);
+
+    final Mono<byte[]> userKey = userService.findKeyById(userId);
+
+    final Mono<byte[]> serverKey = configurationService.getServerKey();
+
+    return moduleKey
+        .zipWith(userKey)
+        .map(tuple -> Bytes.concat(tuple.getT1(), tuple.getT2(), prefix.getBytes()))
+        .zipWith(serverKey)
+        .map(tuple -> cryptoService.hmac(algorithm, tuple.getT2(), tuple.getT1()))
+        .map(keyService::bytesToHexString);
+  }
 
   public Mono<Boolean> verifyFlag(
       final long userId, final long moduleId, final String submittedFlag) {
@@ -66,18 +105,12 @@ public final class FlagHandler {
             .switchIfEmpty(
                 Mono.error(
                     new ModuleIdNotFoundException("Module id " + moduleId + " was not found")))
-            // Check to see if flags are enabled
-            .filter(Module::isFlagEnabled)
-            // If flag wasn't enabled, return exception
-            .switchIfEmpty(
-                Mono.error(
-                    new InvalidFlagStateException("Cannot verify flag if flag is not enabled")))
-            // Now check if the flag is valid
+            // Check if the flag is valid
             .flatMap(
                 module -> {
-                  if (module.isFlagExact()) {
+                  if (module.isFlagStatic()) {
                     // Verifying an exact flag
-                    return Mono.just(module.getFlag().equalsIgnoreCase(submittedFlag));
+                    return Mono.just(module.getStaticFlag().equalsIgnoreCase(submittedFlag));
                   } else {
                     // Verifying a dynamic flag
                     return getDynamicFlag(userId, moduleId).map(submittedFlag::equalsIgnoreCase);
@@ -107,46 +140,6 @@ public final class FlagHandler {
   }
 
   public Mono<String> getDynamicFlag(final long userId, final long moduleId) {
-    if (userId <= 0) {
-      return Mono.error(new InvalidUserIdException());
-    }
-
-    if (moduleId <= 0) {
-      return Mono.error(new InvalidModuleIdException());
-    }
-
-    final Mono<byte[]> baseFlag =
-        // Find the module in the repo
-        moduleService
-            .findById(moduleId)
-            // Return error if module wasn't found
-            .switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
-            // Check to see if flag is enable
-            .filter(Module::isFlagEnabled)
-            // Return error if flag isn't enabled
-            .switchIfEmpty(
-                Mono.error(
-                    new InvalidFlagStateException("Cannot get dynamic flag if flag is disabled")))
-            // Check to see if flag is dynamic
-            .filter(module -> !module.isFlagExact())
-            // Return error if flag isn't dynamic
-            .switchIfEmpty(
-                Mono.error(
-                    new InvalidFlagStateException("Cannot get dynamic flag if flag is exact")))
-            // Get flag from module
-            .map(Module::getFlag)
-            // Get bytes from flag string
-            .map(String::getBytes);
-
-    final Mono<byte[]> keyMono =
-        userService
-            .findKeyById(userId)
-            .zipWith(configurationService.getServerKey())
-            .map(tuple -> Bytes.concat(tuple.getT1(), tuple.getT2()));
-
-    return keyMono
-        .zipWith(baseFlag)
-        .map(tuple -> cryptoService.hmac(tuple.getT1(), tuple.getT2()))
-        .map(keyService::byteFlagToString);
+    return getSaltedHmac(userId, moduleId, "flag", "HmacSHA512");
   }
 }

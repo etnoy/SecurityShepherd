@@ -15,13 +15,14 @@
 package org.owasp.securityshepherd.test.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.Module.ModuleBuilder;
 import org.owasp.securityshepherd.test.util.TestUtils;
+
 import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
@@ -56,27 +57,15 @@ class ModuleTest {
   }
 
   @Test
-  void buildIsExactFlag_TrueOrFalse_MatchesBuild() {
+  void buildIsStaticFlag_TrueOrFalse_MatchesBuild() {
     // TODO
-    for (final boolean isFlagExact : TestUtils.BOOLEANS) {
+    for (final boolean isFlagStatic : TestUtils.BOOLEANS) {
       final ModuleBuilder builder = Module.builder().name("TestModule").shortName("test-module");
 
-      builder.isFlagExact(isFlagExact);
+      builder.isFlagStatic(isFlagStatic);
 
       assertThat(builder.build()).isInstanceOf(Module.class);
-      assertThat(builder.build().isFlagExact()).isEqualTo(isFlagExact);
-    }
-  }
-
-  @Test
-  void buildIsFlagEnabled_TrueOrFalse_MatchesBuild() {
-    for (final boolean isFlagEnabled : TestUtils.BOOLEANS) {
-      final ModuleBuilder builder = Module.builder().name("TestModule").shortName("test-module");
-
-      builder.isFlagEnabled(isFlagEnabled);
-
-      assertThat(builder.build()).isInstanceOf(Module.class);
-      assertThat(builder.build().isFlagEnabled()).isEqualTo(isFlagEnabled);
+      assertThat(builder.build().isFlagStatic()).isEqualTo(isFlagStatic);
     }
   }
 
@@ -144,7 +133,7 @@ class ModuleTest {
         .hasToString(
             "Module.ModuleBuilder(id=null, name=null, shortName=null, "
                 + "description=null, isFlagEnabled=false, "
-                + "isFlagExact=false, flag=null, isOpen=false)");
+                + "isFlagStatic=false, flag=null, isOpen=false)");
   }
 
   @Test
@@ -154,7 +143,7 @@ class ModuleTest {
     assertThat(testModule)
         .hasToString(
             "Module(id=null, name=TestModule, shortName=test-module, "
-                + "description=null, isFlagEnabled=false, isFlagExact=false, "
+                + "description=null, isFlagEnabled=false, isFlagStatic=false, "
                 + "flag=null, isOpen=false)");
   }
 
@@ -174,40 +163,30 @@ class ModuleTest {
   }
 
   @Test
-  void withFlag_ValidFlag_ChangesFlag() {
+  void withStaticFlag_ValidStaticFlag_ChangesFlag() {
     final Module module =
         Module.builder()
             .name("TestModule")
             .shortName("test-module")
-            .flag(TestUtils.INITIAL_STRING)
+            .staticFlag(TestUtils.INITIAL_STRING)
             .build();
 
-    for (final String newFlag : TestUtils.STRINGS_WITH_NULL) {
-      assertThat(module.withFlag(newFlag).getFlag()).isEqualTo(newFlag);
+    for (final String newStaticFlag : TestUtils.STRINGS_WITH_NULL) {
+      assertThat(module.withStaticFlag(newStaticFlag).getStaticFlag()).isEqualTo(newStaticFlag);
     }
   }
 
   @Test
-  void withFlagEnabled_ValidBoolean_ChangesIsFlagEnabled() {
-    final Module module =
-        Module.builder().isFlagEnabled(false).name("TestModule").shortName("test-module").build();
-
-    for (final Boolean isFlagEnabled : TestUtils.BOOLEANS) {
-      assertThat(module.withFlagEnabled(isFlagEnabled).isFlagEnabled()).isEqualTo(isFlagEnabled);
-    }
-  }
-
-  @Test
-  void withFlagExact_ValidBoolean_ChangesIsExactFlag() {
+  void withFlagStatic_ValidBoolean_ChangesIsStaticFlag() {
     // TODO: Refactor
     final Module testModule = Module.builder().name("TestModule").shortName("test-module").build();
 
-    assertThat(testModule.isFlagExact()).isFalse();
+    assertThat(testModule.isFlagStatic()).isFalse();
 
-    Module changedModule = testModule.withFlagExact(false);
-    assertThat(changedModule.isFlagExact()).isFalse();
-    changedModule = testModule.withFlagExact(true);
-    assertThat(changedModule.isFlagExact()).isTrue();
+    Module changedModule = testModule.withFlagStatic(false);
+    assertThat(changedModule.isFlagStatic()).isFalse();
+    changedModule = testModule.withFlagStatic(true);
+    assertThat(changedModule.isFlagStatic()).isTrue();
   }
 
   @Test

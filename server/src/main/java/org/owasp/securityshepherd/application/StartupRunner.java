@@ -109,7 +109,7 @@ public class StartupRunner implements ApplicationRunner {
     final long moduleId = moduleService.create("ScoreTestModule", "score-test").block().getId();
 
     // Set that module to have an exact flag
-    moduleService.setExactFlag(moduleId, flag).block();
+    moduleService.setStaticFlag(moduleId, flag).block();
 
     // Set scoring levels for module1
     scoringService.setModuleScore(moduleId, 0, 100).block();
@@ -121,7 +121,7 @@ public class StartupRunner implements ApplicationRunner {
 
     // Create some other modules we aren't interested in
     final long moduleId2 = moduleService.create("AnotherModule", "another-module").block().getId();
-    moduleService.setExactFlag(moduleId2, flag).block();
+    moduleService.setStaticFlag(moduleId2, flag).block();
 
     // Set scoring levels for module2
     scoringService.setModuleScore(moduleId2, 0, 50).block();
@@ -130,7 +130,7 @@ public class StartupRunner implements ApplicationRunner {
 
     final long moduleId3 =
         moduleService.create("IrrelevantModule", "irrelevant-module").block().getId();
-    moduleService.setExactFlag(moduleId3, flag).block();
+    moduleService.setStaticFlag(moduleId3, flag).block();
 
     // You only get 1 point for this module
     scoringService.setModuleScore(moduleId3, 0, 1).block();

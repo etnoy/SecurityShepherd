@@ -15,15 +15,14 @@
 package org.owasp.securityshepherd.test.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.atMost;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -44,6 +43,7 @@ import org.owasp.securityshepherd.module.ModuleRepository;
 import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.module.SubmittableModule;
 import org.owasp.securityshepherd.test.util.TestUtils;
+
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
@@ -379,18 +379,18 @@ class ModuleServiceTest {
   void setDynamicFlag_FlagPreviouslySet_ReturnPreviousFlag() {
     final String newFlag = "uVR6jeaKqtMD6CPg";
 
-    final Module mockModuleWithoutExactFlag = mock(Module.class);
-    final Module mockModuleWithExactFlag = mock(Module.class);
+    final Module mockModuleWithoutStaticFlag = mock(Module.class);
+    final Module mockModuleWithStaticFlag = mock(Module.class);
     final Module mockModuleWithDynamicFlag = mock(Module.class);
 
     final long mockModuleId = 517;
 
-    when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.just(mockModuleWithoutExactFlag));
+    when(moduleRepository.findById(mockModuleId))
+        .thenReturn(Mono.just(mockModuleWithoutStaticFlag));
 
-    when(mockModuleWithoutExactFlag.withFlagEnabled(true)).thenReturn(mockModuleWithExactFlag);
-    when(mockModuleWithExactFlag.withFlagExact(false)).thenReturn(mockModuleWithDynamicFlag);
+    when(mockModuleWithStaticFlag.withFlagStatic(false)).thenReturn(mockModuleWithDynamicFlag);
 
-    when(mockModuleWithDynamicFlag.getFlag()).thenReturn(newFlag);
+    when(mockModuleWithDynamicFlag.getKey()).thenReturn(newFlag);
 
     when(moduleRepository.save(mockModuleWithDynamicFlag))
         .thenReturn(Mono.just(mockModuleWithDynamicFlag));
@@ -398,7 +398,7 @@ class ModuleServiceTest {
     StepVerifier.create(moduleService.setDynamicFlag(mockModuleId))
         .assertNext(
             module -> {
-              assertThat(module.getFlag()).isEqualTo(newFlag);
+              assertThat(module.getKey()).isEqualTo(newFlag);
             })
         .expectComplete()
         .verify();
@@ -408,7 +408,7 @@ class ModuleServiceTest {
 
     ArgumentCaptor<Module> argument = ArgumentCaptor.forClass(Module.class);
     verify(moduleRepository, times(1)).save(argument.capture());
-    assertThat(argument.getValue().getFlag()).isEqualTo(newFlag);
+    assertThat(argument.getValue().getKey()).isEqualTo(newFlag);
   }
 
   @Test
@@ -422,48 +422,30 @@ class ModuleServiceTest {
   }
 
   @Test
-  void setDynamicFlag_NoPreviousFlag_GeneratesNewFlag() {
-    final String newFlag = "uVR6jeaKqtMD6CPg";
-
-    final Module mockModuleWithoutDynamicFlag = mock(Module.class);
-    final Module mockModuleWithoutExactFlag = mock(Module.class);
-    final Module mockModuleWithExactFlag = mock(Module.class);
+  void setDynamicFlag_StaticFlagIsSet_SetsDynamicFlag() {
+    final Module mockModuleWithStaticFlag = mock(Module.class);
     final Module mockModuleWithDynamicFlag = mock(Module.class);
-    final Module mockModuleWithFlag = mock(Module.class);
 
     final long mockModuleId = 134;
 
-    when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.just(mockModuleWithoutExactFlag));
+    when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.just(mockModuleWithStaticFlag));
 
-    when(mockModuleWithoutExactFlag.withFlagEnabled(true)).thenReturn(mockModuleWithExactFlag);
-    when(mockModuleWithExactFlag.withFlagExact(false)).thenReturn(mockModuleWithDynamicFlag);
+    when(mockModuleWithStaticFlag.withFlagStatic(false)).thenReturn(mockModuleWithDynamicFlag);
 
-    when(keyService.generateRandomString(16)).thenReturn(newFlag);
-    when(mockModuleWithDynamicFlag.withFlag(newFlag)).thenReturn(mockModuleWithFlag);
-    when(mockModuleWithFlag.isFlagEnabled()).thenReturn(true);
-    when(mockModuleWithFlag.isFlagExact()).thenReturn(false);
-    when(mockModuleWithFlag.getFlag()).thenReturn(newFlag);
+    when(mockModuleWithDynamicFlag.isFlagStatic()).thenReturn(false);
 
-    when(moduleRepository.save(mockModuleWithFlag)).thenReturn(Mono.just(mockModuleWithFlag));
+    when(moduleRepository.save(mockModuleWithDynamicFlag))
+        .thenReturn(Mono.just(mockModuleWithDynamicFlag));
 
     StepVerifier.create(moduleService.setDynamicFlag(mockModuleId))
         .assertNext(
             module -> {
-              assertThat(module.isFlagEnabled()).isTrue();
-              assertThat(module.isFlagExact()).isFalse();
-              assertThat(module.getFlag()).isEqualTo(newFlag);
+              assertThat(module.isFlagStatic()).isFalse();
             })
         .expectComplete()
         .verify();
 
-    verify(mockModuleWithoutExactFlag, atMost(1)).withFlagEnabled(true);
-    verify(mockModuleWithExactFlag, atMost(1)).withFlagExact(false);
-    verify(mockModuleWithoutExactFlag, atMost(1)).withFlagExact(false);
-    verify(mockModuleWithoutDynamicFlag, atMost(1)).withFlagEnabled(true);
-
-    verify(keyService, times(1)).generateRandomString(16);
-    verify(mockModuleWithDynamicFlag, times(1)).withFlag(newFlag);
-
+    verify(mockModuleWithStaticFlag, times(1)).withFlagStatic(false);
     verify(moduleRepository, times(1)).save(any(Module.class));
   }
 
@@ -475,28 +457,28 @@ class ModuleServiceTest {
   }
 
   @Test
-  void setExactFlag_EmptyExactFlag_ReturnsInvalidFlagException() {
-    StepVerifier.create(moduleService.setExactFlag(1, ""))
+  void setStaticFlag_EmptyStaticFlag_ReturnsInvalidFlagException() {
+    StepVerifier.create(moduleService.setStaticFlag(1, ""))
         .expectError(InvalidFlagException.class)
         .verify();
   }
 
   @Test
-  void setExactFlag_InvalidModuleId_ReturnsInvalidModuleIdException() {
-    StepVerifier.create(moduleService.setExactFlag(0, "flag"))
+  void setStaticFlag_InvalidModuleId_ReturnsInvalidModuleIdException() {
+    StepVerifier.create(moduleService.setStaticFlag(0, "flag"))
         .expectError(InvalidModuleIdException.class)
         .verify();
-    StepVerifier.create(moduleService.setExactFlag(-1, "flag"))
+    StepVerifier.create(moduleService.setStaticFlag(-1, "flag"))
         .expectError(InvalidModuleIdException.class)
         .verify();
-    StepVerifier.create(moduleService.setExactFlag(-9999, "flag"))
+    StepVerifier.create(moduleService.setStaticFlag(-9999, "flag"))
         .expectError(InvalidModuleIdException.class)
         .verify();
   }
 
   @Test
-  void setExactFlag_NullExactFlag_ReturnsNulPointerException() {
-    StepVerifier.create(moduleService.setExactFlag(1, null))
+  void setStaticFlag_NullStaticFlag_ReturnsNulPointerException() {
+    StepVerifier.create(moduleService.setStaticFlag(1, null))
         .expectErrorMatches(
             throwable ->
                 throwable instanceof NullPointerException
@@ -505,35 +487,28 @@ class ModuleServiceTest {
   }
 
   @Test
-  void setExactFlag_ValidFlag_SetsFlagToExact() {
-    final String exactFlag = "setExactFlag_ValidFlag_flag";
+  void setStaticFlag_ValidFlag_SetsFlagToStatic() {
+    final String exactFlag = "setStaticFlag_ValidFlag_flag";
 
-    final Module mockModuleWithoutFlag = mock(Module.class);
-    final Module mockModuleWithFlagEnabled = mock(Module.class);
-    final Module mockModuleWithExactFlagEnabled = mock(Module.class);
-    final Module mockModuleWithExactFlagEnabledAndSet = mock(Module.class);
+    final Module mockModule = mock(Module.class);
+    final Module mockModuleWithStaticFlag = mock(Module.class);
 
     final long mockModuleId = 239;
 
-    when(mockModuleWithoutFlag.withFlagEnabled(true)).thenReturn(mockModuleWithFlagEnabled);
-    when(mockModuleWithFlagEnabled.withFlagExact(true)).thenReturn(mockModuleWithExactFlagEnabled);
-    when(mockModuleWithExactFlagEnabled.withFlag(exactFlag))
-        .thenReturn(mockModuleWithExactFlagEnabledAndSet);
+    when(mockModule.withFlagStatic(true)).thenReturn(mockModuleWithStaticFlag);
 
-    when(mockModuleWithExactFlagEnabledAndSet.isFlagEnabled()).thenReturn(true);
-    when(mockModuleWithExactFlagEnabledAndSet.isFlagExact()).thenReturn(true);
-    when(mockModuleWithExactFlagEnabledAndSet.getFlag()).thenReturn(exactFlag);
+    when(mockModuleWithStaticFlag.isFlagStatic()).thenReturn(true);
+    when(mockModuleWithStaticFlag.getKey()).thenReturn(exactFlag);
 
-    when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.just(mockModuleWithoutFlag));
-    when(moduleRepository.save(mockModuleWithExactFlagEnabledAndSet))
-        .thenReturn(Mono.just(mockModuleWithExactFlagEnabledAndSet));
+    when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
+    when(moduleRepository.save(mockModuleWithStaticFlag))
+        .thenReturn(Mono.just(mockModuleWithStaticFlag));
 
-    StepVerifier.create(moduleService.setExactFlag(mockModuleId, exactFlag))
+    StepVerifier.create(moduleService.setStaticFlag(mockModuleId, exactFlag))
         .assertNext(
             module -> {
-              assertThat(module.isFlagEnabled()).isTrue();
-              assertThat(module.isFlagExact()).isTrue();
-              assertThat(module.getFlag()).isEqualTo(exactFlag);
+              assertThat(module.isFlagStatic()).isTrue();
+              assertThat(module.getKey()).isEqualTo(exactFlag);
             })
         .expectComplete()
         .verify();
@@ -544,7 +519,7 @@ class ModuleServiceTest {
 
     ArgumentCaptor<Module> saveArgument = ArgumentCaptor.forClass(Module.class);
     verify(moduleRepository, times(1)).save(saveArgument.capture());
-    assertThat(saveArgument.getValue().getFlag()).isEqualTo(exactFlag);
+    assertThat(saveArgument.getValue().getKey()).isEqualTo(exactFlag);
   }
 
   @Test

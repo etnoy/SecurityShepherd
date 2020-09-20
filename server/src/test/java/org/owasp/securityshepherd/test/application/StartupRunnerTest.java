@@ -17,6 +17,7 @@ package org.owasp.securityshepherd.test.application;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,6 +41,7 @@ import org.owasp.securityshepherd.scoring.Submission;
 import org.owasp.securityshepherd.scoring.SubmissionRepository;
 import org.owasp.securityshepherd.scoring.SubmissionService;
 import org.owasp.securityshepherd.user.UserService;
+
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 
@@ -62,9 +64,9 @@ class StartupRunnerTest {
   @Mock private XssTutorial xssTutorial;
 
   @Mock private SqlInjectionTutorial sqlInjectionTutorial;
-  
+
   @Mock private CsrfTutorial csrfTutorial;
-  
+
   @Mock private CsrfService csrfService;
 
   @Mock private SubmissionService submissionService;
@@ -101,7 +103,7 @@ class StartupRunnerTest {
     when(moduleService.create("ScoreTestModule", "score-test"))
         .thenReturn(Mono.just(mockScoreTestModule));
     when(mockScoreTestModule.getId()).thenReturn(3L);
-    when(moduleService.setExactFlag(3L, flag)).thenReturn(Mono.just(mockScoreTestModule));
+    when(moduleService.setStaticFlag(3L, flag)).thenReturn(Mono.just(mockScoreTestModule));
 
     final ModulePoint mockModulePoint = mock(ModulePoint.class);
 
@@ -115,7 +117,7 @@ class StartupRunnerTest {
     when(moduleService.create("AnotherModule", "another-module"))
         .thenReturn(Mono.just(mockAnotherModule));
     when(mockAnotherModule.getId()).thenReturn(4L);
-    when(moduleService.setExactFlag(4L, flag)).thenReturn(Mono.just(mockAnotherModule));
+    when(moduleService.setStaticFlag(4L, flag)).thenReturn(Mono.just(mockAnotherModule));
 
     when(scoringService.setModuleScore(4L, 0, 50)).thenReturn(Mono.just(mockModulePoint));
     when(scoringService.setModuleScore(4L, 1, 30)).thenReturn(Mono.just(mockModulePoint));
@@ -125,7 +127,7 @@ class StartupRunnerTest {
     when(moduleService.create("IrrelevantModule", "irrelevant-module"))
         .thenReturn(Mono.just(mockIrrelevantModule));
     when(mockIrrelevantModule.getId()).thenReturn(5L);
-    when(moduleService.setExactFlag(5L, flag)).thenReturn(Mono.just(mockIrrelevantModule));
+    when(moduleService.setStaticFlag(5L, flag)).thenReturn(Mono.just(mockIrrelevantModule));
 
     when(scoringService.setModuleScore(5L, 0, 1)).thenReturn(Mono.just(mockModulePoint));
 

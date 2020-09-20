@@ -14,6 +14,9 @@
  */
 package org.owasp.securityshepherd.module.csrf;
 
+import java.time.LocalDateTime;
+
+import org.owasp.securityshepherd.module.FlagHandler;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
@@ -24,36 +27,33 @@ import reactor.core.publisher.Mono;
 public class CsrfService {
   private final CsrfVoteCounterRepository csrfVoteCounterRepository;
 
-  public Mono<Void> incrementCounter(final long userId, final long moduleId) {
-    return csrfVoteCounterRepository
-        .findByUserIdAndModuleId(userId, moduleId)
-        .map(counter -> counter.withCount(counter.getCount() + 1))
-        .flatMap(csrfVoteCounterRepository::save)
-        .then(Mono.empty());
-  }
+  private final FlagHandler flagHandler;
 
-  public Mono<Void> resetCounter(final long userId, final long moduleId) {
+  public Mono<Void> activate(final String target, final long moduleId) {
     return csrfVoteCounterRepository
-        .findByUserIdAndModuleId(userId, moduleId)
-        .switchIfEmpty(
-            Mono.just(
-                CsrfVoteCounter.builder().count(0L).userId(userId).moduleId(moduleId).build()))
-        .map(counter -> counter.withCount(0L))
+        .findByPseudonymAndModuleId(target, moduleId)
+        .map(counter -> counter.withIsActivated(true))
         .flatMap(csrfVoteCounterRepository::save)
         .then(Mono.empty());
   }
 
   public Mono<String> getPseudonym(final long userId, final long moduleId) {
-	  
+    return flagHandler.getSaltedHmac(userId, moduleId, "csrfPseudonym", "HmacSHA224");
   }
-  
-  public Mono<Boolean> validate(final long userId, final long moduleId) {
+
+  public Mono<Boolean> validate(final String pseudonym, final long moduleId) {
     return csrfVoteCounterRepository
-        .findByUserIdAndModuleId(userId, moduleId)
-        .map(counter -> counter.getCount() > 0)
+        .findByPseudonymAndModuleId(pseudonym, moduleId)
+        .map(CsrfVoteCounter::getIsActivated)
         .switchIfEmpty(
             csrfVoteCounterRepository
-                .save(CsrfVoteCounter.builder().count(0L).userId(userId).moduleId(moduleId).build())
+                .save(
+                    CsrfVoteCounter.builder()
+                        .pseudonym(pseudonym)
+                        .isActivated(false)
+                        .initialized(LocalDateTime.now())
+                        .moduleId(moduleId)
+                        .build())
                 .then(Mono.just(false)));
   }
 }

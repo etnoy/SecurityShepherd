@@ -37,8 +37,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserter;
 import org.springframework.web.reactive.function.BodyInserters;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
+
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
@@ -77,7 +79,7 @@ class FlagControllerIT {
 
   @Test
   @DisplayName("Submitting an invalid exact flag should return false")
-  void submitFlag_InvalidExactFlag_Success() throws Exception {
+  void submitFlag_InvalidStaticFlag_Success() throws Exception {
     final String loginName = "testUser";
     final String password = "paLswOrdha17£@£sh";
     final String moduleName = "test-module";
@@ -87,7 +89,7 @@ class FlagControllerIT {
 
     final long moduleId = moduleService.create(moduleName, moduleShortName).block().getId();
 
-    moduleService.setExactFlag(moduleId, flag).block();
+    moduleService.setStaticFlag(moduleId, flag).block();
 
     webTestClient
         .post()
@@ -171,7 +173,7 @@ class FlagControllerIT {
 
   @Test
   @DisplayName("Submitting a valid exact flag should return true")
-  void submitFlag_ValidExactFlag_Success() throws Exception {
+  void submitFlag_ValidStaticFlag_Success() throws Exception {
     final String loginName = "testUser";
     final String password = "paLswOrdha17£@£sh";
     final String moduleName = "test-module";
@@ -181,7 +183,7 @@ class FlagControllerIT {
 
     final long moduleId = moduleService.create(moduleName, moduleShortName).block().getId();
 
-    moduleService.setExactFlag(moduleId, flag).block();
+    moduleService.setStaticFlag(moduleId, flag).block();
 
     webTestClient
         .post()

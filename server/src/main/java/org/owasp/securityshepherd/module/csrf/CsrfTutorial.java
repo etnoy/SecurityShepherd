@@ -66,22 +66,25 @@ public class CsrfTutorial extends AbstractModule {
       return Mono.error(new RuntimeException("Must initialize module first"));
     }
 
-    final CsrfTutorialResultBuilder csrfTutorialResultBuilder =
-        CsrfTutorialResult.builder().parameter(String.valueOf(userId));
+    final Mono<String> pseudonym = csrfService.getPseudonym(userId, this.moduleId);
 
-    return csrfService
-        .validate(userId, this.moduleId)
-        .filterWhen(isIncremented -> Mono.just(true))
-        .flatMap(
-            isIncremented ->
-                flagHandler
-                    .getDynamicFlag(userId, this.moduleId)
-                    .map(csrfTutorialResultBuilder::flag))
-        .defaultIfEmpty(csrfTutorialResultBuilder)
+    final Mono<CsrfTutorialResultBuilder> resultWithoutFlag =
+        pseudonym.map(p -> CsrfTutorialResult.builder().pseudonym(p));
+
+    final Mono<CsrfTutorialResultBuilder> resultWithFlag =
+        resultWithoutFlag
+            .zipWith(flagHandler.getDynamicFlag(userId, this.moduleId))
+            .map(tuple -> tuple.getT1().flag(tuple.getT2()));
+
+    return pseudonym
+        .flatMap(p -> csrfService.validate(p, this.moduleId))
+        .filter(isActive -> isActive == true)
+        .flatMap(isActive -> resultWithFlag)
+        .switchIfEmpty(resultWithoutFlag)
         .map(builder -> builder.build());
   }
 
-  public Mono<CsrfTutorialIncrementResult> increment(final long userId, final String targetUserId) {
+  public Mono<CsrfTutorialIncrementResult> activate(final long userId, final String target) {
     if (this.moduleId == null) {
       return Mono.error(new RuntimeException("Must initialize module first"));
     }
@@ -89,14 +92,14 @@ public class CsrfTutorial extends AbstractModule {
     CsrfTutorialIncrementResultBuilder csrfTutorialIncrementResultBuilder =
         CsrfTutorialIncrementResult.builder();
 
-    if (String.valueOf(userId) == targetUserId) {
+    if (String.valueOf(userId) == target) {
       return Mono.just(
           csrfTutorialIncrementResultBuilder
               .error("You cannot increment your own counter")
               .build());
     } else {
       return csrfService
-          .incrementCounter(targetUserId, this.moduleId)
+          .activate(target, this.moduleId)
           .then(
               Mono.just(
                   csrfTutorialIncrementResultBuilder.message("Thank you for voting").build()));

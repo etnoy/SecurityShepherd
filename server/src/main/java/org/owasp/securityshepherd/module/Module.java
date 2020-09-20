@@ -17,7 +17,10 @@ package org.owasp.securityshepherd.module;
 import java.io.Serializable;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NonNull;
@@ -39,13 +42,14 @@ public class Module implements Serializable {
 
   private String description;
 
-  @JsonProperty("isFlagEnabled")
-  private boolean isFlagEnabled;
+  @JsonProperty("hasStaticFlag")
+  private boolean isFlagStatic;
 
-  @JsonProperty("isFlagExact")
-  private boolean isFlagExact;
+  private String staticFlag;
 
-  private String flag;
+  @Column("module_key")
+  @NonNull
+  private String key;
 
   @JsonProperty("isOpen")
   private boolean isOpen;

@@ -42,21 +42,20 @@ export class CsrfTutorialComponent implements OnInit {
       this.module.parameters.length === 2 &&
       this.module.parameters[0].path === 'increment'
     ) {
-      this.increment(this.module.parameters[1].path);
+      this.activate(this.module.parameters[1].path);
     }
     this.loading = false;
   }
 
-  public increment(userId: string): void {
+  public activate(pseudonym: string): void {
     this.apiService
-      .moduleGetRequest(this.module.shortName, 'increment/' + userId)
+      .moduleGetRequest(this.module.shortName, 'activate/' + pseudonym)
       .subscribe(
         (data) => {
           this.alertService.clear();
           this.loading = false;
           this.submitted = true;
           this.result = data;
-          console.log(data);
         },
         (error) => {
           this.loading = false;

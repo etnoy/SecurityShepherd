@@ -1,5 +1,5 @@
 export class CsrfTutorialResult {
-  parameter: string;
+  pseudonym: string;
   flag: string;
   error: string;
 }

@@ -225,12 +225,12 @@ public final class UserService {
     return userRepository.findById(userId).map(User::getDisplayName);
   }
 
-  public Mono<byte[]> findKeyById(final long id) {
-    if (id <= 0) {
+  public Mono<byte[]> findKeyById(final long userId) {
+    if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
 
-    return Mono.just(id)
+    return Mono.just(userId)
         .filterWhen(userRepository::existsById)
         .switchIfEmpty(Mono.error(new UserIdNotFoundException()))
         .flatMap(userRepository::findById)
