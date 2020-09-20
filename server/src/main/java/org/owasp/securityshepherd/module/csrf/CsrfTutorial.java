@@ -70,7 +70,7 @@ public class CsrfTutorial extends AbstractModule {
         CsrfTutorialResult.builder().parameter(String.valueOf(userId));
 
     return csrfService
-        .isIncremented(String.valueOf(userId), this.moduleId)
+        .validate(userId, this.moduleId)
         .filterWhen(isIncremented -> Mono.just(true))
         .flatMap(
             isIncremented ->

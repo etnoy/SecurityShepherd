@@ -39,7 +39,7 @@ DEFAULT CHARACTER SET = utf8mb4;
 
 CREATE TABLE csrf_vote_counter (
 	id INT AUTO_INCREMENT,
-	user_id VARCHAR(191) NOT NULL,
+	user_id INT NOT NULL,
 	module_id INT NOT NULL,
 	count INT NOT NULL,
   PRIMARY KEY (id),

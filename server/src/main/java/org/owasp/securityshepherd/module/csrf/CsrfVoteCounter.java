@@ -28,7 +28,7 @@ import lombok.With;
 @With
 public final class CsrfVoteCounter {
   @Id private Long id;
-  @NonNull private String userId;
+  @NonNull private Long userId;
   @NonNull private Long moduleId;
   @NonNull private Long count;
 }

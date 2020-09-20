@@ -24,18 +24,15 @@ import reactor.core.publisher.Mono;
 public class CsrfService {
   private final CsrfVoteCounterRepository csrfVoteCounterRepository;
 
-  public Mono<Void> incrementCounter(final String userId, final long moduleId) {
+  public Mono<Void> incrementCounter(final long userId, final long moduleId) {
     return csrfVoteCounterRepository
         .findByUserIdAndModuleId(userId, moduleId)
-        .switchIfEmpty(
-            Mono.just(
-                CsrfVoteCounter.builder().count(0L).userId(userId).moduleId(moduleId).build()))
         .map(counter -> counter.withCount(counter.getCount() + 1))
         .flatMap(csrfVoteCounterRepository::save)
         .then(Mono.empty());
   }
 
-  public Mono<Void> resetCounter(final String userId, final long moduleId) {
+  public Mono<Void> resetCounter(final long userId, final long moduleId) {
     return csrfVoteCounterRepository
         .findByUserIdAndModuleId(userId, moduleId)
         .switchIfEmpty(
@@ -46,10 +43,17 @@ public class CsrfService {
         .then(Mono.empty());
   }
 
-  public Mono<Boolean> isIncremented(final String userId, final long moduleId) {
+  public Mono<String> getPseudonym(final long userId, final long moduleId) {
+	  
+  }
+  
+  public Mono<Boolean> validate(final long userId, final long moduleId) {
     return csrfVoteCounterRepository
         .findByUserIdAndModuleId(userId, moduleId)
         .map(counter -> counter.getCount() > 0)
-        .switchIfEmpty(Mono.just(false));
+        .switchIfEmpty(
+            csrfVoteCounterRepository
+                .save(CsrfVoteCounter.builder().count(0L).userId(userId).moduleId(moduleId).build())
+                .then(Mono.just(false)));
   }
 }
