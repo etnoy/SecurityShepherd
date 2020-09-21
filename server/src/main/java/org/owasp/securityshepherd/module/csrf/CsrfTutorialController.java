@@ -43,8 +43,8 @@ public class CsrfTutorialController {
       value = {"/activate/{pseudonym}"},
       method = RequestMethod.GET)
   @PreAuthorize("hasRole('ROLE_USER')")
-  public Mono<CsrfTutorialIncrementResult> activate(
-      @PathVariable(value = "userId") String pseudonym) {
+  public Mono<CsrfTutorialActivationResult> activate(
+      @PathVariable(value = "pseudonym") String pseudonym) {
     return controllerAuthentication
         .getUserId()
         .flatMap(userId -> csrfTutorial.activate(userId, pseudonym));

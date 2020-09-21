@@ -18,7 +18,7 @@ import org.owasp.securityshepherd.module.AbstractModule;
 import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleService;
-import org.owasp.securityshepherd.module.csrf.CsrfTutorialIncrementResult.CsrfTutorialIncrementResultBuilder;
+import org.owasp.securityshepherd.module.csrf.CsrfTutorialActivationResult.CsrfTutorialActivationResultBuilder;
 import org.owasp.securityshepherd.module.csrf.CsrfTutorialResult.CsrfTutorialResultBuilder;
 import org.springframework.stereotype.Component;
 
@@ -84,25 +84,34 @@ public class CsrfTutorial extends AbstractModule {
         .map(builder -> builder.build());
   }
 
-  public Mono<CsrfTutorialIncrementResult> activate(final long userId, final String target) {
+  public Mono<CsrfTutorialActivationResult> activate(final long userId, final String target) {
     if (this.moduleId == null) {
       return Mono.error(new RuntimeException("Must initialize module first"));
     }
 
-    CsrfTutorialIncrementResultBuilder csrfTutorialIncrementResultBuilder =
-        CsrfTutorialIncrementResult.builder();
+    CsrfTutorialActivationResultBuilder csrfTutorialActivationResultBuilder =
+        CsrfTutorialActivationResult.builder();
 
-    if (String.valueOf(userId) == target) {
-      return Mono.just(
-          csrfTutorialIncrementResultBuilder
-              .error("You cannot increment your own counter")
-              .build());
-    } else {
-      return csrfService
-          .activate(target, this.moduleId)
-          .then(
-              Mono.just(
-                  csrfTutorialIncrementResultBuilder.message("Thank you for voting").build()));
-    }
+    log.debug(String.format("User %d is activating target %s", userId, target));
+
+    return csrfService
+        .getPseudonym(userId, this.moduleId)
+        .flatMap(
+            p -> {
+              if (p.equals(target)) {
+                return Mono.just(
+                    csrfTutorialActivationResultBuilder
+                        .error("You cannot activate yourself")
+                        .build());
+              } else {
+                return csrfService
+                    .activate(target, this.moduleId)
+                    .then(
+                        Mono.just(
+                            csrfTutorialActivationResultBuilder
+                                .message("Thank you for voting")
+                                .build()));
+              }
+            });
   }
 }

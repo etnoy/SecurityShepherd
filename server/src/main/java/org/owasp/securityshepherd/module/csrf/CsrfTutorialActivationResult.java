@@ -20,7 +20,7 @@ import lombok.Value;
 
 @Value
 @Builder
-public class CsrfTutorialIncrementResult implements Serializable {
+public class CsrfTutorialActivationResult implements Serializable {
   private static final long serialVersionUID = -6737772337605789261L;
   private String message;
   private String error;

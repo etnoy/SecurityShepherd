@@ -1,12 +1,22 @@
 <h3>Csrf Tutorial</h3>
-<div *ngIf="result">
-  <p *ngIf="result.pseudonym">
+<div *ngIf="tutorialResult">
+  <p *ngIf="tutorialResult.pseudonym">
     Please visit
-    <a [routerLink]="['activate', result.pseudonym]" routerLinkActive="active"
+    <a
+      [routerLink]="['activate', tutorialResult.pseudonym]"
+      routerLinkActive="active"
       >this page</a
     >
     to vote.
   </p>
-  <p *ngIf="result.flag">Congratulations, flag is {{ result.flag }}</p>
-  <p *ngIf="result.error">Error: {{ result.error }}</p>
+  <p *ngIf="tutorialResult.flag">
+    Congratulations, flag is {{ tutorialResult.flag }}
+  </p>
+  <p *ngIf="tutorialResult.error">Error: {{ tutorialResult.error }}</p>
+</div>
+<div *ngIf="activationResult">
+  <p *ngIf="activationResult.message">
+    {{ activationResult.message }}
+  </p>
+  <p *ngIf="activationResult.error">Error: {{ activationResult.error }}</p>
 </div>

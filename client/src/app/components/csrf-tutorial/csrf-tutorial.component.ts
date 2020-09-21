@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { Module } from 'src/app/model/module';
 import { AlertService } from 'src/app/service/alert.service';
 import { CsrfTutorialResult } from 'src/app/model/csrf-tutorial-result';
+import { CsrfTutorialActivationResult } from 'src/app/model/csrf-tutorial-activation-result';
 
 @Component({
   selector: 'app-csrf-injection-tutorial',
@@ -12,7 +13,9 @@ import { CsrfTutorialResult } from 'src/app/model/csrf-tutorial-result';
 })
 export class CsrfTutorialComponent implements OnInit {
   queryForm: FormGroup;
-  result: CsrfTutorialResult;
+  tutorialResult: CsrfTutorialResult;
+  activationResult: CsrfTutorialActivationResult;
+
   errorResult: string;
   submitted = false;
   loading = true;
@@ -27,12 +30,13 @@ export class CsrfTutorialComponent implements OnInit {
     this.queryForm = this.fb.group({
       query: [''],
     });
-    this.result = null;
+    this.tutorialResult = null;
     this.errorResult = '';
   }
 
   ngOnInit(): void {
     this.loading = true;
+    console.log(this.module.parameters);
     if (
       !Array.isArray(this.module.parameters) ||
       !this.module.parameters.length
@@ -40,7 +44,7 @@ export class CsrfTutorialComponent implements OnInit {
       this.loadTutorial();
     } else if (
       this.module.parameters.length === 2 &&
-      this.module.parameters[0].path === 'increment'
+      this.module.parameters[0].path === 'activate'
     ) {
       this.activate(this.module.parameters[1].path);
     }
@@ -55,12 +59,15 @@ export class CsrfTutorialComponent implements OnInit {
           this.alertService.clear();
           this.loading = false;
           this.submitted = true;
-          this.result = data;
+          this.tutorialResult = null;
+          this.activationResult = data;
         },
         (error) => {
           this.loading = false;
           this.submitted = false;
-          this.result = null;
+          this.tutorialResult = null;
+          this.activationResult = null;
+
           this.errorResult = '';
           let msg = '';
           if (error.error instanceof ErrorEvent) {
@@ -80,11 +87,11 @@ export class CsrfTutorialComponent implements OnInit {
       (data) => {
         this.alertService.clear();
         this.loading = false;
-        this.result = data;
+        this.tutorialResult = data;
       },
       (error) => {
         this.loading = false;
-        this.result = null;
+        this.tutorialResult = null;
         this.errorResult = '';
         let msg = '';
         if (error.error instanceof ErrorEvent) {
