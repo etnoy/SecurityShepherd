@@ -31,7 +31,7 @@ CREATE TABLE module (
  	description VARCHAR(191),
   	is_flag_static BOOLEAN DEFAULT FALSE,
 	static_flag VARCHAR(64) NULL,
-	module_key VARCHAR(64) NOT NULL,
+	module_key BINARY(64) NOT NULL,
 	is_open BOOLEAN DEFAULT FALSE,
   PRIMARY KEY (id) )
 ENGINE = InnoDB
