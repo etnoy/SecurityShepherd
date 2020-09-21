@@ -24,6 +24,7 @@ import org.owasp.securityshepherd.service.ConfigurationService;
 import org.owasp.securityshepherd.user.UserService;
 import org.springframework.stereotype.Service;
 
+import com.google.common.io.BaseEncoding;
 import com.google.common.primitives.Bytes;
 
 import lombok.RequiredArgsConstructor;
@@ -79,7 +80,7 @@ public final class FlagHandler {
         .map(tuple -> Bytes.concat(tuple.getT1(), tuple.getT2(), prefix.getBytes()))
         .zipWith(serverKey)
         .map(tuple -> cryptoService.hmac(algorithm, tuple.getT2(), tuple.getT1()))
-        .map(keyService::bytesToHexString);
+        .map(BaseEncoding.base32()::encode);
   }
 
   public Mono<Boolean> verifyFlag(
