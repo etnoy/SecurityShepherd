@@ -388,7 +388,6 @@ class ModuleServiceTest {
   void setDynamicFlag_FlagPreviouslySet_ReturnPreviousFlag() {
     final byte[] newFlag = {-118, 17, 4, -35, 17, -3, -94, 0, -72, -17, 65, -127, 12, 82, 9, 29};
 
-    final Module mockModuleWithoutStaticFlag = mock(Module.class);
     final Module mockModuleWithStaticFlag = mock(Module.class);
     final Module mockModuleWithDynamicFlag = mock(Module.class);
 

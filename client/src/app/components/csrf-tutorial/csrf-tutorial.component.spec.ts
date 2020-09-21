@@ -1,27 +1,27 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientModule } from '@angular/common/http';
-import { SqlInjectionTutorialComponent } from './sql-injection-tutorial.component';
+import { CsrfTutorialComponent } from './csrf-tutorial.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-describe('SqlInjectionTutorialComponent', () => {
-  let component: SqlInjectionTutorialComponent;
-  let fixture: ComponentFixture<SqlInjectionTutorialComponent>;
+describe('CsrfTutorialComponent', () => {
+  let component: CsrfTutorialComponent;
+  let fixture: ComponentFixture<CsrfTutorialComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [SqlInjectionTutorialComponent],
+      declarations: [CsrfTutorialComponent],
       imports: [
         RouterTestingModule,
         HttpClientModule,
         FormsModule,
-        ReactiveFormsModule,
-      ],
+        ReactiveFormsModule
+      ]
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SqlInjectionTutorialComponent);
+    fixture = TestBed.createComponent(CsrfTutorialComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
