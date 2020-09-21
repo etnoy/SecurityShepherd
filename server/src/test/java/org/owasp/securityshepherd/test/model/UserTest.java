@@ -15,14 +15,16 @@
 package org.owasp.securityshepherd.test.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.time.LocalDateTime;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.owasp.securityshepherd.test.util.TestUtils;
 import org.owasp.securityshepherd.user.User;
 import org.owasp.securityshepherd.user.User.UserBuilder;
+
 import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 

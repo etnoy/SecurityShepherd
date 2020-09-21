@@ -12,9 +12,10 @@
  * <p>You should have received a copy of the GNU General Public License along with Security
  * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.owasp.securityshepherd.it.module.sqlinjection;
+package org.owasp.securityshepherd.it.module.xss;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,6 +34,7 @@ import org.owasp.securityshepherd.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
