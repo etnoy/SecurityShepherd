@@ -15,17 +15,20 @@
 package org.owasp.securityshepherd.test.util;
 
 import java.time.LocalDateTime;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.owasp.securityshepherd.authentication.PasswordAuthRepository;
 import org.owasp.securityshepherd.authentication.UserAuthRepository;
 import org.owasp.securityshepherd.configuration.ConfigurationRepository;
 import org.owasp.securityshepherd.module.ModulePointRepository;
 import org.owasp.securityshepherd.module.ModuleRepository;
+import org.owasp.securityshepherd.module.csrf.CsrfVoteCounterRepository;
 import org.owasp.securityshepherd.scoring.CorrectionRepository;
 import org.owasp.securityshepherd.scoring.SubmissionRepository;
 import org.owasp.securityshepherd.user.ClassRepository;
 import org.owasp.securityshepherd.user.UserRepository;
 import org.springframework.stereotype.Service;
+
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
@@ -137,6 +140,8 @@ public final class TestUtils {
 
   private final ModuleRepository moduleRepository;
 
+  private final CsrfVoteCounterRepository csrfVoteCounterRepository;
+
   private final SubmissionRepository submissionRepository;
 
   private final CorrectionRepository correctionRepository;
@@ -151,6 +156,8 @@ public final class TestUtils {
     // Delete all score corrections
     correctionRepository
         .deleteAll()
+        // Delete all module scoring rules
+        .then(csrfVoteCounterRepository.deleteAll())
         // Delete all module scoring rules
         .then(modulePointRepository.deleteAll())
         // Delete all submissions

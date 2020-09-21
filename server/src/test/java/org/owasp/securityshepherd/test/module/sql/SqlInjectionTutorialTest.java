@@ -20,6 +20,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -39,6 +40,7 @@ import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorial;
 import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorialRow;
 import org.springframework.data.r2dbc.BadSqlGrammarException;
 import org.springframework.data.r2dbc.core.DatabaseClient;
+
 import io.r2dbc.spi.R2dbcBadGrammarException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Hooks;

@@ -16,8 +16,10 @@ package org.owasp.securityshepherd.crypto;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -29,11 +31,11 @@ public final class CryptoFactory {
     return SecureRandom.getInstanceStrong();
   }
 
-  public Mac getHmac() throws NoSuchAlgorithmException {
-    return Mac.getInstance("HmacSHA512");
+  public Mac getHmac(final String algorithm) throws NoSuchAlgorithmException {
+    return Mac.getInstance(algorithm);
   }
 
-  public SecretKeySpec getHmacKey(byte[] key) {
-    return new SecretKeySpec(key, "HmacSHA512");
+  public SecretKeySpec getSecretKeySpec(final String algorithm, byte[] key) {
+    return new SecretKeySpec(key, algorithm);
   }
 }

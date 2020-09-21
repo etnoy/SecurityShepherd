@@ -49,6 +49,16 @@ export class ApiService {
     );
   }
 
+  moduleGetRequest(shortName: string, resource: string): Observable<any> {
+    const api = `${this.endpoint}/module/${shortName}/${resource}`;
+    return this.http.get<any>(api).pipe(
+      map((res: Response) => {
+        return res || {};
+      }),
+      catchError(this.handleError)
+    );
+  }
+
   public get currentUserValue(): User {
     return this.currentUserSubject.value;
   }

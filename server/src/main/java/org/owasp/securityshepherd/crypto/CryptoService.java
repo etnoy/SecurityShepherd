@@ -16,8 +16,10 @@ package org.owasp.securityshepherd.crypto;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+
 import org.owasp.securityshepherd.exception.CryptographicException;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 public final class CryptoService {
   private final CryptoFactory cryptoFactory;
 
-  public byte[] hmac(final byte[] key, final byte[] message) {
+  public byte[] hmac(final String algorithm, final byte[] key, final byte[] message) {
     if (key == null) {
       throw new NullPointerException("Key cannot be null");
     }
@@ -36,22 +38,22 @@ public final class CryptoService {
       throw new NullPointerException("Message cannot be null");
     }
 
-    final Mac hmac512;
+    final Mac hmac;
 
     try {
-      hmac512 = cryptoFactory.getHmac();
+      hmac = cryptoFactory.getHmac(algorithm);
     } catch (NoSuchAlgorithmException e) {
       throw new CryptographicException("Could not initialize MAC algorithm", e);
     }
 
-    SecretKeySpec secretKeySpec = cryptoFactory.getHmacKey(key);
+    SecretKeySpec secretKeySpec = cryptoFactory.getSecretKeySpec(algorithm, key);
 
     try {
-      hmac512.init(secretKeySpec);
+      hmac.init(secretKeySpec);
     } catch (InvalidKeyException e) {
       throw new CryptographicException("Invalid key supplied to MAC", e);
     }
 
-    return hmac512.doFinal(message);
+    return hmac.doFinal(message);
   }
 }

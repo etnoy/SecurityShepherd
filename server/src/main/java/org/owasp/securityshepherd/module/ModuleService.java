@@ -22,6 +22,7 @@ import org.owasp.securityshepherd.exception.InvalidFlagException;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
 import org.springframework.stereotype.Service;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
@@ -47,8 +48,8 @@ public final class ModuleService {
         submittableModule.getDescription());
   }
 
-  public Mono<Module> create(final String moduleName, final String url) {
-    return this.create(moduleName, url, null);
+  public Mono<Module> create(final String moduleName, final String shortName) {
+    return this.create(moduleName, shortName, null);
   }
 
   public Mono<Module> create(
@@ -61,7 +62,7 @@ public final class ModuleService {
       return Mono.error(new EmptyModuleNameException("Module name cannot be empty"));
     }
 
-    log.info("Creating new module with name " + moduleName + " and url " + shortName);
+    log.info("Creating new module with name " + moduleName + " and short name " + shortName);
 
     return Mono.just(moduleName)
         .filterWhen(this::doesNotExistByName)
@@ -76,6 +77,7 @@ public final class ModuleService {
                     .name(name)
                     .description(description)
                     .shortName(shortName)
+                    .key(keyService.generateRandomBytes(16))
                     .build())
         .flatMap(moduleRepository::save);
   }
@@ -129,31 +131,24 @@ public final class ModuleService {
 
     return findById(moduleId)
         .switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
-        .map(module -> module.withFlagEnabled(true).withFlagExact(false))
-        .map(
-            module -> {
-              if (module.getFlag() == null) {
-                return module.withFlag(keyService.generateRandomString(16));
-              }
-              return module;
-            })
+        .map(module -> module.withFlagStatic(false))
         .flatMap(moduleRepository::save);
   }
 
-  public Mono<Module> setExactFlag(final long moduleId, final String exactFlag) {
+  public Mono<Module> setStaticFlag(final long moduleId, final String staticFlag) {
     if (moduleId <= 0) {
       return Mono.error(moduleIdMustBePositive());
     }
 
-    if (exactFlag == null) {
+    if (staticFlag == null) {
       return Mono.error(new NullPointerException("Flag cannot be null"));
-    } else if (exactFlag.isEmpty()) {
+    } else if (staticFlag.isEmpty()) {
       return Mono.error(new InvalidFlagException("Flag cannot be empty"));
     }
 
     return findById(moduleId)
         .switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
-        .map(module -> module.withFlagEnabled(true).withFlagExact(true).withFlag(exactFlag))
+        .map(module -> module.withFlagStatic(true).withStaticFlag(staticFlag))
         .flatMap(moduleRepository::save);
   }
 

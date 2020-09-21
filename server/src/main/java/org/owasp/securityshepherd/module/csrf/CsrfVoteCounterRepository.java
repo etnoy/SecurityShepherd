@@ -14,16 +14,13 @@
  */
 package org.owasp.securityshepherd.module.csrf;
 
-import java.io.Serializable;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import org.springframework.stereotype.Repository;
 
-import lombok.Builder;
-import lombok.Value;
+import reactor.core.publisher.Mono;
 
-@Value
-@Builder
-public class CsrfTutorialResult implements Serializable {
-  private static final long serialVersionUID = -4198798937863388090L;
-  private String pseudonym;
-  private String flag;
-  private String error;
+@Repository
+public interface CsrfVoteCounterRepository extends ReactiveCrudRepository<CsrfVoteCounter, Long> {
+  public Mono<CsrfVoteCounter> findByPseudonymAndModuleId(
+      final String pseudonym, final Long moduleId);
 }

@@ -12,14 +12,11 @@
  * <p>You should have received a copy of the GNU General Public License along with Security
  * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.owasp.securityshepherd.module;
+package org.owasp.securityshepherd.module.csrf;
 
-import java.io.Serializable;
+import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,26 +28,10 @@ import lombok.With;
 @AllArgsConstructor
 @Builder
 @With
-public class Module implements Serializable {
-  private static final long serialVersionUID = 6391362512222766270L;
-
+public final class CsrfVoteCounter {
   @Id private Long id;
-
-  @NonNull private String name;
-
-  @NonNull private String shortName;
-
-  private String description;
-
-  @JsonProperty("hasStaticFlag")
-  private boolean isFlagStatic;
-
-  private String staticFlag;
-
-  @Column("module_key")
-  @NonNull
-  private byte[] key;
-
-  @JsonProperty("isOpen")
-  private boolean isOpen;
+  @NonNull private String pseudonym;
+  @NonNull private LocalDateTime initialized;
+  @NonNull private Long moduleId;
+  @NonNull private Boolean isActivated;
 }

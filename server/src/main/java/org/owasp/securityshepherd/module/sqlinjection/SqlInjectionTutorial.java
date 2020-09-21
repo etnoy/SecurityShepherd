@@ -15,6 +15,7 @@
 package org.owasp.securityshepherd.module.sqlinjection;
 
 import java.util.Base64;
+
 import org.owasp.securityshepherd.crypto.KeyService;
 import org.owasp.securityshepherd.exception.ModuleNotInitializedException;
 import org.owasp.securityshepherd.module.AbstractModule;
@@ -24,6 +25,7 @@ import org.owasp.securityshepherd.module.ModuleService;
 import org.springframework.data.r2dbc.BadSqlGrammarException;
 import org.springframework.data.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Component;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;

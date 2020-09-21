@@ -15,13 +15,14 @@
 package org.owasp.securityshepherd.it.service;
 
 import java.time.Clock;
-import org.junit.jupiter.api.parallel.ExecutionMode;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.owasp.securityshepherd.exception.ModuleAlreadySolvedException;
 import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.Module;
@@ -37,6 +38,7 @@ import org.owasp.securityshepherd.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -79,7 +81,7 @@ class SubmissionServiceIT {
   }
 
   @Test
-  void submitFlag_DuplicateValidExactFlag_ReturnModuleAlreadySolvedException() {
+  void submitFlag_DuplicateValidStaticFlag_ReturnModuleAlreadySolvedException() {
     final String flag = "thisisaflag";
 
     final Mono<Long> userIdMono = userService.create("TestUser");
@@ -88,7 +90,7 @@ class SubmissionServiceIT {
         moduleService
             .create("Test Module", "short-name")
             .map(Module::getId)
-            .flatMap(moduleId -> moduleService.setExactFlag(moduleId, flag))
+            .flatMap(moduleId -> moduleService.setStaticFlag(moduleId, flag))
             .map(Module::getId);
 
     StepVerifier.create(
@@ -105,7 +107,7 @@ class SubmissionServiceIT {
   }
 
   @Test
-  void submitFlag_ValidExactFlag_Success() {
+  void submitFlag_ValidStaticFlag_Success() {
     final String flag = "thisisaflag";
 
     final Mono<Long> userIdMono = userService.create("TestUser");
@@ -114,7 +116,7 @@ class SubmissionServiceIT {
         moduleService
             .create("Test Module", "short-name")
             .map(Module::getId)
-            .flatMap(moduleId -> moduleService.setExactFlag(moduleId, flag))
+            .flatMap(moduleId -> moduleService.setStaticFlag(moduleId, flag))
             .map(Module::getId);
 
     StepVerifier.create(

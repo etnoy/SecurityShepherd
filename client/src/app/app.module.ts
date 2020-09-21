@@ -14,6 +14,7 @@ import { SearchbarModule } from './components/searchbar/searchbar.module';
 import { SqlInjectionTutorialComponent } from './components/sql-injection-tutorial/sql-injection-tutorial.component';
 import { ModuleItemComponent } from './components/module-item/module-item.component';
 import { XssTutorialComponent } from './components/xss-tutorial/xss-tutorial.component';
+import { CsrfTutorialComponent } from './components/csrf-tutorial/csrf-tutorial.component';
 import { HomeComponent } from './components/home/home.component';
 import { AlertComponent } from './components/alert/alert.component';
 import { ErrorInterceptor } from './shared/error.interceptor';
@@ -31,6 +32,7 @@ import { UserScoreComponent } from './components/user-score/user-score.component
     SqlInjectionTutorialComponent,
     ModuleItemComponent,
     XssTutorialComponent,
+    CsrfTutorialComponent,
     ModuleDirective,
     ScoreboardComponent,
     UserScoreComponent,

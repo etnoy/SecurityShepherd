@@ -1,5 +1,4 @@
 import { ModuleDirective } from '../../module.directive';
-import { SqlInjectionTutorialComponent } from '../sql-injection-tutorial/sql-injection-tutorial.component';
 import { ApiService } from '../../service/api.service';
 import {
   Component,
@@ -9,12 +8,14 @@ import {
   ComponentFactoryResolver,
 } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, UrlSegment } from '@angular/router';
 import { Module } from '../../model/module';
-import { XssTutorialComponent } from '../xss-tutorial/xss-tutorial.component';
 import { throwError } from 'rxjs';
 import { AlertService } from 'src/app/service/alert.service';
 import { Submission } from 'src/app/model/submission';
+import { XssTutorialComponent } from '../xss-tutorial/xss-tutorial.component';
+import { SqlInjectionTutorialComponent } from '../sql-injection-tutorial/sql-injection-tutorial.component';
+import { CsrfTutorialComponent } from '../csrf-tutorial/csrf-tutorial.component';
 
 @Component({
   selector: 'app-module-item',
@@ -48,12 +49,21 @@ export class ModuleItemComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.route.paramMap.subscribe((params) => {
-      const shortName = params.get('shortName');
+    this.route.url.subscribe((segments: UrlSegment[]) => {
+      if (!Array.isArray(segments) || !segments.length) {
+        // no parameters given, return error
+        throwError('Invalid argument');
+      }
+      const shortName = segments[0].path;
+
       this.apiService
         .getModuleByShortName(shortName)
         .subscribe((module: Module) => {
           this.module = module;
+          if (segments.length > 1) {
+            this.module.parameters = segments;
+            this.module.parameters.shift();
+          }
           this.solved = this.module.isSolved;
           if (this.solved) {
             this.flagForm.disable();
@@ -66,6 +76,10 @@ export class ModuleItemComponent implements OnInit {
             }
             case 'xss-tutorial': {
               currentModule = XssTutorialComponent;
+              break;
+            }
+            case 'csrf-tutorial': {
+              currentModule = CsrfTutorialComponent;
               break;
             }
             default: {

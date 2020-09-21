@@ -16,9 +16,13 @@ package org.owasp.securityshepherd.test.crypto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+
 import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+
 import javax.crypto.Mac;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.owasp.securityshepherd.crypto.CryptoFactory;
+
 import reactor.core.publisher.Hooks;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,25 +45,25 @@ class CryptoFactoryTest {
   CryptoFactory cryptoFactory;
 
   @Test
-  void getPrng_ReturnsSecureRandomInstance() throws Exception {
+  void getPrng_ReturnsSecureRandomInstance() throws NoSuchAlgorithmException {
     assertThat(cryptoFactory.getPrng()).isInstanceOf(SecureRandom.class);
   }
 
   @Test
   void getHmac_ReturnsMacInstance() throws Exception {
-    assertThat(cryptoFactory.getHmac()).isInstanceOf(Mac.class);
+    assertThat(cryptoFactory.getHmac("HmacSHA512")).isInstanceOf(Mac.class);
   }
 
   @Test
-  void getHmacKey_ValidKey_ReturnsMacInstance() throws Exception {
+  void getHmacKey_ValidKey_ReturnsMacInstance() {
     final byte[] key = {-91, -79, 67};
-    assertThat(cryptoFactory.getHmacKey(key)).isInstanceOf(Key.class);
+    assertThat(cryptoFactory.getSecretKeySpec("HmacSHA512", key)).isInstanceOf(Key.class);
   }
 
   @Test
-  void getHmacKey_NullKey_ThrowsIllegalArgumentException() throws Exception {
+  void getHmacKey_NullKey_ThrowsIllegalArgumentException() {
     assertThatExceptionOfType(IllegalArgumentException.class)
-        .isThrownBy(() -> cryptoFactory.getHmacKey(null));
+        .isThrownBy(() -> cryptoFactory.getSecretKeySpec("Hmac512", null));
   }
 
   @BeforeEach

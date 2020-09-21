@@ -29,11 +29,22 @@ CREATE TABLE module (
 	name VARCHAR(191) NOT NULL UNIQUE,
 	short_name VARCHAR(191) NOT NULL UNIQUE,
  	description VARCHAR(191),
-	is_flag_enabled BOOLEAN DEFAULT FALSE,
-  	is_flag_exact BOOLEAN DEFAULT FALSE,
-	flag VARCHAR(64) NULL,
+  	is_flag_static BOOLEAN DEFAULT FALSE,
+	static_flag VARCHAR(64) NULL,
+	module_key BINARY(64) NOT NULL,
 	is_open BOOLEAN DEFAULT FALSE,
   PRIMARY KEY (id) )
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4;
+
+CREATE TABLE csrf_vote_counter (
+	id INT AUTO_INCREMENT,
+	pseudonym VARCHAR(191) NOT NULL,
+	module_id INT NOT NULL,
+	initialized TIMESTAMP NOT NULL,
+	is_activated BOOLEAN NOT NULL,
+  PRIMARY KEY (id),
+FOREIGN KEY (`module_id`) REFERENCES module(id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 

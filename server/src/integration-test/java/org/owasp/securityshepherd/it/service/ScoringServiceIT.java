@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -48,6 +49,7 @@ import org.owasp.securityshepherd.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import reactor.core.publisher.Hooks;
 import reactor.test.StepVerifier;
 
@@ -115,7 +117,7 @@ class ScoringServiceIT {
     final long moduleId = moduleService.create("ScoreTestModule", "shortName").block().getId();
 
     // Set that module to have an exact flag
-    moduleService.setExactFlag(moduleId, flag).block();
+    moduleService.setStaticFlag(moduleId, flag).block();
 
     // Set scoring levels for module1
     scoringService.setModuleScore(moduleId, 0, 100).block();
@@ -127,7 +129,7 @@ class ScoringServiceIT {
 
     // Create some other modules we aren't interested in
     final long moduleId2 = moduleService.create("AnotherModule", "another-module").block().getId();
-    moduleService.setExactFlag(moduleId2, flag).block();
+    moduleService.setStaticFlag(moduleId2, flag).block();
 
     // Set scoring levels for module2
     scoringService.setModuleScore(moduleId2, 0, 50).block();
@@ -136,7 +138,7 @@ class ScoringServiceIT {
 
     final long moduleId3 =
         moduleService.create("IrrelevantModule", "irrelevant-module").block().getId();
-    moduleService.setExactFlag(moduleId3, flag).block();
+    moduleService.setStaticFlag(moduleId3, flag).block();
 
     // You only get 1 point for this module
     scoringService.setModuleScore(moduleId3, 0, 1).block();

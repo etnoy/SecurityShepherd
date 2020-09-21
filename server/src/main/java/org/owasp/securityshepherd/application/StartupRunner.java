@@ -23,7 +23,9 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.owasp.securityshepherd.module.ModuleService;
+import org.owasp.securityshepherd.module.csrf.CsrfTutorial;
 import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorial;
 import org.owasp.securityshepherd.module.xss.XssTutorial;
 import org.owasp.securityshepherd.scoring.CorrectionService;
@@ -35,6 +37,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -56,6 +59,8 @@ public class StartupRunner implements ApplicationRunner {
 
   private final SqlInjectionTutorial sqlInjectionTutorial;
 
+  private final CsrfTutorial csrfTutorial;
+
   private final SubmissionService submissionService;
 
   private final CorrectionService correctionService;
@@ -75,8 +80,10 @@ public class StartupRunner implements ApplicationRunner {
 
     xssTutorial.initialize().block();
     sqlInjectionTutorial.initialize().block();
+    csrfTutorial.initialize().block();
 
     // We'll use this exact flag
+
     final String flag = "itsaflag";
 
     // And this will be an incorrect flag
@@ -97,7 +104,7 @@ public class StartupRunner implements ApplicationRunner {
     final long moduleId = moduleService.create("ScoreTestModule", "score-test").block().getId();
 
     // Set that module to have an exact flag
-    moduleService.setExactFlag(moduleId, flag).block();
+    moduleService.setStaticFlag(moduleId, flag).block();
 
     // Set scoring levels for module1
     scoringService.setModuleScore(moduleId, 0, 100).block();
@@ -109,7 +116,7 @@ public class StartupRunner implements ApplicationRunner {
 
     // Create some other modules we aren't interested in
     final long moduleId2 = moduleService.create("AnotherModule", "another-module").block().getId();
-    moduleService.setExactFlag(moduleId2, flag).block();
+    moduleService.setStaticFlag(moduleId2, flag).block();
 
     // Set scoring levels for module2
     scoringService.setModuleScore(moduleId2, 0, 50).block();
@@ -118,7 +125,7 @@ public class StartupRunner implements ApplicationRunner {
 
     final long moduleId3 =
         moduleService.create("IrrelevantModule", "irrelevant-module").block().getId();
-    moduleService.setExactFlag(moduleId3, flag).block();
+    moduleService.setStaticFlag(moduleId3, flag).block();
 
     // You only get 1 point for this module
     scoringService.setModuleScore(moduleId3, 0, 1).block();
