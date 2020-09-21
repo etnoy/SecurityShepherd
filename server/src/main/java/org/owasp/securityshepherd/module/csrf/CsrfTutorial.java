@@ -78,10 +78,10 @@ public class CsrfTutorial extends AbstractModule {
 
     return pseudonym
         .flatMap(p -> csrfService.validate(p, this.moduleId))
-        .filter(isActive -> isActive == true)
+        .filter(isActive -> isActive)
         .flatMap(isActive -> resultWithFlag)
         .switchIfEmpty(resultWithoutFlag)
-        .map(builder -> builder.build());
+        .map(CsrfTutorialResultBuilder::build);
   }
 
   public Mono<CsrfTutorialActivationResult> activate(final long userId, final String target) {
