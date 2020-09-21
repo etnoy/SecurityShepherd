@@ -36,7 +36,6 @@ export class CsrfTutorialComponent implements OnInit {
 
   ngOnInit(): void {
     this.loading = true;
-    console.log(this.module.parameters);
     if (
       !Array.isArray(this.module.parameters) ||
       !this.module.parameters.length
