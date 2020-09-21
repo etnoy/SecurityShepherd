@@ -29,7 +29,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.owasp.securityshepherd.crypto.CryptoService;
-import org.owasp.securityshepherd.crypto.KeyService;
 import org.owasp.securityshepherd.exception.InvalidFlagStateException;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
@@ -38,6 +37,8 @@ import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.service.ConfigurationService;
 import org.owasp.securityshepherd.user.UserService;
+
+import com.google.common.io.BaseEncoding;
 
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
@@ -60,8 +61,6 @@ class FlagHandlerTest {
   @Mock private UserService userService;
 
   @Mock private ConfigurationService configurationService;
-
-  @Mock private KeyService keyService;
 
   @Mock private CryptoService cryptoService;
 
@@ -93,40 +92,44 @@ class FlagHandlerTest {
   }
 
   @Test
-  void getDynamicFlag_FlagIsSet_ReturnsFlag() {
+  void getDynamicFlag_DynamicFlag_ReturnsFlag() {
     final Module mockModule = mock(Module.class);
 
     final long mockModuleId = 76;
     final long mockUserId = 785;
 
+    final byte[] mockedServerKey = {
+      -118, 17, 4, -35, 17, -3, -94, 0, -72, -17, 65, -127, 12, 82, 9, 29
+    };
+
     final byte[] mockedUserKey = {
       -108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62, 9, 19
     };
-    final byte[] mockedServerKey = {
-      -118, 9, -7, -35, 17, -116, -94, 0, -32, -117, 65, -127, 12, 82, 9, 29
+    final byte[] mockedModuleKey = {
+      -118, 9, -7, -35, 15, -116, -94, 0, -32, -117, 65, -127, 12, 82, 97, 19
     };
-    final byte[] mockedTotalKey = {
-      -108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62, 9, 19, -118, 9, -7, -35, 17,
-      -116, -94, 0, -32, -117, 65, -127, 12, 82, 9, 29
-    };
+
     final byte[] mockedHmacOutput = {
       -128, 1, -7, -35, 15, -116, -94, 0, -32, -117, 115, -127, 12, 82, 97, 19
     };
 
-    final String mockedSalt = "ZrLBRsS0QfL5TDz5";
-    final String correctFlag = "thisistheoutputtedflag";
+    final byte[] mockedTotalKey = {
+      -108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62, 9, 19, -118, 9, -7, -35, 15,
+      -116, -94, 0, -32, -117, 65, -127, 12, 82, 97, 19, 102, 108, 97, 103
+    };
+    final String correctFlag =
+        BaseEncoding.base32().lowerCase().omitPadding().encode(mockedHmacOutput);
 
     when(moduleService.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
 
     when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
     when(configurationService.getServerKey()).thenReturn(Mono.just(mockedServerKey));
-    when(mockModule.getKey()).thenReturn(mockedSalt);
+    when(mockModule.getKey()).thenReturn(mockedModuleKey);
 
     when(configurationService.getServerKey()).thenReturn(Mono.just(mockedServerKey));
 
-    when(cryptoService.hmac("Hmac512", mockedTotalKey, mockedSalt.getBytes()))
+    when(cryptoService.hmac("HmacSHA512", mockedServerKey, mockedTotalKey))
         .thenReturn(mockedHmacOutput);
-    when(keyService.bytesToHexString(mockedHmacOutput)).thenReturn(correctFlag);
 
     StepVerifier.create(flagHandler.getDynamicFlag(mockUserId, mockModuleId))
         .expectNext(correctFlag)
@@ -141,31 +144,7 @@ class FlagHandlerTest {
 
     verify(configurationService, times(1)).getServerKey();
 
-    verify(cryptoService, times(1)).hmac("Hmac512", mockedTotalKey, mockedSalt.getBytes());
-  }
-
-  @Test
-  void getDynamicFlag_FlagNotEnabled_ReturnsInvalidFlagStateException() {
-    final long mockModuleId = 440;
-    final long mockUserId = 332;
-
-    final Module mockModule = mock(Module.class);
-
-    final byte[] mockedUserKey = {
-      -108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62, 9, 19
-    };
-    final byte[] mockedServerKey = {
-      -118, 9, -7, -35, 17, -116, -94, 0, -32, -117, 65, -127, 12, 82, 9, 29
-    };
-
-    when(moduleService.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
-
-    when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
-    when(configurationService.getServerKey()).thenReturn(Mono.just(mockedServerKey));
-
-    StepVerifier.create(flagHandler.getDynamicFlag(mockUserId, mockModuleId))
-        .expectError(InvalidFlagStateException.class)
-        .verify();
+    verify(cryptoService, times(1)).hmac("HmacSHA512", mockedServerKey, mockedTotalKey);
   }
 
   @Test
@@ -205,9 +184,7 @@ class FlagHandlerTest {
   @BeforeEach
   private void setUp() {
     // Set up the system under test
-    flagHandler =
-        new FlagHandler(
-            moduleService, userService, configurationService, cryptoService, keyService);
+    flagHandler = new FlagHandler(moduleService, userService, configurationService, cryptoService);
   }
 
   @Test
@@ -216,26 +193,31 @@ class FlagHandlerTest {
 
     final long mockUserId = 158;
     final long mockModuleId = 184;
-    final String salt = "salt";
-    final String validFlag = "thisisavalidflag";
+    final byte[] mockedServerKey = {
+      -118, 17, 4, -35, 17, -3, -94, 0, -72, -17, 65, -127, 12, 82, 9, 29
+    };
 
     final byte[] mockedUserKey = {
       -108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62, 9, 19
     };
-    final byte[] mockedServerKey = {
+    final byte[] mockedModuleKey = {
       -118, 9, -7, -35, 15, -116, -94, 0, -32, -117, 65, -127, 12, 82, 97, 19
     };
+
     final byte[] mockedHmacOutput = {
       -128, 1, -7, -35, 15, -116, -94, 0, -32, -117, 115, -127, 12, 82, 97, 19
     };
 
     final byte[] mockedTotalKey = {
       -108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62, 9, 19, -118, 9, -7, -35, 15,
-      -116, -94, 0, -32, -117, 65, -127, 12, 82, 97, 19
+      -116, -94, 0, -32, -117, 65, -127, 12, 82, 97, 19, 102, 108, 97, 103
     };
 
+    final String validFlag =
+        BaseEncoding.base32().lowerCase().omitPadding().encode(mockedHmacOutput);
+
     when(mockModule.isFlagStatic()).thenReturn(false);
-    when(mockModule.getKey()).thenReturn(salt);
+    when(mockModule.getKey()).thenReturn(mockedModuleKey);
 
     when(userService.findDisplayNameById(mockUserId)).thenReturn(Mono.just("MockUser"));
     when(mockModule.getName()).thenReturn("TestModule");
@@ -244,11 +226,10 @@ class FlagHandlerTest {
 
     when(configurationService.getServerKey()).thenReturn(Mono.just(mockedServerKey));
 
-    when(cryptoService.hmac("Hmac512", mockedTotalKey, salt.getBytes()))
+    when(cryptoService.hmac("HmacSHA512", mockedServerKey, mockedTotalKey))
         .thenReturn(mockedHmacOutput);
 
     when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
-    when(keyService.bytesToHexString(mockedHmacOutput)).thenReturn(validFlag);
 
     StepVerifier.create(flagHandler.verifyFlag(mockUserId, mockModuleId, validFlag))
         .expectNext(true)
@@ -260,7 +241,7 @@ class FlagHandlerTest {
     verify(mockModule, times(2)).getKey();
     verify(mockModule, never()).getId();
     verify(configurationService, atLeast(1)).getServerKey();
-    verify(cryptoService, atLeast(1)).hmac("Hmac512", mockedTotalKey, salt.getBytes());
+    verify(cryptoService, atLeast(1)).hmac("HmacSHA512", mockedServerKey, mockedTotalKey);
     verify(userService, atLeast(1)).findKeyById(mockUserId);
   }
 
@@ -278,7 +259,7 @@ class FlagHandlerTest {
     when(mockModule.getName()).thenReturn("TestModule");
 
     when(mockModule.isFlagStatic()).thenReturn(true);
-    when(mockModule.getKey()).thenReturn(validStaticFlag);
+    when(mockModule.getStaticFlag()).thenReturn(validStaticFlag);
 
     StepVerifier.create(flagHandler.verifyFlag(mockUserId, mockModuleId, validStaticFlag))
         .expectNext(true)
@@ -288,11 +269,11 @@ class FlagHandlerTest {
     verify(moduleService, times(1)).findById(mockModuleId);
 
     verify(mockModule, times(2)).isFlagStatic();
-    verify(mockModule, times(2)).getKey();
+    verify(mockModule, times(2)).getStaticFlag();
   }
 
   @Test
-  void verifyFlag_CorrectLowerCaseFlag_ReturnsTrue() {
+  void verifyFlag_CorrectLowerCaseStaticFlag_ReturnsTrue() {
     final long mockUserId = 594;
     final long mockModuleId = 769;
     final String validStaticFlag = "validFlagWithUPPERCASEandlowercase";
@@ -305,7 +286,7 @@ class FlagHandlerTest {
     when(mockModule.getName()).thenReturn("TestModule");
 
     when(mockModule.isFlagStatic()).thenReturn(true);
-    when(mockModule.getKey()).thenReturn(validStaticFlag);
+    when(mockModule.getStaticFlag()).thenReturn(validStaticFlag);
 
     StepVerifier.create(
             flagHandler.verifyFlag(mockUserId, mockModuleId, validStaticFlag.toLowerCase()))
@@ -316,11 +297,11 @@ class FlagHandlerTest {
     verify(moduleService, times(1)).findById(mockModuleId);
 
     verify(mockModule, times(2)).isFlagStatic();
-    verify(mockModule, times(2)).getKey();
+    verify(mockModule, times(2)).getStaticFlag();
   }
 
   @Test
-  void verifyFlag_CorrectUpperCaseFlag_ReturnsTrue() {
+  void verifyFlag_CorrectUpperCaseStaticFlag_ReturnsTrue() {
     final long mockUserId = 594;
     final long mockModuleId = 769;
     final String validStaticFlag = "validFlagWithUPPERCASEandlowercase";
@@ -333,7 +314,7 @@ class FlagHandlerTest {
     when(mockModule.getName()).thenReturn("TestModule");
 
     when(mockModule.isFlagStatic()).thenReturn(true);
-    when(mockModule.getKey()).thenReturn(validStaticFlag);
+    when(mockModule.getStaticFlag()).thenReturn(validStaticFlag);
 
     StepVerifier.create(
             flagHandler.verifyFlag(mockUserId, mockModuleId, validStaticFlag.toUpperCase()))
@@ -344,7 +325,7 @@ class FlagHandlerTest {
     verify(moduleService, times(1)).findById(mockModuleId);
 
     verify(mockModule, times(2)).isFlagStatic();
-    verify(mockModule, times(2)).getKey();
+    verify(mockModule, times(2)).getStaticFlag();
   }
 
   @Test
@@ -353,25 +334,29 @@ class FlagHandlerTest {
 
     final long mockUserId = 193;
     final long mockModuleId = 34;
-    final String validFlag = "validFlag";
+    final byte[] mockedServerKey = {
+      -118, 17, 4, -35, 17, -3, -94, 0, -72, -17, 65, -127, 12, 82, 9, 29
+    };
 
     final byte[] mockedUserKey = {
       -108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62, 9, 19
     };
-    final byte[] mockedServerKey = {
+    final byte[] mockedModuleKey = {
       -118, 9, -7, -35, 15, -116, -94, 0, -32, -117, 65, -127, 12, 82, 97, 19
     };
+
     final byte[] mockedHmacOutput = {
       -128, 1, -7, -35, 15, -116, -94, 0, -32, -117, 115, -127, 12, 82, 97, 19
     };
 
     final byte[] mockedTotalKey = {
       -108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62, 9, 19, -118, 9, -7, -35, 15,
-      -116, -94, 0, -32, -117, 65, -127, 12, 82, 97, 19
+      -116, -94, 0, -32, -117, 65, -127, 12, 82, 97, 19, 102, 108, 97, 103
     };
 
     when(mockModule.isFlagStatic()).thenReturn(false);
-    when(mockModule.getKey()).thenReturn(validFlag);
+    when(mockModule.getKey()).thenReturn(mockedModuleKey);
+    when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
 
     when(userService.findDisplayNameById(mockUserId)).thenReturn(Mono.just("MockUser"));
     when(mockModule.getName()).thenReturn("TestModule");
@@ -380,12 +365,8 @@ class FlagHandlerTest {
 
     when(configurationService.getServerKey()).thenReturn(Mono.just(mockedServerKey));
 
-    when(cryptoService.hmac("Hmac512", mockedTotalKey, validFlag.getBytes()))
+    when(cryptoService.hmac("HmacSHA512", mockedServerKey, mockedTotalKey))
         .thenReturn(mockedHmacOutput);
-
-    when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
-
-    when(keyService.bytesToHexString(mockedHmacOutput)).thenReturn(validFlag);
 
     StepVerifier.create(flagHandler.verifyFlag(mockUserId, mockModuleId, ""))
         // We expect this to return false
@@ -401,9 +382,8 @@ class FlagHandlerTest {
     verify(mockModule, times(2)).getKey();
     verify(mockModule, never()).getId();
     verify(configurationService, atLeast(1)).getServerKey();
-    verify(cryptoService, times(2)).hmac("Hmac512", mockedTotalKey, validFlag.getBytes());
+    verify(cryptoService, times(2)).hmac("HmacSHA512", mockedServerKey, mockedTotalKey);
     verify(userService, times(2)).findKeyById(mockUserId);
-    verify(keyService, times(2)).bytesToHexString(mockedHmacOutput);
   }
 
   @Test
@@ -417,7 +397,7 @@ class FlagHandlerTest {
     when(moduleService.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
 
     when(mockModule.isFlagStatic()).thenReturn(true);
-    when(mockModule.getKey()).thenReturn(validStaticFlag);
+    when(mockModule.getStaticFlag()).thenReturn(validStaticFlag);
 
     when(userService.findDisplayNameById(mockUserId)).thenReturn(Mono.just("MockUser"));
     when(mockModule.getName()).thenReturn("TestModule");
@@ -430,24 +410,7 @@ class FlagHandlerTest {
     verify(moduleService, times(1)).findById(mockModuleId);
 
     verify(mockModule, times(2)).isFlagStatic();
-    verify(mockModule, times(2)).getKey();
-  }
-
-  @Test
-  void verifyFlag_FlagNotEnabled_ReturnsInvalidFlagStateException() {
-    final long mockUserId = 515;
-    final long mockModuleId = 161;
-
-    final Module mockModule = mock(Module.class);
-
-    when(moduleService.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
-
-    when(userService.findDisplayNameById(mockUserId)).thenReturn(Mono.just("MockUser"));
-    when(mockModule.getName()).thenReturn("TestModule");
-
-    StepVerifier.create(flagHandler.verifyFlag(mockUserId, mockModuleId, "flag"))
-        .expectError(InvalidFlagStateException.class)
-        .verify();
+    verify(mockModule, times(2)).getStaticFlag();
   }
 
   @Test
@@ -476,25 +439,28 @@ class FlagHandlerTest {
 
     final long mockUserId = 193;
     final long mockModuleId = 34;
-    final String validFlag = "validFlag";
+    final byte[] mockedServerKey = {
+      -118, 17, 4, -35, 17, -3, -94, 0, -72, -17, 65, -127, 12, 82, 9, 29
+    };
 
     final byte[] mockedUserKey = {
       -108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62, 9, 19
     };
-    final byte[] mockedServerKey = {
+    final byte[] mockedModuleKey = {
       -118, 9, -7, -35, 15, -116, -94, 0, -32, -117, 65, -127, 12, 82, 97, 19
     };
+
     final byte[] mockedHmacOutput = {
       -128, 1, -7, -35, 15, -116, -94, 0, -32, -117, 115, -127, 12, 82, 97, 19
     };
 
     final byte[] mockedTotalKey = {
       -108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62, 9, 19, -118, 9, -7, -35, 15,
-      -116, -94, 0, -32, -117, 65, -127, 12, 82, 97, 19
+      -116, -94, 0, -32, -117, 65, -127, 12, 82, 97, 19, 102, 108, 97, 103
     };
 
     when(mockModule.isFlagStatic()).thenReturn(false);
-    when(mockModule.getKey()).thenReturn(validFlag);
+    when(mockModule.getKey()).thenReturn(mockedModuleKey);
 
     when(userService.findDisplayNameById(mockUserId)).thenReturn(Mono.just("MockUser"));
     when(mockModule.getName()).thenReturn("TestModule");
@@ -503,12 +469,10 @@ class FlagHandlerTest {
 
     when(configurationService.getServerKey()).thenReturn(Mono.just(mockedServerKey));
 
-    when(cryptoService.hmac("Hmac512", mockedTotalKey, validFlag.getBytes()))
+    when(cryptoService.hmac("HmacSHA512", mockedServerKey, mockedTotalKey))
         .thenReturn(mockedHmacOutput);
 
     when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
-
-    when(keyService.bytesToHexString(mockedHmacOutput)).thenReturn(validFlag);
 
     StepVerifier.create(flagHandler.verifyFlag(mockUserId, mockModuleId, "invalidFlag"))
         //
@@ -522,7 +486,7 @@ class FlagHandlerTest {
     verify(mockModule, times(2)).getKey();
     verify(mockModule, never()).getId();
     verify(configurationService, atLeast(1)).getServerKey();
-    verify(cryptoService, atLeast(1)).hmac("Hmac512", mockedTotalKey, validFlag.getBytes());
+    verify(cryptoService, atLeast(1)).hmac("HmacSHA512", mockedServerKey, mockedTotalKey);
     verify(userService, atLeast(1)).findKeyById(mockUserId);
   }
 
@@ -537,7 +501,7 @@ class FlagHandlerTest {
     when(moduleService.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
 
     when(mockModule.isFlagStatic()).thenReturn(true);
-    when(mockModule.getKey()).thenReturn(validStaticFlag);
+    when(mockModule.getStaticFlag()).thenReturn(validStaticFlag);
 
     when(userService.findDisplayNameById(mockUserId)).thenReturn(Mono.just("MockUser"));
     when(mockModule.getName()).thenReturn("TestModule");
@@ -550,6 +514,6 @@ class FlagHandlerTest {
     verify(moduleService, times(1)).findById(mockModuleId);
 
     verify(mockModule, times(2)).isFlagStatic();
-    verify(mockModule, times(2)).getKey();
+    verify(mockModule, times(2)).getStaticFlag();
   }
 }

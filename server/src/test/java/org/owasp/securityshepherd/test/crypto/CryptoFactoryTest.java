@@ -18,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 import javax.crypto.Mac;
@@ -44,23 +45,23 @@ class CryptoFactoryTest {
   CryptoFactory cryptoFactory;
 
   @Test
-  void getPrng_ReturnsSecureRandomInstance() throws Exception {
+  void getPrng_ReturnsSecureRandomInstance() throws NoSuchAlgorithmException {
     assertThat(cryptoFactory.getPrng()).isInstanceOf(SecureRandom.class);
   }
 
   @Test
   void getHmac_ReturnsMacInstance() throws Exception {
-    assertThat(cryptoFactory.getHmac("Hmac512")).isInstanceOf(Mac.class);
+    assertThat(cryptoFactory.getHmac("HmacSHA512")).isInstanceOf(Mac.class);
   }
 
   @Test
-  void getHmacKey_ValidKey_ReturnsMacInstance() throws Exception {
+  void getHmacKey_ValidKey_ReturnsMacInstance() {
     final byte[] key = {-91, -79, 67};
-    assertThat(cryptoFactory.getSecretKeySpec("Hmac512", key)).isInstanceOf(Key.class);
+    assertThat(cryptoFactory.getSecretKeySpec("HmacSHA512", key)).isInstanceOf(Key.class);
   }
 
   @Test
-  void getHmacKey_NullKey_ThrowsIllegalArgumentException() throws Exception {
+  void getHmacKey_NullKey_ThrowsIllegalArgumentException() {
     assertThatExceptionOfType(IllegalArgumentException.class)
         .isThrownBy(() -> cryptoFactory.getSecretKeySpec("Hmac512", null));
   }

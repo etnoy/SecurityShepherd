@@ -122,6 +122,9 @@ class ModuleServiceTest {
 
     final long mockModuleId = 390;
 
+    final byte[] randomBytes = {120, 56, 111};
+    when(keyService.generateRandomBytes(16)).thenReturn(randomBytes);
+
     when(moduleRepository.save(any(Module.class)))
         .thenAnswer(user -> Mono.just(user.getArgument(0, Module.class).withId(mockModuleId)));
 
@@ -151,6 +154,9 @@ class ModuleServiceTest {
     final String shortName = "test-module";
 
     final long mockModuleId = 390;
+
+    final byte[] randomBytes = {120, 56, 111};
+    when(keyService.generateRandomBytes(16)).thenReturn(randomBytes);
 
     when(moduleRepository.save(any(Module.class)))
         .thenAnswer(user -> Mono.just(user.getArgument(0, Module.class).withId(mockModuleId)));
@@ -193,6 +199,9 @@ class ModuleServiceTest {
     when(mockSubmittableModule.getName()).thenReturn(name);
     when(mockSubmittableModule.getShortName()).thenReturn(shortName);
     when(mockSubmittableModule.getDescription()).thenReturn(description);
+
+    final byte[] randomBytes = {120, 56, 111};
+    when(keyService.generateRandomBytes(16)).thenReturn(randomBytes);
 
     StepVerifier.create(moduleService.create(mockSubmittableModule))
         .assertNext(
@@ -377,7 +386,7 @@ class ModuleServiceTest {
 
   @Test
   void setDynamicFlag_FlagPreviouslySet_ReturnPreviousFlag() {
-    final String newFlag = "uVR6jeaKqtMD6CPg";
+    final byte[] newFlag = {-118, 17, 4, -35, 17, -3, -94, 0, -72, -17, 65, -127, 12, 82, 9, 29};
 
     final Module mockModuleWithoutStaticFlag = mock(Module.class);
     final Module mockModuleWithStaticFlag = mock(Module.class);
@@ -385,8 +394,7 @@ class ModuleServiceTest {
 
     final long mockModuleId = 517;
 
-    when(moduleRepository.findById(mockModuleId))
-        .thenReturn(Mono.just(mockModuleWithoutStaticFlag));
+    when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.just(mockModuleWithStaticFlag));
 
     when(mockModuleWithStaticFlag.withFlagStatic(false)).thenReturn(mockModuleWithDynamicFlag);
 
@@ -487,28 +495,31 @@ class ModuleServiceTest {
   }
 
   @Test
-  void setStaticFlag_ValidFlag_SetsFlagToStatic() {
-    final String exactFlag = "setStaticFlag_ValidFlag_flag";
+  void setStaticFlag_ValidStaticFlag_SetsFlagToStatic() {
+    final String staticFlag = "setStaticFlag_ValidStaticFlag_SetsFlagToStatic";
 
     final Module mockModule = mock(Module.class);
     final Module mockModuleWithStaticFlag = mock(Module.class);
+    final Module mockModuleWithStaticFlagEnabled = mock(Module.class);
 
     final long mockModuleId = 239;
 
-    when(mockModule.withFlagStatic(true)).thenReturn(mockModuleWithStaticFlag);
-
-    when(mockModuleWithStaticFlag.isFlagStatic()).thenReturn(true);
-    when(mockModuleWithStaticFlag.getKey()).thenReturn(exactFlag);
-
     when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
-    when(moduleRepository.save(mockModuleWithStaticFlag))
-        .thenReturn(Mono.just(mockModuleWithStaticFlag));
+    when(mockModule.withFlagStatic(true)).thenReturn(mockModuleWithStaticFlag);
+    when(mockModuleWithStaticFlag.withStaticFlag(staticFlag))
+        .thenReturn(mockModuleWithStaticFlagEnabled);
 
-    StepVerifier.create(moduleService.setStaticFlag(mockModuleId, exactFlag))
+    when(mockModuleWithStaticFlagEnabled.isFlagStatic()).thenReturn(true);
+    when(mockModuleWithStaticFlagEnabled.getStaticFlag()).thenReturn(staticFlag);
+
+    when(moduleRepository.save(mockModuleWithStaticFlagEnabled))
+        .thenReturn(Mono.just(mockModuleWithStaticFlagEnabled));
+
+    StepVerifier.create(moduleService.setStaticFlag(mockModuleId, staticFlag))
         .assertNext(
             module -> {
               assertThat(module.isFlagStatic()).isTrue();
-              assertThat(module.getKey()).isEqualTo(exactFlag);
+              assertThat(module.getStaticFlag()).isEqualTo(staticFlag);
             })
         .expectComplete()
         .verify();
@@ -519,7 +530,7 @@ class ModuleServiceTest {
 
     ArgumentCaptor<Module> saveArgument = ArgumentCaptor.forClass(Module.class);
     verify(moduleRepository, times(1)).save(saveArgument.capture());
-    assertThat(saveArgument.getValue().getKey()).isEqualTo(exactFlag);
+    assertThat(saveArgument.getValue().getStaticFlag()).isEqualTo(staticFlag);
   }
 
   @Test

@@ -15,7 +15,6 @@
 package org.owasp.securityshepherd.module;
 
 import org.owasp.securityshepherd.crypto.CryptoService;
-import org.owasp.securityshepherd.crypto.KeyService;
 import org.owasp.securityshepherd.exception.InvalidFlagStateException;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
@@ -44,8 +43,6 @@ public final class FlagHandler {
 
   private final CryptoService cryptoService;
 
-  private final KeyService keyService;
-
   public Mono<String> getSaltedHmac(
       final long userId, final long moduleId, final String prefix, final String algorithm) {
     if (userId <= 0) {
@@ -68,19 +65,18 @@ public final class FlagHandler {
                 Mono.error(
                     new InvalidFlagStateException("Cannot get dynamic flag if flag is static")))
             // Get module key and convert to bytes
-            .map(Module::getKey)
-            .map(String::getBytes);
+            .map(Module::getKey);
 
     final Mono<byte[]> userKey = userService.findKeyById(userId);
 
     final Mono<byte[]> serverKey = configurationService.getServerKey();
 
-    return moduleKey
-        .zipWith(userKey)
+    return userKey
+        .zipWith(moduleKey)
         .map(tuple -> Bytes.concat(tuple.getT1(), tuple.getT2(), prefix.getBytes()))
         .zipWith(serverKey)
         .map(tuple -> cryptoService.hmac(algorithm, tuple.getT2(), tuple.getT1()))
-        .map(BaseEncoding.base32()::encode);
+        .map(BaseEncoding.base32().lowerCase().omitPadding()::encode);
   }
 
   public Mono<Boolean> verifyFlag(

@@ -90,6 +90,8 @@ class StartupRunnerTest {
 
     when(xssTutorial.initialize()).thenReturn(Mono.just(1L));
     when(sqlInjectionTutorial.initialize()).thenReturn(Mono.just(2L));
+    when(csrfTutorial.initialize()).thenReturn(Mono.just(3L));
+
     when(userService.create("TestUser1")).thenReturn(Mono.just(2L));
     when(userService.create("TestUser2")).thenReturn(Mono.just(3L));
     when(userService.create("TestUser3")).thenReturn(Mono.just(4L));

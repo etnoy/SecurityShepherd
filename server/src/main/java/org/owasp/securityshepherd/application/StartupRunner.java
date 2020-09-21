@@ -78,11 +78,6 @@ public class StartupRunner implements ApplicationRunner {
             "Admin", "admin", "$2y$08$WpfUVZLcXNNpmM2VwSWlbe25dae.eEC99AOAVUiU5RaJmfFsE9B5G")
         .block();
 
-    userService
-        .createPasswordUser(
-            "Csrf dummy", "dummy", "$2y$08$WpfUVZLcXNNpmM2VwSWlbe25dae.eEC99AOAVUiU5RaJmfFsE9B5G")
-        .block();
-
     xssTutorial.initialize().block();
     sqlInjectionTutorial.initialize().block();
     csrfTutorial.initialize().block();

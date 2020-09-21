@@ -49,7 +49,7 @@ public class Module implements Serializable {
 
   @Column("module_key")
   @NonNull
-  private String key;
+  private byte[] key;
 
   @JsonProperty("isOpen")
   private boolean isOpen;

@@ -48,8 +48,8 @@ public final class ModuleService {
         submittableModule.getDescription());
   }
 
-  public Mono<Module> create(final String moduleName, final String url) {
-    return this.create(moduleName, url, null);
+  public Mono<Module> create(final String moduleName, final String shortName) {
+    return this.create(moduleName, shortName, null);
   }
 
   public Mono<Module> create(
@@ -62,7 +62,7 @@ public final class ModuleService {
       return Mono.error(new EmptyModuleNameException("Module name cannot be empty"));
     }
 
-    log.info("Creating new module with name " + moduleName + " and url " + shortName);
+    log.info("Creating new module with name " + moduleName + " and short name " + shortName);
 
     return Mono.just(moduleName)
         .filterWhen(this::doesNotExistByName)
@@ -77,7 +77,7 @@ public final class ModuleService {
                     .name(name)
                     .description(description)
                     .shortName(shortName)
-                    .key(keyService.generateRandomString(16))
+                    .key(keyService.generateRandomBytes(16))
                     .build())
         .flatMap(moduleRepository::save);
   }
