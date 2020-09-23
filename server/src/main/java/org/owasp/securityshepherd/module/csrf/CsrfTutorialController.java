@@ -28,22 +28,19 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @RequestMapping(path = "/api/v1/module/csrf-tutorial")
 public class CsrfTutorialController {
-  private final CsrfTutorial csrfTutorial;
+	private final CsrfTutorial csrfTutorial;
 
-  private final ControllerAuthentication controllerAuthentication;
+	private final ControllerAuthentication controllerAuthentication;
 
-  @GetMapping(path = "/")
-  @PreAuthorize("hasRole('ROLE_USER')")
-  public Mono<CsrfTutorialResult> tutorial() {
-    return controllerAuthentication.getUserId().flatMap(csrfTutorial::getTutorial);
-  }
+	@GetMapping(path = "/")
+	@PreAuthorize("hasRole('ROLE_USER')")
+	public Mono<CsrfTutorialResult> tutorial() {
+		return controllerAuthentication.getUserId().flatMap(csrfTutorial::getTutorial);
+	}
 
-  @GetMapping(value = {"/activate/{pseudonym}"})
-  @PreAuthorize("hasRole('ROLE_USER')")
-  public Mono<CsrfTutorialActivationResult> activate(
-      @PathVariable(value = "pseudonym") String pseudonym) {
-    return controllerAuthentication
-        .getUserId()
-        .flatMap(userId -> csrfTutorial.attack(userId, pseudonym));
-  }
+	@GetMapping(value = { "/activate/{pseudonym}" })
+	@PreAuthorize("hasRole('ROLE_USER')")
+	public Mono<CsrfTutorialResult> activate(@PathVariable(value = "pseudonym") String pseudonym) {
+		return controllerAuthentication.getUserId().flatMap(userId -> csrfTutorial.attack(userId, pseudonym));
+	}
 }

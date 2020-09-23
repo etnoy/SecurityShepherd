@@ -41,136 +41,128 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@ConditionalOnProperty(
-    prefix = "application.runner",
-    value = "enabled",
-    havingValue = "true",
-    matchIfMissing = true)
+@ConditionalOnProperty(prefix = "application.runner", value = "enabled", havingValue = "true", matchIfMissing = true)
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class StartupRunner implements ApplicationRunner {
 
-  private final UserService userService;
+	private final UserService userService;
 
-  private final ModuleService moduleService;
+	private final ModuleService moduleService;
 
-  private final XssTutorial xssTutorial;
+	private final XssTutorial xssTutorial;
 
-  private final SqlInjectionTutorial sqlInjectionTutorial;
+	private final SqlInjectionTutorial sqlInjectionTutorial;
 
-  private final CsrfTutorial csrfTutorial;
+	private final CsrfTutorial csrfTutorial;
 
-  private final SubmissionService submissionService;
+	private final SubmissionService submissionService;
 
-  private final CorrectionService correctionService;
+	private final CorrectionService correctionService;
 
-  private final ScoreService scoringService;
+	private final ScoreService scoringService;
 
-  @Autowired private Clock clock;
+	@Autowired
+	private Clock clock;
 
-  @Override
-  public void run(ApplicationArguments args) {
-    log.info("Running StartupRunner");
-    // Create a default admin account
-    userService
-        .createPasswordUser(
-            "Admin", "admin", "$2y$08$WpfUVZLcXNNpmM2VwSWlbe25dae.eEC99AOAVUiU5RaJmfFsE9B5G")
-        .block();
+	@Override
+	public void run(ApplicationArguments args) {
+		log.info("Running StartupRunner");
+		// Create a default admin account
+		userService.createPasswordUser("Admin", "admin", "$2y$08$WpfUVZLcXNNpmM2VwSWlbe25dae.eEC99AOAVUiU5RaJmfFsE9B5G")
+				.block();
 
-    xssTutorial.initialize().block();
-    sqlInjectionTutorial.initialize().block();
-    csrfTutorial.initialize().block();
+		userService.createPasswordUser("dummy", "dummy", "$2y$08$WpfUVZLcXNNpmM2VwSWlbe25dae.eEC99AOAVUiU5RaJmfFsE9B5G")
+				.block();
 
-    // We'll use this exact flag
+		xssTutorial.initialize().block();
+		sqlInjectionTutorial.initialize().block();
+		csrfTutorial.initialize().block();
 
-    final String flag = "itsaflag";
+		// We'll use this exact flag
 
-    // And this will be an incorrect flag
-    final String wrongFlag = "itsanincorrectflag";
+		final String flag = "itsaflag";
 
-    // Create six users and store their ids
-    List<Long> userIds = new ArrayList<>();
-    userIds.add(userService.create("TestUser1").block());
-    userIds.add(userService.create("TestUser2").block());
-    userIds.add(userService.create("TestUser3").block());
-    userIds.add(userService.create("TestUser4").block());
-    userIds.add(userService.create("TestUser5").block());
-    userIds.add(userService.create("TestUser6").block());
-    userIds.add(userService.create("TestUser7").block());
-    userIds.add(userService.create("TestUser8").block());
+		// And this will be an incorrect flag
+		final String wrongFlag = "itsanincorrectflag";
 
-    // Create a module to submit to
-    final long moduleId = moduleService.create("ScoreTestModule", "score-test").block().getId();
+		// Create six users and store their ids
+		List<Long> userIds = new ArrayList<>();
+		userIds.add(userService.create("TestUser1").block());
+		userIds.add(userService.create("TestUser2").block());
+		userIds.add(userService.create("TestUser3").block());
+		userIds.add(userService.create("TestUser4").block());
+		userIds.add(userService.create("TestUser5").block());
+		userIds.add(userService.create("TestUser6").block());
+		userIds.add(userService.create("TestUser7").block());
+		userIds.add(userService.create("TestUser8").block());
 
-    // Set that module to have an exact flag
-    moduleService.setStaticFlag(moduleId, flag).block();
+		// Create a module to submit to
+		final long moduleId = moduleService.create("ScoreTestModule", "score-test").block().getId();
 
-    // Set scoring levels for module1
-    scoringService.setModuleScore(moduleId, 0, 100).block();
+		// Set that module to have an exact flag
+		moduleService.setStaticFlag(moduleId, flag).block();
 
-    scoringService.setModuleScore(moduleId, 1, 50).block();
-    scoringService.setModuleScore(moduleId, 2, 40).block();
-    scoringService.setModuleScore(moduleId, 3, 30).block();
-    scoringService.setModuleScore(moduleId, 4, 20).block();
+		// Set scoring levels for module1
+		scoringService.setModuleScore(moduleId, 0, 100).block();
 
-    // Create some other modules we aren't interested in
-    final long moduleId2 = moduleService.create("AnotherModule", "another-module").block().getId();
-    moduleService.setStaticFlag(moduleId2, flag).block();
+		scoringService.setModuleScore(moduleId, 1, 50).block();
+		scoringService.setModuleScore(moduleId, 2, 40).block();
+		scoringService.setModuleScore(moduleId, 3, 30).block();
+		scoringService.setModuleScore(moduleId, 4, 20).block();
 
-    // Set scoring levels for module2
-    scoringService.setModuleScore(moduleId2, 0, 50).block();
-    scoringService.setModuleScore(moduleId2, 1, 30).block();
-    scoringService.setModuleScore(moduleId2, 2, 10).block();
+		// Create some other modules we aren't interested in
+		final long moduleId2 = moduleService.create("AnotherModule", "another-module").block().getId();
+		moduleService.setStaticFlag(moduleId2, flag).block();
 
-    final long moduleId3 =
-        moduleService.create("IrrelevantModule", "irrelevant-module").block().getId();
-    moduleService.setStaticFlag(moduleId3, flag).block();
+		// Set scoring levels for module2
+		scoringService.setModuleScore(moduleId2, 0, 50).block();
+		scoringService.setModuleScore(moduleId2, 1, 30).block();
+		scoringService.setModuleScore(moduleId2, 2, 10).block();
 
-    // You only get 1 point for this module
-    scoringService.setModuleScore(moduleId3, 0, 1).block();
+		final long moduleId3 = moduleService.create("IrrelevantModule", "irrelevant-module").block().getId();
+		moduleService.setStaticFlag(moduleId3, flag).block();
 
-    // Create a fixed clock from which we will base our offset submission times
-    final Clock startTime = Clock.fixed(Instant.parse("2000-01-01T10:00:00.00Z"), ZoneId.of("Z"));
+		// You only get 1 point for this module
+		scoringService.setModuleScore(moduleId3, 0, 1).block();
 
-    // Create a list of times at which the above six users will submit their solutions
-    List<Integer> timeOffsets = Arrays.asList(3, 4, 1, 2, 3, 1, 0, 5);
+		// Create a fixed clock from which we will base our offset submission times
+		final Clock startTime = Clock.fixed(Instant.parse("2000-01-01T10:00:00.00Z"), ZoneId.of("Z"));
 
-    // The duration between times should be 1 day
-    final List<Clock> clocks =
-        timeOffsets
-            .stream()
-            .map(Duration::ofDays)
-            .map(duration -> Clock.offset(startTime, duration))
-            .collect(Collectors.toList());
+		// Create a list of times at which the above six users will submit their
+		// solutions
+		List<Integer> timeOffsets = Arrays.asList(3, 4, 1, 2, 3, 1, 0, 5);
 
-    final List<String> flags =
-        Arrays.asList(flag, flag, flag, wrongFlag, flag, flag, flag, wrongFlag);
+		// The duration between times should be 1 day
+		final List<Clock> clocks = timeOffsets.stream().map(Duration::ofDays)
+				.map(duration -> Clock.offset(startTime, duration)).collect(Collectors.toList());
 
-    // Iterate over the user ids and clocks at the same time
-    Iterator<Long> userIdIterator = userIds.iterator();
-    Iterator<Clock> clockIterator = clocks.iterator();
-    Iterator<String> flagIterator = flags.iterator();
+		final List<String> flags = Arrays.asList(flag, flag, flag, wrongFlag, flag, flag, flag, wrongFlag);
 
-    while (userIdIterator.hasNext() && clockIterator.hasNext() && flagIterator.hasNext()) {
-      // Recreate the submission service every time with a new clock
-      submissionService.setClock(clockIterator.next());
+		// Iterate over the user ids and clocks at the same time
+		Iterator<Long> userIdIterator = userIds.iterator();
+		Iterator<Clock> clockIterator = clocks.iterator();
+		Iterator<String> flagIterator = flags.iterator();
 
-      final Long currentUserId = userIdIterator.next();
-      final String currentFlag = flagIterator.next();
+		while (userIdIterator.hasNext() && clockIterator.hasNext() && flagIterator.hasNext()) {
+			// Recreate the submission service every time with a new clock
+			submissionService.setClock(clockIterator.next());
 
-      // Submit a new flag
-      submissionService.submit(currentUserId, moduleId, currentFlag).block();
-      submissionService.submit(currentUserId, moduleId2, currentFlag).block();
-      submissionService.submit(currentUserId, moduleId3, currentFlag).block();
-    }
+			final Long currentUserId = userIdIterator.next();
+			final String currentFlag = flagIterator.next();
 
-    final Clock correctionClock =
-        Clock.fixed(Instant.parse("2000-01-04T10:00:00.00Z"), ZoneId.of("Z"));
-    submissionService.setClock(correctionClock);
-    correctionService.submit(userIds.get(2), -1000, "Penalty for cheating").block();
-    submissionService.setClock(Clock.offset(correctionClock, Duration.ofHours(10)));
-    correctionService.submit(userIds.get(1), 100, "Thanks for the bribe").block();
-    submissionService.setClock(clock);
-  }
+			// Submit a new flag
+			submissionService.submit(currentUserId, moduleId, currentFlag).block();
+			submissionService.submit(currentUserId, moduleId2, currentFlag).block();
+			submissionService.submit(currentUserId, moduleId3, currentFlag).block();
+		}
+
+		final Clock correctionClock = Clock.fixed(Instant.parse("2000-01-04T10:00:00.00Z"), ZoneId.of("Z"));
+		submissionService.setClock(correctionClock);
+		correctionService.submit(userIds.get(2), -1000, "Penalty for cheating").block();
+		submissionService.setClock(Clock.offset(correctionClock, Duration.ofHours(10)));
+		correctionService.submit(userIds.get(1), 100, "Thanks for the bribe").block();
+		submissionService.setClock(clock);
+	}
 }

@@ -4,7 +4,6 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { Module } from 'src/app/model/module';
 import { AlertService } from 'src/app/service/alert.service';
 import { CsrfTutorialResult } from 'src/app/model/csrf-tutorial-result';
-import { CsrfTutorialActivationResult } from 'src/app/model/csrf-tutorial-activation-result';
 
 @Component({
   selector: 'app-csrf-injection-tutorial',
@@ -14,7 +13,6 @@ import { CsrfTutorialActivationResult } from 'src/app/model/csrf-tutorial-activa
 export class CsrfTutorialComponent implements OnInit {
   queryForm: FormGroup;
   tutorialResult: CsrfTutorialResult;
-  activationResult: CsrfTutorialActivationResult;
 
   errorResult: string;
   submitted = false;
@@ -58,14 +56,12 @@ export class CsrfTutorialComponent implements OnInit {
           this.alertService.clear();
           this.loading = false;
           this.submitted = true;
-          this.tutorialResult = null;
-          this.activationResult = data;
+          this.tutorialResult = data;
         },
         (error) => {
           this.loading = false;
           this.submitted = false;
           this.tutorialResult = null;
-          this.activationResult = null;
 
           this.errorResult = '';
           let msg = '';

@@ -1,5 +1,8 @@
 <h3>Csrf Tutorial</h3>
 <div *ngIf="tutorialResult">
+  <p *ngIf="tutorialResult.message">
+    {{ tutorialResult.message }}
+  </p>
   <p *ngIf="tutorialResult.pseudonym">
     Please visit
     <a
@@ -13,10 +16,4 @@
     Congratulations, flag is {{ tutorialResult.flag }}
   </p>
   <p *ngIf="tutorialResult.error">Error: {{ tutorialResult.error }}</p>
-</div>
-<div *ngIf="activationResult">
-  <p *ngIf="activationResult.message">
-    {{ activationResult.message }}
-  </p>
-  <p *ngIf="activationResult.error">Error: {{ activationResult.error }}</p>
 </div>

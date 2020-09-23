@@ -19,7 +19,6 @@ import org.owasp.securityshepherd.module.AbstractModule;
 import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleService;
-import org.owasp.securityshepherd.module.csrf.CsrfTutorialActivationResult.CsrfTutorialActivationResultBuilder;
 import org.owasp.securityshepherd.module.csrf.CsrfTutorialResult.CsrfTutorialResultBuilder;
 import org.springframework.stereotype.Component;
 
@@ -80,27 +79,25 @@ public class CsrfTutorial extends AbstractModule {
 				.map(CsrfTutorialResultBuilder::build);
 	}
 
-	public Mono<CsrfTutorialActivationResult> attack(final long userId, final String target) {
+	public Mono<CsrfTutorialResult> attack(final long userId, final String target) {
 		if (this.moduleId == null) {
 			return Mono.error(new ModuleNotInitializedException("Must initialize module first"));
 		}
 
-		CsrfTutorialActivationResultBuilder csrfTutorialActivationResultBuilder = CsrfTutorialActivationResult
-				.builder();
+		CsrfTutorialResultBuilder csrfTutorialResultBuilder = CsrfTutorialResult.builder();
 
 		log.debug(String.format("User %d is attacking csrf target %s", userId, target));
 
 		return csrfService.validatePseudonym(target, this.moduleId).flatMap(valid -> {
 			if (!valid) {
-				return Mono.just(csrfTutorialActivationResultBuilder.error("Unknown target ID").build());
+				return Mono.just(csrfTutorialResultBuilder.error("Unknown target ID").build());
 			} else {
 				return csrfService.getPseudonym(userId, this.moduleId).flatMap(p -> {
 					if (p.equals(target)) {
-						return Mono.just(
-								csrfTutorialActivationResultBuilder.error("You cannot activate yourself").build());
+						return Mono.just(csrfTutorialResultBuilder.error("You cannot activate yourself").build());
 					} else {
-						return csrfService.attack(target, this.moduleId).then(
-								Mono.just(csrfTutorialActivationResultBuilder.message("Thank you for voting").build()));
+						return csrfService.attack(target, this.moduleId)
+								.then(Mono.just(csrfTutorialResultBuilder.message("Thank you for voting").build()));
 					}
 				});
 			}
