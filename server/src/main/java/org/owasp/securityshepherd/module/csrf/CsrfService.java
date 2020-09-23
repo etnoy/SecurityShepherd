@@ -25,35 +25,28 @@ import reactor.core.publisher.Mono;
 @Component
 @RequiredArgsConstructor
 public class CsrfService {
-  private final CsrfVoteCounterRepository csrfVoteCounterRepository;
+	private final CsrfAttackRepository csrfAttackRepository;
 
-  private final FlagHandler flagHandler;
+	private final FlagHandler flagHandler;
 
-  public Mono<Void> activate(final String target, final long moduleId) {
-    return csrfVoteCounterRepository
-        .findByPseudonymAndModuleId(target, moduleId)
-        .map(counter -> counter.withIsActivated(true))
-        .flatMap(csrfVoteCounterRepository::save)
-        .then(Mono.empty());
-  }
+	public Mono<Void> attack(final String pseudonym, final long moduleId) {
+		return csrfAttackRepository.findByPseudonymAndModuleId(pseudonym, moduleId)
+				.map(attack -> attack.withFinished(LocalDateTime.now())).flatMap(csrfAttackRepository::save)
+				.then(Mono.empty());
+	}
 
-  public Mono<String> getPseudonym(final long userId, final long moduleId) {
-    return flagHandler.getSaltedHmac(userId, moduleId, "csrfPseudonym", "HmacSHA224");
-  }
+	public Mono<String> getPseudonym(final long userId, final long moduleId) {
+		return flagHandler.getSaltedHmac(userId, moduleId, "csrfPseudonym", "HmacSHA256");
+	}
 
-  public Mono<Boolean> validate(final String pseudonym, final long moduleId) {
-    return csrfVoteCounterRepository
-        .findByPseudonymAndModuleId(pseudonym, moduleId)
-        .map(CsrfVoteCounter::getIsActivated)
-        .switchIfEmpty(
-            csrfVoteCounterRepository
-                .save(
-                    CsrfVoteCounter.builder()
-                        .pseudonym(pseudonym)
-                        .isActivated(false)
-                        .initialized(LocalDateTime.now())
-                        .moduleId(moduleId)
-                        .build())
-                .then(Mono.just(false)));
-  }
+	public Mono<Boolean> validatePseudonym(final String pseudonym, final long moduleId) {
+		return csrfAttackRepository.countByPseudonymAndModuleId(pseudonym, moduleId).map(count -> count > 0);
+	}
+
+	public Mono<Boolean> validate(final String pseudonym, final long moduleId) {
+		return csrfAttackRepository.findByPseudonymAndModuleId(pseudonym, moduleId)
+				.map(attack -> attack.getFinished() != null)
+				.switchIfEmpty(csrfAttackRepository.save(CsrfAttack.builder().pseudonym(pseudonym)
+						.started(LocalDateTime.now()).moduleId(moduleId).build()).then(Mono.just(false)));
+	}
 }

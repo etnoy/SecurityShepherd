@@ -44,6 +44,6 @@ public class CsrfTutorialController {
       @PathVariable(value = "pseudonym") String pseudonym) {
     return controllerAuthentication
         .getUserId()
-        .flatMap(userId -> csrfTutorial.activate(userId, pseudonym));
+        .flatMap(userId -> csrfTutorial.attack(userId, pseudonym));
   }
 }

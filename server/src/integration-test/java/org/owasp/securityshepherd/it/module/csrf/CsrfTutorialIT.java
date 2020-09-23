@@ -24,6 +24,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.owasp.securityshepherd.module.ModuleService;
+import org.owasp.securityshepherd.module.csrf.CsrfAttackRepository;
+import org.owasp.securityshepherd.module.csrf.CsrfService;
 import org.owasp.securityshepherd.module.csrf.CsrfTutorial;
 import org.owasp.securityshepherd.module.csrf.CsrfTutorialResult;
 import org.owasp.securityshepherd.scoring.ScoreService;
@@ -38,70 +40,81 @@ import reactor.core.publisher.Hooks;
 import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(properties = {"application.runner.enabled=false"})
+@SpringBootTest(properties = { "application.runner.enabled=false" })
 @Execution(ExecutionMode.SAME_THREAD)
 @DisplayName("CsrfTutorial integration test")
 class CsrfTutorialIT {
 
-  @Autowired CsrfTutorial csrfTutorial;
+	@Autowired
+	CsrfService csrfService;
 
-  @Autowired TestUtils testUtils;
+	@Autowired
+	CsrfTutorial csrfTutorial;
 
-  @Autowired UserService userService;
+	@Autowired
+	CsrfAttackRepository csrfAttackRespository;
 
-  @Autowired ModuleService moduleService;
+	@Autowired
+	TestUtils testUtils;
 
-  @Autowired SubmissionService submissionService;
+	@Autowired
+	UserService userService;
 
-  @Autowired ScoreService scoreService;
+	@Autowired
+	ModuleService moduleService;
 
-  @BeforeAll
-  private static void reactorVerbose() {
-    // Tell Reactor to print verbose error messages
-    Hooks.onOperatorDebug();
-  }
+	@Autowired
+	SubmissionService submissionService;
 
-  @Test
-  void getTutorial_SelfActivation_NotAllowed() {
-    final Long userId = userService.create("TestUser").block();
+	@Autowired
+	ScoreService scoreService;
 
-    csrfTutorial.initialize().block();
+	@BeforeAll
+	private static void reactorVerbose() {
+		// Tell Reactor to print verbose error messages
+		Hooks.onOperatorDebug();
+	}
 
-    final CsrfTutorialResult tutorialResult = csrfTutorial.getTutorial(userId).block();
+	@Test
+	void activate_NonExistentPseudonym_ReturnsError() {
+		final Long userId = userService.create("Attacker").block();
 
-    StepVerifier.create(csrfTutorial.activate(userId, tutorialResult.getPseudonym()))
-        .assertNext(
-            result -> {
-              assertThat(result.getMessage()).isNull();
-              assertThat(result.getError()).isEqualTo("You cannot activate yourself");
-            })
-        .expectComplete()
-        .verify();
-  }
+		StepVerifier.create(csrfTutorial.attack(userId, "Unknown target ID")).assertNext(result -> {
+			assertThat(result.getMessage()).isNull();
+			assertThat(result.getError()).isEqualTo("Unknown target ID");
+		}).expectComplete().verify();
+	}
 
-  @Test
-  void getTutorial_CorrectAttack_Success() {
-    final Long userId1 = userService.create("TestUser1").block();
-    final Long userId2 = userService.create("TestUser2").block();
+	@Test
+	void getTutorial_CorrectAttack_Success() {
+		final Long userId1 = userService.create("TestUser1").block();
+		final Long userId2 = userService.create("TestUser2").block();
 
-    csrfTutorial.initialize().block();
+		final CsrfTutorialResult tutorialResult = csrfTutorial.getTutorial(userId1).block();
 
-    final CsrfTutorialResult tutorialResult = csrfTutorial.getTutorial(userId1).block();
+		csrfTutorial.attack(userId2, tutorialResult.getPseudonym()).block();
 
-    csrfTutorial.activate(userId2, tutorialResult.getPseudonym()).block();
+		StepVerifier.create(csrfTutorial.getTutorial(userId1)).assertNext(result -> {
+			assertThat(result.getFlag()).isNotNull();
+			assertThat(result.getError()).isNull();
+		}).expectComplete().verify();
+	}
 
-    StepVerifier.create(csrfTutorial.getTutorial(userId1))
-        .assertNext(
-            result -> {
-              assertThat(result.getFlag()).isNotNull();
-              assertThat(result.getError()).isNull();
-            })
-        .expectComplete()
-        .verify();
-  }
+	@BeforeEach
+	private void clear() {
+		testUtils.deleteAll().block();
+		csrfTutorial.initialize().block();
+	}
 
-  @BeforeEach
-  private void clear() {
-    testUtils.deleteAll().block();
-  }
+	@Test
+	void getTutorial_SelfActivation_NotAllowed() {
+		final Long userId = userService.create("TestUser").block();
+
+		final CsrfTutorialResult tutorialResult = csrfTutorial.getTutorial(userId).block();
+
+		StepVerifier.create(csrfTutorial.attack(userId, tutorialResult.getPseudonym())).assertNext(result -> {
+			assertThat(result.getMessage()).isNull();
+			assertThat(result.getError()).isEqualTo("You cannot activate yourself");
+		}).expectComplete().verify();
+	}
 }

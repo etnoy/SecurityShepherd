@@ -9,8 +9,8 @@ CREATE TABLE user (
   class_id INT NULL,
   email VARCHAR(128) NULL,
   is_not_banned BOOLEAN DEFAULT FALSE,
-  account_created DATETIME NULL DEFAULT NULL,
-  user_key BINARY(16) NULL,
+  account_created DATETIME NOT NULL,
+  user_key BINARY(16) NOT NULL,
   PRIMARY KEY (id),
   INDEX class_id (class_id ASC) ,
   UNIQUE INDEX display_name_UNIQUE (display_name ASC))
@@ -37,12 +37,12 @@ CREATE TABLE module (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
-CREATE TABLE csrf_vote_counter (
+CREATE TABLE csrf_attack (
 	id INT AUTO_INCREMENT,
-	pseudonym VARCHAR(191) NOT NULL,
+	pseudonym VARCHAR(64) NOT NULL,
 	module_id INT NOT NULL,
-	initialized TIMESTAMP NOT NULL,
-	is_activated BOOLEAN NOT NULL,
+	started TIMESTAMP NOT NULL,
+	finished TIMESTAMP,
   PRIMARY KEY (id),
 FOREIGN KEY (`module_id`) REFERENCES module(id))
 ENGINE = InnoDB

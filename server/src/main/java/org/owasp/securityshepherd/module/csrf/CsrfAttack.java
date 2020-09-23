@@ -28,10 +28,15 @@ import lombok.With;
 @AllArgsConstructor
 @Builder
 @With
-public final class CsrfVoteCounter {
-  @Id private Long id;
-  @NonNull private String pseudonym;
-  @NonNull private LocalDateTime initialized;
-  @NonNull private Long moduleId;
-  @NonNull private Boolean isActivated;
+public final class CsrfAttack {
+	@Id
+	private Long id;
+	@NonNull
+	private String pseudonym;
+	@NonNull
+	private LocalDateTime started;
+	@NonNull
+	private Long moduleId;
+
+	private LocalDateTime finished;
 }

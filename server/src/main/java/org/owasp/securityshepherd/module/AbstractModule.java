@@ -20,13 +20,14 @@ import org.springframework.stereotype.Service;
 @Service
 public abstract class AbstractModule implements SubmittableModule {
 
-  protected Long moduleId;
+	protected Long moduleId;
 
-  @Override
-  public final long getModuleId() {
-    if (this.moduleId == null) {
-      throw new ModuleNotInitializedException("Module must be initialized first");
-    }
-    return this.moduleId;
-  }
+	@Override
+	public final long getModuleId() {
+		if (this.moduleId == null) {
+			throw new ModuleNotInitializedException("Module must be initialized first");
+		}
+		return this.moduleId;
+	}
+
 }
