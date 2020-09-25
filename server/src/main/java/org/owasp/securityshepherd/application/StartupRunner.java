@@ -79,7 +79,7 @@ public class StartupRunner implements ApplicationRunner {
 
     userService
         .createPasswordUser(
-            "dummy", "dummy", "$2y$08$WpfUVZLcXNNpmM2VwSWlbe25dae.eEC99AOAVUiU5RaJmfFsE9B5G")
+            "Dummy", "dummy", "$2y$08$WpfUVZLcXNNpmM2VwSWlbe25dae.eEC99AOAVUiU5RaJmfFsE9B5G")
         .block();
 
     xssTutorial.initialize().block();

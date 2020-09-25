@@ -88,6 +88,10 @@ class StartupRunnerTest {
             "Admin", "admin", "$2y$08$WpfUVZLcXNNpmM2VwSWlbe25dae.eEC99AOAVUiU5RaJmfFsE9B5G"))
         .thenReturn(Mono.just(1L));
 
+    when(userService.createPasswordUser(
+            "Dummy", "dummy", "$2y$08$WpfUVZLcXNNpmM2VwSWlbe25dae.eEC99AOAVUiU5RaJmfFsE9B5G"))
+        .thenReturn(Mono.just(1L));
+
     when(xssTutorial.initialize()).thenReturn(Mono.just(1L));
     when(sqlInjectionTutorial.initialize()).thenReturn(Mono.just(2L));
     when(csrfTutorial.initialize()).thenReturn(Mono.just(3L));
