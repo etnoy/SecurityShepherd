@@ -39,7 +39,7 @@ DEFAULT CHARACTER SET = utf8mb4;
 
 CREATE TABLE csrf_attack (
 	id INT AUTO_INCREMENT,
-	pseudonym VARCHAR(64) NOT NULL,
+	pseudonym VARCHAR(128) NOT NULL,
 	module_id INT NOT NULL,
 	started TIMESTAMP NOT NULL,
 	finished TIMESTAMP,

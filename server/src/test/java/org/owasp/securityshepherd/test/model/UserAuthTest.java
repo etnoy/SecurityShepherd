@@ -1,22 +1,23 @@
-/**
+/*
  * This file is part of Security Shepherd.
- *
- * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
- * of the GNU General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
- *
- * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * 
+ * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
+ * the GNU General Public License as published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ * 
+ * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with Security Shepherd.
+ * If not, see <http://www.gnu.org/licenses/>.
  *
- * <p>You should have received a copy of the GNU General Public License along with Security
- * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.owasp.securityshepherd.test.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -24,13 +25,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.NonNull;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.owasp.securityshepherd.authentication.UserAuth;
 import org.owasp.securityshepherd.authentication.UserAuth.UserAuthBuilder;
 import org.owasp.securityshepherd.test.util.TestUtils;
-import lombok.NonNull;
-import nl.jqno.equalsverifier.EqualsVerifier;
 
 @DisplayName("UserAuth unit test")
 class UserAuthTest {
@@ -270,8 +271,7 @@ class UserAuthTest {
         Arrays.asList(originalTime, 1L, 2L, 1000L, 5000L, 9000990909L, 12398234987345983L);
 
     final List<LocalDateTime> dateTimesToTest =
-        timesToTest
-            .stream()
+        timesToTest.stream()
             .map(
                 epoch ->
                     LocalDateTime.ofInstant(Instant.ofEpochMilli(epoch), ZoneId.systemDefault()))
@@ -312,8 +312,7 @@ class UserAuthTest {
         Arrays.asList(originalTime, 1L, 2L, 1000L, 5000L, 9000990909L, 12398234987345983L);
 
     final List<LocalDateTime> dateTimesToTest =
-        timesToTest
-            .stream()
+        timesToTest.stream()
             .map(
                 epoch ->
                     LocalDateTime.ofInstant(Instant.ofEpochMilli(epoch), ZoneId.systemDefault()))

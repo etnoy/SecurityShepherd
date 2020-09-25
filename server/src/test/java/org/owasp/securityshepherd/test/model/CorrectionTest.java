@@ -1,30 +1,31 @@
-/**
+/*
  * This file is part of Security Shepherd.
- *
- * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
- * of the GNU General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
- *
- * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * 
+ * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
+ * the GNU General Public License as published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ * 
+ * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with Security Shepherd.
+ * If not, see <http://www.gnu.org/licenses/>.
  *
- * <p>You should have received a copy of the GNU General Public License along with Security
- * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.owasp.securityshepherd.test.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.time.LocalDateTime;
+import lombok.NonNull;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.owasp.securityshepherd.scoring.Correction;
 import org.owasp.securityshepherd.scoring.Correction.CorrectionBuilder;
 import org.owasp.securityshepherd.test.util.TestUtils;
-import lombok.NonNull;
-import nl.jqno.equalsverifier.EqualsVerifier;
 
 @DisplayName("Correction unit test")
 class CorrectionTest {
@@ -143,7 +144,7 @@ class CorrectionTest {
     assertThat(testCorrection)
         .hasToString(
             "Correction(id=null, userId=83, amount=1, "
-            + "time=-999999999-01-01T00:00, description=null)");
+                + "time=-999999999-01-01T00:00, description=null)");
   }
 
   @Test

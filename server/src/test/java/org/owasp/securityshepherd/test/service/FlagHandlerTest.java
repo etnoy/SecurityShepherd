@@ -1,16 +1,17 @@
-/**
+/*
  * This file is part of Security Shepherd.
- *
- * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
- * of the GNU General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
- *
- * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * 
+ * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
+ * the GNU General Public License as published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ * 
+ * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with Security Shepherd.
+ * If not, see <http://www.gnu.org/licenses/>.
  *
- * <p>You should have received a copy of the GNU General Public License along with Security
- * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.owasp.securityshepherd.test.service;
 
@@ -21,6 +22,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.common.io.BaseEncoding;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -37,9 +39,6 @@ import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.service.ConfigurationService;
 import org.owasp.securityshepherd.user.UserService;
-
-import com.google.common.io.BaseEncoding;
-
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -128,8 +127,7 @@ class FlagHandlerTest {
 
     when(configurationService.getServerKey()).thenReturn(Mono.just(mockedServerKey));
 
-    when(cryptoService.hmac("HmacSHA512", mockedServerKey, mockedTotalKey))
-        .thenReturn(mockedHmacOutput);
+    when(cryptoService.hmac(mockedServerKey, mockedTotalKey)).thenReturn(mockedHmacOutput);
 
     StepVerifier.create(flagHandler.getDynamicFlag(mockUserId, mockModuleId))
         .expectNext(correctFlag)
@@ -144,7 +142,7 @@ class FlagHandlerTest {
 
     verify(configurationService, times(1)).getServerKey();
 
-    verify(cryptoService, times(1)).hmac("HmacSHA512", mockedServerKey, mockedTotalKey);
+    verify(cryptoService, times(1)).hmac(mockedServerKey, mockedTotalKey);
   }
 
   @Test
@@ -226,8 +224,7 @@ class FlagHandlerTest {
 
     when(configurationService.getServerKey()).thenReturn(Mono.just(mockedServerKey));
 
-    when(cryptoService.hmac("HmacSHA512", mockedServerKey, mockedTotalKey))
-        .thenReturn(mockedHmacOutput);
+    when(cryptoService.hmac(mockedServerKey, mockedTotalKey)).thenReturn(mockedHmacOutput);
 
     when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
 
@@ -241,7 +238,7 @@ class FlagHandlerTest {
     verify(mockModule, times(2)).getKey();
     verify(mockModule, never()).getId();
     verify(configurationService, atLeast(1)).getServerKey();
-    verify(cryptoService, atLeast(1)).hmac("HmacSHA512", mockedServerKey, mockedTotalKey);
+    verify(cryptoService, atLeast(1)).hmac(mockedServerKey, mockedTotalKey);
     verify(userService, atLeast(1)).findKeyById(mockUserId);
   }
 
@@ -365,8 +362,7 @@ class FlagHandlerTest {
 
     when(configurationService.getServerKey()).thenReturn(Mono.just(mockedServerKey));
 
-    when(cryptoService.hmac("HmacSHA512", mockedServerKey, mockedTotalKey))
-        .thenReturn(mockedHmacOutput);
+    when(cryptoService.hmac(mockedServerKey, mockedTotalKey)).thenReturn(mockedHmacOutput);
 
     StepVerifier.create(flagHandler.verifyFlag(mockUserId, mockModuleId, ""))
         // We expect this to return false
@@ -382,7 +378,7 @@ class FlagHandlerTest {
     verify(mockModule, times(2)).getKey();
     verify(mockModule, never()).getId();
     verify(configurationService, atLeast(1)).getServerKey();
-    verify(cryptoService, times(2)).hmac("HmacSHA512", mockedServerKey, mockedTotalKey);
+    verify(cryptoService, times(2)).hmac(mockedServerKey, mockedTotalKey);
     verify(userService, times(2)).findKeyById(mockUserId);
   }
 
@@ -469,8 +465,7 @@ class FlagHandlerTest {
 
     when(configurationService.getServerKey()).thenReturn(Mono.just(mockedServerKey));
 
-    when(cryptoService.hmac("HmacSHA512", mockedServerKey, mockedTotalKey))
-        .thenReturn(mockedHmacOutput);
+    when(cryptoService.hmac(mockedServerKey, mockedTotalKey)).thenReturn(mockedHmacOutput);
 
     when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
 
@@ -486,7 +481,7 @@ class FlagHandlerTest {
     verify(mockModule, times(2)).getKey();
     verify(mockModule, never()).getId();
     verify(configurationService, atLeast(1)).getServerKey();
-    verify(cryptoService, atLeast(1)).hmac("HmacSHA512", mockedServerKey, mockedTotalKey);
+    verify(cryptoService, atLeast(1)).hmac(mockedServerKey, mockedTotalKey);
     verify(userService, atLeast(1)).findKeyById(mockUserId);
   }
 

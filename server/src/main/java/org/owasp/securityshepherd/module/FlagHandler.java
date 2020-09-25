@@ -1,19 +1,24 @@
-/**
+/*
  * This file is part of Security Shepherd.
- *
- * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
- * of the GNU General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
- *
- * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * 
+ * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
+ * the GNU General Public License as published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ * 
+ * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with Security Shepherd.
+ * If not, see <http://www.gnu.org/licenses/>.
  *
- * <p>You should have received a copy of the GNU General Public License along with Security
- * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.owasp.securityshepherd.module;
 
+import com.google.common.io.BaseEncoding;
+import com.google.common.primitives.Bytes;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.owasp.securityshepherd.crypto.CryptoService;
 import org.owasp.securityshepherd.exception.InvalidFlagStateException;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
@@ -22,12 +27,6 @@ import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
 import org.owasp.securityshepherd.service.ConfigurationService;
 import org.owasp.securityshepherd.user.UserService;
 import org.springframework.stereotype.Service;
-
-import com.google.common.io.BaseEncoding;
-import com.google.common.primitives.Bytes;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Slf4j
@@ -43,8 +42,7 @@ public final class FlagHandler {
 
   private final CryptoService cryptoService;
 
-  public Mono<String> getSaltedHmac(
-      final long userId, final long moduleId, final String prefix, final String algorithm) {
+  public Mono<String> getSaltedHmac(final long userId, final long moduleId, final String prefix) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
@@ -75,7 +73,7 @@ public final class FlagHandler {
         .zipWith(moduleKey)
         .map(tuple -> Bytes.concat(tuple.getT1(), tuple.getT2(), prefix.getBytes()))
         .zipWith(serverKey)
-        .map(tuple -> cryptoService.hmac(algorithm, tuple.getT2(), tuple.getT1()))
+        .map(tuple -> cryptoService.hmac(tuple.getT2(), tuple.getT1()))
         .map(BaseEncoding.base32().lowerCase().omitPadding()::encode);
   }
 
@@ -137,6 +135,6 @@ public final class FlagHandler {
   }
 
   public Mono<String> getDynamicFlag(final long userId, final long moduleId) {
-    return getSaltedHmac(userId, moduleId, "flag", "HmacSHA512");
+    return getSaltedHmac(userId, moduleId, "flag");
   }
 }

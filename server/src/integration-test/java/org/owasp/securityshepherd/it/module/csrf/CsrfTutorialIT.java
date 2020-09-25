@@ -1,16 +1,17 @@
-/**
+/*
  * This file is part of Security Shepherd.
- *
- * <p>Security Shepherd is free software: you can redistribute it and/or modify it under the terms
- * of the GNU General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
- *
- * <p>Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * 
+ * Security Shepherd is free software: you can redistribute it and/or modify it under the terms of
+ * the GNU General Public License as published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ * 
+ * Security Shepherd is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with Security Shepherd.
+ * If not, see <http://www.gnu.org/licenses/>.
  *
- * <p>You should have received a copy of the GNU General Public License along with Security
- * Shepherd. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.owasp.securityshepherd.it.module.csrf;
 
@@ -35,86 +36,89 @@ import org.owasp.securityshepherd.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
 import reactor.core.publisher.Hooks;
 import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(properties = { "application.runner.enabled=false" })
+@SpringBootTest(properties = {"application.runner.enabled=false"})
 @Execution(ExecutionMode.SAME_THREAD)
 @DisplayName("CsrfTutorial integration test")
 class CsrfTutorialIT {
 
-	@Autowired
-	CsrfService csrfService;
+  @Autowired CsrfService csrfService;
 
-	@Autowired
-	CsrfTutorial csrfTutorial;
+  @Autowired CsrfTutorial csrfTutorial;
 
-	@Autowired
-	CsrfAttackRepository csrfAttackRespository;
+  @Autowired CsrfAttackRepository csrfAttackRespository;
 
-	@Autowired
-	TestUtils testUtils;
+  @Autowired TestUtils testUtils;
 
-	@Autowired
-	UserService userService;
+  @Autowired UserService userService;
 
-	@Autowired
-	ModuleService moduleService;
+  @Autowired ModuleService moduleService;
 
-	@Autowired
-	SubmissionService submissionService;
+  @Autowired SubmissionService submissionService;
 
-	@Autowired
-	ScoreService scoreService;
+  @Autowired ScoreService scoreService;
 
-	@BeforeAll
-	private static void reactorVerbose() {
-		// Tell Reactor to print verbose error messages
-		Hooks.onOperatorDebug();
-	}
+  @BeforeAll
+  private static void reactorVerbose() {
+    // Tell Reactor to print verbose error messages
+    Hooks.onOperatorDebug();
+  }
 
-	@Test
-	void activate_NonExistentPseudonym_ReturnsError() {
-		final Long userId = userService.create("Attacker").block();
+  @Test
+  void activate_NonExistentPseudonym_ReturnsError() {
+    final Long userId = userService.create("Attacker").block();
 
-		StepVerifier.create(csrfTutorial.attack(userId, "Unknown target ID")).assertNext(result -> {
-			assertThat(result.getMessage()).isNull();
-			assertThat(result.getError()).isEqualTo("Unknown target ID");
-		}).expectComplete().verify();
-	}
+    StepVerifier.create(csrfTutorial.attack(userId, "Unknown target ID"))
+        .assertNext(
+            result -> {
+              assertThat(result.getMessage()).isNull();
+              assertThat(result.getError()).isEqualTo("Unknown target ID");
+            })
+        .expectComplete()
+        .verify();
+  }
 
-	@Test
-	void getTutorial_CorrectAttack_Success() {
-		final Long userId1 = userService.create("TestUser1").block();
-		final Long userId2 = userService.create("TestUser2").block();
+  @Test
+  void getTutorial_CorrectAttack_Success() {
+    final Long userId1 = userService.create("TestUser1").block();
+    final Long userId2 = userService.create("TestUser2").block();
 
-		final CsrfTutorialResult tutorialResult = csrfTutorial.getTutorial(userId1).block();
+    final CsrfTutorialResult tutorialResult = csrfTutorial.getTutorial(userId1).block();
 
-		csrfTutorial.attack(userId2, tutorialResult.getPseudonym()).block();
+    csrfTutorial.attack(userId2, tutorialResult.getPseudonym()).block();
 
-		StepVerifier.create(csrfTutorial.getTutorial(userId1)).assertNext(result -> {
-			assertThat(result.getFlag()).isNotNull();
-			assertThat(result.getError()).isNull();
-		}).expectComplete().verify();
-	}
+    StepVerifier.create(csrfTutorial.getTutorial(userId1))
+        .assertNext(
+            result -> {
+              assertThat(result.getFlag()).isNotNull();
+              assertThat(result.getError()).isNull();
+            })
+        .expectComplete()
+        .verify();
+  }
 
-	@BeforeEach
-	private void clear() {
-		testUtils.deleteAll().block();
-		csrfTutorial.initialize().block();
-	}
+  @BeforeEach
+  private void clear() {
+    testUtils.deleteAll().block();
+    csrfTutorial.initialize().block();
+  }
 
-	@Test
-	void getTutorial_SelfActivation_NotAllowed() {
-		final Long userId = userService.create("TestUser").block();
+  @Test
+  void getTutorial_SelfActivation_NotAllowed() {
+    final Long userId = userService.create("TestUser").block();
 
-		final CsrfTutorialResult tutorialResult = csrfTutorial.getTutorial(userId).block();
+    final CsrfTutorialResult tutorialResult = csrfTutorial.getTutorial(userId).block();
 
-		StepVerifier.create(csrfTutorial.attack(userId, tutorialResult.getPseudonym())).assertNext(result -> {
-			assertThat(result.getMessage()).isNull();
-			assertThat(result.getError()).isEqualTo("You cannot activate yourself");
-		}).expectComplete().verify();
-	}
+    StepVerifier.create(csrfTutorial.attack(userId, tutorialResult.getPseudonym()))
+        .assertNext(
+            result -> {
+              assertThat(result.getMessage()).isNull();
+              assertThat(result.getError()).isEqualTo("You cannot activate yourself");
+            })
+        .expectComplete()
+        .verify();
+  }
 }
