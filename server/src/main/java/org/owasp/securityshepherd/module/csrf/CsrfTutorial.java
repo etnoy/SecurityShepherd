@@ -15,8 +15,6 @@
  */
 package org.owasp.securityshepherd.module.csrf;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.owasp.securityshepherd.exception.ModuleNotInitializedException;
 import org.owasp.securityshepherd.module.AbstractModule;
 import org.owasp.securityshepherd.module.FlagHandler;
@@ -24,6 +22,8 @@ import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.module.csrf.CsrfTutorialResult.CsrfTutorialResultBuilder;
 import org.springframework.stereotype.Component;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -97,9 +97,7 @@ public class CsrfTutorial extends AbstractModule {
         .validatePseudonym(target, this.moduleId)
         .flatMap(
             valid -> {
-              if (!valid) {
-                return Mono.just(csrfTutorialResultBuilder.error("Unknown target ID").build());
-              } else {
+              if (Boolean.TRUE.equals(valid)) {
                 return csrfService
                     .getPseudonym(userId, this.moduleId)
                     .flatMap(
@@ -119,6 +117,9 @@ public class CsrfTutorial extends AbstractModule {
                                             .build()));
                           }
                         });
+
+              } else {
+                return Mono.just(csrfTutorialResultBuilder.error("Unknown target ID").build());
               }
             });
   }
