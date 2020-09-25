@@ -17,6 +17,7 @@ jobs:
         - cd server
         - git fetch --unshallow
       script:
+        - ./gradlew spotlessCheck
         - ./gradlew test jacocoTestReport sonarqube --info
     - stage: test
       name: Backend integration tests
