@@ -116,8 +116,7 @@ class FlagHandlerTest {
       -108, 101, -7, -35, 17, -16, -94, 0, -32, -117, 65, -127, 22, 62, 9, 19, -118, 9, -7, -35, 15,
       -116, -94, 0, -32, -117, 65, -127, 12, 82, 97, 19, 102, 108, 97, 103
     };
-    final String correctFlag =
-        BaseEncoding.base32().lowerCase().omitPadding().encode(mockedHmacOutput);
+    final String correctFlag = "flag{qaa7txiprsrabyelooaqyutbcm}";
 
     when(moduleService.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
 
@@ -211,8 +210,7 @@ class FlagHandlerTest {
       -116, -94, 0, -32, -117, 65, -127, 12, 82, 97, 19, 102, 108, 97, 103
     };
 
-    final String validFlag =
-        BaseEncoding.base32().lowerCase().omitPadding().encode(mockedHmacOutput);
+    final String correctFlag = "flag{qaa7txiprsrabyelooaqyutbcm}";
 
     when(mockModule.isFlagStatic()).thenReturn(false);
     when(mockModule.getKey()).thenReturn(mockedModuleKey);
@@ -228,7 +226,7 @@ class FlagHandlerTest {
 
     when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
 
-    StepVerifier.create(flagHandler.verifyFlag(mockUserId, mockModuleId, validFlag))
+    StepVerifier.create(flagHandler.verifyFlag(mockUserId, mockModuleId, correctFlag))
         .expectNext(true)
         .expectComplete()
         .verify();

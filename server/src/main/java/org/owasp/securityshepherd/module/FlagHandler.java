@@ -42,6 +42,8 @@ public final class FlagHandler {
 
   private final CryptoService cryptoService;
 
+  private static final String FLAG_PREFIX = "flag";
+
   public Mono<String> getSaltedHmac(final long userId, final long moduleId, final String prefix) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
@@ -135,6 +137,7 @@ public final class FlagHandler {
   }
 
   public Mono<String> getDynamicFlag(final long userId, final long moduleId) {
-    return getSaltedHmac(userId, moduleId, "flag");
+    return getSaltedHmac(userId, moduleId, "flag")
+        .map(flag -> String.format("%s{%s}", FLAG_PREFIX, flag));
   }
 }
