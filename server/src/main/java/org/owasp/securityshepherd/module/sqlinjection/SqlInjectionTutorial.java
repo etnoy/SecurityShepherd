@@ -82,8 +82,8 @@ public class SqlInjectionTutorial extends AbstractModule {
         flagHandler
             .getDynamicFlag(userId, this.moduleId)
             // Curly braces need to be URL encoded
-            .map(flag -> flag.replaceAll("\\{", "%7B"))
-            .map(flag -> flag.replaceAll("\\}", "%7D"))
+            .map(flag -> flag.replace("{", "%7B"))
+            .map(flag -> flag.replace("}", "%7D"))
             .map(
                 flag ->
                     String.format(
