@@ -75,8 +75,9 @@ public class SqlInjectionTutorial extends AbstractModule {
       return Flux.error(new ModuleNotInitializedException("Module must be initialized first"));
     }
     final String randomUserName =
-        Base64.getEncoder().encodeToString(this.keyService.generateRandomBytes(16));
-    // Generate a dynamic flag and add it as a row to the database creation script. The flag is
+        Base64.getEncoder().encodeToString(keyService.generateRandomBytes(16));
+    // Generate a dynamic flag and add it as a row to the database creation script.
+    // The flag is
     // different for every user to prevent copying flags
     final Mono<String> insertionQuery =
         flagHandler
@@ -90,8 +91,8 @@ public class SqlInjectionTutorial extends AbstractModule {
                         "INSERT INTO sqlinjection.users values ('%s', 'Well done, flag is %s')",
                         randomUserName, flag));
 
-    // Create a connection URL to a H2SQL in-memory database. Each submission call creates a
-    // completely new instance of this database.
+    // Create a connection URL to a H2SQL in-memory database. Each submission call
+    // creates a completely new instance of this database.
     final Mono<String> connectionUrl =
         insertionQuery.map(
             query ->
@@ -99,16 +100,16 @@ public class SqlInjectionTutorial extends AbstractModule {
                     "r2dbc:h2:mem:///sql-injection-tutorial-for-uid%d;"
                         // Load the initial sql file
                         + "INIT=RUNSCRIPT FROM 'classpath:module/sql-injection-tutorial.sql'"
-                        +
-                        // %5C%3B is a backslash and semicolon URL-formatted
-                        "%s%s",
+                        + "%s%s",
+                    // %5C%3B is a backslash and semicolon URL-encoded
                     userId, "%5C%3B", query));
 
     // Create a DatabaseClient that allows us to manually interact with the database
     final Mono<DatabaseClient> databaseClientMono =
         connectionUrl.map(sqlInjectionDatabaseClientFactory::create);
 
-    // Create the database query. Yes, this is vulnerable to SQL injection. That's the whole point.
+    // Create the database query. Yes, this is vulnerable to SQL injection. That's
+    // the whole point.
     final String injectionQuery =
         String.format("SELECT * FROM sqlinjection.users WHERE name = '%s'", usernameQuery);
 
