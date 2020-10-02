@@ -16,12 +16,12 @@
 package org.owasp.securityshepherd.module.xss;
 
 import java.util.List;
+import lombok.EqualsAndHashCode;
 import org.owasp.securityshepherd.module.AbstractModule;
 import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.module.xss.XssTutorialResponse.XssTutorialResponseBuilder;
 import org.springframework.stereotype.Component;
-import lombok.EqualsAndHashCode;
 import reactor.core.publisher.Mono;
 
 @Component

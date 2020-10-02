@@ -16,6 +16,7 @@
 package org.owasp.securityshepherd.module.sqlinjection;
 
 import java.util.Base64;
+import lombok.EqualsAndHashCode;
 import org.owasp.securityshepherd.crypto.KeyService;
 import org.owasp.securityshepherd.module.AbstractModule;
 import org.owasp.securityshepherd.module.FlagHandler;
@@ -23,7 +24,6 @@ import org.owasp.securityshepherd.module.ModuleService;
 import org.springframework.data.r2dbc.BadSqlGrammarException;
 import org.springframework.data.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Component;
-import lombok.EqualsAndHashCode;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

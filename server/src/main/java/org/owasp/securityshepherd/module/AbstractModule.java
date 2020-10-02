@@ -38,9 +38,8 @@ public abstract class AbstractModule {
 
   @NonNull protected final FlagHandler flagHandler;
 
-  @NonFinal
-  private Long moduleId;
-  
+  @NonFinal private Long moduleId;
+
   public Long getModuleId() {
     if (moduleId == null) {
       throw new ModuleNotInitializedException("Must initialize module first");
@@ -65,5 +64,4 @@ public abstract class AbstractModule {
           }
         });
   }
-
 }
