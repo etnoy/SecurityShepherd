@@ -15,17 +15,19 @@
  */
 package org.owasp.securityshepherd.module;
 
-import lombok.Data;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Value;
+import lombok.experimental.NonFinal;
 import org.owasp.securityshepherd.exception.ModuleNotInitializedException;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
-@Service
-@Data
+@Component
+@Value
+@RequiredArgsConstructor
+@NonFinal
 public abstract class AbstractModule {
-  private Long moduleId;
-
   @NonNull protected final String name;
 
   @NonNull protected final String shortName;
@@ -36,6 +38,9 @@ public abstract class AbstractModule {
 
   @NonNull protected final FlagHandler flagHandler;
 
+  @NonFinal
+  private Long moduleId;
+  
   public Long getModuleId() {
     if (moduleId == null) {
       throw new ModuleNotInitializedException("Must initialize module first");
@@ -61,16 +66,4 @@ public abstract class AbstractModule {
         });
   }
 
-  public AbstractModule(
-      final String name,
-      final String shortName,
-      final String description,
-      final ModuleService moduleService,
-      final FlagHandler flagHandler) {
-    this.name = name;
-    this.shortName = shortName;
-    this.moduleService = moduleService;
-    this.description = description;
-    this.flagHandler = flagHandler;
-  }
 }

@@ -23,10 +23,12 @@ import org.owasp.securityshepherd.module.ModuleService;
 import org.springframework.data.r2dbc.BadSqlGrammarException;
 import org.springframework.data.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Component;
+import lombok.EqualsAndHashCode;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Component
+@EqualsAndHashCode(callSuper = true)
 public class SqlInjectionTutorial extends AbstractModule {
 
   private final SqlInjectionDatabaseClientFactory sqlInjectionDatabaseClientFactory;

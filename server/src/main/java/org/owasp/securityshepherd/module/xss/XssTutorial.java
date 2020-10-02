@@ -19,11 +19,14 @@ import java.util.List;
 import org.owasp.securityshepherd.module.AbstractModule;
 import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.ModuleService;
+import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorial;
 import org.owasp.securityshepherd.module.xss.XssTutorialResponse.XssTutorialResponseBuilder;
 import org.springframework.stereotype.Component;
+import lombok.EqualsAndHashCode;
 import reactor.core.publisher.Mono;
 
 @Component
+@EqualsAndHashCode(callSuper = true)
 public class XssTutorial extends AbstractModule {
   private final XssService xssService;
 
