@@ -16,13 +16,9 @@
 package org.owasp.securityshepherd.module.sqlinjection;
 
 import java.util.Base64;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.owasp.securityshepherd.crypto.KeyService;
-import org.owasp.securityshepherd.exception.ModuleNotInitializedException;
 import org.owasp.securityshepherd.module.AbstractModule;
 import org.owasp.securityshepherd.module.FlagHandler;
-import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleService;
 import org.springframework.data.r2dbc.BadSqlGrammarException;
 import org.springframework.data.r2dbc.core.DatabaseClient;
@@ -31,49 +27,28 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Component
-@Slf4j
-@RequiredArgsConstructor
 public class SqlInjectionTutorial extends AbstractModule {
 
   private final SqlInjectionDatabaseClientFactory sqlInjectionDatabaseClientFactory;
 
-  private final ModuleService moduleService;
-
-  private final FlagHandler flagHandler;
-
   private final KeyService keyService;
 
-  @Override
-  public String getDescription() {
-    return "Tutorial on SQL injections";
-  }
-
-  @Override
-  public String getName() {
-    return "SQL Injection Tutorial";
-  }
-
-  @Override
-  public String getShortName() {
-    return "sql-injection-tutorial";
-  }
-
-  @Override
-  public Mono<Long> initialize() {
-    log.info("Creating sql tutorial module");
-    final Mono<Module> moduleMono = moduleService.create(this);
-
-    return moduleMono.flatMap(
-        module -> {
-          this.moduleId = module.getId();
-          return moduleService.setDynamicFlag(moduleId).then(Mono.just(this.moduleId));
-        });
+  public SqlInjectionTutorial(
+      final ModuleService moduleService,
+      final FlagHandler flagHandler,
+      final SqlInjectionDatabaseClientFactory sqlInjectionDatabaseClientFactory,
+      final KeyService keyService) {
+    super(
+        "SQL Injection Tutorial",
+        "sql-injection-tutorial",
+        "Tutorial on SQL injections",
+        moduleService,
+        flagHandler);
+    this.sqlInjectionDatabaseClientFactory = sqlInjectionDatabaseClientFactory;
+    this.keyService = keyService;
   }
 
   public Flux<SqlInjectionTutorialRow> submitQuery(final long userId, final String usernameQuery) {
-    if (this.moduleId == null) {
-      return Flux.error(new ModuleNotInitializedException("Module must be initialized first"));
-    }
     final String randomUserName =
         Base64.getEncoder().encodeToString(keyService.generateRandomBytes(16));
     // Generate a dynamic flag and add it as a row to the database creation script.
@@ -81,7 +56,7 @@ public class SqlInjectionTutorial extends AbstractModule {
     // different for every user to prevent copying flags
     final Mono<String> insertionQuery =
         flagHandler
-            .getDynamicFlag(userId, this.moduleId)
+            .getDynamicFlag(userId, getModuleId())
             // Curly braces need to be URL encoded
             .map(flag -> flag.replace("{", "%7B"))
             .map(flag -> flag.replace("}", "%7D"))

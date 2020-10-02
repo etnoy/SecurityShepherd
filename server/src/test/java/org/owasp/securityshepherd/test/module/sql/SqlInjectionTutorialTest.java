@@ -17,6 +17,7 @@ package org.owasp.securityshepherd.test.module.sql;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -99,7 +100,7 @@ class SqlInjectionTutorialTest {
   void getModuleId_ModuleNotIntialized_ThrowsModuleNotInitializedException() {
     assertThatThrownBy(() -> sqlInjectionTutorial.getModuleId())
         .isInstanceOf(ModuleNotInitializedException.class)
-        .hasMessageContaining("Module must be initialized first");
+        .hasMessageContaining("Must initialize module first");
   }
 
   @Test
@@ -154,7 +155,7 @@ class SqlInjectionTutorialTest {
     // Set up the system under test
     sqlInjectionTutorial =
         new SqlInjectionTutorial(
-            sqlInjectionDatabaseClientFactory, moduleService, flagHandler, keyService);
+            moduleService, flagHandler, sqlInjectionDatabaseClientFactory, keyService);
   }
 
   @Test
@@ -241,10 +242,13 @@ class SqlInjectionTutorialTest {
 
   @Test
   void submitQuery_ModuleNotIntialized_ReturnsModuleNotInitializedException() {
+    final byte[] randomBytes = {120, 56, 111};
+    when(keyService.generateRandomBytes(16)).thenReturn(randomBytes);
     final long mockUserId = 419L;
     final String query = "username";
-    StepVerifier.create(sqlInjectionTutorial.submitQuery(mockUserId, query))
-        .expectError(ModuleNotInitializedException.class);
+    assertThrows(
+        ModuleNotInitializedException.class,
+        () -> sqlInjectionTutorial.submitQuery(mockUserId, query));
   }
 
   @Test

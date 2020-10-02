@@ -41,11 +41,13 @@ public final class ModuleService {
     return moduleRepository.count();
   }
 
-  public Mono<Module> create(final SubmittableModule submittableModule) {
-    return this.create(
-        submittableModule.getName(),
-        submittableModule.getShortName(),
-        submittableModule.getDescription());
+  public Mono<Module> create(final AbstractModule abstractModule) {
+    return findByShortName(abstractModule.getShortName())
+        .switchIfEmpty(
+            create(
+                abstractModule.getName(),
+                abstractModule.getShortName(),
+                abstractModule.getDescription()));
   }
 
   public Mono<Module> create(final String moduleName, final String shortName) {

@@ -39,10 +39,10 @@ import org.owasp.securityshepherd.exception.EmptyModuleNameException;
 import org.owasp.securityshepherd.exception.EmptyModuleShortNameException;
 import org.owasp.securityshepherd.exception.InvalidFlagException;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
+import org.owasp.securityshepherd.module.AbstractModule;
 import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleRepository;
 import org.owasp.securityshepherd.module.ModuleService;
-import org.owasp.securityshepherd.module.SubmittableModule;
 import org.owasp.securityshepherd.test.util.TestUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Hooks;
@@ -189,12 +189,14 @@ class ModuleServiceTest {
 
     final long mockModuleId = 390;
 
-    final SubmittableModule mockSubmittableModule = mock(SubmittableModule.class);
+    final AbstractModule mockSubmittableModule = mock(AbstractModule.class);
 
     when(moduleRepository.save(any(Module.class)))
         .thenAnswer(user -> Mono.just(user.getArgument(0, Module.class).withId(mockModuleId)));
 
     when(moduleRepository.findByName(name)).thenReturn(Mono.empty());
+
+    when(moduleRepository.findByShortName(shortName)).thenReturn(Mono.empty());
 
     when(mockSubmittableModule.getName()).thenReturn(name);
     when(mockSubmittableModule.getShortName()).thenReturn(shortName);

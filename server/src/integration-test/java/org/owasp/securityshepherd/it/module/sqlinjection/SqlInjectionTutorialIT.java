@@ -68,15 +68,12 @@ class SqlInjectionTutorialIT {
   @Test
   void submitSql_QueryWithNoMatches_EmptyResultSet() {
     final Long userId = userService.create("TestUser1").block();
-    sqlInjectionTutorial.initialize().block();
-
     StepVerifier.create(sqlInjectionTutorial.submitQuery(userId, "test")).expectComplete().verify();
   }
 
   @Test
   void submitSql_CorrectAttackQuery_ReturnsWholeDatabase() {
     final Long userId = userService.create("TestUser1").block();
-    sqlInjectionTutorial.initialize().block();
 
     StepVerifier.create(sqlInjectionTutorial.submitQuery(userId, "' OR '1' = '1"))
         .expectNextCount(6)
@@ -87,7 +84,6 @@ class SqlInjectionTutorialIT {
   @Test
   void submitSql_SqlSyntaxError_ReturnsError() {
     final Long userId = userService.create("TestUser1").block();
-    sqlInjectionTutorial.initialize().block();
 
     final String errorMessage =
         "io.r2dbc.spi.R2dbcBadGrammarException: [42000] [42000] "
@@ -105,7 +101,7 @@ class SqlInjectionTutorialIT {
   @Test
   void submitSql_CorrectAttackQuery_ReturnedFlagIsCorrect() {
     final Long userId = userService.create("TestUser1").block();
-    final Long moduleId = sqlInjectionTutorial.initialize().block();
+    final Long moduleId = sqlInjectionTutorial.getModuleId();
 
     final Mono<String> flagMono =
         sqlInjectionTutorial
@@ -155,5 +151,6 @@ class SqlInjectionTutorialIT {
   @BeforeEach
   private void clear() {
     testUtils.deleteAll().block();
+    sqlInjectionTutorial.initialize().block();
   }
 }

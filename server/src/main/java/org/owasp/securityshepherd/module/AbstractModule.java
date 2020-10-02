@@ -15,19 +15,62 @@
  */
 package org.owasp.securityshepherd.module;
 
+import lombok.Data;
+import lombok.NonNull;
 import org.owasp.securityshepherd.exception.ModuleNotInitializedException;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 @Service
-public abstract class AbstractModule implements SubmittableModule {
+@Data
+public abstract class AbstractModule {
+  private Long moduleId;
 
-  protected Long moduleId;
+  @NonNull protected final String name;
 
-  @Override
-  public final long getModuleId() {
-    if (this.moduleId == null) {
-      throw new ModuleNotInitializedException("Module must be initialized first");
+  @NonNull protected final String shortName;
+
+  @NonNull protected final String description;
+
+  @NonNull protected final ModuleService moduleService;
+
+  @NonNull protected final FlagHandler flagHandler;
+
+  public Long getModuleId() {
+    if (moduleId == null) {
+      throw new ModuleNotInitializedException("Must initialize module first");
     }
-    return this.moduleId;
+
+    return moduleId;
+  }
+
+  public Mono<Long> initialize() {
+    return initialize(null);
+  }
+
+  public Mono<Long> initialize(final String staticFlag) {
+    final Mono<Module> moduleMono = moduleService.create(this);
+    return moduleMono.flatMap(
+        module -> {
+          this.moduleId = module.getId();
+          if (staticFlag == null) {
+            return moduleService.setDynamicFlag(moduleId).then(Mono.just(this.moduleId));
+          } else {
+            return moduleService.setStaticFlag(moduleId, staticFlag).then(Mono.just(this.moduleId));
+          }
+        });
+  }
+
+  public AbstractModule(
+      final String name,
+      final String shortName,
+      final String description,
+      final ModuleService moduleService,
+      final FlagHandler flagHandler) {
+    this.name = name;
+    this.shortName = shortName;
+    this.moduleService = moduleService;
+    this.description = description;
+    this.flagHandler = flagHandler;
   }
 }

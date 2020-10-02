@@ -16,55 +16,32 @@
 package org.owasp.securityshepherd.module.xss;
 
 import java.util.List;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.owasp.securityshepherd.module.AbstractModule;
 import org.owasp.securityshepherd.module.FlagHandler;
-import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.module.xss.XssTutorialResponse.XssTutorialResponseBuilder;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 @Component
-@Slf4j
-@RequiredArgsConstructor
 public class XssTutorial extends AbstractModule {
   private final XssService xssService;
 
-  private final ModuleService moduleService;
-
-  private final FlagHandler flagHandler;
-
-  @Override
-  public String getDescription() {
-    return "Tutorial on cross site scripting (XSS)";
-  }
-
-  @Override
-  public String getName() {
-    return "XSS Tutorial";
-  }
-
-  @Override
-  public String getShortName() {
-    return "xss-tutorial";
-  }
-
-  public Mono<Long> initialize() {
-    log.info("Creating xss tutorial module");
-    final Mono<Module> moduleMono = moduleService.create(this);
-    return moduleMono.flatMap(
-        module -> {
-          this.moduleId = module.getId();
-          return moduleService.setDynamicFlag(moduleId).then(Mono.just(this.moduleId));
-        });
+  public XssTutorial(
+      final XssService xssService,
+      final ModuleService moduleService,
+      final FlagHandler flagHandler) {
+    super(
+        "XSS Tutorial",
+        "xss-tutorial",
+        "Tutorial on cross site scripting (XSS)",
+        moduleService,
+        flagHandler);
+    this.xssService = xssService;
   }
 
   public Mono<XssTutorialResponse> submitQuery(final long userId, final String query) {
-    if (this.moduleId == null) {
-      return Mono.error(new RuntimeException("Must initialize module before submitting to it"));
-    }
+
     final String htmlTarget =
         String.format(
             "<html><head><title>Alert</title></head><body><p>Result: %s</p></body></html>", query);
@@ -80,7 +57,7 @@ public class XssTutorial extends AbstractModule {
       xssTutorialResponseBuilder.alert(alerts.get(0));
 
       return flagHandler
-          .getDynamicFlag(userId, this.moduleId)
+          .getDynamicFlag(userId, getModuleId())
           .map(flag -> String.format("Congratulations, flag is %s", flag))
           .map(xssTutorialResponseBuilder::result)
           .map(XssTutorialResponseBuilder::build);
