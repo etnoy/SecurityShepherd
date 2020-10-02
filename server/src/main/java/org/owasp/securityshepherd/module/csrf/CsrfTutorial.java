@@ -21,7 +21,6 @@ import org.owasp.securityshepherd.module.AbstractModule;
 import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.module.csrf.CsrfTutorialResult.CsrfTutorialResultBuilder;
-import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorial;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
