@@ -61,7 +61,7 @@ public class StartupRunner implements ApplicationRunner {
 
   private final CsrfTutorial csrfTutorial;
 
-  private final FlagTutorial dummyModule;
+  private final FlagTutorial flagTutorial;
 
   private final SubmissionService submissionService;
 
@@ -88,7 +88,7 @@ public class StartupRunner implements ApplicationRunner {
     xssTutorial.initialize().block();
     sqlInjectionTutorial.initialize().block();
     csrfTutorial.initialize().block();
-    dummyModule.initialize().block();
+    flagTutorial.initialize().block();
 
     // We'll use this exact flag
 

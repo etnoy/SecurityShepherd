@@ -70,7 +70,7 @@ class StartupRunnerTest {
 
   @Mock private CsrfService csrfService;
 
-  @Mock private FlagTutorial dummyModule;
+  @Mock private FlagTutorial flagTutorial;
 
   @Mock private SubmissionService submissionService;
 
@@ -98,6 +98,7 @@ class StartupRunnerTest {
     when(xssTutorial.initialize()).thenReturn(Mono.just(1L));
     when(sqlInjectionTutorial.initialize()).thenReturn(Mono.just(2L));
     when(csrfTutorial.initialize()).thenReturn(Mono.just(3L));
+    when(flagTutorial.initialize()).thenReturn(Mono.just(3L));
 
     when(userService.create("TestUser1")).thenReturn(Mono.just(2L));
     when(userService.create("TestUser2")).thenReturn(Mono.just(3L));
@@ -199,7 +200,7 @@ class StartupRunnerTest {
             xssTutorial,
             sqlInjectionTutorial,
             csrfTutorial,
-            dummyModule,
+            flagTutorial,
             submissionService,
             correctionService,
             scoringService);

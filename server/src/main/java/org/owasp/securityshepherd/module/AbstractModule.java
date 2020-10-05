@@ -19,6 +19,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.experimental.NonFinal;
+import org.owasp.securityshepherd.exception.ModuleNotInitializedException;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
@@ -44,6 +45,7 @@ public abstract class AbstractModule {
   }
 
   public Mono<Long> initialize(final String staticFlag) {
+    // Initialize with static flag
     final Mono<Module> moduleMono = moduleService.create(this);
     return moduleMono.flatMap(
         module -> {
@@ -59,7 +61,24 @@ public abstract class AbstractModule {
         });
   }
 
+  public Long getModuleId() {
+    if (this.module == null) {
+      throw new ModuleNotInitializedException("Must initialize module first");
+    }
+    return this.module.getId();
+  }
+
+  public Module getModule() {
+    if (this.module == null) {
+      throw new ModuleNotInitializedException("Must initialize module first");
+    }
+    return this.module;
+  }
+
   public Mono<String> getFlag(final long userId) {
+    if (this.module == null) {
+      throw new ModuleNotInitializedException("Must initialize module first");
+    }
     if (module.isFlagStatic()) {
       return Mono.just(module.getStaticFlag());
     } else {
