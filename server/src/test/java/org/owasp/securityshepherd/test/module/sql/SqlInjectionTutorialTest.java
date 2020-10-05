@@ -93,12 +93,12 @@ class SqlInjectionTutorialTest {
     when(mockModule.getId()).thenReturn(mockModuleId);
     when(moduleService.setDynamicFlag(mockModuleId)).thenReturn(Mono.just(mockModule));
     sqlInjectionTutorial.initialize().block();
-    assertThat(sqlInjectionTutorial.getModuleId()).isEqualTo(mockModuleId);
+    assertThat(sqlInjectionTutorial.getModule().getId()).isEqualTo(mockModuleId);
   }
 
   @Test
   void getModuleId_ModuleNotIntialized_ThrowsModuleNotInitializedException() {
-    assertThatThrownBy(() -> sqlInjectionTutorial.getModuleId())
+    assertThatThrownBy(() -> sqlInjectionTutorial.getModule().getId())
         .isInstanceOf(ModuleNotInitializedException.class)
         .hasMessageContaining("Must initialize module first");
   }

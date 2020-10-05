@@ -34,7 +34,6 @@ import org.owasp.securityshepherd.test.util.TestUtils;
 import org.owasp.securityshepherd.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
@@ -43,7 +42,6 @@ import reactor.test.StepVerifier;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(properties = {"application.runner.enabled=false"})
 @Execution(ExecutionMode.SAME_THREAD)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @DisplayName("XssTutorial integration test")
 class XssTutorialIT {
   @BeforeAll
@@ -87,7 +85,8 @@ class XssTutorialIT {
     // Submit the flag we got from the sql injection and make sure it validates
     StepVerifier.create(
             flagMono
-                .flatMap(flag -> submissionService.submit(userId, xssTutorial.getModuleId(), flag))
+                .flatMap(
+                    flag -> submissionService.submit(userId, xssTutorial.getModule().getId(), flag))
                 .map(Submission::isValid))
         .expectNext(true)
         .expectComplete()
@@ -98,7 +97,7 @@ class XssTutorialIT {
   void submitSql_CorrectAttackQuery_ModifiedFlagIsWrong() {
     final Long userId = userService.create("TestUser1").block();
 
-    final Long moduleId = xssTutorial.getModuleId();
+    final Long moduleId = xssTutorial.getModule().getId();
     moduleService.setDynamicFlag(moduleId).block();
 
     final Mono<String> flagMono =
@@ -109,9 +108,7 @@ class XssTutorialIT {
     // Take the flag we got from the tutorial, modify it, and expect validation to fail
     StepVerifier.create(
             flagMono
-                .flatMap(
-                    flag ->
-                        submissionService.submit(userId, xssTutorial.getModuleId(), flag + "wrong"))
+                .flatMap(flag -> submissionService.submit(userId, moduleId, flag + "wrong"))
                 .map(Submission::isValid))
         .expectNext(false)
         .expectComplete()

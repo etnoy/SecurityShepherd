@@ -13,23 +13,16 @@
  * If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.owasp.securityshepherd.module.dummy;
+package org.owasp.securityshepherd.module.flag;
 
 import org.owasp.securityshepherd.module.AbstractModule;
 import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.ModuleService;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Mono;
 
 @Component
-public class DummyModule extends AbstractModule {
-
-  public Mono<String> getFlag(final long userId) {
-
-    return flagHandler.getDynamicFlag(userId, getModuleId());
-  }
-
-  public DummyModule(final ModuleService moduleService, final FlagHandler flagHandler) {
-    super("Dummy module", "dummy-module", "Dummy module", moduleService, flagHandler);
+public class FlagTutorial extends AbstractModule {
+  public FlagTutorial(final ModuleService moduleService, final FlagHandler flagHandler) {
+    super("Flag Tutorial", "flag-tutorial", "Flag tutorial", moduleService, flagHandler);
   }
 }

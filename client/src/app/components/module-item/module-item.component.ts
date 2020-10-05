@@ -16,6 +16,7 @@ import { Submission } from 'src/app/model/submission';
 import { XssTutorialComponent } from '../xss-tutorial/xss-tutorial.component';
 import { SqlInjectionTutorialComponent } from '../sql-injection-tutorial/sql-injection-tutorial.component';
 import { CsrfTutorialComponent } from '../csrf-tutorial/csrf-tutorial.component';
+import { FlagTutorialComponent } from '../flag-tutorial/flag-tutorial.component';
 
 @Component({
   selector: 'app-module-item',
@@ -80,6 +81,10 @@ export class ModuleItemComponent implements OnInit {
             }
             case 'csrf-tutorial': {
               currentModule = CsrfTutorialComponent;
+              break;
+            }
+            case 'flag-tutorial': {
+              currentModule = FlagTutorialComponent;
               break;
             }
             default: {

@@ -58,8 +58,7 @@ public class XssTutorial extends AbstractModule {
     } else {
       xssTutorialResponseBuilder.alert(alerts.get(0));
 
-      return flagHandler
-          .getDynamicFlag(userId, getModuleId())
+      return getFlag(userId)
           .map(flag -> String.format("Congratulations, flag is %s", flag))
           .map(xssTutorialResponseBuilder::result)
           .map(XssTutorialResponseBuilder::build);

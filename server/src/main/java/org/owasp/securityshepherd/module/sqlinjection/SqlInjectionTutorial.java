@@ -57,8 +57,7 @@ public class SqlInjectionTutorial extends AbstractModule {
     // The flag is
     // different for every user to prevent copying flags
     final Mono<String> insertionQuery =
-        flagHandler
-            .getDynamicFlag(userId, getModuleId())
+        getFlag(userId)
             // Curly braces need to be URL encoded
             .map(flag -> flag.replace("{", "%7B"))
             .map(flag -> flag.replace("}", "%7D"))

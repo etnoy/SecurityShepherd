@@ -77,7 +77,7 @@ class FlagControllerIT {
   }
 
   @Test
-  @DisplayName("Submitting an invalid exact flag should return false")
+  @DisplayName("Submitting an invalid static flag should return false")
   void submitFlag_InvalidStaticFlag_Success() throws Exception {
     final String loginName = "testUser";
     final String password = "paLswOrdha17£@£sh";
@@ -171,7 +171,7 @@ class FlagControllerIT {
   }
 
   @Test
-  @DisplayName("Submitting a valid exact flag should return true")
+  @DisplayName("Submitting a valid static flag should return true")
   void submitFlag_ValidStaticFlag_Success() throws Exception {
     final String loginName = "testUser";
     final String password = "paLswOrdha17£@£sh";

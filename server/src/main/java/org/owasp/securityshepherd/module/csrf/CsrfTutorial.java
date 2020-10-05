@@ -45,18 +45,16 @@ public class CsrfTutorial extends AbstractModule {
 
   public Mono<CsrfTutorialResult> getTutorial(final long userId) {
 
-    final Mono<String> pseudonym = csrfService.getPseudonym(userId, getModuleId());
+    final Mono<String> pseudonym = csrfService.getPseudonym(userId, module.getId());
 
     final Mono<CsrfTutorialResultBuilder> resultWithoutFlag =
         pseudonym.map(p -> CsrfTutorialResult.builder().pseudonym(p));
 
     final Mono<CsrfTutorialResultBuilder> resultWithFlag =
-        resultWithoutFlag
-            .zipWith(flagHandler.getDynamicFlag(userId, getModuleId()))
-            .map(tuple -> tuple.getT1().flag(tuple.getT2()));
+        resultWithoutFlag.zipWith(getFlag(userId)).map(tuple -> tuple.getT1().flag(tuple.getT2()));
 
     return pseudonym
-        .flatMap(p -> csrfService.validate(p, getModuleId()))
+        .flatMap(p -> csrfService.validate(p, module.getId()))
         .filter(isActive -> isActive)
         .flatMap(isActive -> resultWithFlag)
         .switchIfEmpty(resultWithoutFlag)
@@ -70,12 +68,12 @@ public class CsrfTutorial extends AbstractModule {
     log.debug(String.format("User %d is attacking csrf target %s", userId, target));
 
     return csrfService
-        .validatePseudonym(target, getModuleId())
+        .validatePseudonym(target, module.getId())
         .flatMap(
             valid -> {
               if (Boolean.TRUE.equals(valid)) {
                 return csrfService
-                    .getPseudonym(userId, getModuleId())
+                    .getPseudonym(userId, module.getId())
                     .flatMap(
                         p -> {
                           if (p.equals(target)) {
@@ -85,7 +83,7 @@ public class CsrfTutorial extends AbstractModule {
                                     .build());
                           } else {
                             return csrfService
-                                .attack(target, getModuleId())
+                                .attack(target, module.getId())
                                 .then(
                                     Mono.just(
                                         csrfTutorialResultBuilder

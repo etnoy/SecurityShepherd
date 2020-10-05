@@ -28,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.module.csrf.CsrfTutorial;
+import org.owasp.securityshepherd.module.flag.FlagTutorial;
 import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorial;
 import org.owasp.securityshepherd.module.xss.XssTutorial;
 import org.owasp.securityshepherd.scoring.CorrectionService;
@@ -60,6 +61,8 @@ public class StartupRunner implements ApplicationRunner {
 
   private final CsrfTutorial csrfTutorial;
 
+  private final FlagTutorial dummyModule;
+
   private final SubmissionService submissionService;
 
   private final CorrectionService correctionService;
@@ -85,6 +88,7 @@ public class StartupRunner implements ApplicationRunner {
     xssTutorial.initialize().block();
     sqlInjectionTutorial.initialize().block();
     csrfTutorial.initialize().block();
+    dummyModule.initialize().block();
 
     // We'll use this exact flag
 

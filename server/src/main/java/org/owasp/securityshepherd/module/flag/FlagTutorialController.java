@@ -13,7 +13,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.owasp.securityshepherd.module.dummy;
+package org.owasp.securityshepherd.module.flag;
 
 import lombok.RequiredArgsConstructor;
 import org.owasp.securityshepherd.authentication.ControllerAuthentication;
@@ -25,15 +25,18 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = "/api/v1/module/dummy")
-public class DummyModuleController {
-  private final DummyModule dummyModule;
+@RequestMapping(path = "/api/v1/module/flag-tutorial")
+public class FlagTutorialController {
+  private final FlagTutorial flagTutorial;
 
   private final ControllerAuthentication controllerAuthentication;
 
   @GetMapping(path = "/")
   @PreAuthorize("hasRole('ROLE_USER')")
-  public Mono<String> getFlag() {
-    return controllerAuthentication.getUserId().flatMap(dummyModule::getFlag);
+  public Mono<FlagTutorialResult> getFlag() {
+    return controllerAuthentication
+        .getUserId()
+        .flatMap(flagTutorial::getFlag)
+        .map(flag -> FlagTutorialResult.builder().flag(flag).build());
   }
 }

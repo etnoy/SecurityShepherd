@@ -74,12 +74,12 @@ class XssTutorialTest {
     when(mockModule.getId()).thenReturn(mockModuleId);
     when(moduleService.setDynamicFlag(mockModuleId)).thenReturn(Mono.just(mockModule));
     xssTutorial.initialize().block();
-    assertThat(xssTutorial.getModuleId()).isEqualTo(mockModuleId);
+    assertThat(xssTutorial.getModule().getId()).isEqualTo(mockModuleId);
   }
 
   @Test
   void getModuleId_ModuleNotIntialized_ThrowsModuleNotInitializedException() {
-    assertThatThrownBy(() -> xssTutorial.getModuleId())
+    assertThatThrownBy(() -> xssTutorial.getModule().getId())
         .isInstanceOf(ModuleNotInitializedException.class)
         .hasMessageContaining("Must initialize module first");
   }

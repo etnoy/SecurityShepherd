@@ -1,17 +1,17 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientModule } from '@angular/common/http';
-import { CsrfTutorialComponent } from './csrf-tutorial.component';
+import { FlagTutorialComponent } from './flag-tutorial.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Module } from 'src/app/model/module';
 
-describe('CsrfTutorialComponent', () => {
-  let component: CsrfTutorialComponent;
-  let fixture: ComponentFixture<CsrfTutorialComponent>;
+describe('FlagTutorialComponent', () => {
+  let component: FlagTutorialComponent;
+  let fixture: ComponentFixture<FlagTutorialComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [CsrfTutorialComponent],
+      declarations: [FlagTutorialComponent],
       imports: [
         RouterTestingModule,
         HttpClientModule,
@@ -22,7 +22,7 @@ describe('CsrfTutorialComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CsrfTutorialComponent);
+    fixture = TestBed.createComponent(FlagTutorialComponent);
     component = fixture.componentInstance;
     const module: Module = {
       id: 'test',

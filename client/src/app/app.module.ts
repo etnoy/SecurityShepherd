@@ -20,6 +20,7 @@ import { AlertComponent } from './components/alert/alert.component';
 import { ErrorInterceptor } from './shared/error.interceptor';
 import { ScoreboardComponent } from './components/scoreboard/scoreboard.component';
 import { UserScoreComponent } from './components/user-score/user-score.component';
+import { FlagTutorialComponent } from './components/flag-tutorial/flag-tutorial.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { UserScoreComponent } from './components/user-score/user-score.component
     ModuleItemComponent,
     XssTutorialComponent,
     CsrfTutorialComponent,
+    FlagTutorialComponent,
     ModuleDirective,
     ScoreboardComponent,
     UserScoreComponent,

@@ -32,6 +32,7 @@ import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.module.csrf.CsrfService;
 import org.owasp.securityshepherd.module.csrf.CsrfTutorial;
+import org.owasp.securityshepherd.module.flag.FlagTutorial;
 import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorial;
 import org.owasp.securityshepherd.module.xss.XssTutorial;
 import org.owasp.securityshepherd.scoring.Correction;
@@ -68,6 +69,8 @@ class StartupRunnerTest {
   @Mock private CsrfTutorial csrfTutorial;
 
   @Mock private CsrfService csrfService;
+
+  @Mock private FlagTutorial dummyModule;
 
   @Mock private SubmissionService submissionService;
 
@@ -196,6 +199,7 @@ class StartupRunnerTest {
             xssTutorial,
             sqlInjectionTutorial,
             csrfTutorial,
+            dummyModule,
             submissionService,
             correctionService,
             scoringService);

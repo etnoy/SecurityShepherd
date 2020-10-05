@@ -19,7 +19,6 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.experimental.NonFinal;
-import org.owasp.securityshepherd.exception.ModuleNotInitializedException;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
@@ -38,15 +37,7 @@ public abstract class AbstractModule {
 
   @NonNull protected final FlagHandler flagHandler;
 
-  @NonFinal private Long moduleId;
-
-  public Long getModuleId() {
-    if (moduleId == null) {
-      throw new ModuleNotInitializedException("Must initialize module first");
-    }
-
-    return moduleId;
-  }
+  @NonFinal protected Module module;
 
   public Mono<Long> initialize() {
     return initialize(null);
@@ -56,12 +47,23 @@ public abstract class AbstractModule {
     final Mono<Module> moduleMono = moduleService.create(this);
     return moduleMono.flatMap(
         module -> {
-          this.moduleId = module.getId();
+          this.module = module;
+
           if (staticFlag == null) {
-            return moduleService.setDynamicFlag(moduleId).then(Mono.just(this.moduleId));
+            return moduleService.setDynamicFlag(module.getId()).then(Mono.just(module.getId()));
           } else {
-            return moduleService.setStaticFlag(moduleId, staticFlag).then(Mono.just(this.moduleId));
+            return moduleService
+                .setStaticFlag(module.getId(), staticFlag)
+                .then(Mono.just(module.getId()));
           }
         });
+  }
+
+  public Mono<String> getFlag(final long userId) {
+    if (module.isFlagStatic()) {
+      return Mono.just(module.getStaticFlag());
+    } else {
+      return flagHandler.getDynamicFlag(userId, module.getId());
+    }
   }
 }

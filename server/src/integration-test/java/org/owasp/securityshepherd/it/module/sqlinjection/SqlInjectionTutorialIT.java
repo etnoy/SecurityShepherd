@@ -101,7 +101,7 @@ class SqlInjectionTutorialIT {
   @Test
   void submitSql_CorrectAttackQuery_ReturnedFlagIsCorrect() {
     final Long userId = userService.create("TestUser1").block();
-    final Long moduleId = sqlInjectionTutorial.getModuleId();
+    final Long moduleId = sqlInjectionTutorial.getModule().getId();
 
     final Mono<String> flagMono =
         sqlInjectionTutorial

@@ -16,6 +16,7 @@
 package org.owasp.securityshepherd.authentication;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -49,8 +50,12 @@ public class WebTokenService {
   }
 
   private boolean isTokenExpired(final String token) {
-    final Date expiration = getExpirationDateFromToken(token);
-    return expiration.before(new Date());
+    try {
+      final Date expiration = getExpirationDateFromToken(token);
+      return expiration.before(new Date());
+    } catch (ExpiredJwtException e) {
+      return true;
+    }
   }
 
   public String generateToken(final long userId) {
