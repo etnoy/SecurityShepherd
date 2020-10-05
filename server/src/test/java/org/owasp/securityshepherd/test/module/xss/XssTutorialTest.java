@@ -79,7 +79,7 @@ class XssTutorialTest {
 
   @Test
   void getModuleId_ModuleNotIntialized_ThrowsModuleNotInitializedException() {
-    assertThatThrownBy(() -> xssTutorial.getModule().getId())
+    assertThatThrownBy(() -> xssTutorial.getModuleId())
         .isInstanceOf(ModuleNotInitializedException.class)
         .hasMessageContaining("Must initialize module first");
   }

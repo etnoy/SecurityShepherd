@@ -41,44 +41,47 @@ public abstract class AbstractModule {
   @NonFinal protected Module module;
 
   public Mono<Long> initialize() {
-    return initialize(null);
+    // Initialize with dynamic flag
+    final Mono<Module> moduleMono = moduleService.create(this);
+    return moduleMono.flatMap(
+        createdModule -> {
+          this.module = createdModule;
+          return moduleService
+              .setDynamicFlag(createdModule.getId())
+              .then(Mono.just(createdModule.getId()));
+        });
   }
 
   public Mono<Long> initialize(final String staticFlag) {
     // Initialize with static flag
     final Mono<Module> moduleMono = moduleService.create(this);
     return moduleMono.flatMap(
-        module -> {
-          this.module = module;
-
-          if (staticFlag == null) {
-            return moduleService.setDynamicFlag(module.getId()).then(Mono.just(module.getId()));
-          } else {
-            return moduleService
-                .setStaticFlag(module.getId(), staticFlag)
-                .then(Mono.just(module.getId()));
-          }
+        createdModule -> {
+          this.module = createdModule;
+          return moduleService
+              .setStaticFlag(createdModule.getId(), staticFlag)
+              .then(Mono.just(createdModule.getId()));
         });
   }
-
-  public Long getModuleId() {
+  
+  private void checkIfInitialized() {
     if (this.module == null) {
       throw new ModuleNotInitializedException("Must initialize module first");
     }
+  }
+
+  public Long getModuleId() {
+    checkIfInitialized();
     return this.module.getId();
   }
 
   public Module getModule() {
-    if (this.module == null) {
-      throw new ModuleNotInitializedException("Must initialize module first");
-    }
+    checkIfInitialized();
     return this.module;
   }
 
   public Mono<String> getFlag(final long userId) {
-    if (this.module == null) {
-      throw new ModuleNotInitializedException("Must initialize module first");
-    }
+    checkIfInitialized();
     if (module.isFlagStatic()) {
       return Mono.just(module.getStaticFlag());
     } else {

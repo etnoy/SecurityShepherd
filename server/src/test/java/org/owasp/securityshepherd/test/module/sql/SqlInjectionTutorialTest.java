@@ -98,7 +98,7 @@ class SqlInjectionTutorialTest {
 
   @Test
   void getModuleId_ModuleNotIntialized_ThrowsModuleNotInitializedException() {
-    assertThatThrownBy(() -> sqlInjectionTutorial.getModule().getId())
+    assertThatThrownBy(() -> sqlInjectionTutorial.getModuleId())
         .isInstanceOf(ModuleNotInitializedException.class)
         .hasMessageContaining("Must initialize module first");
   }
