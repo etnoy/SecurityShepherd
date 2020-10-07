@@ -36,7 +36,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.owasp.securityshepherd.exception.InvalidModuleNameException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.ModuleAlreadySolvedException;
 import org.owasp.securityshepherd.module.FlagHandler;
@@ -69,15 +68,6 @@ class SubmissonServiceTest {
   @Mock private CorrectionRepository correctionRepository;
 
   @Mock private FlagHandler flagHandler;
-
-  @Test
-  void findAllByModuleName_InvalidModuleName_ReturnsInvalidModuleNameException() {
-    for (final String moduleName : TestUtils.INVALID_NAMES) {
-      StepVerifier.create(submissionService.findAllByModuleName(moduleName))
-          .expectError(InvalidModuleNameException.class)
-          .verify();
-    }
-  }
 
   @Test
   void findAllByModuleName_NoSubmissionsExist_ReturnsEmpty() {
@@ -148,17 +138,6 @@ class SubmissonServiceTest {
         .verify();
 
     verify(submissionRepository, times(1)).findAllValidByUserId(mockUserId);
-  }
-
-  @Test
-  void findAllValidByUserIdAndModuleName_InvalidModuleName_ReturnsInvalidUserIdException() {
-    final long mockUserId = 671L;
-    for (final String moduleName : TestUtils.INVALID_NAMES) {
-      StepVerifier.create(
-              submissionService.findAllValidByUserIdAndModuleName(mockUserId, moduleName))
-          .expectError(InvalidModuleNameException.class)
-          .verify();
-    }
   }
 
   @Test
@@ -309,16 +288,6 @@ class SubmissonServiceTest {
   }
 
   @Test
-  void submit_InvalidModuleName_ReturnsInvalidUserIdException() {
-    final long mockUserId = 934L;
-    for (final String moduleName : TestUtils.INVALID_NAMES) {
-      StepVerifier.create(submissionService.submit(mockUserId, moduleName, "flag"))
-          .expectError(InvalidModuleNameException.class)
-          .verify();
-    }
-  }
-
-  @Test
   void submit_InvalidUserId_ReturnsInvalidUserIdException() {
     final String mockModuleName = "id";
     for (final long userId : TestUtils.INVALID_IDS) {
@@ -390,16 +359,6 @@ class SubmissonServiceTest {
     verify(submissionRepository, times(1))
         .findAllValidByUserIdAndModuleName(mockUserId, mockModuleName);
     verify(submissionRepository, times(1)).save(any(Submission.class));
-  }
-
-  @Test
-  void submitValid_InvalidModuleName_ReturnsInvalidUserIdException() {
-    final long mockUserId = 348L;
-    for (final String moduleName : TestUtils.INVALID_NAMES) {
-      StepVerifier.create(submissionService.submitValid(mockUserId, moduleName))
-          .expectError(InvalidModuleNameException.class)
-          .verify();
-    }
   }
 
   @Test

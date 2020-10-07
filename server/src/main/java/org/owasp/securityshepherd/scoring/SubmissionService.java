@@ -134,7 +134,7 @@ public final class SubmissionService {
         .switchIfEmpty(
             Mono.error(
                 new ModuleAlreadySolvedException(
-                    String.format("User %d has already finished module %d", userId, moduleName))))
+                    String.format("User %d has already finished module %s", userId, moduleName))))
         // Otherwise, build a submission and save it in db
         .map(SubmissionBuilder::build)
         .flatMap(submissionRepository::save);

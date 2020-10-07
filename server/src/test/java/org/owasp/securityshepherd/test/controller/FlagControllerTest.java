@@ -15,6 +15,7 @@
  */
 package org.owasp.securityshepherd.test.controller;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -31,6 +32,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.owasp.securityshepherd.authentication.ControllerAuthentication;
 import org.owasp.securityshepherd.exception.NotAuthenticatedException;
 import org.owasp.securityshepherd.module.FlagController;
+import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.scoring.Submission;
 import org.owasp.securityshepherd.scoring.SubmissionService;
@@ -64,13 +66,16 @@ class FlagControllerTest {
 
   @Test
   void submitFlag_UserNotAuthenticated_ReturnsException() throws Exception {
-    final String mockShortName = "shortname";
+    final String mockModuleName = "test-module";
     final String flag = "validflag";
+    final Module mockModule = mock(Module.class);
 
     when(controllerAuthentication.getUserId())
         .thenReturn(Mono.error(new NotAuthenticatedException()));
 
-    StepVerifier.create(flagController.submitFlag(mockShortName, flag))
+    when(moduleService.findByName(mockModuleName)).thenReturn(Mono.just(mockModule));
+
+    StepVerifier.create(flagController.submitFlag(mockModuleName, flag))
         .expectError(NotAuthenticatedException.class)
         .verify();
 
@@ -80,7 +85,9 @@ class FlagControllerTest {
   @Test
   void submitFlag_UserAuthenticatedAndValidFlagSubmitted_ReturnsValidSubmission() throws Exception {
     final long mockUserId = 417L;
-    final String mockModuleName = "id";
+    final String moduleName = "test-module";
+    final Module mockModule = mock(Module.class);
+
     final String flag = "validflag";
 
     when(controllerAuthentication.getUserId()).thenReturn(Mono.just(mockUserId));
@@ -88,20 +95,23 @@ class FlagControllerTest {
     final Submission submission =
         Submission.builder()
             .userId(mockUserId)
-            .moduleName("id")
+            .moduleName(moduleName)
             .flag(flag)
             .isValid(true)
             .time(LocalDateTime.of(2000, Month.JULY, 1, 2, 3, 4))
             .build();
 
-    when(submissionService.submit(mockUserId, mockModuleName, flag))
-        .thenReturn(Mono.just(submission));
+    when(submissionService.submit(mockUserId, moduleName, flag)).thenReturn(Mono.just(submission));
 
-    StepVerifier.create(flagController.submitFlag(mockModuleName, flag))
+    when(mockModule.getName()).thenReturn(moduleName);
+
+    when(moduleService.findByName(moduleName)).thenReturn(Mono.just(mockModule));
+
+    StepVerifier.create(flagController.submitFlag(moduleName, flag))
         .expectNext(submission)
         .expectComplete()
         .verify();
 
-    verify(submissionService, times(1)).submit(mockUserId, mockModuleName, flag);
+    verify(submissionService, times(1)).submit(mockUserId, moduleName, flag);
   }
 }

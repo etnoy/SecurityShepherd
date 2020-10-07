@@ -29,11 +29,11 @@ import org.owasp.securityshepherd.test.util.TestUtils;
 @DisplayName("ModuleListItem unit test")
 class ModuleListItemTest {
   @Test
-  void build_IdNotGiven_ThrowsNullPointerException() {
+  void build_NameNotGiven_ThrowsNullPointerException() {
     final ModuleListItemBuilder moduleListItemBuilder = ModuleListItem.builder();
     Throwable thrownException =
         assertThrows(NullPointerException.class, () -> moduleListItemBuilder.build());
-    assertThat(thrownException.getMessage()).isEqualTo("id is marked non-null but is null");
+    assertThat(thrownException.getMessage()).isEqualTo("name is marked non-null but is null");
   }
 
   @Test
@@ -63,7 +63,7 @@ class ModuleListItemTest {
     final ModuleListItemBuilder moduleListItemBuilder = ModuleListItem.builder();
     Throwable thrownException =
         assertThrows(NullPointerException.class, () -> moduleListItemBuilder.name(null));
-    assertThat(thrownException.getMessage()).isEqualTo("id is marked non-null but is null");
+    assertThat(thrownException.getMessage()).isEqualTo("name is marked non-null but is null");
   }
 
   @Test
@@ -76,15 +76,13 @@ class ModuleListItemTest {
     final ModuleListItemBuilder moduleListItemBuilder = ModuleListItem.builder();
 
     assertThat(moduleListItemBuilder)
-        .hasToString(
-            "ModuleListItem.ModuleListItemBuilder(id=null, name=null, shortName=null, "
-                + "description=null, isSolved=null)");
+        .hasToString("ModuleListItem.ModuleListItemBuilder(name=null, isSolved=null)");
   }
 
   @Test
   void toString_ValidData_AsExpected() {
     final ModuleListItem moduleListItem = ModuleListItem.builder().name("id").build();
 
-    assertThat(moduleListItem).hasToString("ModuleListItem(id=id, isSolved=null)");
+    assertThat(moduleListItem).hasToString("ModuleListItem(name=id, isSolved=null)");
   }
 }

@@ -47,8 +47,8 @@ import reactor.core.publisher.Mono;
     properties = {"application.runner.enabled=false"})
 @AutoConfigureWebTestClient
 @Execution(ExecutionMode.SAME_THREAD)
-@DisplayName("ModuleController integration test")
-class ModuleControllerIT {
+@DisplayName("ModuleController API integration test")
+class ModuleControllerAPIIT {
   @BeforeAll
   private static void reactorVerbose() {
     // Tell Reactor to print verbose error messages

@@ -45,9 +45,9 @@ public class ModuleController {
 
   @GetMapping(path = "module/{moduleName}")
   @PreAuthorize("hasRole('ROLE_USER')")
-  public Mono<ModuleListItem> getModuleById(@PathVariable final String moduleName) {
+  public Mono<ModuleListItem> getModuleByName(@PathVariable final String moduleName) {
     return controllerAuthentication
         .getUserId()
-        .flatMap(userId -> moduleSolutions.findModuleByIdWithSolutionStatus(userId, moduleName));
+        .flatMap(userId -> moduleSolutions.findModuleByNameWithSolutionStatus(userId, moduleName));
   }
 }

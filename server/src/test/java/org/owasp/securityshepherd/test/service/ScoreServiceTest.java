@@ -27,14 +27,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.owasp.securityshepherd.exception.InvalidModuleNameException;
 import org.owasp.securityshepherd.exception.InvalidRankException;
 import org.owasp.securityshepherd.module.ModulePointRepository;
 import org.owasp.securityshepherd.scoring.ModulePoint;
 import org.owasp.securityshepherd.scoring.ScoreService;
 import org.owasp.securityshepherd.scoring.ScoreboardEntry;
 import org.owasp.securityshepherd.scoring.ScoreboardRepository;
-import org.owasp.securityshepherd.test.util.TestUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
@@ -80,15 +78,6 @@ class ScoreServiceTest {
             })
         .expectComplete()
         .verify();
-  }
-
-  @Test
-  void submit_InvalidUserId_ReturnsInvalidUserIdException() {
-    for (final String moduleName : TestUtils.INVALID_NAMES) {
-      StepVerifier.create(scoreService.setModuleScore(moduleName, 1, 1))
-          .expectError(InvalidModuleNameException.class)
-          .verify();
-    }
   }
 
   @Test

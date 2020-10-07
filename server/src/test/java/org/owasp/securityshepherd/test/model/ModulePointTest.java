@@ -69,10 +69,10 @@ class ModulePointTest {
 
   @Test
   void buildModuleName_ValidModuleName_Builds() {
-    final long[] moduleNamesToTest = {0L, 1L, -1L, 1000L, -1000L, 1234567L, -1234567L, 42L};
 
-    for (final long moduleName : moduleNamesToTest) {
-      final ModulePointBuilder builder = ModulePoint.builder().moduleName("id").rank(123).points(1);
+    for (final String moduleName : TestUtils.NAMES) {
+      final ModulePointBuilder builder =
+          ModulePoint.builder().moduleName(moduleName).rank(123).points(1);
 
       assertThat(builder.build()).isInstanceOf(ModulePoint.class);
       assertThat(builder.build().getModuleName()).isEqualTo(moduleName);
@@ -125,19 +125,20 @@ class ModulePointTest {
   @Test
   void modulePointBuilderToString_ValidData_AsExpected() {
     final ModulePointBuilder builder =
-        ModulePoint.builder().id(17L).moduleName("id").rank(1).points(54);
+        ModulePoint.builder().id(17L).moduleName("test-module").rank(1).points(54);
 
     assertThat(builder)
-        .hasToString("ModulePoint.ModulePointBuilder(id=17, moduleName=83, rank=1, points=54)");
+        .hasToString(
+            "ModulePoint.ModulePointBuilder(id=17, moduleName=test-module, rank=1, points=54)");
   }
 
   @Test
   void toString_ValidData_AsExpected() {
     final ModulePoint testModulePoint =
-        ModulePoint.builder().id(1337L).moduleName("id").rank(6789).points(987).build();
+        ModulePoint.builder().id(1337L).moduleName("test-module").rank(6789).points(987).build();
 
     assertThat(testModulePoint)
-        .hasToString("ModulePoint(id=1337, moduleName=123, rank=6789, points=987)");
+        .hasToString("ModulePoint(id=1337, moduleName=test-module, rank=6789, points=987)");
   }
 
   @Test
@@ -164,7 +165,7 @@ class ModulePointTest {
 
     final ModulePoint modulePoint =
         ModulePoint.builder()
-            .moduleName(TestUtils.INITIAL_NAMES)
+            .moduleName(TestUtils.INITIAL_NAME)
             .points(79)
             .rank(15)
             .id(2944L)

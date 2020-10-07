@@ -183,7 +183,7 @@ class SubmissionTest {
   void toString_ValidData_AsExpected() {
     final Submission testSubmission =
         Submission.builder()
-            .moduleName("id")
+            .moduleName("test-module")
             .flag("flag")
             .userId(67898L)
             .time(LocalDateTime.MIN)
@@ -191,7 +191,7 @@ class SubmissionTest {
 
     assertThat(testSubmission)
         .hasToString(
-            "Submission(id=null, userId=67898, moduleName=11234, time="
+            "Submission(id=null, userId=67898, moduleName=test-module, time="
                 + LocalDateTime.MIN
                 + ", isValid=false, flag=flag)");
   }
@@ -243,7 +243,7 @@ class SubmissionTest {
             .userId(1L)
             .flag("flag")
             .time(LocalDateTime.MIN)
-            .moduleName(TestUtils.INITIAL_NAMES)
+            .moduleName(TestUtils.INITIAL_NAME)
             .build();
     assertThrows(NullPointerException.class, () -> submission.withModuleName(null));
   }
@@ -253,7 +253,7 @@ class SubmissionTest {
 
     final Submission testSubmission =
         Submission.builder()
-            .moduleName(TestUtils.INITIAL_NAMES)
+            .moduleName(TestUtils.INITIAL_NAME)
             .flag("flag")
             .userId(6736L)
             .time(LocalDateTime.MIN.plusDays(77))

@@ -33,6 +33,8 @@ public abstract class BaseModule {
 
   @NonNull protected Mono<Module> module;
 
+  private Mono<Void> waitSignal;
+
   public BaseModule(
       String moduleName, ModuleService moduleService, FlagHandler flagHandler, String staticFlag) {
     this.moduleName = moduleName;
@@ -40,7 +42,10 @@ public abstract class BaseModule {
     this.flagHandler = flagHandler;
     this.module = moduleService.create(moduleName);
     if (staticFlag != null) {
-      this.module.subscribe(createdModule -> moduleService.setStaticFlag(moduleName, staticFlag));
+      this.waitSignal =
+          Mono.when(this.module.and(moduleService.setStaticFlag(moduleName, staticFlag)));
+    } else {
+      this.waitSignal = Mono.when(this.module);
     }
   }
 

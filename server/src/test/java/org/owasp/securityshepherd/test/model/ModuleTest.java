@@ -31,7 +31,8 @@ class ModuleTest {
   void buildIsStaticFlag_TrueOrFalse_MatchesBuild() {
     // TODO
     for (final boolean isFlagStatic : TestUtils.BOOLEANS) {
-      final ModuleBuilder builder = Module.builder().key(new byte[] {120, 56, 111});
+      final ModuleBuilder builder =
+          Module.builder().name("test-module").key(new byte[] {120, 56, 111});
 
       builder.isFlagStatic(isFlagStatic);
 
@@ -44,7 +45,8 @@ class ModuleTest {
   void buildIsOpen_TrueOrFalse_MatchesBuild() {
     for (final boolean isOpen : TestUtils.BOOLEANS) {
 
-      final ModuleBuilder builder = Module.builder().key(new byte[] {120, 56, 111});
+      final ModuleBuilder builder =
+          Module.builder().name("test-module").key(new byte[] {120, 56, 111});
 
       builder.isOpen(isOpen);
 
@@ -64,18 +66,17 @@ class ModuleTest {
 
     assertThat(builder)
         .hasToString(
-            "Module.ModuleBuilder(id=null, name=null, shortName=null, "
-                + "description=null, isFlagStatic=false, staticFlag=null, key=null, isOpen=false)");
+            "Module.ModuleBuilder(id=null, name=null, isFlagStatic=false, staticFlag=null, key=null, isOpen=false)");
   }
 
   @Test
   void toString_ValidData_AsExpected() {
-    final Module testModule = Module.builder().key(new byte[] {120, 56, 111}).build();
+    final Module testModule =
+        Module.builder().name("test-module").key(new byte[] {120, 56, 111}).build();
 
     assertThat(testModule)
         .hasToString(
-            "Module(id=null, name=TestModule, shortName=test-module, "
-                + "description=null, isFlagStatic=false, staticFlag=null, "
+            "Module(id=null, name=test-module, isFlagStatic=false, staticFlag=null, "
                 + "key=[120, 56, 111], isOpen=false)");
   }
 
@@ -83,6 +84,7 @@ class ModuleTest {
   void withStaticFlag_ValidStaticFlag_ChangesFlag() {
     final Module module =
         Module.builder()
+            .name("test-module")
             .staticFlag(TestUtils.INITIAL_STRING)
             .key(new byte[] {120, 56, 111})
             .build();
@@ -95,7 +97,8 @@ class ModuleTest {
   @Test
   void withFlagStatic_ValidBoolean_ChangesIsStaticFlag() {
     // TODO: Refactor
-    final Module testModule = Module.builder().key(new byte[] {120, 56, 111}).build();
+    final Module testModule =
+        Module.builder().name("test-module").key(new byte[] {120, 56, 111}).build();
 
     assertThat(testModule.isFlagStatic()).isFalse();
 
@@ -108,16 +111,17 @@ class ModuleTest {
   @Test
   void withId_ValidId_ChangesId() {
     final Module module =
-        Module.builder().name(TestUtils.INITIAL_NAMES).key(new byte[] {120, 56, 111}).build();
+        Module.builder().name(TestUtils.INITIAL_NAME).key(new byte[] {120, 56, 111}).build();
 
     for (final String name : TestUtils.NAMES) {
-      assertThat(module.withName(name).getId()).isEqualTo(name);
+      assertThat(module.withName(name).getName()).isEqualTo(name);
     }
   }
 
   @Test
   void withOpen_ValidBoolean_ChangesOpen() {
-    final Module testModule = Module.builder().key(new byte[] {120, 56, 111}).build();
+    final Module testModule =
+        Module.builder().name("test-module").key(new byte[] {120, 56, 111}).build();
 
     assertThat(testModule.isOpen()).isFalse();
 

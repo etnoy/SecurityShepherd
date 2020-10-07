@@ -15,8 +15,8 @@
  */
 package org.owasp.securityshepherd.module;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.owasp.securityshepherd.exception.EmptyModuleNameException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.module.ModuleListItem.ModuleListItemBuilder;
 import org.owasp.securityshepherd.scoring.SubmissionService;
@@ -64,7 +64,10 @@ public final class ModuleSolutions {
       return Mono.error(new InvalidUserIdException("User id must be a strictly positive integer"));
     }
     if (moduleName == null) {
-      return Mono.error(new NullPointerException("Module short name cannot be null"));
+      return Mono.error(new NullPointerException("Module name cannot be null"));
+    }
+    if (moduleName == "") {
+      return Mono.error(new EmptyModuleNameException("Module name cannot be empty"));
     }
     // TODO: check if module id string is empty
     final ModuleListItemBuilder moduleListItemBuilder = ModuleListItem.builder();
@@ -88,19 +91,15 @@ public final class ModuleSolutions {
             });
   }
 
-  public Mono<ModuleListItem> findModuleByIdWithSolutionStatus(
+  public Mono<ModuleListItem> findModuleByNameWithSolutionStatus(
       final long userId, final String moduleName) {
 
     final Mono<Module> moduleMono = moduleService.findByName(moduleName);
 
-    final Mono<List<String>> finishedModulesMono =
-        submissionService
-            // Find all valid submissions by this user
-            .findAllValidModuleNamesByUserId(userId);
-
     final ModuleListItemBuilder moduleListItemBuilder = ModuleListItem.builder();
     return moduleMono
-        .zipWith(finishedModulesMono)
+        // Find all valid submissions by this user
+        .zipWith(submissionService.findAllValidModuleNamesByUserId(userId))
         .map(
             tuple -> {
               moduleListItemBuilder.name(tuple.getT1().getName());

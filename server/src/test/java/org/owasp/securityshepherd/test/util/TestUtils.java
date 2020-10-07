@@ -119,9 +119,9 @@ public final class TestUtils {
     "مُنَاقَشَةُ سُبُلِ اِسْتِخْدَامِ اللُّغَةِ فِي النُّظُمِ الْقَائِمَةِ وَفِيم يَخُصَّ التَّطْبِيقَاتُ الْحاسُوبِيَّةُ، "
   };
 
-  public static final String INITIAL_NAMES = "id";
+  public static final String INITIAL_NAME = "id";
 
-  public static final String[] NAMES = {INITIAL_NAMES, "id-with-hyphen", "abc123"};
+  public static final String[] NAMES = {INITIAL_NAME, "id-with-hyphen", "abc123"};
 
   public static final String[] INVALID_NAMES = {"", null};
 

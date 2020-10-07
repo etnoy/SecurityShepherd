@@ -29,7 +29,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.owasp.securityshepherd.authentication.ControllerAuthentication;
 import org.owasp.securityshepherd.exception.NotAuthenticatedException;
-import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleController;
 import org.owasp.securityshepherd.module.ModuleListItem;
 import org.owasp.securityshepherd.module.ModuleService;
@@ -50,15 +49,15 @@ class ModuleControllerTest {
     Hooks.onOperatorDebug();
   }
 
-  private ModuleController moduleController;
+  ModuleController moduleController;
 
-  @Mock private ControllerAuthentication controllerAuthentication;
+  @Mock ControllerAuthentication controllerAuthentication;
 
-  @Mock private SubmissionService submissionService;
+  @Mock SubmissionService submissionService;
 
-  @Mock private ModuleService moduleService;
+  @Mock ModuleService moduleService;
 
-  @Mock private ModuleSolutions moduleSolutions;
+  @Mock ModuleSolutions moduleSolutions;
 
   @Test
   void findAllByUserId_IdExists_ReturnsModule() throws Exception {
@@ -101,57 +100,63 @@ class ModuleControllerTest {
   }
 
   @Test
-  void getModuleById_IdDoesNotExist_ReturnsModule() throws Exception {
-    final String mockModuleName = "module-id";
-    when(moduleService.findByName(mockModuleName)).thenReturn(Mono.empty());
-    StepVerifier.create(moduleController.getModuleById(mockModuleName)).expectComplete().verify();
-    verify(moduleService, times(1)).findByName(mockModuleName);
+  void getModuleByName_NameDoesNotExist_ReturnsModule() throws Exception {
+    final String mockModuleName = "test-module";
+    final Long mockUserId = 3L;
+    when(controllerAuthentication.getUserId()).thenReturn(Mono.just(mockUserId));
+    when(moduleSolutions.findModuleByNameWithSolutionStatus(mockUserId, mockModuleName))
+        .thenReturn(Mono.empty());
+    StepVerifier.create(moduleController.getModuleByName(mockModuleName)).expectComplete().verify();
   }
 
   @Test
-  void getModuleById_IdExists_ReturnsModuleListItem() throws Exception {
-    final String mockModuleName = "module-id";
-    final Module mockedModule = mock(Module.class);
-    final ModuleListItem mockModuleListItem = mock(ModuleListItem.class);
+  void getModuleByName_NameExists_ReturnsModuleListItem() throws Exception {
+    final String mockModuleName = "test-module";
+    final long mockUserId = 94L;
 
-    when(moduleService.findByName(mockModuleName)).thenReturn(Mono.just(mockedModule));
-    StepVerifier.create(moduleController.getModuleById(mockModuleName))
+    final ModuleListItem mockModuleListItem = mock(ModuleListItem.class);
+    when(controllerAuthentication.getUserId()).thenReturn(Mono.just(mockUserId));
+
+    when(moduleSolutions.findModuleByNameWithSolutionStatus(mockUserId, mockModuleName))
+        .thenReturn(Mono.just(mockModuleListItem));
+    StepVerifier.create(moduleController.getModuleByName(mockModuleName))
         .expectNext(mockModuleListItem)
         .expectComplete()
         .verify();
-    verify(moduleService, times(1)).findByName(mockModuleName);
+    verify(moduleSolutions, times(1))
+        .findModuleByNameWithSolutionStatus(mockUserId, mockModuleName);
   }
 
   @Test
-  void getModuleByShortName_ShortNameDoesNotExist_ReturnsEmpty() throws Exception {
+  void getModuleByName_NameDoesNotExist_ReturnsEmpty() throws Exception {
     final long mockUserId = 94L;
-    final String mockShortName = "shortName";
+    final String mockModuleName = "test-module";
     when(controllerAuthentication.getUserId()).thenReturn(Mono.just(mockUserId));
 
-    when(moduleSolutions.findOpenModuleByIdWithSolutionStatus(mockUserId, mockShortName))
+    when(moduleSolutions.findModuleByNameWithSolutionStatus(mockUserId, mockModuleName))
         .thenReturn(Mono.empty());
-    StepVerifier.create(moduleController.getModuleById(mockShortName)).expectComplete().verify();
+    StepVerifier.create(moduleController.getModuleByName(mockModuleName)).expectComplete().verify();
     verify(controllerAuthentication, times(1)).getUserId();
     verify(moduleSolutions, times(1))
-        .findOpenModuleByIdWithSolutionStatus(mockUserId, mockShortName);
+        .findModuleByNameWithSolutionStatus(mockUserId, mockModuleName);
   }
 
   @Test
   void getModuleByShortName_ShortNameExists_ReturnsModule() throws Exception {
     final long mockUserId = 94L;
-    final String mockShortName = "shortName";
+    final String mockModuleName = "test-module";
     final ModuleListItem mockModuleListItem = mock(ModuleListItem.class);
     when(controllerAuthentication.getUserId()).thenReturn(Mono.just(mockUserId));
 
-    when(moduleSolutions.findOpenModuleByIdWithSolutionStatus(mockUserId, mockShortName))
+    when(moduleSolutions.findModuleByNameWithSolutionStatus(mockUserId, mockModuleName))
         .thenReturn(Mono.just(mockModuleListItem));
-    StepVerifier.create(moduleController.getModuleById(mockShortName))
+    StepVerifier.create(moduleController.getModuleByName(mockModuleName))
         .expectNext(mockModuleListItem)
         .expectComplete()
         .verify();
     verify(controllerAuthentication, times(1)).getUserId();
     verify(moduleSolutions, times(1))
-        .findOpenModuleByIdWithSolutionStatus(mockUserId, mockShortName);
+        .findModuleByNameWithSolutionStatus(mockUserId, mockModuleName);
   }
 
   @BeforeEach

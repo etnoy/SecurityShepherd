@@ -63,13 +63,13 @@ class ModuleSolutionsTest {
   @Mock private SubmissionService submissionService;
 
   @Test
-  void findOpenModuleByIdWithSolutionStatus_EmptyId_ReturnsInvalidModuleNameException() {
+  void findOpenModuleByIdWithSolutionStatus_EmptyModuleName_ReturnsInvalidModuleNameException() {
     final long mockUserId = 690L;
     StepVerifier.create(moduleSolutions.findOpenModuleByIdWithSolutionStatus(mockUserId, ""))
         .expectErrorMatches(
             throwable ->
                 throwable instanceof EmptyModuleNameException
-                    && throwable.getMessage().equals("Module short name cannot be empty"))
+                    && throwable.getMessage().equals("Module name cannot be empty"))
         .verify();
   }
 
@@ -141,7 +141,6 @@ class ModuleSolutionsTest {
         .expectComplete()
         .verify();
 
-    verify(mockModule, times(2)).getId();
     verify(mockModule, times(2)).isOpen();
 
     verify(submissionService, times(1))
@@ -175,7 +174,7 @@ class ModuleSolutionsTest {
         .expectComplete()
         .verify();
 
-    verify(mockModule, times(2)).getId();
+    verify(mockModule, times(2)).getName();
     verify(mockModule, times(2)).isOpen();
 
     verify(submissionService, times(1))
@@ -190,7 +189,7 @@ class ModuleSolutionsTest {
         .expectErrorMatches(
             throwable ->
                 throwable instanceof NullPointerException
-                    && throwable.getMessage().equals("Module short name cannot be null"))
+                    && throwable.getMessage().equals("Module name cannot be null"))
         .verify();
   }
 
@@ -257,19 +256,19 @@ class ModuleSolutionsTest {
         .expectComplete()
         .verify();
 
-    verify(mockModule1, times(1)).getId();
+    verify(mockModule1, times(1)).getName();
 
     verify(mockModule1, never()).isOpen();
 
-    verify(mockModule2, times(1)).getId();
+    verify(mockModule2, times(1)).getName();
 
     verify(mockModule2, never()).isOpen();
 
-    verify(mockModule3, never()).getId();
+    verify(mockModule3, never()).getName();
 
     verify(mockModule3, never()).isOpen();
 
-    verify(mockModule4, never()).getId();
+    verify(mockModule4, never()).getName();
 
     verify(mockModule4, never()).isOpen();
 

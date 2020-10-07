@@ -51,7 +51,7 @@ import reactor.test.StepVerifier;
     properties = {"application.runner.enabled=false"})
 @AutoConfigureWebTestClient
 @Execution(ExecutionMode.SAME_THREAD)
-@DisplayName("FlagController integration test")
+@DisplayName("FlagController API integration test")
 class FlagControllerApiIT {
   @BeforeAll
   private static void reactorVerbose() {
