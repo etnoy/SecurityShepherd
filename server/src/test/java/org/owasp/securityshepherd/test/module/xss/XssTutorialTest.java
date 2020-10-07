@@ -22,7 +22,6 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,7 +29,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.owasp.securityshepherd.exception.ModuleNotInitializedException;
 import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleService;
@@ -58,11 +56,6 @@ class XssTutorialTest {
   @Mock FlagHandler flagHandler;
 
   final Module mockModule = mock(Module.class);
-
-  @Test
-  void equals_EqualsVerifier_AsExpected() {
-    EqualsVerifier.forClass(XssTutorial.class).withRedefinedSuperclass().verify();
-  }
 
   @BeforeEach
   private void setUp() {
@@ -98,14 +91,6 @@ class XssTutorialTest {
             })
         .expectComplete()
         .verify();
-  }
-
-  @Test
-  void submitQuery_ModuleNotIntialized_ReturnsModuleNotInitializedException() {
-    final long mockUserId = 419L;
-    final String query = "username";
-    StepVerifier.create(xssTutorial.submitQuery(mockUserId, query))
-        .expectError(ModuleNotInitializedException.class);
   }
 
   @Test

@@ -31,11 +31,33 @@ import org.owasp.securityshepherd.user.User.UserBuilder;
 class UserTest {
   @Test
   void build_DisplayNameNotGiven_ThrowsNullPointerException() {
-    final UserBuilder userBuilder = User.builder();
+    final UserBuilder userBuilder =
+        User.builder()
+            .id(1L)
+            .email("")
+            .classId(1L)
+            .isNotBanned(false)
+            .accountCreated(null)
+            .key(TestUtils.INITIAL_BYTE_ARRAY);
     final Exception thrownException =
         assertThrows(NullPointerException.class, () -> userBuilder.build());
     assertThat(thrownException.getMessage())
         .isEqualTo("displayName is marked non-null but is null");
+  }
+
+  @Test
+  void build_KeyNotGiven_ThrowsNullPointerException() {
+    final UserBuilder userBuilder =
+        User.builder()
+            .id(1L)
+            .email("")
+            .classId(1L)
+            .isNotBanned(false)
+            .displayName("name")
+            .accountCreated(null);
+    final Exception thrownException =
+        assertThrows(NullPointerException.class, () -> userBuilder.build());
+    assertThat(thrownException.getMessage()).isEqualTo("key is marked non-null but is null");
   }
 
   @Test
@@ -50,6 +72,17 @@ class UserTest {
   }
 
   @Test
+  void buildKey_ValidKey_BuildsUser() {
+    final UserBuilder userBuilder =
+        User.builder().key(TestUtils.INITIAL_BYTE_ARRAY).displayName("TestUser");
+
+    for (final byte[] key : TestUtils.BYTE_ARRAYS) {
+      final User user = userBuilder.key(key).build();
+      assertThat(user.getKey()).isEqualTo(key);
+    }
+  }
+
+  @Test
   void buildClassId_ValidClassId_BuildsUser() {
     final UserBuilder userBuilder =
         User.builder().classId(1L).key(TestUtils.INITIAL_BYTE_ARRAY).displayName("TestUser");
@@ -58,6 +91,14 @@ class UserTest {
       final User user = userBuilder.classId(classId).build();
       assertThat(user.getClassId()).isEqualTo(classId);
     }
+  }
+
+  @Test
+  void buildKey_NullKey_ThrowsNullPointerException() {
+    final UserBuilder userBuilder = User.builder();
+    final Exception thrownException =
+        assertThrows(NullPointerException.class, () -> userBuilder.key(null));
+    assertThat(thrownException.getMessage()).isEqualTo("key is marked non-null but is null");
   }
 
   @Test
@@ -232,5 +273,14 @@ class UserTest {
       final User withUser = user.withNotBanned(isNotBanned);
       assertThat(withUser.isNotBanned()).isEqualTo(isNotBanned);
     }
+  }
+
+  @Test
+  void withKey_NullKey_ThrowsNullPointerException() {
+    final User user =
+        User.builder().displayName("TestUser").key(TestUtils.INITIAL_BYTE_ARRAY).build();
+    final Exception thrownException =
+        assertThrows(NullPointerException.class, () -> user.withKey(null));
+    assertThat(thrownException.getMessage()).isEqualTo("key is marked non-null but is null");
   }
 }
