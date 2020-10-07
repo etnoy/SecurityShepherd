@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.owasp.securityshepherd.module.BaseModule;
 import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.ModuleService;
+import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.csrf.CsrfTutorialResult.CsrfTutorialResultBuilder;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
@@ -65,7 +66,7 @@ public class CsrfTutorial extends BaseModule {
     log.debug(String.format("User %d is attacking csrf target %s", userId, target));
 
     return module
-        .map(m -> m.getName())
+        .map(Module::getName)
         .flatMap(moduleName -> csrfService.validatePseudonym(target, moduleName))
         .flatMap(
             valid -> {
