@@ -28,15 +28,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.owasp.securityshepherd.application.StartupRunner;
 import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.ModuleService;
-import org.owasp.securityshepherd.module.csrf.CsrfService;
 import org.owasp.securityshepherd.module.csrf.CsrfTutorial;
 import org.owasp.securityshepherd.module.flag.FlagTutorial;
 import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorial;
 import org.owasp.securityshepherd.module.xss.XssTutorial;
-import org.owasp.securityshepherd.scoring.CorrectionService;
-import org.owasp.securityshepherd.scoring.ScoreService;
-import org.owasp.securityshepherd.scoring.SubmissionRepository;
-import org.owasp.securityshepherd.scoring.SubmissionService;
 import org.owasp.securityshepherd.user.UserService;
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
@@ -63,17 +58,7 @@ class StartupRunnerTest {
 
   @Mock private CsrfTutorial csrfTutorial;
 
-  @Mock private CsrfService csrfService;
-
   @Mock private FlagTutorial flagTutorial;
-
-  @Mock private SubmissionService submissionService;
-
-  @Mock private CorrectionService correctionService;
-
-  @Mock private ScoreService scoringService;
-
-  @Mock private SubmissionRepository submissionRepository;
 
   @Mock private FlagHandler flagHandler;
 

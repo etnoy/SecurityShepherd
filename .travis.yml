@@ -12,13 +12,20 @@ cache:
 jobs:
   include:
     - stage: test
-      name: Backend unit tests and coverage
+      name: Backend code style check
       before_install:
         - cd server
         - git fetch --unshallow
       script:
         - ./gradlew spotlessCheck
+    - stage: test
+      name: Backend unit tests and coverage
+      before_install:
+        - cd server
+        - git fetch --unshallow
+      script:
         - ./gradlew test jacocoTestReport sonarqube --info
+        
     - stage: test
       name: Backend integration tests
       services: mysql
