@@ -35,7 +35,7 @@ public abstract class BaseModule {
 
   private Mono<Void> waitSignal;
 
-  public BaseModule(
+  protected BaseModule(
       String moduleName, ModuleService moduleService, FlagHandler flagHandler, String staticFlag) {
     this.moduleName = moduleName;
     this.moduleService = moduleService;

@@ -39,11 +39,7 @@ public final class ModuleService {
   }
 
   public Mono<Module> create(final String moduleName) {
-    log.trace("Find or create module with id " + moduleName);
-    final Mono<Module> moduleMono =
-        findByName(moduleName).switchIfEmpty(doCreateModule(moduleName));
-    // moduleMono.subscribe();
-    return moduleMono;
+    return findByName(moduleName).switchIfEmpty(doCreateModule(moduleName));
   }
 
   private Mono<Module> doCreateModule(final String moduleName) {

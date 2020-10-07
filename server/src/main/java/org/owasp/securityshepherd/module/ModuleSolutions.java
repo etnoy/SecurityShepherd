@@ -66,10 +66,10 @@ public final class ModuleSolutions {
     if (moduleName == null) {
       return Mono.error(new NullPointerException("Module name cannot be null"));
     }
-    if (moduleName == "") {
+    if (moduleName.isEmpty()) {
       return Mono.error(new EmptyModuleNameException("Module name cannot be empty"));
     }
-    // TODO: check if module id string is empty
+
     final ModuleListItemBuilder moduleListItemBuilder = ModuleListItem.builder();
 
     final Mono<Module> moduleMono = moduleService.findByName(moduleName).filter(Module::isOpen);
