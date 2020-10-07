@@ -15,19 +15,13 @@
  */
 package org.owasp.securityshepherd.application;
 
-import java.time.Clock;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.module.csrf.CsrfTutorial;
 import org.owasp.securityshepherd.module.flag.FlagTutorial;
 import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorial;
 import org.owasp.securityshepherd.module.xss.XssTutorial;
-import org.owasp.securityshepherd.scoring.CorrectionService;
-import org.owasp.securityshepherd.scoring.ScoreService;
-import org.owasp.securityshepherd.scoring.SubmissionService;
 import org.owasp.securityshepherd.user.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -46,8 +40,6 @@ public class StartupRunner implements ApplicationRunner {
 
   private final UserService userService;
 
-  private final ModuleService moduleService;
-
   private final XssTutorial xssTutorial;
 
   private final SqlInjectionTutorial sqlInjectionTutorial;
@@ -55,14 +47,6 @@ public class StartupRunner implements ApplicationRunner {
   private final CsrfTutorial csrfTutorial;
 
   private final FlagTutorial flagTutorial;
-
-  private final SubmissionService submissionService;
-
-  private final CorrectionService correctionService;
-
-  private final ScoreService scoringService;
-
-  @Autowired private Clock clock;
 
   @Override
   public void run(ApplicationArguments args) {

@@ -80,8 +80,6 @@ class StartupRunnerTest {
   @Test
   void run_MockedServices_CallsMocks() {
 
-    final String flag = "itsaflag";
-
     when(userService.createPasswordUser(
             "Admin", "admin", "$2y$08$WpfUVZLcXNNpmM2VwSWlbe25dae.eEC99AOAVUiU5RaJmfFsE9B5G"))
         .thenReturn(Mono.just(1L));
@@ -94,14 +92,6 @@ class StartupRunnerTest {
     // Set up the system under test
     startupRunner =
         new StartupRunner(
-            userService,
-            moduleService,
-            xssTutorial,
-            sqlInjectionTutorial,
-            csrfTutorial,
-            flagTutorial,
-            submissionService,
-            correctionService,
-            scoringService);
+            userService, xssTutorial, sqlInjectionTutorial, csrfTutorial, flagTutorial);
   }
 }
