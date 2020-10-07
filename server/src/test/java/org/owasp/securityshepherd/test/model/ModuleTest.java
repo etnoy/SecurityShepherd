@@ -16,7 +16,6 @@
 package org.owasp.securityshepherd.test.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import lombok.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
@@ -29,43 +28,10 @@ import org.owasp.securityshepherd.test.util.TestUtils;
 @DisplayName("Module unit test")
 class ModuleTest {
   @Test
-  void build_NameNotGiven_ThrowsNullPointerException() {
-    final ModuleBuilder moduleBuilder = Module.builder().shortName("test-module");
-
-    Throwable thrownException =
-        assertThrows(NullPointerException.class, () -> moduleBuilder.build());
-    assertThat(thrownException.getMessage()).isEqualTo("name is marked non-null but is null");
-  }
-
-  @Test
-  void build_ShortNameNotGiven_ThrowsNullPointerException() {
-    final ModuleBuilder moduleBuilder = Module.builder().name("test-module");
-
-    Throwable thrownException =
-        assertThrows(NullPointerException.class, () -> moduleBuilder.build());
-    assertThat(thrownException.getMessage()).isEqualTo("shortName is marked non-null but is null");
-  }
-
-  @Test
-  void buildDescription_ValidDescription_Builds() {
-    final ModuleBuilder builder =
-        Module.builder().name("TestModule").shortName("test-module").key(new byte[] {120, 56, 111});
-    for (final String description : TestUtils.STRINGS_WITH_NULL) {
-      builder.description(description);
-      final Module module = builder.build();
-      assertThat(module.getDescription()).isEqualTo(description);
-    }
-  }
-
-  @Test
   void buildIsStaticFlag_TrueOrFalse_MatchesBuild() {
     // TODO
     for (final boolean isFlagStatic : TestUtils.BOOLEANS) {
-      final ModuleBuilder builder =
-          Module.builder()
-              .name("TestModule")
-              .key(new byte[] {120, 56, 111})
-              .shortName("test-module");
+      final ModuleBuilder builder = Module.builder().key(new byte[] {120, 56, 111});
 
       builder.isFlagStatic(isFlagStatic);
 
@@ -78,56 +44,12 @@ class ModuleTest {
   void buildIsOpen_TrueOrFalse_MatchesBuild() {
     for (final boolean isOpen : TestUtils.BOOLEANS) {
 
-      final ModuleBuilder builder =
-          Module.builder()
-              .name("TestModule")
-              .shortName("test-module")
-              .key(new byte[] {120, 56, 111});
+      final ModuleBuilder builder = Module.builder().key(new byte[] {120, 56, 111});
 
       builder.isOpen(isOpen);
 
       assertThat(builder.build()).isInstanceOf(Module.class);
       assertThat(builder.build().isOpen()).isEqualTo(isOpen);
-    }
-  }
-
-  @Test
-  void buildName_NullName_ThrowsNullPointerException() {
-    final ModuleBuilder moduleBuilder = Module.builder().shortName("test-module");
-    Throwable thrownException =
-        assertThrows(NullPointerException.class, () -> moduleBuilder.name(null));
-    assertThat(thrownException.getMessage()).isEqualTo("name is marked non-null but is null");
-  }
-
-  @Test
-  void buildName_NullShortName_ThrowsNullPointerException() {
-    final ModuleBuilder moduleBuilder = Module.builder().name("TestModule");
-    Throwable thrownException =
-        assertThrows(NullPointerException.class, () -> moduleBuilder.shortName(null));
-    assertThat(thrownException.getMessage()).isEqualTo("shortName is marked non-null but is null");
-  }
-
-  @Test
-  void buildName_ValidName_Builds() {
-    final ModuleBuilder builder =
-        Module.builder().shortName("test-module").key(new byte[] {120, 56, 111});
-    for (final String name : TestUtils.STRINGS) {
-      builder.name(name);
-      final Module module = builder.build();
-      assertThat(module).isInstanceOf(Module.class);
-      assertThat(module.getName()).isEqualTo(name);
-    }
-  }
-
-  @Test
-  void buildShortName_ValidShortName_Builds() {
-    final ModuleBuilder builder =
-        Module.builder().name("TestModule").key(new byte[] {120, 56, 111});
-    for (final String shortName : TestUtils.STRINGS) {
-      builder.shortName(shortName);
-      final Module module = builder.build();
-      assertThat(module).isInstanceOf(Module.class);
-      assertThat(module.getShortName()).isEqualTo(shortName);
     }
   }
 
@@ -148,12 +70,7 @@ class ModuleTest {
 
   @Test
   void toString_ValidData_AsExpected() {
-    final Module testModule =
-        Module.builder()
-            .name("TestModule")
-            .shortName("test-module")
-            .key(new byte[] {120, 56, 111})
-            .build();
+    final Module testModule = Module.builder().key(new byte[] {120, 56, 111}).build();
 
     assertThat(testModule)
         .hasToString(
@@ -163,27 +80,9 @@ class ModuleTest {
   }
 
   @Test
-  void withDescription_ValidDescription_ChangesDescription() {
-    final Module testModule =
-        Module.builder()
-            .name("TestModule")
-            .shortName("test-module")
-            .description(TestUtils.INITIAL_STRING)
-            .key(new byte[] {120, 56, 111})
-            .build();
-
-    for (final String newDescription : TestUtils.STRINGS_WITH_NULL) {
-      assertThat(testModule.withDescription(newDescription).getDescription())
-          .isEqualTo(newDescription);
-    }
-  }
-
-  @Test
   void withStaticFlag_ValidStaticFlag_ChangesFlag() {
     final Module module =
         Module.builder()
-            .name("TestModule")
-            .shortName("test-module")
             .staticFlag(TestUtils.INITIAL_STRING)
             .key(new byte[] {120, 56, 111})
             .build();
@@ -196,12 +95,7 @@ class ModuleTest {
   @Test
   void withFlagStatic_ValidBoolean_ChangesIsStaticFlag() {
     // TODO: Refactor
-    final Module testModule =
-        Module.builder()
-            .name("TestModule")
-            .key(new byte[] {120, 56, 111})
-            .shortName("test-module")
-            .build();
+    final Module testModule = Module.builder().key(new byte[] {120, 56, 111}).build();
 
     assertThat(testModule.isFlagStatic()).isFalse();
 
@@ -214,54 +108,16 @@ class ModuleTest {
   @Test
   void withId_ValidId_ChangesId() {
     final Module module =
-        Module.builder()
-            .id(TestUtils.INITIAL_LONG)
-            .name("TestModule")
-            .shortName("test-module")
-            .key(new byte[] {120, 56, 111})
-            .build();
+        Module.builder().id(TestUtils.INITIAL_ID_STRING).key(new byte[] {120, 56, 111}).build();
 
-    for (final long id : TestUtils.LONGS) {
+    for (final String id : TestUtils.ID_STRINGS) {
       assertThat(module.withId(id).getId()).isEqualTo(id);
     }
   }
 
   @Test
-  void withName_NullName_ThrowsNullPointerException() {
-    final Module module =
-        Module.builder()
-            .name("TestModule")
-            .shortName("test-module")
-            .key(new byte[] {120, 56, 111})
-            .build();
-    Throwable thrownException =
-        assertThrows(NullPointerException.class, () -> module.withName(null));
-    assertThat(thrownException.getMessage()).isEqualTo("name is marked non-null but is null");
-  }
-
-  @Test
-  void withName_ValidName_ChangesName() {
-    final Module testModule =
-        Module.builder()
-            .name(TestUtils.INITIAL_STRING)
-            .key(new byte[] {120, 56, 111})
-            .shortName("test-module")
-            .build();
-
-    for (final String moduleName : TestUtils.STRINGS) {
-      final Module withModule = testModule.withName(moduleName);
-      assertThat(withModule.getName()).isEqualTo(moduleName);
-    }
-  }
-
-  @Test
   void withOpen_ValidBoolean_ChangesOpen() {
-    final Module testModule =
-        Module.builder()
-            .name("TestModule")
-            .key(new byte[] {120, 56, 111})
-            .shortName("test-module")
-            .build();
+    final Module testModule = Module.builder().key(new byte[] {120, 56, 111}).build();
 
     assertThat(testModule.isOpen()).isFalse();
 
@@ -269,33 +125,5 @@ class ModuleTest {
     assertThat(changedModule.isOpen()).isFalse();
     changedModule = testModule.withOpen(true);
     assertThat(changedModule.isOpen()).isTrue();
-  }
-
-  @Test
-  void withShortName_NullShortName_ThrowsNullPointerException() {
-    final Module module =
-        Module.builder()
-            .name("TestModule")
-            .key(new byte[] {120, 56, 111})
-            .shortName("test-module")
-            .build();
-    Throwable thrownException =
-        assertThrows(NullPointerException.class, () -> module.withShortName(null));
-    assertThat(thrownException.getMessage()).isEqualTo("shortName is marked non-null but is null");
-  }
-
-  @Test
-  void withShortName_ValidShortName_ChangesName() {
-    final Module testModule =
-        Module.builder()
-            .name("TestModule")
-            .key(new byte[] {120, 56, 111})
-            .shortName(TestUtils.INITIAL_STRING)
-            .build();
-
-    for (final String shortName : TestUtils.STRINGS) {
-      final Module withModule = testModule.withShortName(shortName);
-      assertThat(withModule.getShortName()).isEqualTo(shortName);
-    }
   }
 }

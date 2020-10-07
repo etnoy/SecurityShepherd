@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.owasp.securityshepherd.exception.EmptyModuleShortNameException;
+import org.owasp.securityshepherd.exception.EmptyModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleListItem;
@@ -63,24 +63,22 @@ class ModuleSolutionsTest {
   @Mock private SubmissionService submissionService;
 
   @Test
-  void
-      findOpenModuleByShortNameWithSolutionStatus_EmptyShortName_ReturnsInvalidModuleShortNameException() {
+  void findOpenModuleByIdWithSolutionStatus_EmptyId_ReturnsInvalidModuleIdException() {
     final long mockUserId = 690L;
-    StepVerifier.create(moduleSolutions.findOpenModuleByShortNameWithSolutionStatus(mockUserId, ""))
+    StepVerifier.create(moduleSolutions.findOpenModuleByIdWithSolutionStatus(mockUserId, ""))
         .expectErrorMatches(
             throwable ->
-                throwable instanceof EmptyModuleShortNameException
+                throwable instanceof EmptyModuleIdException
                     && throwable.getMessage().equals("Module short name cannot be empty"))
         .verify();
   }
 
   @Test
-  void findOpenModuleByShortNameWithSolutionStatus_InvalidUserid_ReturnsInvalidUserIdException() {
-    final String mockModuleShortName = "shortName";
+  void findOpenModuleByIdWithSolutionStatus_InvalidUserid_ReturnsInvalidUserIdException() {
+    final String mockModuleId = "moduleId";
     for (final long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(
-              moduleSolutions.findOpenModuleByShortNameWithSolutionStatus(
-                  userId, mockModuleShortName))
+              moduleSolutions.findOpenModuleByIdWithSolutionStatus(userId, mockModuleId))
           .expectErrorMatches(
               throwable ->
                   throwable instanceof InvalidUserIdException
@@ -92,49 +90,39 @@ class ModuleSolutionsTest {
   }
 
   @Test
-  void findOpenModuleByShortNameWithSolutionStatus_ModuleIsClosedAndHasSolution_ReturnsEmpty() {
-    final long mockModuleId = 782L;
-    final String mockModuleShortName = "test-module";
+  void findOpenModuleByIdWithSolutionStatus_ModuleIsClosedAndHasSolution_ReturnsEmpty() {
+    final String mockModuleId = "moduleId";
 
     final long mockUserId = 1000L;
     final Module mockModule = mock(Module.class);
-    ;
 
     when(mockModule.isOpen()).thenReturn(false);
 
-    when(moduleService.findByShortName(mockModuleShortName)).thenReturn(Mono.just(mockModule));
+    when(moduleService.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
 
     StepVerifier.create(
-            moduleSolutions.findOpenModuleByShortNameWithSolutionStatus(
-                mockUserId, mockModuleShortName))
+            moduleSolutions.findOpenModuleByIdWithSolutionStatus(mockUserId, mockModuleId))
         .expectComplete()
         .verify();
 
     verify(mockModule, never()).getId();
-    verify(mockModule, never()).getName();
-    verify(mockModule, never()).getShortName();
-    verify(mockModule, never()).getDescription();
     verify(mockModule, times(2)).isOpen();
 
     verify(submissionService, never()).findAllValidByUserIdAndModuleId(mockUserId, mockModuleId);
-    verify(moduleService, times(1)).findByShortName(mockModuleShortName);
+    verify(moduleService, times(1)).findById(mockModuleId);
   }
 
   @Test
-  void findOpenModuleByShortNameWithSolutionStatus_ModuleIsOpenAndHasSolution_ReturnsModule() {
-    final long mockModuleId = 782L;
+  void findOpenModuleByIdWithSolutionStatus_ModuleIsOpenAndHasSolution_ReturnsModule() {
+    final String mockModuleId = "moduleId";
     final String mockModuleName = "Test Module";
-    final String mockModuleShortName = "test-module";
     final String mockModuleDescription = "This is a module";
 
     final long mockUserId = 1000L;
     final Module mockModule = mock(Module.class);
-    ;
 
     when(mockModule.getId()).thenReturn(mockModuleId);
-    when(mockModule.getName()).thenReturn(mockModuleName);
-    when(mockModule.getShortName()).thenReturn(mockModuleShortName);
-    when(mockModule.getDescription()).thenReturn(mockModuleDescription);
+    when(mockModule.getId()).thenReturn(mockModuleId);
     when(mockModule.isOpen()).thenReturn(true);
 
     final Submission mockedSubmission = mock(Submission.class);
@@ -142,41 +130,29 @@ class ModuleSolutionsTest {
     when(submissionService.findAllValidByUserIdAndModuleId(mockUserId, mockModuleId))
         .thenReturn(Mono.just(mockedSubmission));
 
-    when(moduleService.findByShortName(mockModuleShortName)).thenReturn(Mono.just(mockModule));
+    when(moduleService.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
 
     final ModuleListItemBuilder moduleListItemBuilder = ModuleListItem.builder();
 
-    final ModuleListItem listItem =
-        moduleListItemBuilder
-            .id(mockModuleId)
-            .name(mockModuleName)
-            .shortName(mockModuleShortName)
-            .description(mockModuleDescription)
-            .isSolved(true)
-            .build();
+    final ModuleListItem listItem = moduleListItemBuilder.id(mockModuleId).isSolved(true).build();
 
     StepVerifier.create(
-            moduleSolutions.findOpenModuleByShortNameWithSolutionStatus(
-                mockUserId, mockModuleShortName))
+            moduleSolutions.findOpenModuleByIdWithSolutionStatus(mockUserId, mockModuleId))
         .expectNext(listItem)
         .expectComplete()
         .verify();
 
     verify(mockModule, times(2)).getId();
-    verify(mockModule, times(1)).getName();
-    verify(mockModule, times(1)).getShortName();
-    verify(mockModule, times(1)).getDescription();
     verify(mockModule, times(2)).isOpen();
 
     verify(submissionService, times(1)).findAllValidByUserIdAndModuleId(mockUserId, mockModuleId);
-    verify(moduleService, times(1)).findByShortName(mockModuleShortName);
+    verify(moduleService, times(1)).findById(mockModuleId);
   }
 
   @Test
-  void findOpenModuleByShortNameWithSolutionStatus_ModuleIsOpenAndHasNoSolution_ReturnsModule() {
-    final long mockModuleId = 782L;
+  void findOpenModuleByIdWithSolutionStatus_ModuleIsOpenAndHasNoSolution_ReturnsModule() {
+    final String mockModuleId = "moduleId";
     final String mockModuleName = "Test Module";
-    final String mockModuleShortName = "test-module";
     final String mockModuleDescription = "This is a module";
 
     final long mockUserId = 1000L;
@@ -184,50 +160,35 @@ class ModuleSolutionsTest {
     ;
 
     when(mockModule.getId()).thenReturn(mockModuleId);
-    when(mockModule.getName()).thenReturn(mockModuleName);
-    when(mockModule.getShortName()).thenReturn(mockModuleShortName);
-    when(mockModule.getDescription()).thenReturn(mockModuleDescription);
+    when(mockModule.getId()).thenReturn(mockModuleId);
     when(mockModule.isOpen()).thenReturn(true);
 
     when(submissionService.findAllValidByUserIdAndModuleId(mockUserId, mockModuleId))
         .thenReturn(Mono.empty());
 
-    when(moduleService.findByShortName(mockModuleShortName)).thenReturn(Mono.just(mockModule));
+    when(moduleService.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
 
     final ModuleListItemBuilder moduleListItemBuilder = ModuleListItem.builder();
 
-    final ModuleListItem listItem =
-        moduleListItemBuilder
-            .id(mockModuleId)
-            .name(mockModuleName)
-            .shortName(mockModuleShortName)
-            .description(mockModuleDescription)
-            .isSolved(false)
-            .build();
+    final ModuleListItem listItem = moduleListItemBuilder.id(mockModuleId).isSolved(false).build();
 
     StepVerifier.create(
-            moduleSolutions.findOpenModuleByShortNameWithSolutionStatus(
-                mockUserId, mockModuleShortName))
+            moduleSolutions.findOpenModuleByIdWithSolutionStatus(mockUserId, mockModuleId))
         .expectNext(listItem)
         .expectComplete()
         .verify();
 
     verify(mockModule, times(2)).getId();
-    verify(mockModule, times(1)).getName();
-    verify(mockModule, times(1)).getShortName();
-    verify(mockModule, times(1)).getDescription();
     verify(mockModule, times(2)).isOpen();
 
     verify(submissionService, times(1)).findAllValidByUserIdAndModuleId(mockUserId, mockModuleId);
-    verify(moduleService, times(1)).findByShortName(mockModuleShortName);
+    verify(moduleService, times(1)).findById(mockModuleId);
   }
 
   @Test
-  void
-      findOpenModuleByShortNameWithSolutionStatus_NullShortName_ReturnsInvalidModuleShortNameException() {
-    final long mockUserId = 398L;
-    StepVerifier.create(
-            moduleSolutions.findOpenModuleByShortNameWithSolutionStatus(mockUserId, null))
+  void findOpenModuleByIdWithSolutionStatus_NullModuleId_ReturnsInvalidModuleIdException() {
+    final Long mockUserId = 108L;
+    StepVerifier.create(moduleSolutions.findOpenModuleByIdWithSolutionStatus(mockUserId, null))
         .expectErrorMatches(
             throwable ->
                 throwable instanceof NullPointerException
@@ -260,17 +221,15 @@ class ModuleSolutionsTest {
 
   @Test
   void findOpenModulesByUserIdWithSolutionStatus_ValidSubmissions_ReturnsModules() {
-    final long mockModule1Id = 315L;
+    final String mockModule1Id = "id1";
     final String mockModule1Name = "Module 1";
-    final String mockModule1ShortName = "module-1";
     final String mockModule1Description = "This is the first module";
 
-    final long mockModule2Id = 759L;
+    final String mockModule2Id = "id2";
     final String mockModule2Name = "Module 2";
-    final String mockModule2ShortName = "module-2";
     final String mockModule2Description = "This is the second module";
 
-    final long mockModule3Id = 245L;
+    final String mockModule3Id = "id3";
 
     final long mockUserId = 1000L;
     final Module mockModule1 = mock(Module.class);
@@ -279,17 +238,13 @@ class ModuleSolutionsTest {
     final Module mockModule4 = mock(Module.class);
 
     when(mockModule1.getId()).thenReturn(mockModule1Id);
-    when(mockModule1.getName()).thenReturn(mockModule1Name);
-    when(mockModule1.getShortName()).thenReturn(mockModule1ShortName);
-    when(mockModule1.getDescription()).thenReturn(mockModule1Description);
 
     when(mockModule2.getId()).thenReturn(mockModule2Id);
-    when(mockModule2.getName()).thenReturn(mockModule2Name);
-    when(mockModule2.getShortName()).thenReturn(mockModule2ShortName);
-    when(mockModule2.getDescription()).thenReturn(mockModule2Description);
+    when(mockModule2.getId()).thenReturn(mockModule2Id);
 
-    final Mono<List<Long>> mockedValidSolutionsList =
-        Mono.just(new ArrayList<Long>(Arrays.asList(mockModule1Id, mockModule2Id, mockModule3Id)));
+    final Mono<List<String>> mockedValidSolutionsList =
+        Mono.just(
+            new ArrayList<String>(Arrays.asList(mockModule1Id, mockModule2Id, mockModule3Id)));
 
     when(submissionService.findAllValidIdsByUserId(mockUserId))
         .thenReturn(mockedValidSolutionsList);
@@ -298,23 +253,9 @@ class ModuleSolutionsTest {
 
     final ModuleListItemBuilder moduleListItemBuilder = ModuleListItem.builder();
 
-    final ModuleListItem listItem1 =
-        moduleListItemBuilder
-            .id(mockModule1Id)
-            .name(mockModule1Name)
-            .shortName(mockModule1ShortName)
-            .description(mockModule1Description)
-            .isSolved(true)
-            .build();
+    final ModuleListItem listItem1 = moduleListItemBuilder.id(mockModule1Id).isSolved(true).build();
 
-    final ModuleListItem listItem2 =
-        moduleListItemBuilder
-            .id(mockModule2Id)
-            .name(mockModule2Name)
-            .shortName(mockModule2ShortName)
-            .description(mockModule2Description)
-            .isSolved(true)
-            .build();
+    final ModuleListItem listItem2 = moduleListItemBuilder.id(mockModule2Id).isSolved(true).build();
 
     StepVerifier.create(moduleSolutions.findOpenModulesByUserIdWithSolutionStatus(mockUserId))
         .expectNext(listItem1)
@@ -323,27 +264,19 @@ class ModuleSolutionsTest {
         .verify();
 
     verify(mockModule1, times(1)).getId();
-    verify(mockModule1, times(1)).getName();
-    verify(mockModule1, times(1)).getShortName();
-    verify(mockModule1, times(1)).getDescription();
+
     verify(mockModule1, never()).isOpen();
 
     verify(mockModule2, times(1)).getId();
-    verify(mockModule2, times(1)).getName();
-    verify(mockModule2, times(1)).getShortName();
-    verify(mockModule2, times(1)).getDescription();
+
     verify(mockModule2, never()).isOpen();
 
     verify(mockModule3, never()).getId();
-    verify(mockModule3, never()).getName();
-    verify(mockModule3, never()).getShortName();
-    verify(mockModule3, never()).getDescription();
+
     verify(mockModule3, never()).isOpen();
 
     verify(mockModule4, never()).getId();
-    verify(mockModule4, never()).getName();
-    verify(mockModule4, never()).getShortName();
-    verify(mockModule4, never()).getDescription();
+
     verify(mockModule4, never()).isOpen();
 
     verify(submissionService, times(1)).findAllValidIdsByUserId(mockUserId);

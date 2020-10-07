@@ -31,7 +31,7 @@ public class ModulePoint implements Serializable {
 
   @Id private Long id;
 
-  @NonNull private Long moduleId;
+  @NonNull private String moduleId;
 
   @Column("submission_rank")
   @NonNull

@@ -31,7 +31,7 @@ public final class CsrfAttack {
   @Id private Long id;
   @NonNull private String pseudonym;
   @NonNull private LocalDateTime started;
-  @NonNull private Long moduleId;
+  @NonNull private String moduleId;
 
   private LocalDateTime finished;
 }

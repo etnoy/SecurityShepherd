@@ -15,14 +15,14 @@
  */
 package org.owasp.securityshepherd.module.flag;
 
-import org.owasp.securityshepherd.module.AbstractModule;
+import org.owasp.securityshepherd.module.BaseModule;
 import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.ModuleService;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FlagTutorial extends AbstractModule {
+public class FlagTutorial extends BaseModule {
   public FlagTutorial(final ModuleService moduleService, final FlagHandler flagHandler) {
-    super("Flag Tutorial", "flag-tutorial", "Flag tutorial", moduleService, flagHandler);
+    super("flag-tutorial", moduleService, flagHandler, null);
   }
 }

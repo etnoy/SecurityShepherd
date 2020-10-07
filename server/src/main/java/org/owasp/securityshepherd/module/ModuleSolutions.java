@@ -15,8 +15,8 @@
  */
 package org.owasp.securityshepherd.module;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.owasp.securityshepherd.exception.EmptyModuleShortNameException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.module.ModuleListItem.ModuleListItemBuilder;
 import org.owasp.securityshepherd.scoring.SubmissionService;
@@ -48,12 +48,9 @@ public final class ModuleSolutions {
                     .findAllOpen()
                     .map(
                         module -> {
-                          final long moduleId = module.getId();
+                          final String moduleId = module.getId();
                           // For each module, construct a module list item
                           moduleListItemBuilder.id(moduleId);
-                          moduleListItemBuilder.name(module.getName());
-                          moduleListItemBuilder.shortName(module.getShortName());
-                          moduleListItemBuilder.description(module.getDescription());
                           // Check if this module id is finished
                           moduleListItemBuilder.isSolved(finishedModules.contains(moduleId));
                           // Build the module list item and return
@@ -61,25 +58,23 @@ public final class ModuleSolutions {
                         }));
   }
 
-  public Mono<ModuleListItem> findOpenModuleByShortNameWithSolutionStatus(
-      final long userId, final String shortName) {
+  public Mono<ModuleListItem> findOpenModuleByIdWithSolutionStatus(
+      final long userId, final String moduleId) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException("User id must be a strictly positive integer"));
     }
-    if (shortName == null) {
+    if (moduleId == null) {
       return Mono.error(new NullPointerException("Module short name cannot be null"));
     }
-    if (shortName.isEmpty()) {
-      return Mono.error(new EmptyModuleShortNameException("Module short name cannot be empty"));
-    }
+    // TODO: check if module id string is empty
     final ModuleListItemBuilder moduleListItemBuilder = ModuleListItem.builder();
 
-    final Mono<Module> moduleMono = moduleService.findByShortName(shortName).filter(Module::isOpen);
+    final Mono<Module> moduleMono = moduleService.findById(moduleId).filter(Module::isOpen);
 
     return moduleMono
         .map(Module::getId)
         // Find all valid submissions by this user
-        .flatMap(moduleId -> userHasSolvedThisModule(userId, moduleId))
+        .flatMap(openModuleId -> userHasSolvedThisModule(userId, openModuleId))
         .defaultIfEmpty(false)
         .zipWith(moduleMono)
         .map(
@@ -87,16 +82,34 @@ public final class ModuleSolutions {
               final Module module = tuple.getT2();
               // For each module, construct a module list item
               moduleListItemBuilder.id(module.getId());
-              moduleListItemBuilder.name(module.getName());
-              moduleListItemBuilder.shortName(module.getShortName());
-              moduleListItemBuilder.description(module.getDescription());
               moduleListItemBuilder.isSolved(tuple.getT1());
               // Build the module list item and return
               return moduleListItemBuilder.build();
             });
   }
 
-  private Mono<Boolean> userHasSolvedThisModule(final long userId, final long moduleId) {
+  public Mono<ModuleListItem> findModuleByIdWithSolutionStatus(
+      final long userId, final String moduleId) {
+
+    final Mono<Module> moduleMono = moduleService.findById(moduleId);
+
+    final Mono<List<String>> finishedModulesMono =
+        submissionService
+            // Find all valid submissions by this user
+            .findAllValidIdsByUserId(userId);
+
+    final ModuleListItemBuilder moduleListItemBuilder = ModuleListItem.builder();
+    return moduleMono
+        .zipWith(finishedModulesMono)
+        .map(
+            tuple -> {
+              moduleListItemBuilder.id(tuple.getT1().getId());
+              moduleListItemBuilder.isSolved(tuple.getT2().contains(moduleId));
+              return moduleListItemBuilder.build();
+            });
+  }
+
+  private Mono<Boolean> userHasSolvedThisModule(final long userId, final String moduleId) {
     return submissionService
         .findAllValidByUserIdAndModuleId(userId, moduleId)
         .map(u -> true)

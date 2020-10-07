@@ -26,6 +26,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.owasp.securityshepherd.authentication.PasswordRegistrationDto;
+import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.module.flag.FlagTutorial;
 import org.owasp.securityshepherd.scoring.ScoreService;
@@ -59,7 +60,7 @@ class FlagTutorialControllerIT {
     Hooks.onOperatorDebug();
   }
 
-  @Autowired FlagTutorial flagTutorial;
+  FlagTutorial flagTutorial;
 
   @Autowired TestUtils testUtils;
 
@@ -73,18 +74,19 @@ class FlagTutorialControllerIT {
 
   @Autowired WebTestClient webTestClient;
 
+  @Autowired FlagHandler flagHandler;
+
   @BeforeEach
   private void clear() {
     testUtils.deleteAll().block();
-    flagTutorial.initialize().block();
+    flagTutorial = new FlagTutorial(moduleService, flagHandler);
+    flagTutorial.init();
   }
 
   @Test
   void submitFlag_ValidStaticFlag_Success() throws Exception {
     final String loginName = "testUser";
     final String password = "paLswOrdha17£@£sh";
-
-    flagTutorial.initialize();
 
     webTestClient
         .post()

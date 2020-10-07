@@ -3,11 +3,9 @@
     <div class="inner-main">
       <ul>
         <ng-container *ngFor="let module of modules">
-          <li *ngIf="module.shortName">
+          <li *ngIf="module.id">
             <p>
-              <a href="module/{{ module.shortName }}">{{ module.name }}</a
-              >&nbsp;
-              <span *ngIf="module.description">{{ module.description }}</span
+              <a href="module/{{ module.id }}">{{ module.id }}</a
               >&nbsp;
               <span *ngIf="module.isSolved">Solved</span>
             </p>

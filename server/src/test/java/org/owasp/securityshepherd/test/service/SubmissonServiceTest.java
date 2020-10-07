@@ -72,7 +72,7 @@ class SubmissonServiceTest {
 
   @Test
   void findAllByModuleId_InvalidModuleId_ReturnsInvalidModuleIdException() {
-    for (final long moduleId : TestUtils.INVALID_IDS) {
+    for (final String moduleId : TestUtils.INVALID_ID_STRINGS) {
       StepVerifier.create(submissionService.findAllByModuleId(moduleId))
           .expectError(InvalidModuleIdException.class)
           .verify();
@@ -81,7 +81,7 @@ class SubmissonServiceTest {
 
   @Test
   void findAllByModuleId_NoSubmissionsExist_ReturnsEmpty() {
-    final long mockModuleId = 614L;
+    final String mockModuleId = "id";
     when(submissionRepository.findAllByModuleId(mockModuleId)).thenReturn(Flux.empty());
     StepVerifier.create(submissionService.findAllByModuleId(mockModuleId))
         .expectComplete()
@@ -91,7 +91,7 @@ class SubmissonServiceTest {
 
   @Test
   void findAllByModuleId_SubmissionsExist_ReturnsSubmissions() {
-    final long mockModuleId = 628L;
+    final String mockModuleId = "id";
     final Submission mockSubmission1 = mock(Submission.class);
     final Submission mockSubmission2 = mock(Submission.class);
     final Submission mockSubmission3 = mock(Submission.class);
@@ -153,7 +153,7 @@ class SubmissonServiceTest {
   @Test
   void findAllValidByUserIdAndModuleId_InvalidModuleId_ReturnsInvalidUserIdException() {
     final long mockUserId = 671L;
-    for (final long moduleId : TestUtils.INVALID_IDS) {
+    for (final String moduleId : TestUtils.INVALID_ID_STRINGS) {
       StepVerifier.create(submissionService.findAllValidByUserIdAndModuleId(mockUserId, moduleId))
           .expectError(InvalidModuleIdException.class)
           .verify();
@@ -162,7 +162,7 @@ class SubmissonServiceTest {
 
   @Test
   void findAllValidByUserIdAndModuleId_InvalidUserId_ReturnsInvalidUserIdException() {
-    final long mockModuleId = 366L;
+    final String mockModuleId = "id";
     for (final long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(submissionService.findAllValidByUserIdAndModuleId(userId, mockModuleId))
           .expectError(InvalidUserIdException.class)
@@ -173,7 +173,7 @@ class SubmissonServiceTest {
   @Test
   void findAllValidByUserIdAndModuleId_NoSubmissionsExist_ReturnsEmpty() {
     final long mockUserId = 648L;
-    final long mockModuleId = 283L;
+    final String mockModuleId = "id";
     when(submissionRepository.findAllValidByUserIdAndModuleId(mockUserId, mockModuleId))
         .thenReturn(Mono.empty());
     StepVerifier.create(submissionService.findAllValidByUserIdAndModuleId(mockUserId, mockModuleId))
@@ -186,7 +186,7 @@ class SubmissonServiceTest {
   @Test
   void findAllValidByUserIdAndModuleId_SubmissionsExist_ReturnsSubmissions() {
     final long mockUserId = 864L;
-    final long mockModuleId = 36L;
+    final String mockModuleId = "id";
     final Submission mockSubmission = mock(Submission.class);
 
     when(submissionRepository.findAllValidByUserIdAndModuleId(mockUserId, mockModuleId))
@@ -214,7 +214,7 @@ class SubmissonServiceTest {
     final long mockUserId = 508L;
     when(submissionRepository.findAllValidByUserId(mockUserId)).thenReturn(Flux.empty());
     StepVerifier.create(submissionService.findAllValidIdsByUserId(mockUserId))
-        .expectNext(new ArrayList<Long>())
+        .expectNext(new ArrayList<String>())
         .expectComplete()
         .verify();
     verify(submissionRepository, times(1)).findAllValidByUserId(mockUserId);
@@ -228,20 +228,20 @@ class SubmissonServiceTest {
     final Submission mockSubmission3 = mock(Submission.class);
     final Submission mockSubmission4 = mock(Submission.class);
 
-    final long moduleId1 = 164L;
+    final String moduleId1 = "id1";
     when(mockSubmission1.getModuleId()).thenReturn(moduleId1);
 
-    final long moduleId2 = 310L;
+    final String moduleId2 = "id2";
     when(mockSubmission2.getModuleId()).thenReturn(moduleId2);
 
-    final long moduleId3 = 783;
+    final String moduleId3 = "id3";
     when(mockSubmission3.getModuleId()).thenReturn(moduleId3);
 
-    final long moduleId4 = 499L;
+    final String moduleId4 = "id4";
     when(mockSubmission4.getModuleId()).thenReturn(moduleId4);
 
-    final List<Long> moduleIdList =
-        Arrays.asList(new Long[] {moduleId1, moduleId2, moduleId3, moduleId4});
+    final List<String> moduleIdList =
+        Arrays.asList(new String[] {moduleId1, moduleId2, moduleId3, moduleId4});
 
     when(submissionRepository.findAllValidByUserId(mockUserId))
         .thenReturn(Flux.just(mockSubmission1, mockSubmission2, mockSubmission3, mockSubmission4));
@@ -267,7 +267,7 @@ class SubmissonServiceTest {
   @Test
   void submit_InvalidFlag_ReturnsInvalidSubmission() {
     final long mockUserId = 293L;
-    final long mockModuleId = 800L;
+    final String mockModuleId = "id";
     final long mockSubmissionId = 353L;
 
     final String flag = "invalidFlag";
@@ -307,7 +307,7 @@ class SubmissonServiceTest {
   @Test
   void submit_InvalidModuleId_ReturnsInvalidUserIdException() {
     final long mockUserId = 934L;
-    for (final long moduleId : TestUtils.INVALID_IDS) {
+    for (final String moduleId : TestUtils.INVALID_ID_STRINGS) {
       StepVerifier.create(submissionService.submit(mockUserId, moduleId, "flag"))
           .expectError(InvalidModuleIdException.class)
           .verify();
@@ -316,7 +316,7 @@ class SubmissonServiceTest {
 
   @Test
   void submit_InvalidUserId_ReturnsInvalidUserIdException() {
-    final long mockModuleId = 201L;
+    final String mockModuleId = "id";
     for (final long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(submissionService.submit(userId, mockModuleId, "flag"))
           .expectError(InvalidUserIdException.class)
@@ -327,7 +327,7 @@ class SubmissonServiceTest {
   @Test
   void submit_ModuleAlreadySolvedByUser_ReturnsModuleAlreadySolvedException() {
     final long mockUserId = 293L;
-    final long mockModuleId = 800L;
+    final String mockModuleId = "id";
     final String flag = "validFlag";
 
     final Clock fixedClock = Clock.fixed(Instant.parse("2000-01-01T10:00:00.00Z"), ZoneId.of("Z"));
@@ -351,7 +351,7 @@ class SubmissonServiceTest {
   @Test
   void submit_ValidFlag_ReturnsValidSubmission() {
     final long mockUserId = 293L;
-    final long mockModuleId = 800L;
+    final String mockModuleId = "id";
     final long mockSubmissionId = 353L;
 
     final String flag = "validFlag";
@@ -391,7 +391,7 @@ class SubmissonServiceTest {
   @Test
   void submitValid_InvalidModuleId_ReturnsInvalidUserIdException() {
     final long mockUserId = 348L;
-    for (final long moduleId : TestUtils.INVALID_IDS) {
+    for (final String moduleId : TestUtils.INVALID_ID_STRINGS) {
       StepVerifier.create(submissionService.submitValid(mockUserId, moduleId))
           .expectError(InvalidModuleIdException.class)
           .verify();
@@ -400,7 +400,7 @@ class SubmissonServiceTest {
 
   @Test
   void submitValid_InvalidUserId_ReturnsInvalidUserIdException() {
-    final long mockModuleId = 160L;
+    final String mockModuleId = "id";
     for (final long userId : TestUtils.INVALID_IDS) {
       StepVerifier.create(submissionService.submitValid(userId, mockModuleId))
           .expectError(InvalidUserIdException.class)
@@ -411,7 +411,7 @@ class SubmissonServiceTest {
   @Test
   void submitValid_ModuleAlreadySolvedByUser_ReturnsModuleAlreadySolvedException() {
     final long mockUserId = 743L;
-    final long mockModuleId = 276L;
+    final String mockModuleId = "id";
 
     final Clock fixedClock = Clock.fixed(Instant.parse("2000-01-01T10:00:00.00Z"), ZoneId.of("Z"));
 
@@ -431,7 +431,7 @@ class SubmissonServiceTest {
   @Test
   void submitValid_ModuleNotAlreadySolved_ReturnsValidSubmission() {
     final long mockUserId = 293L;
-    final long mockModuleId = 800L;
+    final String mockModuleId = "id";
     final long mockSubmissionId = 353L;
 
     final Clock fixedClock = Clock.fixed(Instant.parse("2000-01-01T10:00:00.00Z"), ZoneId.of("Z"));

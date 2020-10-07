@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.owasp.securityshepherd.crypto.CryptoService;
 import org.owasp.securityshepherd.exception.InvalidFlagStateException;
-import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
 import org.owasp.securityshepherd.service.ConfigurationService;
@@ -44,13 +43,9 @@ public final class FlagHandler {
 
   private static final String FLAG_PREFIX = "flag";
 
-  public Mono<String> getSaltedHmac(final long userId, final long moduleId, final String prefix) {
+  public Mono<String> getSaltedHmac(final long userId, final String moduleId, final String prefix) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
-    }
-
-    if (moduleId <= 0) {
-      return Mono.error(new InvalidModuleIdException());
     }
 
     final Mono<byte[]> moduleKey =
@@ -58,7 +53,9 @@ public final class FlagHandler {
         moduleService
             .findById(moduleId)
             // Return error if module wasn't found
-            .switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
+            .switchIfEmpty(
+                Mono.error(
+                    new ModuleIdNotFoundException("Did not find module with id " + moduleId)))
             // Make sure that the flag isn't static
             .filter(foundModule -> !foundModule.isFlagStatic())
             .switchIfEmpty(
@@ -80,7 +77,7 @@ public final class FlagHandler {
   }
 
   public Mono<Boolean> verifyFlag(
-      final long userId, final long moduleId, final String submittedFlag) {
+      final long userId, final String moduleId, final String submittedFlag) {
     if (submittedFlag == null) {
       return Mono.error(new NullPointerException("Submitted flag cannot be null"));
     }
@@ -120,7 +117,7 @@ public final class FlagHandler {
             .onErrorReturn(false)
             .map(validFlag -> Boolean.TRUE.equals(validFlag) ? "valid" : "invalid");
 
-    Mono.zip(userService.findDisplayNameById(userId), validText, currentModule.map(Module::getName))
+    Mono.zip(userService.findDisplayNameById(userId), validText, currentModule.map(Module::getId))
         .map(
             tuple ->
                 "User "
@@ -136,7 +133,7 @@ public final class FlagHandler {
     return isValid;
   }
 
-  public Mono<String> getDynamicFlag(final long userId, final long moduleId) {
+  public Mono<String> getDynamicFlag(final long userId, final String moduleId) {
     return getSaltedHmac(userId, moduleId, "flag")
         .map(flag -> String.format("%s{%s}", FLAG_PREFIX, flag));
   }

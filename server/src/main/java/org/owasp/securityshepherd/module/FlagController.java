@@ -33,14 +33,17 @@ import reactor.core.publisher.Mono;
 public class FlagController {
   private final ControllerAuthentication controllerAuthentication;
 
+  private final ModuleService moduleService;
+
   private final SubmissionService submissionService;
 
-  @PostMapping(path = "flag/submit/{id}")
+  @PostMapping(path = "flag/submit/{moduleId}")
   @PreAuthorize("hasRole('ROLE_USER')")
   public Mono<Submission> submitFlag(
-      @PathVariable("id") final Long moduleId, @RequestBody final String flag) {
+      @PathVariable("moduleId") final String moduleId, @RequestBody final String flag) {
     return controllerAuthentication
         .getUserId()
-        .flatMap(userId -> submissionService.submit(userId, moduleId, flag));
+        .zipWith(moduleService.findById(moduleId).map(Module::getId))
+        .flatMap(tuple -> submissionService.submit(tuple.getT1(), tuple.getT2(), flag));
   }
 }

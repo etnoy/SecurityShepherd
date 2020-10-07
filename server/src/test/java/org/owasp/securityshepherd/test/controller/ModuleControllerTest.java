@@ -102,19 +102,21 @@ class ModuleControllerTest {
 
   @Test
   void getModuleById_IdDoesNotExist_ReturnsModule() throws Exception {
-    final long mockModuleId = 459L;
+    final String mockModuleId = "module-id";
     when(moduleService.findById(mockModuleId)).thenReturn(Mono.empty());
     StepVerifier.create(moduleController.getModuleById(mockModuleId)).expectComplete().verify();
     verify(moduleService, times(1)).findById(mockModuleId);
   }
 
   @Test
-  void getModuleById_IdExists_ReturnsModule() throws Exception {
-    final long mockModuleId = 433L;
+  void getModuleById_IdExists_ReturnsModuleListItem() throws Exception {
+    final String mockModuleId = "module-id";
     final Module mockedModule = mock(Module.class);
+    final ModuleListItem mockModuleListItem = mock(ModuleListItem.class);
+
     when(moduleService.findById(mockModuleId)).thenReturn(Mono.just(mockedModule));
     StepVerifier.create(moduleController.getModuleById(mockModuleId))
-        .expectNext(mockedModule)
+        .expectNext(mockModuleListItem)
         .expectComplete()
         .verify();
     verify(moduleService, times(1)).findById(mockModuleId);
@@ -126,14 +128,12 @@ class ModuleControllerTest {
     final String mockShortName = "shortName";
     when(controllerAuthentication.getUserId()).thenReturn(Mono.just(mockUserId));
 
-    when(moduleSolutions.findOpenModuleByShortNameWithSolutionStatus(mockUserId, mockShortName))
+    when(moduleSolutions.findOpenModuleByIdWithSolutionStatus(mockUserId, mockShortName))
         .thenReturn(Mono.empty());
-    StepVerifier.create(moduleController.getModuleByShortName(mockShortName))
-        .expectComplete()
-        .verify();
+    StepVerifier.create(moduleController.getModuleById(mockShortName)).expectComplete().verify();
     verify(controllerAuthentication, times(1)).getUserId();
     verify(moduleSolutions, times(1))
-        .findOpenModuleByShortNameWithSolutionStatus(mockUserId, mockShortName);
+        .findOpenModuleByIdWithSolutionStatus(mockUserId, mockShortName);
   }
 
   @Test
@@ -143,21 +143,20 @@ class ModuleControllerTest {
     final ModuleListItem mockModuleListItem = mock(ModuleListItem.class);
     when(controllerAuthentication.getUserId()).thenReturn(Mono.just(mockUserId));
 
-    when(moduleSolutions.findOpenModuleByShortNameWithSolutionStatus(mockUserId, mockShortName))
+    when(moduleSolutions.findOpenModuleByIdWithSolutionStatus(mockUserId, mockShortName))
         .thenReturn(Mono.just(mockModuleListItem));
-    StepVerifier.create(moduleController.getModuleByShortName(mockShortName))
+    StepVerifier.create(moduleController.getModuleById(mockShortName))
         .expectNext(mockModuleListItem)
         .expectComplete()
         .verify();
     verify(controllerAuthentication, times(1)).getUserId();
     verify(moduleSolutions, times(1))
-        .findOpenModuleByShortNameWithSolutionStatus(mockUserId, mockShortName);
+        .findOpenModuleByIdWithSolutionStatus(mockUserId, mockShortName);
   }
 
   @BeforeEach
   private void setUp() throws Exception {
     // Set up the system under test
-    moduleController =
-        new ModuleController(moduleService, moduleSolutions, controllerAuthentication);
+    moduleController = new ModuleController(moduleSolutions, controllerAuthentication);
   }
 }

@@ -16,13 +16,13 @@
 package org.owasp.securityshepherd.test.module.xss;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,8 +30,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.owasp.securityshepherd.exception.DuplicateModuleNameException;
-import org.owasp.securityshepherd.exception.DuplicateModuleShortNameException;
 import org.owasp.securityshepherd.exception.ModuleNotInitializedException;
 import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.Module;
@@ -59,95 +57,32 @@ class XssTutorialTest {
 
   @Mock FlagHandler flagHandler;
 
-  @Test
-  void getDescription_IsNotEmpty() {
-    assertThat(xssTutorial.getDescription()).isNotEmpty();
-  }
+  final Module mockModule = mock(Module.class);
 
   @Test
-  void getModuleId_ModuleIntialized_ReturnsModuleId() {
-    final long mockModuleId = 254L;
-    final Module mockModule = mock(Module.class);
-
-    when(moduleService.create(xssTutorial)).thenReturn(Mono.just(mockModule));
-
-    when(mockModule.getId()).thenReturn(mockModuleId);
-    when(moduleService.setDynamicFlag(mockModuleId)).thenReturn(Mono.just(mockModule));
-    xssTutorial.initialize().block();
-    assertThat(xssTutorial.getModule().getId()).isEqualTo(mockModuleId);
-  }
-
-  @Test
-  void getModuleId_ModuleNotIntialized_ThrowsModuleNotInitializedException() {
-    assertThatThrownBy(() -> xssTutorial.getModuleId())
-        .isInstanceOf(ModuleNotInitializedException.class)
-        .hasMessageContaining("Must initialize module first");
-  }
-
-  @Test
-  void getName_ReturnsXssTutorial() {
-    assertThat(xssTutorial.getName()).isEqualTo("XSS Tutorial");
-  }
-
-  @Test
-  void getShortName_ReturnsXssTutorial() {
-    assertThat(xssTutorial.getShortName()).isEqualTo("xss-tutorial");
-  }
-
-  @Test
-  void initialize_DuplicateModuleName_ReturnsException() {
-    when(moduleService.create(xssTutorial))
-        .thenReturn(Mono.error(new DuplicateModuleNameException()));
-    StepVerifier.create(xssTutorial.initialize())
-        .expectError(DuplicateModuleNameException.class)
-        .verify();
-  }
-
-  @Test
-  void initialize_DuplicateModuleShortName_ReturnsException() {
-    when(moduleService.create(xssTutorial))
-        .thenReturn(Mono.error(new DuplicateModuleShortNameException()));
-    StepVerifier.create(xssTutorial.initialize())
-        .expectError(DuplicateModuleShortNameException.class)
-        .verify();
-  }
-
-  @Test
-  void initialize_ValidModuleName_InitializesModule() {
-    final long mockModuleId = 125L;
-
-    final Module mockModule = mock(Module.class);
-
-    when(moduleService.create(xssTutorial)).thenReturn(Mono.just(mockModule));
-
-    when(mockModule.getId()).thenReturn(mockModuleId);
-    when(moduleService.setDynamicFlag(mockModuleId)).thenReturn(Mono.just(mockModule));
-
-    StepVerifier.create(xssTutorial.initialize())
-        .expectNext(mockModuleId)
-        .expectComplete()
-        .verify();
+  void equals_EqualsVerifier_AsExpected() {
+    EqualsVerifier.forClass(XssTutorial.class).withRedefinedSuperclass().verify();
   }
 
   @BeforeEach
   private void setUp() {
     // Set up the system under test
+    when(moduleService.create("xss-tutorial")).thenReturn(Mono.just(mockModule));
+
     xssTutorial = new XssTutorial(xssService, moduleService, flagHandler);
   }
 
   @Test
   void submitQuery_MakesAlert_ReturnsFlag() {
     final long mockUserId = 606L;
-    final Module mockModule = mock(Module.class);
     final String mockFlag = "mockedflag";
     final String query = "username";
-    final long mockModuleId = 823L;
-
-    when(moduleService.create(xssTutorial)).thenReturn(Mono.just(mockModule));
+    final String mockModuleId = "id";
 
     when(mockModule.getId()).thenReturn(mockModuleId);
     when(moduleService.setDynamicFlag(mockModuleId)).thenReturn(Mono.just(mockModule));
     when(flagHandler.getDynamicFlag(mockUserId, mockModuleId)).thenReturn(Mono.just(mockFlag));
+    when(mockModule.isFlagStatic()).thenReturn(false);
 
     final String mockTarget =
         "<html><head><title>Alert</title></head><body><p>Result: username</p></body></html>";
@@ -155,8 +90,6 @@ class XssTutorialTest {
     final List<String> mockAlertList = Arrays.asList(new String[] {"xss", "alert"});
 
     when(xssService.doXss(mockTarget)).thenReturn(mockAlertList);
-
-    xssTutorial.initialize().block();
 
     StepVerifier.create(xssTutorial.submitQuery(mockUserId, query))
         .assertNext(
@@ -181,9 +114,7 @@ class XssTutorialTest {
     final long mockUserId = 606L;
     final Module mockModule = mock(Module.class);
     final String query = "username";
-    final long mockModuleId = 823L;
-
-    when(moduleService.create(xssTutorial)).thenReturn(Mono.just(mockModule));
+    final String mockModuleId = "id";
 
     when(mockModule.getId()).thenReturn(mockModuleId);
     when(moduleService.setDynamicFlag(mockModuleId)).thenReturn(Mono.just(mockModule));
@@ -194,8 +125,6 @@ class XssTutorialTest {
     final List<String> mockAlertList = new ArrayList<String>();
 
     when(xssService.doXss(mockTarget)).thenReturn(mockAlertList);
-
-    xssTutorial.initialize().block();
 
     StepVerifier.create(xssTutorial.submitQuery(mockUserId, query))
         .assertNext(

@@ -106,18 +106,8 @@ export class ApiService {
     );
   }
 
-  getModuleByShortName(shortName: string): Observable<any> {
-    const api = `${this.endpoint}/module/by-name/${shortName}`;
-    return this.http.get(api, { headers: this.headers }).pipe(
-      map((res: Response) => {
-        return res || {};
-      }),
-      catchError(this.handleError)
-    );
-  }
-
   getModuleById(moduleId: string): Observable<any> {
-    const api = `${this.endpoint}/module/by-id/${moduleId}`;
+    const api = `${this.endpoint}/module/${moduleId}`;
     return this.http.get(api, { headers: this.headers }).pipe(
       map((res: Response) => {
         return res || {};

@@ -22,7 +22,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.owasp.securityshepherd.crypto.KeyService;
+import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.ModuleService;
+import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionDatabaseClientFactory;
 import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorial;
 import org.owasp.securityshepherd.module.sqlinjection.SqlInjectionTutorialRow;
 import org.owasp.securityshepherd.scoring.ScoreService;
@@ -43,7 +46,7 @@ import reactor.test.StepVerifier;
 @DisplayName("SqlInjectionTutorial integration test")
 class SqlInjectionTutorialIT {
 
-  @Autowired SqlInjectionTutorial sqlInjectionTutorial;
+  SqlInjectionTutorial sqlInjectionTutorial;
 
   @Autowired TestUtils testUtils;
 
@@ -54,6 +57,13 @@ class SqlInjectionTutorialIT {
   @Autowired SubmissionService submissionService;
 
   @Autowired ScoreService scoreService;
+  
+  @Autowired SqlInjectionDatabaseClientFactory sqlInjectionDatabaseClientFactory;
+
+  @Autowired
+  FlagHandler flagHandler;
+  
+  @Autowired KeyService keyService;
 
   @BeforeAll
   private static void reactorVerbose() {
@@ -101,7 +111,6 @@ class SqlInjectionTutorialIT {
   @Test
   void submitSql_CorrectAttackQuery_ReturnedFlagIsCorrect() {
     final Long userId = userService.create("TestUser1").block();
-    final Long moduleId = sqlInjectionTutorial.getModule().getId();
 
     final Mono<String> flagMono =
         sqlInjectionTutorial
@@ -113,7 +122,8 @@ class SqlInjectionTutorialIT {
     // Submit the flag we got from the sql injection and make sure it validates
     StepVerifier.create(
             flagMono
-                .flatMap(flag -> submissionService.submit(userId, moduleId, flag))
+                .zipWith(sqlInjectionTutorial.getModule().map(m -> m.getId()))
+                .flatMap(tuple -> submissionService.submit(userId, tuple.getT2(), tuple.getT1()))
                 .map(Submission::isValid))
         .expectNext(true)
         .expectComplete()
@@ -123,9 +133,6 @@ class SqlInjectionTutorialIT {
   @Test
   void submitSql_CorrectAttackQuery_ModifiedFlagIsWrong() {
     final Long userId = userService.create("TestUser1").block();
-    final Long moduleId = sqlInjectionTutorial.initialize().block();
-
-    moduleService.setDynamicFlag(moduleId).block();
 
     final Mono<String> flagVerificationMono =
         sqlInjectionTutorial
@@ -137,7 +144,10 @@ class SqlInjectionTutorialIT {
     // Take the flag we got from the tutorial, modify it, and expect validation to fail
     StepVerifier.create(
             flagVerificationMono
-                .flatMap(flag -> submissionService.submit(userId, moduleId, flag + "wrong"))
+                .zipWith(sqlInjectionTutorial.getModule().map(m -> m.getId()))
+                .flatMap(
+                    tuple ->
+                        submissionService.submit(userId, tuple.getT2(), tuple.getT1() + "wrong"))
                 .map(Submission::isValid))
         .expectNext(false)
         .expectComplete()
@@ -151,6 +161,7 @@ class SqlInjectionTutorialIT {
   @BeforeEach
   private void clear() {
     testUtils.deleteAll().block();
-    sqlInjectionTutorial.initialize().block();
+    sqlInjectionTutorial=new SqlInjectionTutorial(moduleService, flagHandler, sqlInjectionDatabaseClientFactory,keyService);
+    sqlInjectionTutorial.init();
   }
 }

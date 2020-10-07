@@ -8,7 +8,7 @@ import { XssTutorialResult } from 'src/app/model/xss-tutorial-result';
 @Component({
   selector: 'app-xss-tutorial',
   templateUrl: './xss-tutorial.component.html',
-  styleUrls: ['./xss-tutorial.component.css']
+  styleUrls: ['./xss-tutorial.component.css'],
 })
 export class XssTutorialComponent implements OnInit {
   queryForm: FormGroup;
@@ -23,7 +23,7 @@ export class XssTutorialComponent implements OnInit {
     private alertService: AlertService
   ) {
     this.queryForm = this.fb.group({
-      query: ['']
+      query: [''],
     });
     this.result = null;
   }
@@ -39,11 +39,11 @@ export class XssTutorialComponent implements OnInit {
 
     return this.apiService
       .modulePostRequest(
-        this.module.shortName,
+        this.module.id,
         'search',
         this.queryForm.controls.query.value
       )
-      .subscribe(data => {
+      .subscribe((data) => {
         this.result = data;
         const alert = data['alert'];
         if (this.result.alert) {

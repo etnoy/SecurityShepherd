@@ -21,7 +21,7 @@ import reactor.core.publisher.Mono;
 
 @Repository
 public interface CsrfAttackRepository extends ReactiveCrudRepository<CsrfAttack, Long> {
-  public Mono<CsrfAttack> findByPseudonymAndModuleId(String pseudonym, long moduleId);
+  public Mono<CsrfAttack> findByPseudonymAndModuleId(String pseudonym, String moduleId);
 
-  public Mono<Long> countByPseudonymAndModuleId(String pseudonym, long moduleId);
+  public Mono<Long> countByPseudonymAndModuleId(String pseudonym, String moduleId);
 }

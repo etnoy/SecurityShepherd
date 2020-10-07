@@ -18,7 +18,7 @@ package org.owasp.securityshepherd.module.sqlinjection;
 import java.util.Base64;
 import lombok.EqualsAndHashCode;
 import org.owasp.securityshepherd.crypto.KeyService;
-import org.owasp.securityshepherd.module.AbstractModule;
+import org.owasp.securityshepherd.module.BaseModule;
 import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.ModuleService;
 import org.springframework.data.r2dbc.BadSqlGrammarException;
@@ -29,7 +29,9 @@ import reactor.core.publisher.Mono;
 
 @Component
 @EqualsAndHashCode(callSuper = true)
-public class SqlInjectionTutorial extends AbstractModule {
+public class SqlInjectionTutorial extends BaseModule {
+
+  private static final String MODULE_ID = "sql-injection-tutorial";
 
   private final SqlInjectionDatabaseClientFactory sqlInjectionDatabaseClientFactory;
 
@@ -40,12 +42,7 @@ public class SqlInjectionTutorial extends AbstractModule {
       final FlagHandler flagHandler,
       final SqlInjectionDatabaseClientFactory sqlInjectionDatabaseClientFactory,
       final KeyService keyService) {
-    super(
-        "SQL Injection Tutorial",
-        "sql-injection-tutorial",
-        "Tutorial on SQL injections",
-        moduleService,
-        flagHandler);
+    super(MODULE_ID, moduleService, flagHandler, null);
     this.sqlInjectionDatabaseClientFactory = sqlInjectionDatabaseClientFactory;
     this.keyService = keyService;
   }

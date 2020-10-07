@@ -32,8 +32,6 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/")
 public class ModuleController {
-  private final ModuleService moduleService;
-
   private final ModuleSolutions moduleSolutions;
 
   private final ControllerAuthentication controllerAuthentication;
@@ -46,19 +44,11 @@ public class ModuleController {
         .flatMapMany(moduleSolutions::findOpenModulesByUserIdWithSolutionStatus);
   }
 
-  @GetMapping(path = "module/{id}")
+  @GetMapping(path = "module/{moduleId}")
   @PreAuthorize("hasRole('ROLE_USER')")
-  public Mono<Module> getModuleById(@Min(1) @PathVariable final long id) {
-    return moduleService.findById(id);
-  }
-
-  @GetMapping(path = "module/by-name/{shortName}")
-  @PreAuthorize("hasRole('ROLE_USER')")
-  public Mono<ModuleListItem> getModuleByShortName(@PathVariable final String shortName) {
+  public Mono<ModuleListItem> getModuleById(@PathVariable final String moduleId) {
     return controllerAuthentication
         .getUserId()
-        .flatMap(
-            userId ->
-                moduleSolutions.findOpenModuleByShortNameWithSolutionStatus(userId, shortName));
+        .flatMap(userId -> moduleSolutions.findModuleByIdWithSolutionStatus(userId, moduleId));
   }
 }

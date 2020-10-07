@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.module.csrf.CsrfAttackRepository;
 import org.owasp.securityshepherd.module.csrf.CsrfService;
@@ -45,9 +46,9 @@ import reactor.test.StepVerifier;
 @DisplayName("CsrfTutorial integration test")
 class CsrfTutorialIT {
 
-  @Autowired CsrfService csrfService;
+  CsrfTutorial csrfTutorial;
 
-  @Autowired CsrfTutorial csrfTutorial;
+  @Autowired CsrfService csrfService;
 
   @Autowired CsrfAttackRepository csrfAttackRespository;
 
@@ -60,6 +61,8 @@ class CsrfTutorialIT {
   @Autowired SubmissionService submissionService;
 
   @Autowired ScoreService scoreService;
+
+  @Autowired FlagHandler flagHandler;
 
   @BeforeAll
   private static void reactorVerbose() {
@@ -103,7 +106,8 @@ class CsrfTutorialIT {
   @BeforeEach
   private void clear() {
     testUtils.deleteAll().block();
-    csrfTutorial.initialize().block();
+    csrfTutorial = new CsrfTutorial(csrfService, moduleService, flagHandler);
+    csrfTutorial.init();
   }
 
   @Test

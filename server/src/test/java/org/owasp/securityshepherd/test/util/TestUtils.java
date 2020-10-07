@@ -119,6 +119,12 @@ public final class TestUtils {
     "مُنَاقَشَةُ سُبُلِ اِسْتِخْدَامِ اللُّغَةِ فِي النُّظُمِ الْقَائِمَةِ وَفِيم يَخُصَّ التَّطْبِيقَاتُ الْحاسُوبِيَّةُ، "
   };
 
+  public static final String INITIAL_ID_STRING = "id";
+
+  public static final String[] ID_STRINGS = {INITIAL_ID_STRING, "id-with-hyphen", "abc123"};
+
+  public static final String[] INVALID_ID_STRINGS = {"", null};
+
   public static final String[] STRINGS_WITH_NULL =
       (String[]) ArrayUtils.addAll(STRINGS, (String) null);
 

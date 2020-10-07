@@ -17,7 +17,6 @@ package org.owasp.securityshepherd.test.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -30,16 +29,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.owasp.securityshepherd.crypto.KeyService;
-import org.owasp.securityshepherd.exception.DuplicateModuleNameException;
-import org.owasp.securityshepherd.exception.EmptyModuleNameException;
-import org.owasp.securityshepherd.exception.EmptyModuleShortNameException;
 import org.owasp.securityshepherd.exception.InvalidFlagException;
 import org.owasp.securityshepherd.exception.InvalidModuleIdException;
-import org.owasp.securityshepherd.module.AbstractModule;
 import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleRepository;
 import org.owasp.securityshepherd.module.ModuleService;
@@ -79,148 +73,22 @@ class ModuleServiceTest {
   }
 
   @Test
-  void create_DuplicateName_ReturnsDuplicateModuleNameException() {
-    final String name = "TestModule";
-    final String shortName = "test-module";
-
-    final Module mockModule = mock(Module.class);
-
-    when(moduleRepository.findByName(name)).thenReturn(Mono.just(mockModule));
-
-    StepVerifier.create(moduleService.create(name, shortName))
-        .expectErrorMatches(
-            throwable ->
-                throwable instanceof DuplicateModuleNameException
-                    && throwable.getMessage().equals("Module name TestModule already exists"))
-        .verify();
-
-    verify(moduleRepository, times(1)).findByName(name);
-  }
-
-  @Test
-  void create_EmptyName_ReturnsIllegalArgumentException() {
-    StepVerifier.create(moduleService.create("", "shortName"))
-        .expectErrorMatches(
-            throwable ->
-                throwable instanceof EmptyModuleNameException
-                    && throwable.getMessage().equals("Module name cannot be empty"))
-        .verify();
-  }
-
-  @Test
-  void create_NullName_ReturnsNullPointerException() {
-    StepVerifier.create(moduleService.create(null, "shortName"))
-        .expectError(NullPointerException.class)
-        .verify();
-  }
-
-  @Test
-  void create_NameAndShortnameAndDescription_Succeeds() {
-    final String name = "TestModule";
-    final String shortName = "test-module";
-    final String description = "This is a module";
-
-    final long mockModuleId = 390;
+  void create_ValidModuleId_Succeeds() {
+    final String moduleId = "test-module";
 
     final byte[] randomBytes = {120, 56, 111};
     when(keyService.generateRandomBytes(16)).thenReturn(randomBytes);
 
     when(moduleRepository.save(any(Module.class)))
-        .thenAnswer(user -> Mono.just(user.getArgument(0, Module.class).withId(mockModuleId)));
+        .thenAnswer(user -> Mono.just(user.getArgument(0, Module.class)));
 
-    when(moduleRepository.findByName(name)).thenReturn(Mono.empty());
-
-    StepVerifier.create(moduleService.create(name, shortName, description))
-        .assertNext(
-            module -> {
-              assertThat(module.getName()).isEqualTo(name);
-              assertThat(module.getShortName()).isEqualTo(shortName);
-              assertThat(module.getDescription()).isEqualTo(description);
-            })
-        .expectComplete()
-        .verify();
+    StepVerifier.create(moduleService.create(moduleId)).expectComplete().verify();
 
     ArgumentCaptor<Module> argument = ArgumentCaptor.forClass(Module.class);
 
-    verify(moduleRepository, times(1)).findByName(name);
     verify(moduleRepository, times(1)).save(argument.capture());
     verify(moduleRepository, times(1)).save(any(Module.class));
-    assertThat(argument.getValue().getName()).isEqualTo(name);
-  }
-
-  @Test
-  void create_NameAndShortnameSucceeds() {
-    final String name = "TestModule";
-    final String shortName = "test-module";
-
-    final long mockModuleId = 390;
-
-    final byte[] randomBytes = {120, 56, 111};
-    when(keyService.generateRandomBytes(16)).thenReturn(randomBytes);
-
-    when(moduleRepository.save(any(Module.class)))
-        .thenAnswer(user -> Mono.just(user.getArgument(0, Module.class).withId(mockModuleId)));
-
-    when(moduleRepository.findByName(name)).thenReturn(Mono.empty());
-
-    StepVerifier.create(moduleService.create(name, shortName))
-        .assertNext(
-            module -> {
-              assertThat(module.getName()).isEqualTo(name);
-              assertThat(module.getShortName()).isEqualTo(shortName);
-              assertThat(module.getDescription()).isNull();
-            })
-        .expectComplete()
-        .verify();
-
-    ArgumentCaptor<Module> argument = ArgumentCaptor.forClass(Module.class);
-
-    verify(moduleRepository, times(1)).findByName(name);
-    verify(moduleRepository, times(1)).save(argument.capture());
-    verify(moduleRepository, times(1)).save(any(Module.class));
-    assertThat(argument.getValue().getName()).isEqualTo(name);
-  }
-
-  @Test
-  void create_ValidSubmittableModule_Succeeds() {
-    final String name = "TestModule";
-    final String shortName = "test-module";
-    final String description = "description";
-
-    final long mockModuleId = 390;
-
-    final AbstractModule mockSubmittableModule = mock(AbstractModule.class);
-
-    when(moduleRepository.save(any(Module.class)))
-        .thenAnswer(user -> Mono.just(user.getArgument(0, Module.class).withId(mockModuleId)));
-
-    when(moduleRepository.findByName(name)).thenReturn(Mono.empty());
-
-    when(moduleRepository.findByShortName(shortName)).thenReturn(Mono.empty());
-
-    when(mockSubmittableModule.getName()).thenReturn(name);
-    when(mockSubmittableModule.getShortName()).thenReturn(shortName);
-    when(mockSubmittableModule.getDescription()).thenReturn(description);
-
-    final byte[] randomBytes = {120, 56, 111};
-    when(keyService.generateRandomBytes(16)).thenReturn(randomBytes);
-
-    StepVerifier.create(moduleService.create(mockSubmittableModule))
-        .assertNext(
-            module -> {
-              assertThat(module.getName()).isEqualTo(name);
-              assertThat(module.getShortName()).isEqualTo(shortName);
-              assertThat(module.getDescription()).isEqualTo(description);
-            })
-        .expectComplete()
-        .verify();
-
-    ArgumentCaptor<Module> argument = ArgumentCaptor.forClass(Module.class);
-
-    verify(moduleRepository, times(1)).findByName(name);
-    verify(moduleRepository, times(1)).save(argument.capture());
-    verify(moduleRepository, times(1)).save(any(Module.class));
-    assertThat(argument.getValue().getName()).isEqualTo(name);
+    assertThat(argument.getValue().getId()).isEqualTo(moduleId);
   }
 
   @Test
@@ -276,7 +144,7 @@ class ModuleServiceTest {
 
   @Test
   void findById_InvalidModuleId_ReturnsInvalidModuleIdException() {
-    for (final long moduleId : TestUtils.INVALID_IDS) {
+    for (final String moduleId : TestUtils.INVALID_ID_STRINGS) {
       StepVerifier.create(moduleService.findById(moduleId))
           .expectError(InvalidModuleIdException.class)
           .verify();
@@ -286,7 +154,7 @@ class ModuleServiceTest {
   @Test
   void findById_ModuleIdExists_ReturnsInvalidModuleIdException() {
     final Module mockModule = mock(Module.class);
-    final long mockModuleId = 750L;
+    final String mockModuleId = "id";
 
     when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
     StepVerifier.create(moduleService.findById(mockModuleId))
@@ -298,92 +166,10 @@ class ModuleServiceTest {
 
   @Test
   void findById_NonExistentModuleId_ReturnsEmpty() {
-    final long mockModuleId = 286;
+    final String mockModuleId = "id";
     when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.empty());
     StepVerifier.create(moduleService.findById(mockModuleId)).expectComplete().verify();
     verify(moduleRepository, times(1)).findById(mockModuleId);
-  }
-
-  @Test
-  void findByShortName_EmptyShortName_ReturnsInvalidShortNameException() {
-    StepVerifier.create(moduleService.findByShortName(""))
-        .expectErrorMatches(
-            throwable ->
-                throwable instanceof EmptyModuleShortNameException
-                    && throwable.getMessage().equals("Module short name cannot be empty"))
-        .verify();
-  }
-
-  @Test
-  void findByShortName_ExistingShortName_ReturnsModule() {
-    final String mockModuleShortName = "a-name";
-    final Module mockModule = mock(Module.class);
-    when(moduleRepository.findByShortName(mockModuleShortName)).thenReturn(Mono.just(mockModule));
-    StepVerifier.create(moduleService.findByShortName(mockModuleShortName))
-        .expectNext(mockModule)
-        .expectComplete()
-        .verify();
-    verify(moduleRepository, times(1)).findByShortName(mockModuleShortName);
-  }
-
-  @Test
-  void findByShortName_NonExistentShortName_ReturnsEmpty() {
-    final String mockModuleShortName = "a-name";
-    when(moduleRepository.findByShortName(mockModuleShortName)).thenReturn(Mono.empty());
-    StepVerifier.create(moduleService.findByShortName(mockModuleShortName))
-        .expectComplete()
-        .verify();
-    verify(moduleRepository, times(1)).findByShortName(mockModuleShortName);
-  }
-
-  @Test
-  void findByShortName_NullShortName_ReturnsNullPointerException() {
-    StepVerifier.create(moduleService.findByShortName(null))
-        .expectErrorMatches(
-            throwable ->
-                throwable instanceof NullPointerException
-                    && throwable.getMessage().equals("Module short name cannot be null"))
-        .verify();
-  }
-
-  @Test
-  void findNameById_ExistingModuleId_ReturnsUserEntity() {
-    final Module mockModule = mock(Module.class);
-    final String mockModuleName = "MockName";
-    final long mockModuleId = 21;
-
-    when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
-    when(mockModule.getName()).thenReturn(mockModuleName);
-
-    StepVerifier.create(moduleService.findNameById(mockModuleId))
-        .expectNext(mockModuleName)
-        .expectComplete()
-        .verify();
-
-    verify(moduleRepository, times(1)).findById(mockModuleId);
-    verify(mockModule, times(1)).getName();
-  }
-
-  @Test
-  void findNameById_InvalidModuleId_ReturnsInvalidModuleIdException() {
-    for (final long invalidId : TestUtils.INVALID_IDS) {
-      StepVerifier.create(moduleService.findNameById(invalidId))
-          .expectErrorMatches(
-              throwable ->
-                  throwable instanceof InvalidModuleIdException
-                      && throwable
-                          .getMessage()
-                          .equals("Module id must be a strictly positive integer"))
-          .verify();
-    }
-  }
-
-  @Test
-  void findNameById_NonExistentModuleId_ReturnsEmpty() {
-    final long nonExistentModuleId = 248;
-    when(moduleRepository.findById(nonExistentModuleId)).thenReturn(Mono.empty());
-    StepVerifier.create(moduleService.findNameById(nonExistentModuleId)).expectComplete().verify();
-    verify(moduleRepository, times(1)).findById(nonExistentModuleId);
   }
 
   @Test
@@ -393,7 +179,7 @@ class ModuleServiceTest {
     final Module mockModuleWithStaticFlag = mock(Module.class);
     final Module mockModuleWithDynamicFlag = mock(Module.class);
 
-    final long mockModuleId = 517;
+    final String mockModuleId = "id";
 
     when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.just(mockModuleWithStaticFlag));
 
@@ -421,21 +207,11 @@ class ModuleServiceTest {
   }
 
   @Test
-  void setDynamicFlag_NegativeModuleId_ReturnsInvalidModuleIdException() {
-    StepVerifier.create(moduleService.setDynamicFlag(-1))
-        .expectError(InvalidModuleIdException.class)
-        .verify();
-    StepVerifier.create(moduleService.setDynamicFlag(-1000))
-        .expectError(InvalidModuleIdException.class)
-        .verify();
-  }
-
-  @Test
   void setDynamicFlag_StaticFlagIsSet_SetsDynamicFlag() {
     final Module mockModuleWithStaticFlag = mock(Module.class);
     final Module mockModuleWithDynamicFlag = mock(Module.class);
 
-    final long mockModuleId = 134;
+    final String mockModuleId = "id";
 
     when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.just(mockModuleWithStaticFlag));
 
@@ -459,35 +235,15 @@ class ModuleServiceTest {
   }
 
   @Test
-  void setDynamicFlag_ZeroModuleId_ReturnsInvalidModuleIdException() {
-    StepVerifier.create(moduleService.setDynamicFlag(0))
-        .expectError(InvalidModuleIdException.class)
-        .verify();
-  }
-
-  @Test
   void setStaticFlag_EmptyStaticFlag_ReturnsInvalidFlagException() {
-    StepVerifier.create(moduleService.setStaticFlag(1, ""))
+    StepVerifier.create(moduleService.setStaticFlag("id", ""))
         .expectError(InvalidFlagException.class)
         .verify();
   }
 
   @Test
-  void setStaticFlag_InvalidModuleId_ReturnsInvalidModuleIdException() {
-    StepVerifier.create(moduleService.setStaticFlag(0, "flag"))
-        .expectError(InvalidModuleIdException.class)
-        .verify();
-    StepVerifier.create(moduleService.setStaticFlag(-1, "flag"))
-        .expectError(InvalidModuleIdException.class)
-        .verify();
-    StepVerifier.create(moduleService.setStaticFlag(-9999, "flag"))
-        .expectError(InvalidModuleIdException.class)
-        .verify();
-  }
-
-  @Test
   void setStaticFlag_NullStaticFlag_ReturnsNulPointerException() {
-    StepVerifier.create(moduleService.setStaticFlag(1, null))
+    StepVerifier.create(moduleService.setStaticFlag("id", null))
         .expectErrorMatches(
             throwable ->
                 throwable instanceof NullPointerException
@@ -503,7 +259,7 @@ class ModuleServiceTest {
     final Module mockModuleWithStaticFlag = mock(Module.class);
     final Module mockModuleWithStaticFlagEnabled = mock(Module.class);
 
-    final long mockModuleId = 239;
+    final String mockModuleId = "id";
 
     when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
     when(mockModule.withFlagStatic(true)).thenReturn(mockModuleWithStaticFlag);
@@ -525,71 +281,13 @@ class ModuleServiceTest {
         .expectComplete()
         .verify();
 
-    ArgumentCaptor<Long> findArgument = ArgumentCaptor.forClass(Long.class);
+    ArgumentCaptor<String> findArgument = ArgumentCaptor.forClass(String.class);
     verify(moduleRepository, times(1)).findById(findArgument.capture());
     assertThat(findArgument.getValue()).isEqualTo(mockModuleId);
 
     ArgumentCaptor<Module> saveArgument = ArgumentCaptor.forClass(Module.class);
     verify(moduleRepository, times(1)).save(saveArgument.capture());
     assertThat(saveArgument.getValue().getStaticFlag()).isEqualTo(staticFlag);
-  }
-
-  @Test
-  void setName_EmptyName_ReturnsEmptyModuleNameException() {
-    StepVerifier.create(moduleService.setName(847L, ""))
-        .expectErrorMatches(
-            throwable ->
-                throwable instanceof EmptyModuleNameException
-                    && throwable.getMessage().equals("Module name cannot be empty"))
-        .verify();
-  }
-
-  @Test
-  void setName_InvalidModuleId_ReturnsInvalidModuleIdException() {
-    for (final long moduleId : TestUtils.INVALID_IDS) {
-      StepVerifier.create(moduleService.setName(moduleId, "name"))
-          .expectErrorMatches(
-              throwable ->
-                  throwable instanceof InvalidModuleIdException
-                      && throwable
-                          .getMessage()
-                          .equals("Module id must be a strictly positive integer"))
-          .verify();
-    }
-  }
-
-  @Test
-  void setName_NullName_ReturnsNullPointerException() {
-    StepVerifier.create(moduleService.setName(204L, null))
-        .expectErrorMatches(
-            throwable ->
-                throwable instanceof NullPointerException
-                    && throwable.getMessage().equals("Module name cannot be null"))
-        .verify();
-  }
-
-  @Test
-  void setName_ValidName_Succeeds() {
-    Module mockModule = mock(Module.class);
-    String newName = "newName";
-
-    final long mockModuleId = 30;
-
-    when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
-
-    when(mockModule.withName(newName)).thenReturn(mockModule);
-    when(moduleRepository.save(any(Module.class))).thenReturn(Mono.just(mockModule));
-    when(mockModule.getName()).thenReturn(newName);
-
-    StepVerifier.create(moduleService.setName(mockModuleId, newName))
-        .assertNext(module -> assertThat(module.getName()).isEqualTo(newName))
-        .expectComplete()
-        .verify();
-
-    InOrder order = inOrder(mockModule, moduleRepository);
-
-    order.verify(mockModule, times(1)).withName(newName);
-    order.verify(moduleRepository, times(1)).save(mockModule);
   }
 
   @BeforeEach

@@ -25,7 +25,6 @@ import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.owasp.securityshepherd.exception.ModuleAlreadySolvedException;
 import org.owasp.securityshepherd.module.FlagHandler;
-import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleRepository;
 import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.scoring.CorrectionRepository;
@@ -75,31 +74,26 @@ class SubmissionServiceIT {
 
   @BeforeEach
   private void clear() {
-    // Initialize services with the real clock
     testService.deleteAll().block();
   }
 
   @Test
   void submitFlag_DuplicateValidStaticFlag_ReturnModuleAlreadySolvedException() {
     final String flag = "thisisaflag";
+    final String moduleId = "test-module";
 
     final Mono<Long> userIdMono = userService.create("TestUser");
 
-    final Mono<Long> moduleIdMono =
-        moduleService
-            .create("Test Module", "short-name")
-            .map(Module::getId)
-            .flatMap(moduleId -> moduleService.setStaticFlag(moduleId, flag))
-            .map(Module::getId);
+    moduleService.create(moduleId).block();
+    moduleService.setStaticFlag(moduleId, flag).block();
 
     StepVerifier.create(
-            Mono.zip(userIdMono, moduleIdMono)
-                .flatMapMany(
-                    tuple ->
-                        submissionService
-                            .submit(tuple.getT1(), tuple.getT2(), flag)
-                            .repeat(2)
-                            .map(Submission::isValid)))
+            userIdMono.flatMapMany(
+                userId ->
+                    submissionService
+                        .submit(userId, moduleId, flag)
+                        .repeat(2)
+                        .map(Submission::isValid)))
         .expectNext(true)
         .expectError(ModuleAlreadySolvedException.class)
         .verify();
@@ -108,23 +102,18 @@ class SubmissionServiceIT {
   @Test
   void submitFlag_ValidStaticFlag_Success() {
     final String flag = "thisisaflag";
+    final String moduleId = "test-module";
 
     final Mono<Long> userIdMono = userService.create("TestUser");
 
-    final Mono<Long> moduleIdMono =
-        moduleService
-            .create("Test Module", "short-name")
-            .map(Module::getId)
-            .flatMap(moduleId -> moduleService.setStaticFlag(moduleId, flag))
-            .map(Module::getId);
+    moduleService.create(moduleId).block();
+
+    moduleService.setStaticFlag(moduleId, flag).block();
 
     StepVerifier.create(
-            Mono.zip(userIdMono, moduleIdMono)
-                .flatMap(
-                    tuple ->
-                        submissionService
-                            .submit(tuple.getT1(), tuple.getT2(), flag)
-                            .map(Submission::isValid)))
+            userIdMono.flatMap(
+                userId ->
+                    submissionService.submit(userId, moduleId, flag).map(Submission::isValid)))
         .expectNext(true)
         .expectComplete()
         .verify();

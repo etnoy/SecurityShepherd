@@ -16,7 +16,6 @@
 package org.owasp.securityshepherd.test.module.sql;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -32,8 +31,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.owasp.securityshepherd.crypto.KeyService;
-import org.owasp.securityshepherd.exception.DuplicateModuleNameException;
-import org.owasp.securityshepherd.exception.DuplicateModuleShortNameException;
 import org.owasp.securityshepherd.exception.ModuleNotInitializedException;
 import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.Module;
@@ -78,78 +75,6 @@ class SqlInjectionTutorialTest {
     return mockDatabaseClient;
   }
 
-  @Test
-  void getDescription_IsNotEmpty() {
-    assertThat(sqlInjectionTutorial.getDescription()).isNotEmpty();
-  }
-
-  @Test
-  void getModuleId_ModuleIntialized_ReturnsModuleId() {
-    final long mockModuleId = 92L;
-    final Module mockModule = mock(Module.class);
-
-    when(moduleService.create(sqlInjectionTutorial)).thenReturn(Mono.just(mockModule));
-
-    when(mockModule.getId()).thenReturn(mockModuleId);
-    when(moduleService.setDynamicFlag(mockModuleId)).thenReturn(Mono.just(mockModule));
-    sqlInjectionTutorial.initialize().block();
-    assertThat(sqlInjectionTutorial.getModule().getId()).isEqualTo(mockModuleId);
-  }
-
-  @Test
-  void getModuleId_ModuleNotIntialized_ThrowsModuleNotInitializedException() {
-    assertThatThrownBy(() -> sqlInjectionTutorial.getModuleId())
-        .isInstanceOf(ModuleNotInitializedException.class)
-        .hasMessageContaining("Must initialize module first");
-  }
-
-  @Test
-  void getName_ReturnsSqlInjectionTutorial() {
-    assertThat(sqlInjectionTutorial.getName()).isEqualTo("SQL Injection Tutorial");
-  }
-
-  @Test
-  void getShortName_ReturnsSqlInjectionTutorial() {
-    assertThat(sqlInjectionTutorial.getShortName()).isEqualTo("sql-injection-tutorial");
-  }
-
-  @Test
-  void initialize_DuplicateModuleName_ReturnsException() {
-    when(moduleService.create(sqlInjectionTutorial))
-        .thenReturn(Mono.error(new DuplicateModuleNameException()));
-
-    StepVerifier.create(sqlInjectionTutorial.initialize())
-        .expectError(DuplicateModuleNameException.class)
-        .verify();
-  }
-
-  @Test
-  void initialize_DuplicateModuleShortName_ReturnsException() {
-    when(moduleService.create(sqlInjectionTutorial))
-        .thenReturn(Mono.error(new DuplicateModuleShortNameException()));
-
-    StepVerifier.create(sqlInjectionTutorial.initialize())
-        .expectError(DuplicateModuleShortNameException.class)
-        .verify();
-  }
-
-  @Test
-  void initialize_ValidModuleName_InitializesModule() {
-    final long mockModuleId = 572L;
-
-    final Module mockModule = mock(Module.class);
-
-    when(moduleService.create(sqlInjectionTutorial)).thenReturn(Mono.just(mockModule));
-
-    when(mockModule.getId()).thenReturn(mockModuleId);
-    when(moduleService.setDynamicFlag(mockModuleId)).thenReturn(Mono.just(mockModule));
-
-    StepVerifier.create(sqlInjectionTutorial.initialize())
-        .expectNext(mockModuleId)
-        .expectComplete()
-        .verify();
-  }
-
   @BeforeEach
   private void setUp() {
     // Set up the system under test
@@ -165,9 +90,9 @@ class SqlInjectionTutorialTest {
     final String mockFlag = "mockedflag";
     final String query = "username";
 
-    final long mockModuleId = 572L;
+    final String mockModuleId = "id";
 
-    when(moduleService.create(sqlInjectionTutorial)).thenReturn(Mono.just(mockModule));
+    when(moduleService.create("sql-injection-tutorial")).thenReturn(Mono.just(mockModule));
 
     final byte[] randomBytes = {120, 56, 111};
     when(keyService.generateRandomBytes(16)).thenReturn(randomBytes);
@@ -189,8 +114,6 @@ class SqlInjectionTutorialTest {
                 new BadSqlGrammarException(
                     "Error", query, new R2dbcBadGrammarException("Syntax error, yo"))));
 
-    sqlInjectionTutorial.initialize().block();
-
     StepVerifier.create(sqlInjectionTutorial.submitQuery(mockUserId, query))
         .assertNext(
             row -> {
@@ -208,9 +131,9 @@ class SqlInjectionTutorialTest {
     final Module mockModule = mock(Module.class);
     final String mockFlag = "mockedflag";
     final String query = "username";
-    final long mockModuleId = 823L;
+    final String mockModuleId = "id";
 
-    when(moduleService.create(sqlInjectionTutorial)).thenReturn(Mono.just(mockModule));
+    when(moduleService.create("sql-injection-tutorial")).thenReturn(Mono.just(mockModule));
 
     when(mockModule.getId()).thenReturn(mockModuleId);
     when(moduleService.setDynamicFlag(mockModuleId)).thenReturn(Mono.just(mockModule));
@@ -230,8 +153,6 @@ class SqlInjectionTutorialTest {
                 getClient(
                     args.getArgument(0, String.class),
                     Flux.just(mockSqlInjectionTutorialRow1, mockSqlInjectionTutorialRow2)));
-
-    sqlInjectionTutorial.initialize().block();
 
     StepVerifier.create(sqlInjectionTutorial.submitQuery(mockUserId, query))
         .expectNext(mockSqlInjectionTutorialRow1)
@@ -257,12 +178,12 @@ class SqlInjectionTutorialTest {
     final Module mockModule = mock(Module.class);
     final String mockFlag = "mockedflag";
     final String query = "username";
-    final long mockModuleId = 991L;
+    final String mockModuleId = "id";
 
     final byte[] randomBytes = {120, 56, 111};
     when(keyService.generateRandomBytes(16)).thenReturn(randomBytes);
 
-    when(moduleService.create(sqlInjectionTutorial)).thenReturn(Mono.just(mockModule));
+    when(moduleService.create("sql-injection-tutorial")).thenReturn(Mono.just(mockModule));
 
     when(mockModule.getId()).thenReturn(mockModuleId);
     when(moduleService.setDynamicFlag(mockModuleId)).thenReturn(Mono.just(mockModule));
@@ -276,8 +197,6 @@ class SqlInjectionTutorialTest {
             .fetch()
             .all())
         .thenReturn(Flux.error(new RuntimeException()));
-
-    sqlInjectionTutorial.initialize().block();
 
     StepVerifier.create(sqlInjectionTutorial.submitQuery(mockUserId, query))
         .expectError(RuntimeException.class);

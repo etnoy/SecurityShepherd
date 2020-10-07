@@ -25,10 +25,8 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
 CREATE TABLE module (
-	id INT AUTO_INCREMENT,
-	name VARCHAR(191) NOT NULL UNIQUE,
-	short_name VARCHAR(191) NOT NULL UNIQUE,
- 	description VARCHAR(191),
+	id VARCHAR(191) NOT NULL,
+	is_stored BOOLEAN DEFAULT TRUE,
   	is_flag_static BOOLEAN DEFAULT FALSE,
 	static_flag VARCHAR(64) NULL,
 	module_key BINARY(64) NOT NULL,
@@ -40,7 +38,7 @@ DEFAULT CHARACTER SET = utf8mb4;
 CREATE TABLE csrf_attack (
 	id INT AUTO_INCREMENT,
 	pseudonym VARCHAR(128) NOT NULL,
-	module_id INT NOT NULL,
+	module_id VARCHAR(191) NOT NULL,
 	started TIMESTAMP NOT NULL,
 	finished TIMESTAMP,
   PRIMARY KEY (id),
@@ -61,7 +59,7 @@ DEFAULT CHARACTER SET = utf8mb4;
 
 CREATE TABLE module_point (
 	id INT AUTO_INCREMENT,
-	module_id INT NOT NULL,
+	module_id VARCHAR(191) NOT NULL,
 	submission_rank INT NOT NULL,
 	points INT NOT NULL,
   PRIMARY KEY (id),
@@ -108,7 +106,7 @@ DEFAULT CHARACTER SET = utf8mb4;
 CREATE TABLE submission (
 	id INT AUTO_INCREMENT,
     user_id INT NOT NULL,
-    module_id INT NOT NULL,
+    module_id VARCHAR(191) NOT NULL,
     time DATETIME NULL DEFAULT NULL,
     is_valid BOOLEAN NOT NULL,
     flag VARCHAR(191) NOT NULL,

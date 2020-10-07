@@ -70,8 +70,10 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 
     testImplementation 'nl.jqno.equalsverifier:equalsverifier:3.4.2'
-    testImplementation 'io.projectreactor:reactor-test:3.3.4.RELEASE'
-    testImplementation 'org.apache.commons:commons-lang3:3.11'
+    testImplementation 'io.projectreactor:reactor-test'
+    testImplementation 'org.apache.commons:commons-lang3'
+
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '3.5.13'
 
     integrationTestCompileOnly 'org.projectlombok:lombok'
 

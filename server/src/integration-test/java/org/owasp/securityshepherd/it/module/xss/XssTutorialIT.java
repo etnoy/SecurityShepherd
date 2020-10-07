@@ -24,7 +24,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.ModuleService;
+import org.owasp.securityshepherd.module.xss.XssService;
 import org.owasp.securityshepherd.module.xss.XssTutorial;
 import org.owasp.securityshepherd.module.xss.XssTutorialResponse;
 import org.owasp.securityshepherd.scoring.ScoreService;
@@ -50,7 +52,7 @@ class XssTutorialIT {
     Hooks.onOperatorDebug();
   }
 
-  @Autowired XssTutorial xssTutorial;
+  XssTutorial xssTutorial;
 
   @Autowired TestUtils testUtils;
 
@@ -61,11 +63,16 @@ class XssTutorialIT {
   @Autowired SubmissionService submissionService;
 
   @Autowired ScoreService scoreService;
+  
+  @Autowired XssService xssService;
+  
+  @Autowired FlagHandler flagHandler;
 
   @BeforeEach
   private void clear() {
     testUtils.deleteAll().block();
-    xssTutorial.initialize().block();
+    xssTutorial=new XssTutorial(xssService, moduleService, flagHandler);
+    xssTutorial.init();
   }
 
   private String extractFlagFromResponse(final XssTutorialResponse response) {
@@ -85,8 +92,7 @@ class XssTutorialIT {
     // Submit the flag we got from the sql injection and make sure it validates
     StepVerifier.create(
             flagMono
-                .flatMap(
-                    flag -> submissionService.submit(userId, xssTutorial.getModule().getId(), flag))
+                .flatMap(flag -> submissionService.submit(userId, "xss-tutorial", flag))
                 .map(Submission::isValid))
         .expectNext(true)
         .expectComplete()
@@ -94,11 +100,8 @@ class XssTutorialIT {
   }
 
   @Test
-  void submitSql_CorrectAttackQuery_ModifiedFlagIsWrong() {
+  void submitQuery_CorrectAttackQuery_ModifiedFlagIsWrong() {
     final Long userId = userService.create("TestUser1").block();
-
-    final Long moduleId = xssTutorial.getModule().getId();
-    moduleService.setDynamicFlag(moduleId).block();
 
     final Mono<String> flagMono =
         xssTutorial
@@ -108,7 +111,7 @@ class XssTutorialIT {
     // Take the flag we got from the tutorial, modify it, and expect validation to fail
     StepVerifier.create(
             flagMono
-                .flatMap(flag -> submissionService.submit(userId, moduleId, flag + "wrong"))
+                .flatMap(flag -> submissionService.submit(userId, "xss-tutorial", flag + "wrong"))
                 .map(Submission::isValid))
         .expectNext(false)
         .expectComplete()
@@ -116,7 +119,7 @@ class XssTutorialIT {
   }
 
   @Test
-  void submitSql_QueryWithoutXss_NoResults() {
+  void submitQuery_QueryWithoutXss_NoResults() {
     final Long userId = userService.create("TestUser1").block();
 
     StepVerifier.create(xssTutorial.submitQuery(userId, "test"))

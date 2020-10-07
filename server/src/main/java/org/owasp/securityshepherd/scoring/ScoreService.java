@@ -16,7 +16,6 @@
 package org.owasp.securityshepherd.scoring;
 
 import lombok.RequiredArgsConstructor;
-import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidRankException;
 import org.owasp.securityshepherd.module.ModulePointRepository;
 import org.owasp.securityshepherd.scoring.ModulePoint.ModulePointBuilder;
@@ -32,11 +31,8 @@ public final class ScoreService {
 
   private final ScoreboardRepository scoreboardRepository;
 
-  public Mono<ModulePoint> setModuleScore(final long moduleId, final int rank, final int points) {
-    if (moduleId <= 0) {
-      return Mono.error(
-          new InvalidModuleIdException("Module id must be a strictly positive integer"));
-    }
+  public Mono<ModulePoint> setModuleScore(final String moduleId, final int rank, final int points) {
+
     if (rank < 0) {
       return Mono.error(new InvalidRankException("Rank must be zero or a positive integer"));
     }

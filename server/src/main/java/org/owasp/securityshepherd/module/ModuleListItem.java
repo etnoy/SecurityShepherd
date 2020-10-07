@@ -19,6 +19,7 @@ import java.io.Serializable;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
+import org.springframework.data.annotation.Id;
 
 @Value
 @Builder
@@ -26,13 +27,8 @@ public class ModuleListItem implements Serializable {
 
   private static final long serialVersionUID = -5011105798343266330L;
 
-  @NonNull private Long id;
-
-  @NonNull private String name;
-
-  @NonNull private String shortName;
-
-  private String description;
+  @Id @NonNull private String id;
 
   private Boolean isSolved;
+  
 }

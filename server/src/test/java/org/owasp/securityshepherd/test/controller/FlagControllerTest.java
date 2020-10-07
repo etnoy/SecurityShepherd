@@ -31,6 +31,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.owasp.securityshepherd.authentication.ControllerAuthentication;
 import org.owasp.securityshepherd.exception.NotAuthenticatedException;
 import org.owasp.securityshepherd.module.FlagController;
+import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.scoring.Submission;
 import org.owasp.securityshepherd.scoring.SubmissionService;
 import reactor.core.publisher.Hooks;
@@ -51,23 +52,25 @@ class FlagControllerTest {
 
   @Mock private ControllerAuthentication controllerAuthentication;
 
+  @Mock private ModuleService moduleService;
+
   @Mock private SubmissionService submissionService;
 
   @BeforeEach
   private void setUp() throws Exception {
     // Set up the system under test
-    flagController = new FlagController(controllerAuthentication, submissionService);
+    flagController = new FlagController(controllerAuthentication, moduleService, submissionService);
   }
 
   @Test
   void submitFlag_UserNotAuthenticated_ReturnsException() throws Exception {
-    final long mockModuleId = 16L;
+    final String mockShortName = "shortname";
     final String flag = "validflag";
 
     when(controllerAuthentication.getUserId())
         .thenReturn(Mono.error(new NotAuthenticatedException()));
 
-    StepVerifier.create(flagController.submitFlag(mockModuleId, flag))
+    StepVerifier.create(flagController.submitFlag(mockShortName, flag))
         .expectError(NotAuthenticatedException.class)
         .verify();
 
@@ -77,7 +80,7 @@ class FlagControllerTest {
   @Test
   void submitFlag_UserAuthenticatedAndValidFlagSubmitted_ReturnsValidSubmission() throws Exception {
     final long mockUserId = 417L;
-    final long mockModuleId = 16L;
+    final String mockModuleId = "id";
     final String flag = "validflag";
 
     when(controllerAuthentication.getUserId()).thenReturn(Mono.just(mockUserId));
@@ -85,7 +88,7 @@ class FlagControllerTest {
     final Submission submission =
         Submission.builder()
             .userId(mockUserId)
-            .moduleId(mockModuleId)
+            .moduleId("id")
             .flag(flag)
             .isValid(true)
             .time(LocalDateTime.of(2000, Month.JULY, 1, 2, 3, 4))

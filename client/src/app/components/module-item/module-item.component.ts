@@ -55,55 +55,51 @@ export class ModuleItemComponent implements OnInit {
         // no parameters given, return error
         throwError('Invalid argument');
       }
-      const shortName = segments[0].path;
+      const id = segments[0].path;
 
-      this.apiService
-        .getModuleByShortName(shortName)
-        .subscribe((module: Module) => {
-          this.module = module;
-          if (segments.length > 1) {
-            this.module.parameters = segments;
-            this.module.parameters.shift();
+      this.apiService.getModuleById(id).subscribe((module: Module) => {
+        this.module = module;
+        if (segments.length > 1) {
+          this.module.parameters = segments;
+          this.module.parameters.shift();
+        }
+        this.solved = this.module.isSolved;
+        if (this.solved) {
+          this.flagForm.disable();
+        }
+        let currentModule;
+        switch (this.module.id) {
+          case 'sql-injection-tutorial': {
+            currentModule = SqlInjectionTutorialComponent;
+            break;
           }
-          this.solved = this.module.isSolved;
-          if (this.solved) {
-            this.flagForm.disable();
+          case 'xss-tutorial': {
+            currentModule = XssTutorialComponent;
+            break;
           }
-          let currentModule;
-          switch (this.module.shortName) {
-            case 'sql-injection-tutorial': {
-              currentModule = SqlInjectionTutorialComponent;
-              break;
-            }
-            case 'xss-tutorial': {
-              currentModule = XssTutorialComponent;
-              break;
-            }
-            case 'csrf-tutorial': {
-              currentModule = CsrfTutorialComponent;
-              break;
-            }
-            case 'flag-tutorial': {
-              currentModule = FlagTutorialComponent;
-              break;
-            }
-            default: {
-              throwError('shortName cannot be resolved');
-              break;
-            }
+          case 'csrf-tutorial': {
+            currentModule = CsrfTutorialComponent;
+            break;
           }
-          const componentFactory = this.componentFactoryResolver.resolveComponentFactory(
-            currentModule
-          );
+          case 'flag-tutorial': {
+            currentModule = FlagTutorialComponent;
+            break;
+          }
+          default: {
+            throwError('shortName cannot be resolved');
+            break;
+          }
+        }
+        const componentFactory = this.componentFactoryResolver.resolveComponentFactory(
+          currentModule
+        );
 
-          const viewContainerRef = this.moduleDirective.viewContainerRef;
-          viewContainerRef.clear();
-          const componentRef = viewContainerRef.createComponent(
-            componentFactory
-          );
+        const viewContainerRef = this.moduleDirective.viewContainerRef;
+        viewContainerRef.clear();
+        const componentRef = viewContainerRef.createComponent(componentFactory);
 
-          (componentRef.instance as typeof currentModule).module = this.module;
-        });
+        (componentRef.instance as typeof currentModule).module = this.module;
+      });
     });
   }
 

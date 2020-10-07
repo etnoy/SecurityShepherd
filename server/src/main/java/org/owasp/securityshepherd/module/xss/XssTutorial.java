@@ -17,7 +17,7 @@ package org.owasp.securityshepherd.module.xss;
 
 import java.util.List;
 import lombok.EqualsAndHashCode;
-import org.owasp.securityshepherd.module.AbstractModule;
+import org.owasp.securityshepherd.module.BaseModule;
 import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.module.xss.XssTutorialResponse.XssTutorialResponseBuilder;
@@ -26,19 +26,17 @@ import reactor.core.publisher.Mono;
 
 @Component
 @EqualsAndHashCode(callSuper = true)
-public class XssTutorial extends AbstractModule {
+public final class XssTutorial extends BaseModule {
+  private static final String MODULE_ID = "xss-tutorial";
+
+  
   private final XssService xssService;
 
   public XssTutorial(
       final XssService xssService,
       final ModuleService moduleService,
       final FlagHandler flagHandler) {
-    super(
-        "XSS Tutorial",
-        "xss-tutorial",
-        "Tutorial on cross site scripting (XSS)",
-        moduleService,
-        flagHandler);
+    super(MODULE_ID, moduleService, flagHandler, null);
     this.xssService = xssService;
   }
 

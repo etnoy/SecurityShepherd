@@ -17,7 +17,7 @@ package org.owasp.securityshepherd.module.csrf;
 
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
-import org.owasp.securityshepherd.module.AbstractModule;
+import org.owasp.securityshepherd.module.BaseModule;
 import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.module.csrf.CsrfTutorialResult.CsrfTutorialResultBuilder;
@@ -27,25 +27,22 @@ import reactor.core.publisher.Mono;
 @Component
 @Slf4j
 @EqualsAndHashCode(callSuper = true)
-public class CsrfTutorial extends AbstractModule {
+public class CsrfTutorial extends BaseModule {
   private final CsrfService csrfService;
+
+  private static final String MODULE_ID = "csrf-tutorial";
 
   public CsrfTutorial(
       final CsrfService csrfService,
       final ModuleService moduleService,
       final FlagHandler flagHandler) {
-    super(
-        "CSRF Tutorial",
-        "csrf-tutorial",
-        "Tutorial on cross-site request forgery (CSRF)",
-        moduleService,
-        flagHandler);
+    super(MODULE_ID, moduleService, flagHandler, null);
     this.csrfService = csrfService;
   }
 
   public Mono<CsrfTutorialResult> getTutorial(final long userId) {
 
-    final Mono<String> pseudonym = csrfService.getPseudonym(userId, module.getId());
+    final Mono<String> pseudonym = csrfService.getPseudonym(userId, MODULE_ID);
 
     final Mono<CsrfTutorialResultBuilder> resultWithoutFlag =
         pseudonym.map(p -> CsrfTutorialResult.builder().pseudonym(p));
@@ -54,7 +51,7 @@ public class CsrfTutorial extends AbstractModule {
         resultWithoutFlag.zipWith(getFlag(userId)).map(tuple -> tuple.getT1().flag(tuple.getT2()));
 
     return pseudonym
-        .flatMap(p -> csrfService.validate(p, module.getId()))
+        .flatMap(pseudo -> csrfService.validate(pseudo, MODULE_ID))
         .filter(isActive -> isActive)
         .flatMap(isActive -> resultWithFlag)
         .switchIfEmpty(resultWithoutFlag)
@@ -67,23 +64,24 @@ public class CsrfTutorial extends AbstractModule {
 
     log.debug(String.format("User %d is attacking csrf target %s", userId, target));
 
-    return csrfService
-        .validatePseudonym(target, module.getId())
+    return module
+        .map(m -> m.getId())
+        .flatMap(moduleId -> csrfService.validatePseudonym(target, moduleId))
         .flatMap(
             valid -> {
               if (Boolean.TRUE.equals(valid)) {
                 return csrfService
-                    .getPseudonym(userId, module.getId())
+                    .getPseudonym(userId, moduleId)
                     .flatMap(
-                        p -> {
-                          if (p.equals(target)) {
+                        pseudonym -> {
+                          if (pseudonym.equals(target)) {
                             return Mono.just(
                                 csrfTutorialResultBuilder
                                     .error("You cannot activate yourself")
                                     .build());
                           } else {
                             return csrfService
-                                .attack(target, module.getId())
+                                .attack(target, moduleId)
                                 .then(
                                     Mono.just(
                                         csrfTutorialResultBuilder

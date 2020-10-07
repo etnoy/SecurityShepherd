@@ -8,7 +8,7 @@ import { SqlInjectionTutorialResult } from 'src/app/model/sql-injection-tutorial
 @Component({
   selector: 'app-sql-injection-tutorial',
   templateUrl: './sql-injection-tutorial.component.html',
-  styleUrls: ['./sql-injection-tutorial.component.css']
+  styleUrls: ['./sql-injection-tutorial.component.css'],
 })
 export class SqlInjectionTutorialComponent implements OnInit {
   queryForm: FormGroup;
@@ -25,7 +25,7 @@ export class SqlInjectionTutorialComponent implements OnInit {
     private alertService: AlertService
   ) {
     this.queryForm = this.fb.group({
-      query: ['']
+      query: [''],
     });
     this.result = [];
     this.errorResult = '';
@@ -37,18 +37,18 @@ export class SqlInjectionTutorialComponent implements OnInit {
     this.loading = true;
     return this.apiService
       .modulePostRequest(
-        this.module.shortName,
+        this.module.id,
         'search',
         this.queryForm.controls.query.value
       )
       .subscribe(
-        data => {
+        (data) => {
           this.alertService.clear();
           this.loading = false;
           this.submitted = true;
           this.result = data;
         },
-        error => {
+        (error) => {
           this.loading = false;
           this.submitted = false;
           this.result = [];

@@ -66,7 +66,7 @@ class FlagHandlerTest {
   void getDynamicFlag_FlagIsStatic_ReturnsInvalidFlagStateException() {
     final Module mockModule = mock(Module.class);
 
-    final long mockModuleId = 18;
+    final String mockModuleId = "module-id";
     final long mockUserId = 7;
 
     final byte[] mockedUserKey = {
@@ -93,7 +93,7 @@ class FlagHandlerTest {
   void getDynamicFlag_DynamicFlag_ReturnsFlag() {
     final Module mockModule = mock(Module.class);
 
-    final long mockModuleId = 76;
+    final String mockModuleId = "module-id";
     final long mockUserId = 785;
 
     final byte[] mockedServerKey = {
@@ -144,35 +144,29 @@ class FlagHandlerTest {
   }
 
   @Test
-  void getDynamicFlag_NegativeModuleId_ReturnsInvalidModuleIdException() {
-    StepVerifier.create(flagHandler.getDynamicFlag(768, -1))
+  void getDynamicFlag_InvalidModuleId_ReturnsInvalidModuleIdException() {
+    // TODO: refactor to check for invalid id strings from testutils
+    StepVerifier.create(flagHandler.getDynamicFlag(768, ""))
         .expectError(InvalidModuleIdException.class)
         .verify();
-    StepVerifier.create(flagHandler.getDynamicFlag(768, -1000))
+    StepVerifier.create(flagHandler.getDynamicFlag(768, ""))
         .expectError(InvalidModuleIdException.class)
         .verify();
   }
 
   @Test
   void getDynamicFlag_NegativeUserId_ReturnsInvalidUserIdException() {
-    StepVerifier.create(flagHandler.getDynamicFlag(-1, 302))
+    StepVerifier.create(flagHandler.getDynamicFlag(-1, "id"))
         .expectError(InvalidUserIdException.class)
         .verify();
-    StepVerifier.create(flagHandler.getDynamicFlag(-1000, 302))
+    StepVerifier.create(flagHandler.getDynamicFlag(-1000, "id"))
         .expectError(InvalidUserIdException.class)
-        .verify();
-  }
-
-  @Test
-  void getDynamicFlag_ZeroModuleId_ReturnsInvalidModuleIdException() {
-    StepVerifier.create(flagHandler.getDynamicFlag(267, 0))
-        .expectError(InvalidModuleIdException.class)
         .verify();
   }
 
   @Test
   void getDynamicFlag_ZeroUserId_ReturnsInvalidUserIdException() {
-    StepVerifier.create(flagHandler.getDynamicFlag(0, 186))
+    StepVerifier.create(flagHandler.getDynamicFlag(0, "id"))
         .expectError(InvalidUserIdException.class)
         .verify();
   }
@@ -188,7 +182,7 @@ class FlagHandlerTest {
     final Module mockModule = mock(Module.class);
 
     final long mockUserId = 158;
-    final long mockModuleId = 184;
+    final String mockModuleId = "module-id";
     final byte[] mockedServerKey = {
       -118, 17, 4, -35, 17, -3, -94, 0, -72, -17, 65, -127, 12, 82, 9, 29
     };
@@ -215,7 +209,7 @@ class FlagHandlerTest {
     when(mockModule.getKey()).thenReturn(mockedModuleKey);
 
     when(userService.findDisplayNameById(mockUserId)).thenReturn(Mono.just("MockUser"));
-    when(mockModule.getName()).thenReturn("TestModule");
+    when(mockModule.getId()).thenReturn("test-module");
 
     when(moduleService.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
 
@@ -242,7 +236,7 @@ class FlagHandlerTest {
   @Test
   void verifyFlag_CorrectStaticFlag_ReturnsTrue() {
     final long mockUserId = 225;
-    final long mockModuleId = 201;
+    final String mockModuleId = "module-id";
     final String validStaticFlag = "validFlag";
 
     final Module mockModule = mock(Module.class);
@@ -250,7 +244,7 @@ class FlagHandlerTest {
     when(moduleService.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
 
     when(userService.findDisplayNameById(mockUserId)).thenReturn(Mono.just("MockUser"));
-    when(mockModule.getName()).thenReturn("TestModule");
+    when(mockModule.getId()).thenReturn("test-module");
 
     when(mockModule.isFlagStatic()).thenReturn(true);
     when(mockModule.getStaticFlag()).thenReturn(validStaticFlag);
@@ -269,7 +263,7 @@ class FlagHandlerTest {
   @Test
   void verifyFlag_CorrectLowerCaseStaticFlag_ReturnsTrue() {
     final long mockUserId = 594;
-    final long mockModuleId = 769;
+    final String mockModuleId = "module-id";
     final String validStaticFlag = "validFlagWithUPPERCASEandlowercase";
 
     final Module mockModule = mock(Module.class);
@@ -277,7 +271,7 @@ class FlagHandlerTest {
     when(moduleService.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
 
     when(userService.findDisplayNameById(mockUserId)).thenReturn(Mono.just("MockUser"));
-    when(mockModule.getName()).thenReturn("TestModule");
+    when(mockModule.getId()).thenReturn("test-module");
 
     when(mockModule.isFlagStatic()).thenReturn(true);
     when(mockModule.getStaticFlag()).thenReturn(validStaticFlag);
@@ -297,7 +291,7 @@ class FlagHandlerTest {
   @Test
   void verifyFlag_CorrectUpperCaseStaticFlag_ReturnsTrue() {
     final long mockUserId = 594;
-    final long mockModuleId = 769;
+    final String mockModuleId = "module-id";
     final String validStaticFlag = "validFlagWithUPPERCASEandlowercase";
 
     final Module mockModule = mock(Module.class);
@@ -305,7 +299,7 @@ class FlagHandlerTest {
     when(moduleService.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
 
     when(userService.findDisplayNameById(mockUserId)).thenReturn(Mono.just("MockUser"));
-    when(mockModule.getName()).thenReturn("TestModule");
+    when(mockModule.getId()).thenReturn("test-module");
 
     when(mockModule.isFlagStatic()).thenReturn(true);
     when(mockModule.getStaticFlag()).thenReturn(validStaticFlag);
@@ -327,7 +321,7 @@ class FlagHandlerTest {
     final Module mockModule = mock(Module.class);
 
     final long mockUserId = 193;
-    final long mockModuleId = 34;
+    final String mockModuleId = "module-id";
     final byte[] mockedServerKey = {
       -118, 17, 4, -35, 17, -3, -94, 0, -72, -17, 65, -127, 12, 82, 9, 29
     };
@@ -353,7 +347,7 @@ class FlagHandlerTest {
     when(userService.findKeyById(mockUserId)).thenReturn(Mono.just(mockedUserKey));
 
     when(userService.findDisplayNameById(mockUserId)).thenReturn(Mono.just("MockUser"));
-    when(mockModule.getName()).thenReturn("TestModule");
+    when(mockModule.getId()).thenReturn("test-module");
 
     when(moduleService.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
 
@@ -382,7 +376,7 @@ class FlagHandlerTest {
   @Test
   void verifyFlag_EmptyStaticFlag_ReturnsFalse() {
     final long mockUserId = 709;
-    final long mockModuleId = 677;
+    final String mockModuleId = "module-id";
     final String validStaticFlag = "validFlag";
 
     final Module mockModule = mock(Module.class);
@@ -393,7 +387,7 @@ class FlagHandlerTest {
     when(mockModule.getStaticFlag()).thenReturn(validStaticFlag);
 
     when(userService.findDisplayNameById(mockUserId)).thenReturn(Mono.just("MockUser"));
-    when(mockModule.getName()).thenReturn("TestModule");
+    when(mockModule.getId()).thenReturn("test-module");
 
     StepVerifier.create(flagHandler.verifyFlag(mockUserId, mockModuleId, ""))
         .expectNext(false)
@@ -409,7 +403,7 @@ class FlagHandlerTest {
   @Test
   void verifyFlag_NullDynamicFlag_ReturnsFalse() {
     final long mockUserId = 756;
-    final long mockModuleId = 543;
+    final String mockModuleId = "module-id";
 
     StepVerifier.create(flagHandler.verifyFlag(mockUserId, mockModuleId, null))
         .expectError(NullPointerException.class)
@@ -419,7 +413,7 @@ class FlagHandlerTest {
   @Test
   void verifyFlag_NullStaticFlag_ReturnsFalse() {
     final long mockUserId = 487;
-    final long mockModuleId = 941;
+    final String mockModuleId = "module-id";
 
     StepVerifier.create(flagHandler.verifyFlag(mockUserId, mockModuleId, null))
         .expectError(NullPointerException.class)
@@ -431,7 +425,7 @@ class FlagHandlerTest {
     final Module mockModule = mock(Module.class);
 
     final long mockUserId = 193;
-    final long mockModuleId = 34;
+    final String mockModuleId = "module-id";
     final byte[] mockedServerKey = {
       -118, 17, 4, -35, 17, -3, -94, 0, -72, -17, 65, -127, 12, 82, 9, 29
     };
@@ -456,7 +450,7 @@ class FlagHandlerTest {
     when(mockModule.getKey()).thenReturn(mockedModuleKey);
 
     when(userService.findDisplayNameById(mockUserId)).thenReturn(Mono.just("MockUser"));
-    when(mockModule.getName()).thenReturn("TestModule");
+    when(mockModule.getId()).thenReturn("test-module");
 
     when(moduleService.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
 
@@ -485,7 +479,7 @@ class FlagHandlerTest {
   @Test
   void verifyFlag_WrongStaticFlag_ReturnsFalse() {
     final long mockUserId = 709;
-    final long mockModuleId = 677;
+    final String mockModuleId = "module-id";
     final String validStaticFlag = "validFlag";
 
     final Module mockModule = mock(Module.class);
@@ -496,7 +490,7 @@ class FlagHandlerTest {
     when(mockModule.getStaticFlag()).thenReturn(validStaticFlag);
 
     when(userService.findDisplayNameById(mockUserId)).thenReturn(Mono.just("MockUser"));
-    when(mockModule.getName()).thenReturn("TestModule");
+    when(mockModule.getId()).thenReturn("test-module");
 
     StepVerifier.create(flagHandler.verifyFlag(mockUserId, mockModuleId, "invalidFlag"))
         .expectNext(false)

@@ -18,7 +18,6 @@ package org.owasp.securityshepherd.scoring;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
-import org.owasp.securityshepherd.exception.InvalidModuleIdException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
 import org.owasp.securityshepherd.exception.ModuleAlreadySolvedException;
 import org.owasp.securityshepherd.module.FlagHandler;
@@ -48,10 +47,7 @@ public final class SubmissionService {
     resetClock();
   }
 
-  public Flux<Submission> findAllByModuleId(final long moduleId) {
-    if (moduleId <= 0) {
-      return Flux.error(new InvalidModuleIdException());
-    }
+  public Flux<Submission> findAllByModuleId(final String moduleId) {
     return submissionRepository.findAllByModuleId(moduleId);
   }
 
@@ -69,17 +65,15 @@ public final class SubmissionService {
     return rankedSubmissionRepository.findAllByUserId(userId);
   }
 
-  public Mono<Submission> findAllValidByUserIdAndModuleId(final long userId, final long moduleId) {
+  public Mono<Submission> findAllValidByUserIdAndModuleId(
+      final long userId, final String moduleId) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
-    }
-    if (moduleId <= 0) {
-      return Mono.error(new InvalidModuleIdException());
     }
     return submissionRepository.findAllValidByUserIdAndModuleId(userId, moduleId);
   }
 
-  public Mono<List<Long>> findAllValidIdsByUserId(final long userId) {
+  public Mono<List<String>> findAllValidIdsByUserId(final long userId) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
@@ -97,12 +91,9 @@ public final class SubmissionService {
     this.clock = clock;
   }
 
-  public Mono<Submission> submit(final Long userId, final Long moduleId, final String flag) {
+  public Mono<Submission> submit(final Long userId, final String moduleId, final String flag) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
-    }
-    if (moduleId <= 0) {
-      return Mono.error(new InvalidModuleIdException());
     }
     SubmissionBuilder submissionBuilder = Submission.builder();
     submissionBuilder.userId(userId);
@@ -120,18 +111,15 @@ public final class SubmissionService {
         .switchIfEmpty(
             Mono.error(
                 new ModuleAlreadySolvedException(
-                    String.format("User %d has already finished module %d", userId, moduleId))))
+                    String.format("User %d has already finished module %s", userId, moduleId))))
         // Otherwise, build a submission and save it in db
         .map(SubmissionBuilder::build)
         .flatMap(submissionRepository::save);
   }
 
-  public Mono<Submission> submitValid(final Long userId, final Long moduleId) {
+  public Mono<Submission> submitValid(final Long userId, final String moduleId) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
-    }
-    if (moduleId <= 0) {
-      return Mono.error(new InvalidModuleIdException());
     }
 
     SubmissionBuilder submissionBuilder = Submission.builder();
@@ -153,7 +141,7 @@ public final class SubmissionService {
   }
 
   private Mono<Boolean> validSubmissionDoesNotExistByUserIdAndModuleId(
-      final long userId, final long moduleId) {
+      final long userId, final String moduleId) {
     return submissionRepository
         .findAllValidByUserIdAndModuleId(userId, moduleId)
         .map(u -> false)

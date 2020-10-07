@@ -28,7 +28,7 @@ public class CsrfService {
 
   private final FlagHandler flagHandler;
 
-  public Mono<Void> attack(final String pseudonym, final long moduleId) {
+  public Mono<Void> attack(final String pseudonym, final String moduleId) {
     return csrfAttackRepository
         .findByPseudonymAndModuleId(pseudonym, moduleId)
         .map(attack -> attack.withFinished(LocalDateTime.now()))
@@ -36,17 +36,17 @@ public class CsrfService {
         .then(Mono.empty());
   }
 
-  public Mono<String> getPseudonym(final long userId, final long moduleId) {
+  public Mono<String> getPseudonym(final long userId, final String moduleId) {
     return flagHandler.getSaltedHmac(userId, moduleId, "csrfPseudonym");
   }
 
-  public Mono<Boolean> validatePseudonym(final String pseudonym, final long moduleId) {
+  public Mono<Boolean> validatePseudonym(final String pseudonym, final String moduleId) {
     return csrfAttackRepository
         .countByPseudonymAndModuleId(pseudonym, moduleId)
         .map(count -> count > 0);
   }
 
-  public Mono<Boolean> validate(final String pseudonym, final long moduleId) {
+  public Mono<Boolean> validate(final String pseudonym, final String moduleId) {
     return csrfAttackRepository
         .findByPseudonymAndModuleId(pseudonym, moduleId)
         .map(attack -> attack.getFinished() != null)
