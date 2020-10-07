@@ -68,7 +68,7 @@ export class ModuleItemComponent implements OnInit {
           this.flagForm.disable();
         }
         let currentModule;
-        switch (this.module.id) {
+        switch (this.module.name) {
           case 'sql-injection-tutorial': {
             currentModule = SqlInjectionTutorialComponent;
             break;
@@ -113,7 +113,7 @@ export class ModuleItemComponent implements OnInit {
     this.loading = true;
 
     return this.apiService
-      .submitFlag(this.module.id, this.flagForm.controls.flag.value)
+      .submitFlag(this.module.name, this.flagForm.controls.flag.value)
       .subscribe(
         (submission: Submission) => {
           this.loading = false;

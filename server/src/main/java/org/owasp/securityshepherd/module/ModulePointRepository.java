@@ -24,6 +24,6 @@ import reactor.core.publisher.Flux;
 
 @Repository
 public interface ModulePointRepository extends ReactiveCrudRepository<ModulePoint, Long> {
-  @Query("SELECT * from module_point WHERE module_id = :module")
-  public Flux<ModulePoint> findAllByModuleId(@Param("module") final int moduleId);
+  @Query("SELECT * from module_point WHERE module_name = :moduleName")
+  public Flux<ModulePoint> findAllByModuleName(@Param("moduleName") final int moduleName);
 }

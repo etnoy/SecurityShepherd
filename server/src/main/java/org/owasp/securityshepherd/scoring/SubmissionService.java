@@ -47,8 +47,8 @@ public final class SubmissionService {
     resetClock();
   }
 
-  public Flux<Submission> findAllByModuleId(final String moduleId) {
-    return submissionRepository.findAllByModuleId(moduleId);
+  public Flux<Submission> findAllByModuleName(final String moduleName) {
+    return submissionRepository.findAllByModuleName(moduleName);
   }
 
   public Flux<Submission> findAllValidByUserId(final long userId) {
@@ -65,21 +65,21 @@ public final class SubmissionService {
     return rankedSubmissionRepository.findAllByUserId(userId);
   }
 
-  public Mono<Submission> findAllValidByUserIdAndModuleId(
-      final long userId, final String moduleId) {
+  public Mono<Submission> findAllValidByUserIdAndModuleName(
+      final long userId, final String moduleName) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
-    return submissionRepository.findAllValidByUserIdAndModuleId(userId, moduleId);
+    return submissionRepository.findAllValidByUserIdAndModuleName(userId, moduleName);
   }
 
-  public Mono<List<String>> findAllValidIdsByUserId(final long userId) {
+  public Mono<List<String>> findAllValidModuleNamesByUserId(final long userId) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
     return submissionRepository
         .findAllValidByUserId(userId)
-        .map(Submission::getModuleId)
+        .map(Submission::getModuleName)
         .collectList();
   }
 
@@ -91,33 +91,33 @@ public final class SubmissionService {
     this.clock = clock;
   }
 
-  public Mono<Submission> submit(final Long userId, final String moduleId, final String flag) {
+  public Mono<Submission> submit(final Long userId, final String moduleName, final String flag) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
     SubmissionBuilder submissionBuilder = Submission.builder();
     submissionBuilder.userId(userId);
-    submissionBuilder.moduleId(moduleId);
+    submissionBuilder.moduleName(moduleName);
     submissionBuilder.flag(flag);
     submissionBuilder.time(LocalDateTime.now(clock));
     return
     // Check if flag is correct
     flagHandler
-        .verifyFlag(userId, moduleId, flag)
+        .verifyFlag(userId, moduleName, flag)
         // Get isValid field
         .map(submissionBuilder::isValid)
         // Has this module been solved by this user? In that case, throw exception.
-        .filterWhen(u -> validSubmissionDoesNotExistByUserIdAndModuleId(userId, moduleId))
+        .filterWhen(u -> validSubmissionDoesNotExistByUserIdAndModuleName(userId, moduleName))
         .switchIfEmpty(
             Mono.error(
                 new ModuleAlreadySolvedException(
-                    String.format("User %d has already finished module %s", userId, moduleId))))
+                    String.format("User %d has already finished module %s", userId, moduleName))))
         // Otherwise, build a submission and save it in db
         .map(SubmissionBuilder::build)
         .flatMap(submissionRepository::save);
   }
 
-  public Mono<Submission> submitValid(final Long userId, final String moduleId) {
+  public Mono<Submission> submitValid(final Long userId, final String moduleName) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
@@ -125,25 +125,25 @@ public final class SubmissionService {
     SubmissionBuilder submissionBuilder = Submission.builder();
 
     submissionBuilder.userId(userId);
-    submissionBuilder.moduleId(moduleId);
+    submissionBuilder.moduleName(moduleName);
     submissionBuilder.isValid(true);
     submissionBuilder.time(LocalDateTime.now(clock));
 
     return Mono.just(submissionBuilder)
-        .filterWhen(u -> validSubmissionDoesNotExistByUserIdAndModuleId(userId, moduleId))
+        .filterWhen(u -> validSubmissionDoesNotExistByUserIdAndModuleName(userId, moduleName))
         .switchIfEmpty(
             Mono.error(
                 new ModuleAlreadySolvedException(
-                    String.format("User %d has already finished module %d", userId, moduleId))))
+                    String.format("User %d has already finished module %d", userId, moduleName))))
         // Otherwise, build a submission and save it in db
         .map(SubmissionBuilder::build)
         .flatMap(submissionRepository::save);
   }
 
-  private Mono<Boolean> validSubmissionDoesNotExistByUserIdAndModuleId(
-      final long userId, final String moduleId) {
+  private Mono<Boolean> validSubmissionDoesNotExistByUserIdAndModuleName(
+      final long userId, final String moduleName) {
     return submissionRepository
-        .findAllValidByUserIdAndModuleId(userId, moduleId)
+        .findAllValidByUserIdAndModuleName(userId, moduleName)
         .map(u -> false)
         .defaultIfEmpty(true);
   }

@@ -108,10 +108,10 @@ class ModuleTest {
   @Test
   void withId_ValidId_ChangesId() {
     final Module module =
-        Module.builder().id(TestUtils.INITIAL_ID_STRING).key(new byte[] {120, 56, 111}).build();
+        Module.builder().name(TestUtils.INITIAL_NAMES).key(new byte[] {120, 56, 111}).build();
 
-    for (final String id : TestUtils.ID_STRINGS) {
-      assertThat(module.withId(id).getId()).isEqualTo(id);
+    for (final String name : TestUtils.NAMES) {
+      assertThat(module.withName(name).getId()).isEqualTo(name);
     }
   }
 

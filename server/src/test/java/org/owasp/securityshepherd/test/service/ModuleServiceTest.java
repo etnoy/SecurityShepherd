@@ -33,7 +33,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.owasp.securityshepherd.crypto.KeyService;
 import org.owasp.securityshepherd.exception.InvalidFlagException;
-import org.owasp.securityshepherd.exception.InvalidModuleIdException;
+import org.owasp.securityshepherd.exception.InvalidModuleNameException;
 import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleRepository;
 import org.owasp.securityshepherd.module.ModuleService;
@@ -73,8 +73,8 @@ class ModuleServiceTest {
   }
 
   @Test
-  void create_ValidModuleId_Succeeds() {
-    final String moduleId = "test-module";
+  void create_ValidModuleName_Succeeds() {
+    final String moduleName = "test-module";
 
     final byte[] randomBytes = {120, 56, 111};
     when(keyService.generateRandomBytes(16)).thenReturn(randomBytes);
@@ -82,13 +82,13 @@ class ModuleServiceTest {
     when(moduleRepository.save(any(Module.class)))
         .thenAnswer(user -> Mono.just(user.getArgument(0, Module.class)));
 
-    StepVerifier.create(moduleService.create(moduleId)).expectComplete().verify();
+    StepVerifier.create(moduleService.create(moduleName)).expectComplete().verify();
 
     ArgumentCaptor<Module> argument = ArgumentCaptor.forClass(Module.class);
 
     verify(moduleRepository, times(1)).save(argument.capture());
     verify(moduleRepository, times(1)).save(any(Module.class));
-    assertThat(argument.getValue().getId()).isEqualTo(moduleId);
+    assertThat(argument.getValue().getId()).isEqualTo(moduleName);
   }
 
   @Test
@@ -143,33 +143,33 @@ class ModuleServiceTest {
   }
 
   @Test
-  void findById_InvalidModuleId_ReturnsInvalidModuleIdException() {
-    for (final String moduleId : TestUtils.INVALID_ID_STRINGS) {
-      StepVerifier.create(moduleService.findById(moduleId))
-          .expectError(InvalidModuleIdException.class)
+  void findById_InvalidModuleName_ReturnsInvalidModuleNameException() {
+    for (final String moduleName : TestUtils.INVALID_NAMES) {
+      StepVerifier.create(moduleService.findByName(moduleName))
+          .expectError(InvalidModuleNameException.class)
           .verify();
     }
   }
 
   @Test
-  void findById_ModuleIdExists_ReturnsInvalidModuleIdException() {
+  void findById_ModuleNameExists_ReturnsInvalidModuleNameException() {
     final Module mockModule = mock(Module.class);
-    final String mockModuleId = "id";
+    final String mockModuleName = "id";
 
-    when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
-    StepVerifier.create(moduleService.findById(mockModuleId))
+    when(moduleRepository.findById(mockModuleName)).thenReturn(Mono.just(mockModule));
+    StepVerifier.create(moduleService.findByName(mockModuleName))
         .expectNext(mockModule)
         .expectComplete()
         .verify();
-    verify(moduleRepository, times(1)).findById(mockModuleId);
+    verify(moduleRepository, times(1)).findById(mockModuleName);
   }
 
   @Test
-  void findById_NonExistentModuleId_ReturnsEmpty() {
-    final String mockModuleId = "id";
-    when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.empty());
-    StepVerifier.create(moduleService.findById(mockModuleId)).expectComplete().verify();
-    verify(moduleRepository, times(1)).findById(mockModuleId);
+  void findById_NonExistentModuleName_ReturnsEmpty() {
+    final String mockModuleName = "id";
+    when(moduleRepository.findById(mockModuleName)).thenReturn(Mono.empty());
+    StepVerifier.create(moduleService.findByName(mockModuleName)).expectComplete().verify();
+    verify(moduleRepository, times(1)).findById(mockModuleName);
   }
 
   @Test
@@ -179,9 +179,9 @@ class ModuleServiceTest {
     final Module mockModuleWithStaticFlag = mock(Module.class);
     final Module mockModuleWithDynamicFlag = mock(Module.class);
 
-    final String mockModuleId = "id";
+    final String mockModuleName = "id";
 
-    when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.just(mockModuleWithStaticFlag));
+    when(moduleRepository.findById(mockModuleName)).thenReturn(Mono.just(mockModuleWithStaticFlag));
 
     when(mockModuleWithStaticFlag.withFlagStatic(false)).thenReturn(mockModuleWithDynamicFlag);
 
@@ -190,7 +190,7 @@ class ModuleServiceTest {
     when(moduleRepository.save(mockModuleWithDynamicFlag))
         .thenReturn(Mono.just(mockModuleWithDynamicFlag));
 
-    StepVerifier.create(moduleService.setDynamicFlag(mockModuleId))
+    StepVerifier.create(moduleService.setDynamicFlag(mockModuleName))
         .assertNext(
             module -> {
               assertThat(module.getKey()).isEqualTo(newFlag);
@@ -211,9 +211,9 @@ class ModuleServiceTest {
     final Module mockModuleWithStaticFlag = mock(Module.class);
     final Module mockModuleWithDynamicFlag = mock(Module.class);
 
-    final String mockModuleId = "id";
+    final String mockModuleName = "id";
 
-    when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.just(mockModuleWithStaticFlag));
+    when(moduleRepository.findById(mockModuleName)).thenReturn(Mono.just(mockModuleWithStaticFlag));
 
     when(mockModuleWithStaticFlag.withFlagStatic(false)).thenReturn(mockModuleWithDynamicFlag);
 
@@ -222,7 +222,7 @@ class ModuleServiceTest {
     when(moduleRepository.save(mockModuleWithDynamicFlag))
         .thenReturn(Mono.just(mockModuleWithDynamicFlag));
 
-    StepVerifier.create(moduleService.setDynamicFlag(mockModuleId))
+    StepVerifier.create(moduleService.setDynamicFlag(mockModuleName))
         .assertNext(
             module -> {
               assertThat(module.isFlagStatic()).isFalse();
@@ -259,9 +259,9 @@ class ModuleServiceTest {
     final Module mockModuleWithStaticFlag = mock(Module.class);
     final Module mockModuleWithStaticFlagEnabled = mock(Module.class);
 
-    final String mockModuleId = "id";
+    final String mockModuleName = "id";
 
-    when(moduleRepository.findById(mockModuleId)).thenReturn(Mono.just(mockModule));
+    when(moduleRepository.findById(mockModuleName)).thenReturn(Mono.just(mockModule));
     when(mockModule.withFlagStatic(true)).thenReturn(mockModuleWithStaticFlag);
     when(mockModuleWithStaticFlag.withStaticFlag(staticFlag))
         .thenReturn(mockModuleWithStaticFlagEnabled);
@@ -272,7 +272,7 @@ class ModuleServiceTest {
     when(moduleRepository.save(mockModuleWithStaticFlagEnabled))
         .thenReturn(Mono.just(mockModuleWithStaticFlagEnabled));
 
-    StepVerifier.create(moduleService.setStaticFlag(mockModuleId, staticFlag))
+    StepVerifier.create(moduleService.setStaticFlag(mockModuleName, staticFlag))
         .assertNext(
             module -> {
               assertThat(module.isFlagStatic()).isTrue();
@@ -283,7 +283,7 @@ class ModuleServiceTest {
 
     ArgumentCaptor<String> findArgument = ArgumentCaptor.forClass(String.class);
     verify(moduleRepository, times(1)).findById(findArgument.capture());
-    assertThat(findArgument.getValue()).isEqualTo(mockModuleId);
+    assertThat(findArgument.getValue()).isEqualTo(mockModuleName);
 
     ArgumentCaptor<Module> saveArgument = ArgumentCaptor.forClass(Module.class);
     verify(moduleRepository, times(1)).save(saveArgument.capture());

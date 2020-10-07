@@ -31,7 +31,7 @@ import reactor.core.publisher.Mono;
 @EqualsAndHashCode(callSuper = true)
 public class SqlInjectionTutorial extends BaseModule {
 
-  private static final String MODULE_ID = "sql-injection-tutorial";
+  private static final String MODULE_NAME = "sql-injection-tutorial";
 
   private final SqlInjectionDatabaseClientFactory sqlInjectionDatabaseClientFactory;
 
@@ -42,7 +42,7 @@ public class SqlInjectionTutorial extends BaseModule {
       final FlagHandler flagHandler,
       final SqlInjectionDatabaseClientFactory sqlInjectionDatabaseClientFactory,
       final KeyService keyService) {
-    super(MODULE_ID, moduleService, flagHandler, null);
+    super(MODULE_NAME, moduleService, flagHandler, null);
     this.sqlInjectionDatabaseClientFactory = sqlInjectionDatabaseClientFactory;
     this.keyService = keyService;
   }

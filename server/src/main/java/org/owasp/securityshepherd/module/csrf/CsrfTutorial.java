@@ -30,19 +30,19 @@ import reactor.core.publisher.Mono;
 public class CsrfTutorial extends BaseModule {
   private final CsrfService csrfService;
 
-  private static final String MODULE_ID = "csrf-tutorial";
+  private static final String MODULE_NAME = "csrf-tutorial";
 
   public CsrfTutorial(
       final CsrfService csrfService,
       final ModuleService moduleService,
       final FlagHandler flagHandler) {
-    super(MODULE_ID, moduleService, flagHandler, null);
+    super(MODULE_NAME, moduleService, flagHandler, null);
     this.csrfService = csrfService;
   }
 
   public Mono<CsrfTutorialResult> getTutorial(final long userId) {
 
-    final Mono<String> pseudonym = csrfService.getPseudonym(userId, MODULE_ID);
+    final Mono<String> pseudonym = csrfService.getPseudonym(userId, MODULE_NAME);
 
     final Mono<CsrfTutorialResultBuilder> resultWithoutFlag =
         pseudonym.map(p -> CsrfTutorialResult.builder().pseudonym(p));
@@ -51,7 +51,7 @@ public class CsrfTutorial extends BaseModule {
         resultWithoutFlag.zipWith(getFlag(userId)).map(tuple -> tuple.getT1().flag(tuple.getT2()));
 
     return pseudonym
-        .flatMap(pseudo -> csrfService.validate(pseudo, MODULE_ID))
+        .flatMap(pseudo -> csrfService.validate(pseudo, MODULE_NAME))
         .filter(isActive -> isActive)
         .flatMap(isActive -> resultWithFlag)
         .switchIfEmpty(resultWithoutFlag)
@@ -65,13 +65,13 @@ public class CsrfTutorial extends BaseModule {
     log.debug(String.format("User %d is attacking csrf target %s", userId, target));
 
     return module
-        .map(m -> m.getId())
-        .flatMap(moduleId -> csrfService.validatePseudonym(target, moduleId))
+        .map(m -> m.getName())
+        .flatMap(moduleName -> csrfService.validatePseudonym(target, moduleName))
         .flatMap(
             valid -> {
               if (Boolean.TRUE.equals(valid)) {
                 return csrfService
-                    .getPseudonym(userId, moduleId)
+                    .getPseudonym(userId, moduleName)
                     .flatMap(
                         pseudonym -> {
                           if (pseudonym.equals(target)) {
@@ -81,7 +81,7 @@ public class CsrfTutorial extends BaseModule {
                                     .build());
                           } else {
                             return csrfService
-                                .attack(target, moduleId)
+                                .attack(target, moduleName)
                                 .then(
                                     Mono.just(
                                         csrfTutorialResultBuilder

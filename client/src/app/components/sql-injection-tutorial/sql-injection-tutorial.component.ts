@@ -37,7 +37,7 @@ export class SqlInjectionTutorialComponent implements OnInit {
     this.loading = true;
     return this.apiService
       .modulePostRequest(
-        this.module.id,
+        this.module.name,
         'search',
         this.queryForm.controls.query.value
       )

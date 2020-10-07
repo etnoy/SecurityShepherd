@@ -15,11 +15,13 @@
  */
 package org.owasp.securityshepherd.exception;
 
-public class DuplicateModuleIdException extends Exception {
+import lombok.NoArgsConstructor;
 
-  private static final long serialVersionUID = 3953456107426522726L;
+@NoArgsConstructor
+public class ModuleNameNotFoundException extends RuntimeException {
+  private static final long serialVersionUID = -2976620163436522813L;
 
-  public DuplicateModuleIdException(final String message) {
+  public ModuleNameNotFoundException(final String message) {
     super(message);
   }
 }

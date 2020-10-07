@@ -4,7 +4,7 @@ CREATE SCHEMA core;
 USE core;
 
 CREATE TABLE user (
-  id INT AUTO_INCREMENT,
+  id BIGINT AUTO_INCREMENT,
   display_name VARCHAR(191) NOT NULL UNIQUE,
   class_id INT NULL,
   email VARCHAR(128) NULL,
@@ -18,15 +18,15 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
 CREATE TABLE class (
-  id INT AUTO_INCREMENT,
+  id BIGINT AUTO_INCREMENT,
   name VARCHAR(191) NOT NULL UNIQUE,
   PRIMARY KEY (id) )
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
 CREATE TABLE module (
-	id VARCHAR(191) NOT NULL,
-	is_stored BOOLEAN DEFAULT TRUE,
+  	id BIGINT AUTO_INCREMENT,
+	name VARCHAR(191) NOT NULL UNIQUE,
   	is_flag_static BOOLEAN DEFAULT FALSE,
 	static_flag VARCHAR(64) NULL,
 	module_key BINARY(64) NOT NULL,
@@ -36,19 +36,19 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
 CREATE TABLE csrf_attack (
-	id INT AUTO_INCREMENT,
+	id BIGINT AUTO_INCREMENT,
 	pseudonym VARCHAR(128) NOT NULL,
-	module_id VARCHAR(191) NOT NULL,
+	module_name VARCHAR(191) NOT NULL,
 	started TIMESTAMP NOT NULL,
 	finished TIMESTAMP,
   PRIMARY KEY (id),
-FOREIGN KEY (`module_id`) REFERENCES module(id))
+FOREIGN KEY (`module_name`) REFERENCES module(name))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
 CREATE TABLE correction (
-	id INT AUTO_INCREMENT,
-	user_id INT NOT NULL,
+	id BIGINT AUTO_INCREMENT,
+	user_id BIGINT NOT NULL,
 	amount INT NOT NULL,
 	time TIMESTAMP NOT NULL,
 	description VARCHAR(191),
@@ -58,19 +58,19 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
 CREATE TABLE module_point (
-	id INT AUTO_INCREMENT,
-	module_id VARCHAR(191) NOT NULL,
+	id BIGINT AUTO_INCREMENT,
+	module_name VARCHAR(191) NOT NULL,
 	submission_rank INT NOT NULL,
 	points INT NOT NULL,
   PRIMARY KEY (id),
-  UNIQUE KEY (module_id, submission_rank),
-  FOREIGN KEY (`module_id`) REFERENCES module(id))
+  UNIQUE KEY (module_name, submission_rank),
+  FOREIGN KEY (`module_name`) REFERENCES module(name))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
 CREATE TABLE user_auth (
-  id INT AUTO_INCREMENT,
-  user_id INT UNIQUE NOT NULL,
+  id BIGINT AUTO_INCREMENT,
+  user_id BIGINT UNIQUE NOT NULL,
   is_enabled BOOLEAN DEFAULT FALSE,
   bad_login_count INT DEFAULT 0,
   is_admin BOOLEAN DEFAULT FALSE NOT NULL,
@@ -84,8 +84,8 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
 CREATE TABLE saml_auth (
-  id INT AUTO_INCREMENT,
-  user_id INT NOT NULL UNIQUE,
+  id BIGINT AUTO_INCREMENT,
+  user_id BIGINT NOT NULL UNIQUE,
   saml_id VARCHAR(40) NOT NULL UNIQUE,
   PRIMARY KEY (id) ,
   FOREIGN KEY (user_id) REFERENCES user(id))
@@ -93,8 +93,8 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
 CREATE TABLE password_auth (
-  id INT AUTO_INCREMENT,
-  user_id INT NOT NULL UNIQUE,
+  id BIGINT AUTO_INCREMENT,
+  user_id BIGINT NOT NULL UNIQUE,
   login_name VARCHAR(191) NOT NULL UNIQUE,
   hashed_password VARCHAR(191) NOT NULL,
   is_password_non_expired BOOLEAN DEFAULT FALSE,
@@ -104,22 +104,22 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
 CREATE TABLE submission (
-	id INT AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    module_id VARCHAR(191) NOT NULL,
+	id BIGINT AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    module_name VARCHAR(191) NOT NULL,
     time DATETIME NULL DEFAULT NULL,
     is_valid BOOLEAN NOT NULL,
     flag VARCHAR(191) NOT NULL,
     valid_or_null  boolean as (if(is_valid = true,true, null)) stored,
     PRIMARY KEY (id),
-    UNIQUE KEY (user_id, module_id, valid_or_null),
+    UNIQUE KEY (user_id, module_name, valid_or_null),
     FOREIGN KEY (`user_id`) REFERENCES user(id),
-    FOREIGN KEY (`module_id`) REFERENCES module(id))
+    FOREIGN KEY (`module_name`) REFERENCES module(name))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
 CREATE TABLE configuration (
-  id INT AUTO_INCREMENT,
+  id BIGINT AUTO_INCREMENT,
   config_key VARCHAR(191) NOT NULL UNIQUE,
   value VARCHAR(191) NOT NULL,
   PRIMARY KEY (id))
@@ -130,10 +130,10 @@ CREATE VIEW ranked_submission AS
 WITH ranks as 
 (
 	SELECT 
-		rank() over (partition by module_id order by time) as 'rank',
+		rank() over (partition by module_name order by time) as 'rank',
 		id as submission_id,
 		user_id,
-		module_id,
+		module_name,
 	 	time,
 	 	flag
 	FROM submission
@@ -143,7 +143,7 @@ SELECT
 	submission_id,
 	user_id,
 	`rank`,
-	ranks.module_id,
+	ranks.module_name,
  	time,
  	flag,
  	base_score.points as base_score,
@@ -153,14 +153,14 @@ FROM ranks
 left join
 	module_point as bonus_score
 	on (
-		ranks.module_id = bonus_score.module_id
+		ranks.module_name = bonus_score.module_name
 	and
 		`rank` = bonus_score.submission_rank
 	) 
 inner join 
 	module_point as base_score
 	on (
-		ranks.module_id=base_score.module_id 
+		ranks.module_name=base_score.module_name 
 	and 
 		base_score.submission_rank=0
 	);

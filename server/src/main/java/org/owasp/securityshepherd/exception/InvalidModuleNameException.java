@@ -18,10 +18,10 @@ package org.owasp.securityshepherd.exception;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public class ModuleIdNotFoundException extends RuntimeException {
-  private static final long serialVersionUID = -2976620163436522813L;
+public class InvalidModuleNameException extends RuntimeException {
+  private static final long serialVersionUID = 3189695115052847549L;
 
-  public ModuleIdNotFoundException(final String message) {
+  public InvalidModuleNameException(final String message) {
     super(message);
   }
 }

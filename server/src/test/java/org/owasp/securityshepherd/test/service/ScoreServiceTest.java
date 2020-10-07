@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.owasp.securityshepherd.exception.InvalidModuleIdException;
+import org.owasp.securityshepherd.exception.InvalidModuleNameException;
 import org.owasp.securityshepherd.exception.InvalidRankException;
 import org.owasp.securityshepherd.module.ModulePointRepository;
 import org.owasp.securityshepherd.scoring.ModulePoint;
@@ -63,18 +63,18 @@ class ScoreServiceTest {
   }
 
   @Test
-  void setModuleScore_ValidModuleIdAndRank_ReturnsScore() throws Exception {
-    final String mockModuleId = "id";
+  void setModuleScore_ValidModuleNameAndRank_ReturnsScore() throws Exception {
+    final String mockModuleName = "id";
     final int rank = 3;
     final int points = 1000;
 
     when(modulePointRepository.save(any(ModulePoint.class)))
         .thenAnswer(args -> Mono.just(args.getArgument(0, ModulePoint.class)));
 
-    StepVerifier.create(scoreService.setModuleScore(mockModuleId, rank, points))
+    StepVerifier.create(scoreService.setModuleScore(mockModuleName, rank, points))
         .assertNext(
             modulePoint -> {
-              assertThat(modulePoint.getModuleId()).isEqualTo(mockModuleId);
+              assertThat(modulePoint.getModuleName()).isEqualTo(mockModuleName);
               assertThat(modulePoint.getRank()).isEqualTo(rank);
               assertThat(modulePoint.getPoints()).isEqualTo(points);
             })
@@ -84,9 +84,9 @@ class ScoreServiceTest {
 
   @Test
   void submit_InvalidUserId_ReturnsInvalidUserIdException() {
-    for (final String moduleId : TestUtils.INVALID_ID_STRINGS) {
-      StepVerifier.create(scoreService.setModuleScore(moduleId, 1, 1))
-          .expectError(InvalidModuleIdException.class)
+    for (final String moduleName : TestUtils.INVALID_NAMES) {
+      StepVerifier.create(scoreService.setModuleScore(moduleName, 1, 1))
+          .expectError(InvalidModuleNameException.class)
           .verify();
     }
   }

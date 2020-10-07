@@ -77,11 +77,11 @@ class XssTutorialTest {
     final long mockUserId = 606L;
     final String mockFlag = "mockedflag";
     final String query = "username";
-    final String mockModuleId = "id";
+    final String mockModuleName = "id";
 
-    when(mockModule.getId()).thenReturn(mockModuleId);
-    when(moduleService.setDynamicFlag(mockModuleId)).thenReturn(Mono.just(mockModule));
-    when(flagHandler.getDynamicFlag(mockUserId, mockModuleId)).thenReturn(Mono.just(mockFlag));
+    when(mockModule.getName()).thenReturn(mockModuleName);
+    when(moduleService.setDynamicFlag(mockModuleName)).thenReturn(Mono.just(mockModule));
+    when(flagHandler.getDynamicFlag(mockUserId, mockModuleName)).thenReturn(Mono.just(mockFlag));
     when(mockModule.isFlagStatic()).thenReturn(false);
 
     final String mockTarget =
@@ -114,10 +114,10 @@ class XssTutorialTest {
     final long mockUserId = 606L;
     final Module mockModule = mock(Module.class);
     final String query = "username";
-    final String mockModuleId = "id";
+    final String mockModuleName = "id";
 
-    when(mockModule.getId()).thenReturn(mockModuleId);
-    when(moduleService.setDynamicFlag(mockModuleId)).thenReturn(Mono.just(mockModule));
+    when(mockModule.getName()).thenReturn(mockModuleName);
+    when(moduleService.setDynamicFlag(mockModuleName)).thenReturn(Mono.just(mockModule));
 
     final String mockTarget =
         "<html><head><title>Alert</title></head><body><p>Result: username</p></body></html>";

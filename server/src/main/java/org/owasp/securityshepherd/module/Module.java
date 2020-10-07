@@ -23,19 +23,18 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.With;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.domain.Persistable;
 import org.springframework.data.relational.core.mapping.Column;
 
 @Value
 @AllArgsConstructor
 @Builder
 @With
-public class Module implements Serializable, Persistable<String> {
+public class Module implements Serializable {
   private static final long serialVersionUID = 6391362512222766270L;
 
-  @Id @NonNull private String id;
+  @Id private Long id;
 
-  @Builder.Default private boolean isStored = true;
+  @NonNull private String name;
 
   @JsonProperty("hasStaticFlag")
   private boolean isFlagStatic;
@@ -48,9 +47,4 @@ public class Module implements Serializable, Persistable<String> {
 
   @JsonProperty("isOpen")
   private boolean isOpen;
-
-  @Override
-  public boolean isNew() {
-    return !isStored;
-  }
 }

@@ -40,7 +40,7 @@ public final class ModuleSolutions {
     final ModuleListItemBuilder moduleListItemBuilder = ModuleListItem.builder();
     return submissionService
         // Find all valid submissions by this user
-        .findAllValidIdsByUserId(userId)
+        .findAllValidModuleNamesByUserId(userId)
         .flatMapMany(
             finishedModules ->
                 // Get all modules
@@ -48,40 +48,40 @@ public final class ModuleSolutions {
                     .findAllOpen()
                     .map(
                         module -> {
-                          final String moduleId = module.getId();
+                          final String moduleName = module.getName();
                           // For each module, construct a module list item
-                          moduleListItemBuilder.id(moduleId);
+                          moduleListItemBuilder.name(moduleName);
                           // Check if this module id is finished
-                          moduleListItemBuilder.isSolved(finishedModules.contains(moduleId));
+                          moduleListItemBuilder.isSolved(finishedModules.contains(moduleName));
                           // Build the module list item and return
                           return moduleListItemBuilder.build();
                         }));
   }
 
   public Mono<ModuleListItem> findOpenModuleByIdWithSolutionStatus(
-      final long userId, final String moduleId) {
+      final long userId, final String moduleName) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException("User id must be a strictly positive integer"));
     }
-    if (moduleId == null) {
+    if (moduleName == null) {
       return Mono.error(new NullPointerException("Module short name cannot be null"));
     }
     // TODO: check if module id string is empty
     final ModuleListItemBuilder moduleListItemBuilder = ModuleListItem.builder();
 
-    final Mono<Module> moduleMono = moduleService.findById(moduleId).filter(Module::isOpen);
+    final Mono<Module> moduleMono = moduleService.findByName(moduleName).filter(Module::isOpen);
 
     return moduleMono
-        .map(Module::getId)
+        .map(Module::getName)
         // Find all valid submissions by this user
-        .flatMap(openModuleId -> userHasSolvedThisModule(userId, openModuleId))
+        .flatMap(openModuleName -> userHasSolvedThisModule(userId, openModuleName))
         .defaultIfEmpty(false)
         .zipWith(moduleMono)
         .map(
             tuple -> {
               final Module module = tuple.getT2();
               // For each module, construct a module list item
-              moduleListItemBuilder.id(module.getId());
+              moduleListItemBuilder.name(module.getName());
               moduleListItemBuilder.isSolved(tuple.getT1());
               // Build the module list item and return
               return moduleListItemBuilder.build();
@@ -89,29 +89,29 @@ public final class ModuleSolutions {
   }
 
   public Mono<ModuleListItem> findModuleByIdWithSolutionStatus(
-      final long userId, final String moduleId) {
+      final long userId, final String moduleName) {
 
-    final Mono<Module> moduleMono = moduleService.findById(moduleId);
+    final Mono<Module> moduleMono = moduleService.findByName(moduleName);
 
     final Mono<List<String>> finishedModulesMono =
         submissionService
             // Find all valid submissions by this user
-            .findAllValidIdsByUserId(userId);
+            .findAllValidModuleNamesByUserId(userId);
 
     final ModuleListItemBuilder moduleListItemBuilder = ModuleListItem.builder();
     return moduleMono
         .zipWith(finishedModulesMono)
         .map(
             tuple -> {
-              moduleListItemBuilder.id(tuple.getT1().getId());
-              moduleListItemBuilder.isSolved(tuple.getT2().contains(moduleId));
+              moduleListItemBuilder.name(tuple.getT1().getName());
+              moduleListItemBuilder.isSolved(tuple.getT2().contains(moduleName));
               return moduleListItemBuilder.build();
             });
   }
 
-  private Mono<Boolean> userHasSolvedThisModule(final long userId, final String moduleId) {
+  private Mono<Boolean> userHasSolvedThisModule(final long userId, final String moduleName) {
     return submissionService
-        .findAllValidByUserIdAndModuleId(userId, moduleId)
+        .findAllValidByUserIdAndModuleName(userId, moduleName)
         .map(u -> true)
         .defaultIfEmpty(false);
   }

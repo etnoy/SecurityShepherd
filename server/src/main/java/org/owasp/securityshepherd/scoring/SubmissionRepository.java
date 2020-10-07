@@ -24,14 +24,14 @@ import reactor.core.publisher.Mono;
 
 @Repository
 public interface SubmissionRepository extends ReactiveCrudRepository<Submission, Long> {
-  @Query("SELECT * from submission WHERE module_id = :module_id")
-  public Flux<Submission> findAllByModuleId(@Param("module_id") final String moduleId);
+  @Query("SELECT * from submission WHERE module_name = :module_name")
+  public Flux<Submission> findAllByModuleName(@Param("module_name") final String moduleName);
 
   @Query("SELECT * from submission WHERE user_id = :user_id and is_valid = 1")
   public Flux<Submission> findAllValidByUserId(@Param("user_id") final long userId);
 
   @Query(
-      "SELECT * from submission WHERE user_id = :user_id AND module_id = :module_id and is_valid = 1")
-  public Mono<Submission> findAllValidByUserIdAndModuleId(
-      @Param("user_id") final long userId, @Param("module_id") final String moduleId);
+      "SELECT * from submission WHERE user_id = :user_id AND module_name = :module_name and is_valid = 1")
+  public Mono<Submission> findAllValidByUserIdAndModuleName(
+      @Param("user_id") final long userId, @Param("module_name") final String moduleName);
 }

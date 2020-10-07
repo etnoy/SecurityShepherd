@@ -102,24 +102,24 @@ class ModuleControllerTest {
 
   @Test
   void getModuleById_IdDoesNotExist_ReturnsModule() throws Exception {
-    final String mockModuleId = "module-id";
-    when(moduleService.findById(mockModuleId)).thenReturn(Mono.empty());
-    StepVerifier.create(moduleController.getModuleById(mockModuleId)).expectComplete().verify();
-    verify(moduleService, times(1)).findById(mockModuleId);
+    final String mockModuleName = "module-id";
+    when(moduleService.findByName(mockModuleName)).thenReturn(Mono.empty());
+    StepVerifier.create(moduleController.getModuleById(mockModuleName)).expectComplete().verify();
+    verify(moduleService, times(1)).findByName(mockModuleName);
   }
 
   @Test
   void getModuleById_IdExists_ReturnsModuleListItem() throws Exception {
-    final String mockModuleId = "module-id";
+    final String mockModuleName = "module-id";
     final Module mockedModule = mock(Module.class);
     final ModuleListItem mockModuleListItem = mock(ModuleListItem.class);
 
-    when(moduleService.findById(mockModuleId)).thenReturn(Mono.just(mockedModule));
-    StepVerifier.create(moduleController.getModuleById(mockModuleId))
+    when(moduleService.findByName(mockModuleName)).thenReturn(Mono.just(mockedModule));
+    StepVerifier.create(moduleController.getModuleById(mockModuleName))
         .expectNext(mockModuleListItem)
         .expectComplete()
         .verify();
-    verify(moduleService, times(1)).findById(mockModuleId);
+    verify(moduleService, times(1)).findByName(mockModuleName);
   }
 
   @Test

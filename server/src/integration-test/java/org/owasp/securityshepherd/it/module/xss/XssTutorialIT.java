@@ -63,16 +63,16 @@ class XssTutorialIT {
   @Autowired SubmissionService submissionService;
 
   @Autowired ScoreService scoreService;
-  
+
   @Autowired XssService xssService;
-  
+
   @Autowired FlagHandler flagHandler;
 
   @BeforeEach
   private void clear() {
     testUtils.deleteAll().block();
-    xssTutorial=new XssTutorial(xssService, moduleService, flagHandler);
-    xssTutorial.init();
+    xssTutorial = new XssTutorial(xssService, moduleService, flagHandler);
+    xssTutorial.init().block();
   }
 
   private String extractFlagFromResponse(final XssTutorialResponse response) {
@@ -92,7 +92,8 @@ class XssTutorialIT {
     // Submit the flag we got from the sql injection and make sure it validates
     StepVerifier.create(
             flagMono
-                .flatMap(flag -> submissionService.submit(userId, "xss-tutorial", flag))
+                .flatMap(
+                    flag -> submissionService.submit(userId, xssTutorial.getModuleName(), flag))
                 .map(Submission::isValid))
         .expectNext(true)
         .expectComplete()

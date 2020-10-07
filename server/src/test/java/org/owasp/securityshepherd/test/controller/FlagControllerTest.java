@@ -80,7 +80,7 @@ class FlagControllerTest {
   @Test
   void submitFlag_UserAuthenticatedAndValidFlagSubmitted_ReturnsValidSubmission() throws Exception {
     final long mockUserId = 417L;
-    final String mockModuleId = "id";
+    final String mockModuleName = "id";
     final String flag = "validflag";
 
     when(controllerAuthentication.getUserId()).thenReturn(Mono.just(mockUserId));
@@ -88,20 +88,20 @@ class FlagControllerTest {
     final Submission submission =
         Submission.builder()
             .userId(mockUserId)
-            .moduleId("id")
+            .moduleName("id")
             .flag(flag)
             .isValid(true)
             .time(LocalDateTime.of(2000, Month.JULY, 1, 2, 3, 4))
             .build();
 
-    when(submissionService.submit(mockUserId, mockModuleId, flag))
+    when(submissionService.submit(mockUserId, mockModuleName, flag))
         .thenReturn(Mono.just(submission));
 
-    StepVerifier.create(flagController.submitFlag(mockModuleId, flag))
+    StepVerifier.create(flagController.submitFlag(mockModuleName, flag))
         .expectNext(submission)
         .expectComplete()
         .verify();
 
-    verify(submissionService, times(1)).submit(mockUserId, mockModuleId, flag);
+    verify(submissionService, times(1)).submit(mockUserId, mockModuleName, flag);
   }
 }

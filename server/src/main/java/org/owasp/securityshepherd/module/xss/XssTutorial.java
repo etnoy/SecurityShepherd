@@ -27,16 +27,15 @@ import reactor.core.publisher.Mono;
 @Component
 @EqualsAndHashCode(callSuper = true)
 public final class XssTutorial extends BaseModule {
-  private static final String MODULE_ID = "xss-tutorial";
+  private static final String MODULE_NAME = "xss-tutorial";
 
-  
   private final XssService xssService;
 
   public XssTutorial(
       final XssService xssService,
       final ModuleService moduleService,
       final FlagHandler flagHandler) {
-    super(MODULE_ID, moduleService, flagHandler, null);
+    super(MODULE_NAME, moduleService, flagHandler, null);
     this.xssService = xssService;
   }
 

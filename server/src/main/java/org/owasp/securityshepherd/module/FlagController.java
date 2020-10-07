@@ -37,13 +37,13 @@ public class FlagController {
 
   private final SubmissionService submissionService;
 
-  @PostMapping(path = "flag/submit/{moduleId}")
+  @PostMapping(path = "flag/submit/{moduleName}")
   @PreAuthorize("hasRole('ROLE_USER')")
   public Mono<Submission> submitFlag(
-      @PathVariable("moduleId") final String moduleId, @RequestBody final String flag) {
+      @PathVariable("moduleName") final String moduleName, @RequestBody final String flag) {
     return controllerAuthentication
         .getUserId()
-        .zipWith(moduleService.findById(moduleId).map(Module::getId))
+        .zipWith(moduleService.findByName(moduleName).map(Module::getName))
         .flatMap(tuple -> submissionService.submit(tuple.getT1(), tuple.getT2(), flag));
   }
 }

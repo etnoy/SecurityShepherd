@@ -35,7 +35,7 @@ public class RankedSubmission implements Serializable {
 
   @NonNull Long userId;
 
-  @NonNull Long moduleId;
+  @NonNull Long moduleName;
 
   Long rank;
 

@@ -15,7 +15,6 @@
  */
 package org.owasp.securityshepherd.module;
 
-import javax.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.owasp.securityshepherd.authentication.ControllerAuthentication;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -44,11 +43,11 @@ public class ModuleController {
         .flatMapMany(moduleSolutions::findOpenModulesByUserIdWithSolutionStatus);
   }
 
-  @GetMapping(path = "module/{moduleId}")
+  @GetMapping(path = "module/{moduleName}")
   @PreAuthorize("hasRole('ROLE_USER')")
-  public Mono<ModuleListItem> getModuleById(@PathVariable final String moduleId) {
+  public Mono<ModuleListItem> getModuleById(@PathVariable final String moduleName) {
     return controllerAuthentication
         .getUserId()
-        .flatMap(userId -> moduleSolutions.findModuleByIdWithSolutionStatus(userId, moduleId));
+        .flatMap(userId -> moduleSolutions.findModuleByIdWithSolutionStatus(userId, moduleName));
   }
 }

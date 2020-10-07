@@ -107,7 +107,7 @@ class CsrfTutorialIT {
   private void clear() {
     testUtils.deleteAll().block();
     csrfTutorial = new CsrfTutorial(csrfService, moduleService, flagHandler);
-    csrfTutorial.init();
+    csrfTutorial.init().block();
   }
 
   @Test

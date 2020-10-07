@@ -18,9 +18,9 @@ package org.owasp.securityshepherd.module;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.owasp.securityshepherd.crypto.KeyService;
-import org.owasp.securityshepherd.exception.DuplicateModuleIdException;
+import org.owasp.securityshepherd.exception.DuplicateModuleNameException;
 import org.owasp.securityshepherd.exception.InvalidFlagException;
-import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
+import org.owasp.securityshepherd.exception.ModuleNameNotFoundException;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -38,36 +38,36 @@ public final class ModuleService {
     return moduleRepository.count();
   }
 
-  public Mono<Module> create(final String moduleId) {
-    log.trace("Find or create module with id " + moduleId);
-    final Mono<Module> moduleMono = findById(moduleId).switchIfEmpty(doCreateModule(moduleId));
-    //moduleMono.subscribe();
+  public Mono<Module> create(final String moduleName) {
+    log.trace("Find or create module with id " + moduleName);
+    final Mono<Module> moduleMono =
+        findByName(moduleName).switchIfEmpty(doCreateModule(moduleName));
+    // moduleMono.subscribe();
     return moduleMono;
   }
 
-  private Mono<Module> doCreateModule(final String moduleId) {
-    if (moduleId == null) {
-      return Mono.error(new NullPointerException("Module id cannot be null"));
+  private Mono<Module> doCreateModule(final String moduleName) {
+    if (moduleName == null) {
+      return Mono.error(new NullPointerException("Module name cannot be null"));
     }
 
-    log.info("Creating new module in database with id " + moduleId);
+    log.info("Creating new module in database with id " + moduleName);
 
-    return Mono.just(moduleId)
+    return Mono.just(moduleName)
         .filterWhen(this::doesNotExistById)
         .switchIfEmpty(
             Mono.error(
-                new DuplicateModuleIdException(
-                    String.format("Module id %s already exists", moduleId))))
+                new DuplicateModuleNameException(
+                    String.format("Module id %s already exists", moduleName))))
         .map(
-            moduleName ->
+            exists ->
                 Module.builder()
                     .isOpen(true)
-                    .id(moduleId)
+                    .name(moduleName)
                     .key(keyService.generateRandomBytes(16))
-                    .isStored(false)
                     .build())
         .flatMap(moduleRepository::save)
-        .doOnSuccess(created -> log.trace("Created module with id " + moduleId));
+        .doOnSuccess(created -> log.trace("Created module with id " + moduleName));
   }
 
   public Flux<Module> findAll() {
@@ -78,24 +78,24 @@ public final class ModuleService {
     return moduleRepository.findAllOpen();
   }
 
-  public Mono<Module> findById(final String moduleId) {
-    log.trace("Find module with id " + moduleId);
-    return moduleRepository.findById(moduleId).map(module -> module.withStored(true));
+  public Mono<Module> findByName(final String moduleName) {
+    log.trace("Find module with name " + moduleName);
+    return moduleRepository.findByName(moduleName);
   }
 
-  private Mono<Boolean> doesNotExistById(final String moduleId) {
-    return findById(moduleId).map(u -> false).defaultIfEmpty(true);
+  private Mono<Boolean> doesNotExistById(final String moduleName) {
+    return findByName(moduleName).map(u -> false).defaultIfEmpty(true);
   }
 
-  public Mono<Module> setDynamicFlag(final String moduleId) {
+  public Mono<Module> setDynamicFlag(final String moduleName) {
 
-    return findById(moduleId)
-        .switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
+    return findByName(moduleName)
+        .switchIfEmpty(Mono.error(new ModuleNameNotFoundException()))
         .map(module -> module.withFlagStatic(false))
         .flatMap(moduleRepository::save);
   }
 
-  public Mono<Module> setStaticFlag(final String moduleId, final String staticFlag) {
+  public Mono<Module> setStaticFlag(final String moduleName, final String staticFlag) {
 
     if (staticFlag == null) {
       return Mono.error(new NullPointerException("Flag cannot be null"));
@@ -103,8 +103,8 @@ public final class ModuleService {
       return Mono.error(new InvalidFlagException("Flag cannot be empty"));
     }
 
-    return findById(moduleId)
-        .switchIfEmpty(Mono.error(new ModuleIdNotFoundException()))
+    return findByName(moduleName)
+        .switchIfEmpty(Mono.error(new ModuleNameNotFoundException()))
         .map(module -> module.withFlagStatic(true).withStaticFlag(staticFlag))
         .flatMap(moduleRepository::save);
   }

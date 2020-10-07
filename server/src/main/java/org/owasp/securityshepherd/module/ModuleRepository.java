@@ -19,9 +19,12 @@ import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Repository
 public interface ModuleRepository extends ReactiveCrudRepository<Module, String> {
   @Query("select * from module where is_open = true")
   public Flux<Module> findAllOpen();
+
+  public Mono<Module> findByName(String moduleName);
 }

@@ -39,7 +39,7 @@ export class XssTutorialComponent implements OnInit {
 
     return this.apiService
       .modulePostRequest(
-        this.module.id,
+        this.module.name,
         'search',
         this.queryForm.controls.query.value
       )

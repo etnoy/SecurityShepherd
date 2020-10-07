@@ -30,20 +30,20 @@ import org.owasp.securityshepherd.test.util.TestUtils;
 class ModulePointTest {
 
   @Test
-  void build_ModuleIdNotGiven_ThrowsNullPointerException() {
+  void build_ModuleNameNotGiven_ThrowsNullPointerException() {
     final ModulePointBuilder modulePointBuilder = ModulePoint.builder().rank(1).points(2);
     assertThrows(NullPointerException.class, () -> modulePointBuilder.build());
   }
 
   @Test
   void build_RankNotGiven_ThrowsNullPointerException() {
-    final ModulePointBuilder modulePointBuilder = ModulePoint.builder().moduleId("id").points(2);
+    final ModulePointBuilder modulePointBuilder = ModulePoint.builder().moduleName("id").points(2);
     assertThrows(NullPointerException.class, () -> modulePointBuilder.build());
   }
 
   @Test
   void build_ScoreNotGiven_ThrowsNullPointerException() {
-    final ModulePointBuilder modulePointBuilder = ModulePoint.builder().moduleId("id").rank(2);
+    final ModulePointBuilder modulePointBuilder = ModulePoint.builder().moduleName("id").rank(2);
     assertThrows(NullPointerException.class, () -> modulePointBuilder.build());
   }
 
@@ -52,7 +52,7 @@ class ModulePointTest {
     final long[] idsToTest = {0, 1, -1, 1000, -1000, 1234567, -1234567, 42};
 
     for (final long id : idsToTest) {
-      final ModulePointBuilder builder = ModulePoint.builder().moduleId("id").rank(123).points(1);
+      final ModulePointBuilder builder = ModulePoint.builder().moduleName("id").rank(123).points(1);
 
       builder.id(id);
 
@@ -62,20 +62,20 @@ class ModulePointTest {
   }
 
   @Test
-  void buildModuleId_NullModuleId_ThrowsNullPointerException() {
+  void buildModuleName_NullModuleName_ThrowsNullPointerException() {
     final ModulePointBuilder modulePointBuilder = ModulePoint.builder();
-    assertThrows(NullPointerException.class, () -> modulePointBuilder.moduleId(null));
+    assertThrows(NullPointerException.class, () -> modulePointBuilder.moduleName(null));
   }
 
   @Test
-  void buildModuleId_ValidModuleId_Builds() {
-    final long[] moduleIdsToTest = {0L, 1L, -1L, 1000L, -1000L, 1234567L, -1234567L, 42L};
+  void buildModuleName_ValidModuleName_Builds() {
+    final long[] moduleNamesToTest = {0L, 1L, -1L, 1000L, -1000L, 1234567L, -1234567L, 42L};
 
-    for (final long moduleId : moduleIdsToTest) {
-      final ModulePointBuilder builder = ModulePoint.builder().moduleId("id").rank(123).points(1);
+    for (final long moduleName : moduleNamesToTest) {
+      final ModulePointBuilder builder = ModulePoint.builder().moduleName("id").rank(123).points(1);
 
       assertThat(builder.build()).isInstanceOf(ModulePoint.class);
-      assertThat(builder.build().getModuleId()).isEqualTo(moduleId);
+      assertThat(builder.build().getModuleName()).isEqualTo(moduleName);
     }
   }
 
@@ -90,7 +90,7 @@ class ModulePointTest {
     final Integer[] ranksToTest = {0, 1, -1, 1000, -1000, 1234567, -1234567, 42};
 
     for (final Integer rank : ranksToTest) {
-      final ModulePointBuilder builder = ModulePoint.builder().moduleId("id").points(1);
+      final ModulePointBuilder builder = ModulePoint.builder().moduleName("id").points(1);
       builder.rank(rank);
 
       assertThat(builder.build()).isInstanceOf(ModulePoint.class);
@@ -109,7 +109,7 @@ class ModulePointTest {
     final Integer[] pointsToTest = {0, 1, -1, 1000, -1000, 1234567, -1234567, 42};
 
     for (final Integer points : pointsToTest) {
-      final ModulePointBuilder builder = ModulePoint.builder().moduleId("id").rank(1);
+      final ModulePointBuilder builder = ModulePoint.builder().moduleName("id").rank(1);
       builder.points(points);
 
       assertThat(builder.build()).isInstanceOf(ModulePoint.class);
@@ -125,26 +125,26 @@ class ModulePointTest {
   @Test
   void modulePointBuilderToString_ValidData_AsExpected() {
     final ModulePointBuilder builder =
-        ModulePoint.builder().id(17L).moduleId("id").rank(1).points(54);
+        ModulePoint.builder().id(17L).moduleName("id").rank(1).points(54);
 
     assertThat(builder)
-        .hasToString("ModulePoint.ModulePointBuilder(id=17, moduleId=83, rank=1, points=54)");
+        .hasToString("ModulePoint.ModulePointBuilder(id=17, moduleName=83, rank=1, points=54)");
   }
 
   @Test
   void toString_ValidData_AsExpected() {
     final ModulePoint testModulePoint =
-        ModulePoint.builder().id(1337L).moduleId("id").rank(6789).points(987).build();
+        ModulePoint.builder().id(1337L).moduleName("id").rank(6789).points(987).build();
 
     assertThat(testModulePoint)
-        .hasToString("ModulePoint(id=1337, moduleId=123, rank=6789, points=987)");
+        .hasToString("ModulePoint(id=1337, moduleName=123, rank=6789, points=987)");
   }
 
   @Test
   void withId_ValidId_ChangesId() {
     final long originalId = 1;
     final ModulePoint modulePoint =
-        ModulePoint.builder().id(originalId).moduleId("id").rank(15).points(29).build();
+        ModulePoint.builder().id(originalId).moduleName("id").rank(15).points(29).build();
 
     for (final Long id : TestUtils.LONGS_WITH_NULL) {
       final ModulePoint newModulePoint = modulePoint.withId(id);
@@ -153,33 +153,33 @@ class ModulePointTest {
   }
 
   @Test
-  void withModuleId_NullModuleId_ThrowsNullPointerException() {
+  void withModuleName_NullModuleName_ThrowsNullPointerException() {
     final ModulePoint modulePoint =
-        ModulePoint.builder().moduleId("id").points(5).rank(15).id(29L).build();
-    assertThrows(NullPointerException.class, () -> modulePoint.withModuleId(null));
+        ModulePoint.builder().moduleName("id").points(5).rank(15).id(29L).build();
+    assertThrows(NullPointerException.class, () -> modulePoint.withModuleName(null));
   }
 
   @Test
-  void withModuleId_ValidModuleId_ChangesModuleId() {
+  void withModuleName_ValidModuleName_ChangesModuleName() {
 
     final ModulePoint modulePoint =
         ModulePoint.builder()
-            .moduleId(TestUtils.INITIAL_ID_STRING)
+            .moduleName(TestUtils.INITIAL_NAMES)
             .points(79)
             .rank(15)
             .id(2944L)
             .build();
 
-    for (final String moduleId : TestUtils.ID_STRINGS) {
-      final ModulePoint newModulePoint = modulePoint.withModuleId(moduleId);
-      assertThat(newModulePoint.getModuleId()).isEqualTo(moduleId);
+    for (final String moduleName : TestUtils.NAMES) {
+      final ModulePoint newModulePoint = modulePoint.withModuleName(moduleName);
+      assertThat(newModulePoint.getModuleName()).isEqualTo(moduleName);
     }
   }
 
   @Test
   void withRank_NullRank_ThrowsNullPointerException() {
     final ModulePoint modulePoint =
-        ModulePoint.builder().moduleId("id").points(326).points(5).rank(15).id(2944L).build();
+        ModulePoint.builder().moduleName("id").points(326).points(5).rank(15).id(2944L).build();
     assertThrows(NullPointerException.class, () -> modulePoint.withRank(null));
   }
 
@@ -191,7 +191,7 @@ class ModulePointTest {
     final ModulePoint modulePoint =
         ModulePoint.builder()
             .points(17)
-            .moduleId("id")
+            .moduleName("id")
             .points(5)
             .rank(originalRank)
             .id(291L)
@@ -206,7 +206,7 @@ class ModulePointTest {
   @Test
   void withScore_NullScore_ThrowsNullPointerException() {
     final ModulePoint modulePoint =
-        ModulePoint.builder().moduleId("id").points(326).rank(15).id(12529L).build();
+        ModulePoint.builder().moduleName("id").points(326).rank(15).id(12529L).build();
     assertThrows(NullPointerException.class, () -> modulePoint.withPoints(null));
   }
 
@@ -216,7 +216,7 @@ class ModulePointTest {
     final Integer[] testedScores = {originalScore, 0, -1, 1000, -1000, 123456789, -12346789};
 
     final ModulePoint modulePoint =
-        ModulePoint.builder().points(originalScore).moduleId("id").rank(15).id(2169L).build();
+        ModulePoint.builder().points(originalScore).moduleName("id").rank(15).id(2169L).build();
 
     for (Integer points : testedScores) {
       final ModulePoint newModulePoint = modulePoint.withPoints(points);

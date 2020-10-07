@@ -81,11 +81,11 @@ class FlagControllerApiIT {
   void submitFlag_InvalidStaticFlag_Success() throws Exception {
     final String loginName = "testUser";
     final String password = "paLswOrdha17£@£sh";
-    final String moduleId = "test-module";
+    final String moduleName = "test-module";
 
     final String flag = "thisisaflag";
 
-    moduleService.create(moduleId).block();
+    moduleService.create(moduleName).block();
 
     webTestClient
         .post()
@@ -125,7 +125,7 @@ class FlagControllerApiIT {
     StepVerifier.create(
             webTestClient
                 .post()
-                .uri(String.format("/api/v1/flag/submit/%s", moduleId))
+                .uri(String.format("/api/v1/flag/submit/%s", moduleName))
                 .header("Authorization", "Bearer " + token)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -144,13 +144,13 @@ class FlagControllerApiIT {
   @Test
   @DisplayName("Submitting a flag should return HTTP Unauthorized if not logged in")
   void submitFlag_NotAuthenticated_ReturnsUnauthorized() throws Exception {
-    final String moduleId = "test-module";
+    final String moduleName = "test-module";
 
     final String flag = "thisisaflag";
 
-    moduleService.create(moduleId).block();
+    moduleService.create(moduleName).block();
 
-    final String endpoint = String.format("/api/v1/flag/submit/%s", moduleId);
+    final String endpoint = String.format("/api/v1/flag/submit/%s", moduleName);
 
     final BodyInserter<String, ReactiveHttpOutputMessage> submissionBody =
         BodyInserters.fromValue(flag);
@@ -171,13 +171,13 @@ class FlagControllerApiIT {
   void submitFlag_ValidStaticFlag_Success() throws Exception {
     final String loginName = "testUser";
     final String password = "paLswOrdha17£@£sh";
-    final String moduleId = "test-module";
+    final String moduleName = "test-module";
 
     final String flag = "thisisaflag";
 
-    moduleService.create(moduleId).block().getId();
+    moduleService.create(moduleName).block().getId();
 
-    moduleService.setStaticFlag(moduleId, flag).block();
+    moduleService.setStaticFlag(moduleName, flag).block();
 
     webTestClient
         .post()
@@ -214,7 +214,7 @@ class FlagControllerApiIT {
                         .getResponseBody()))
             .read("$.token");
 
-    final String endpoint = String.format("/api/v1/flag/submit/%s", moduleId);
+    final String endpoint = String.format("/api/v1/flag/submit/%s", moduleName);
 
     final BodyInserter<String, ReactiveHttpOutputMessage> submissionBody =
         BodyInserters.fromValue(flag);

@@ -33,7 +33,7 @@ export class FlagTutorialComponent implements OnInit {
 
   public getFlag() {
     this.loading = true;
-    this.apiService.moduleGetRequest(this.module.id, '').subscribe(
+    this.apiService.moduleGetRequest(this.module.name, '').subscribe(
       (data) => {
         this.alertService.clear();
         this.loading = false;

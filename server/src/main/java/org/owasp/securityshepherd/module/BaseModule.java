@@ -25,7 +25,7 @@ import reactor.core.publisher.Mono;
 @Value
 @NonFinal
 public abstract class BaseModule {
-  @NonNull protected String moduleId;
+  @NonNull protected String moduleName;
 
   @NonNull protected ModuleService moduleService;
 
@@ -34,16 +34,16 @@ public abstract class BaseModule {
   @NonNull protected Mono<Module> module;
 
   public BaseModule(
-      String moduleId, ModuleService moduleService, FlagHandler flagHandler, String staticFlag) {
-    this.moduleId = moduleId;
+      String moduleName, ModuleService moduleService, FlagHandler flagHandler, String staticFlag) {
+    this.moduleName = moduleName;
     this.moduleService = moduleService;
     this.flagHandler = flagHandler;
-    this.module = moduleService.create(moduleId);
+    this.module = moduleService.create(moduleName);
     if (staticFlag != null) {
-      this.module.subscribe(createdModule -> moduleService.setStaticFlag(moduleId, staticFlag));
+      this.module.subscribe(createdModule -> moduleService.setStaticFlag(moduleName, staticFlag));
     }
   }
-  
+
   public Mono<Void> init() {
     return Mono.when(this.module);
   }
@@ -54,7 +54,7 @@ public abstract class BaseModule {
           if (m.isFlagStatic()) {
             return Mono.just(m.getStaticFlag());
           } else {
-            return flagHandler.getDynamicFlag(userId, m.getId());
+            return flagHandler.getDynamicFlag(userId, m.getName());
           }
         });
   }

@@ -29,7 +29,7 @@ public class SubmissionDto implements Serializable {
 
   @NotNull
   @Min(value = 1, message = "{Size.submissionDto.userName}")
-  private Long moduleId;
+  private Long moduleName;
 
   @NotNull
   @Size(min = 1, message = "{Size.submissionDto.userName}")

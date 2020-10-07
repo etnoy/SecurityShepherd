@@ -1,6 +1,6 @@
 import { UrlSegment } from '@angular/router';
 export class Module {
-  id: string;
+  name: string;
   parameters: UrlSegment[];
   isSolved: boolean;
 }

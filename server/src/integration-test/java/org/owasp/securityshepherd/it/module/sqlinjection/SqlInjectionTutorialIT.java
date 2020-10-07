@@ -57,12 +57,11 @@ class SqlInjectionTutorialIT {
   @Autowired SubmissionService submissionService;
 
   @Autowired ScoreService scoreService;
-  
+
   @Autowired SqlInjectionDatabaseClientFactory sqlInjectionDatabaseClientFactory;
 
-  @Autowired
-  FlagHandler flagHandler;
-  
+  @Autowired FlagHandler flagHandler;
+
   @Autowired KeyService keyService;
 
   @BeforeAll
@@ -122,7 +121,7 @@ class SqlInjectionTutorialIT {
     // Submit the flag we got from the sql injection and make sure it validates
     StepVerifier.create(
             flagMono
-                .zipWith(sqlInjectionTutorial.getModule().map(m -> m.getId()))
+                .zipWith(sqlInjectionTutorial.getModule().map(m -> m.getName()))
                 .flatMap(tuple -> submissionService.submit(userId, tuple.getT2(), tuple.getT1()))
                 .map(Submission::isValid))
         .expectNext(true)
@@ -144,10 +143,10 @@ class SqlInjectionTutorialIT {
     // Take the flag we got from the tutorial, modify it, and expect validation to fail
     StepVerifier.create(
             flagVerificationMono
-                .zipWith(sqlInjectionTutorial.getModule().map(m -> m.getId()))
                 .flatMap(
-                    tuple ->
-                        submissionService.submit(userId, tuple.getT2(), tuple.getT1() + "wrong"))
+                    flag ->
+                        submissionService.submit(
+                            userId, sqlInjectionTutorial.getModuleName(), flag + "wrong"))
                 .map(Submission::isValid))
         .expectNext(false)
         .expectComplete()
@@ -161,7 +160,9 @@ class SqlInjectionTutorialIT {
   @BeforeEach
   private void clear() {
     testUtils.deleteAll().block();
-    sqlInjectionTutorial=new SqlInjectionTutorial(moduleService, flagHandler, sqlInjectionDatabaseClientFactory,keyService);
-    sqlInjectionTutorial.init();
+    sqlInjectionTutorial =
+        new SqlInjectionTutorial(
+            moduleService, flagHandler, sqlInjectionDatabaseClientFactory, keyService);
+    sqlInjectionTutorial.init().block();
   }
 }

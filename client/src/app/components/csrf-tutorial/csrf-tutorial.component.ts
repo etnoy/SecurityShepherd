@@ -50,7 +50,7 @@ export class CsrfTutorialComponent implements OnInit {
 
   public activate(pseudonym: string): void {
     this.apiService
-      .moduleGetRequest(this.module.id, 'activate/' + pseudonym)
+      .moduleGetRequest(this.module.name, 'activate/' + pseudonym)
       .subscribe(
         (data) => {
           this.alertService.clear();
@@ -78,7 +78,7 @@ export class CsrfTutorialComponent implements OnInit {
 
   public loadTutorial(): void {
     this.loading = true;
-    this.apiService.moduleGetRequest(this.module.id, '').subscribe(
+    this.apiService.moduleGetRequest(this.module.name, '').subscribe(
       (data) => {
         this.alertService.clear();
         this.loading = false;

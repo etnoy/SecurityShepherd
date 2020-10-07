@@ -29,11 +29,7 @@ public class UserScoreDto implements Serializable {
 
   @NonNull private Long submissionId;
 
-  @NonNull private Long moduleId;
-
   @NonNull private String moduleName;
-
-  @NonNull private String moduleShortName;
 
   @NonNull private Long rank;
 

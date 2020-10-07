@@ -15,10 +15,10 @@
  */
 package org.owasp.securityshepherd.exception;
 
-public class EmptyModuleIdException extends RuntimeException {
+public class EmptyModuleNameException extends RuntimeException {
   private static final long serialVersionUID = -505553415557894220L;
 
-  public EmptyModuleIdException(final String message) {
+  public EmptyModuleNameException(final String message) {
     super(message);
   }
 }

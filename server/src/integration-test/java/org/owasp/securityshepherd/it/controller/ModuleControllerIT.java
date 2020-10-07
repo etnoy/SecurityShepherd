@@ -69,7 +69,7 @@ class ModuleControllerIT {
 
   @Test
   @Validated
-  void getModuleById_InvalidId_ReturnsError() throws Exception {
+  void getModuleByName_InvalidName_ReturnsError() throws Exception {
 
     final String loginName = "testUser";
     final String password = "paLswOrdha17£@£sh";
@@ -111,10 +111,10 @@ class ModuleControllerIT {
 
     // TODO: we should return 400 bad request in the future
 
-    for (final long invalidModuleId : TestUtils.INVALID_IDS) {
+    for (final String invalidModuleName : TestUtils.INVALID_NAMES) {
       webTestClient
           .get()
-          .uri(String.format("/api/v1/module/%d", invalidModuleId))
+          .uri(String.format("/api/v1/module/%s", invalidModuleName))
           .header("Authorization", "Bearer " + token)
           .accept(MediaType.APPLICATION_JSON)
           .exchange()

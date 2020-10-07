@@ -80,18 +80,18 @@ class SubmissionServiceIT {
   @Test
   void submitFlag_DuplicateValidStaticFlag_ReturnModuleAlreadySolvedException() {
     final String flag = "thisisaflag";
-    final String moduleId = "test-module";
+    final String moduleName = "test-module";
 
     final Mono<Long> userIdMono = userService.create("TestUser");
 
-    moduleService.create(moduleId).block();
-    moduleService.setStaticFlag(moduleId, flag).block();
+    moduleService.create(moduleName).block();
+    moduleService.setStaticFlag(moduleName, flag).block();
 
     StepVerifier.create(
             userIdMono.flatMapMany(
                 userId ->
                     submissionService
-                        .submit(userId, moduleId, flag)
+                        .submit(userId, moduleName, flag)
                         .repeat(2)
                         .map(Submission::isValid)))
         .expectNext(true)
@@ -102,18 +102,18 @@ class SubmissionServiceIT {
   @Test
   void submitFlag_ValidStaticFlag_Success() {
     final String flag = "thisisaflag";
-    final String moduleId = "test-module";
+    final String moduleName = "test-module";
 
     final Mono<Long> userIdMono = userService.create("TestUser");
 
-    moduleService.create(moduleId).block();
+    moduleService.create(moduleName).block();
 
-    moduleService.setStaticFlag(moduleId, flag).block();
+    moduleService.setStaticFlag(moduleName, flag).block();
 
     StepVerifier.create(
             userIdMono.flatMap(
                 userId ->
-                    submissionService.submit(userId, moduleId, flag).map(Submission::isValid)))
+                    submissionService.submit(userId, moduleName, flag).map(Submission::isValid)))
         .expectNext(true)
         .expectComplete()
         .verify();

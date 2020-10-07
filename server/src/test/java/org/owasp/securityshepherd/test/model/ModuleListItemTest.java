@@ -39,15 +39,15 @@ class ModuleListItemTest {
   @Test
   void buildId_ValidId_BuildsModuleListItem() {
     final ModuleListItemBuilder moduleListItemBuilder = ModuleListItem.builder();
-    for (final String id : TestUtils.ID_STRINGS) {
-      final ModuleListItem moduleListItem = moduleListItemBuilder.id(id).build();
-      assertThat(moduleListItem.getId()).isEqualTo(id);
+    for (final String name : TestUtils.NAMES) {
+      final ModuleListItem moduleListItem = moduleListItemBuilder.name(name).build();
+      assertThat(moduleListItem.getName()).isEqualTo(name);
     }
   }
 
   @Test
   void buildIsSolved_TrueOrFalse_MatchesBuild() {
-    final ModuleListItemBuilder builder = ModuleListItem.builder().id("id");
+    final ModuleListItemBuilder builder = ModuleListItem.builder().name("id");
     for (final Boolean isSolved : TestUtils.BOOLEANS_WITH_NULL) {
       builder.isSolved(isSolved);
 
@@ -62,7 +62,7 @@ class ModuleListItemTest {
   void buildId_NullId_ThrowsNullPointerException() {
     final ModuleListItemBuilder moduleListItemBuilder = ModuleListItem.builder();
     Throwable thrownException =
-        assertThrows(NullPointerException.class, () -> moduleListItemBuilder.id(null));
+        assertThrows(NullPointerException.class, () -> moduleListItemBuilder.name(null));
     assertThat(thrownException.getMessage()).isEqualTo("id is marked non-null but is null");
   }
 
@@ -83,7 +83,7 @@ class ModuleListItemTest {
 
   @Test
   void toString_ValidData_AsExpected() {
-    final ModuleListItem moduleListItem = ModuleListItem.builder().id("id").build();
+    final ModuleListItem moduleListItem = ModuleListItem.builder().name("id").build();
 
     assertThat(moduleListItem).hasToString("ModuleListItem(id=id, isSolved=null)");
   }

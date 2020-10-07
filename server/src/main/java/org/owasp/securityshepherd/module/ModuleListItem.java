@@ -27,8 +27,7 @@ public class ModuleListItem implements Serializable {
 
   private static final long serialVersionUID = -5011105798343266330L;
 
-  @Id @NonNull private String id;
+  @Id @NonNull private String name;
 
   private Boolean isSolved;
-  
 }

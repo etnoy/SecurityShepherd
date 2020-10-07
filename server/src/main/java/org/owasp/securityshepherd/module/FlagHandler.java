@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.owasp.securityshepherd.crypto.CryptoService;
 import org.owasp.securityshepherd.exception.InvalidFlagStateException;
 import org.owasp.securityshepherd.exception.InvalidUserIdException;
-import org.owasp.securityshepherd.exception.ModuleIdNotFoundException;
+import org.owasp.securityshepherd.exception.ModuleNameNotFoundException;
 import org.owasp.securityshepherd.service.ConfigurationService;
 import org.owasp.securityshepherd.user.UserService;
 import org.springframework.stereotype.Service;
@@ -43,7 +43,8 @@ public final class FlagHandler {
 
   private static final String FLAG_PREFIX = "flag";
 
-  public Mono<String> getSaltedHmac(final long userId, final String moduleId, final String prefix) {
+  public Mono<String> getSaltedHmac(
+      final long userId, final String moduleName, final String prefix) {
     if (userId <= 0) {
       return Mono.error(new InvalidUserIdException());
     }
@@ -51,11 +52,11 @@ public final class FlagHandler {
     final Mono<byte[]> moduleKey =
         // Find the module in the repo
         moduleService
-            .findById(moduleId)
+            .findByName(moduleName)
             // Return error if module wasn't found
             .switchIfEmpty(
                 Mono.error(
-                    new ModuleIdNotFoundException("Did not find module with id " + moduleId)))
+                    new ModuleNameNotFoundException("Did not find module with name " + moduleName)))
             // Make sure that the flag isn't static
             .filter(foundModule -> !foundModule.isFlagStatic())
             .switchIfEmpty(
@@ -77,7 +78,7 @@ public final class FlagHandler {
   }
 
   public Mono<Boolean> verifyFlag(
-      final long userId, final String moduleId, final String submittedFlag) {
+      final long userId, final String moduleName, final String submittedFlag) {
     if (submittedFlag == null) {
       return Mono.error(new NullPointerException("Submitted flag cannot be null"));
     }
@@ -87,18 +88,18 @@ public final class FlagHandler {
             + submittedFlag
             + " submitted by userId "
             + userId
-            + " to moduleId "
-            + moduleId);
+            + " to moduleName "
+            + moduleName);
 
     // Get the module from the repository
-    final Mono<Module> currentModule = moduleService.findById(moduleId);
+    final Mono<Module> currentModule = moduleService.findByName(moduleName);
 
     final Mono<Boolean> isValid =
         currentModule
             // If the module wasn't found, return exception
             .switchIfEmpty(
                 Mono.error(
-                    new ModuleIdNotFoundException("Module id " + moduleId + " was not found")))
+                    new ModuleNameNotFoundException("Module id " + moduleName + " was not found")))
             // Check if the flag is valid
             .flatMap(
                 module -> {
@@ -107,7 +108,7 @@ public final class FlagHandler {
                     return Mono.just(module.getStaticFlag().equalsIgnoreCase(submittedFlag));
                   } else {
                     // Verifying a dynamic flag
-                    return getDynamicFlag(userId, moduleId).map(submittedFlag::equalsIgnoreCase);
+                    return getDynamicFlag(userId, moduleName).map(submittedFlag::equalsIgnoreCase);
                   }
                 });
 
@@ -133,8 +134,8 @@ public final class FlagHandler {
     return isValid;
   }
 
-  public Mono<String> getDynamicFlag(final long userId, final String moduleId) {
-    return getSaltedHmac(userId, moduleId, "flag")
+  public Mono<String> getDynamicFlag(final long userId, final String moduleName) {
+    return getSaltedHmac(userId, moduleName, "flag")
         .map(flag -> String.format("%s{%s}", FLAG_PREFIX, flag));
   }
 }

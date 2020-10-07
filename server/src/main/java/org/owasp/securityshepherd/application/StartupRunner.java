@@ -18,7 +18,6 @@ package org.owasp.securityshepherd.application;
 import java.time.Clock;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import reactor.core.publisher.Mono;
 import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.module.csrf.CsrfTutorial;
 import org.owasp.securityshepherd.module.flag.FlagTutorial;
@@ -33,6 +32,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 @ConditionalOnProperty(
     prefix = "application.runner",
@@ -72,10 +72,12 @@ public class StartupRunner implements ApplicationRunner {
         .createPasswordUser(
             "Admin", "admin", "$2y$08$WpfUVZLcXNNpmM2VwSWlbe25dae.eEC99AOAVUiU5RaJmfFsE9B5G")
         .block();
-    
-    Mono.when(csrfTutorial.init(),
-    flagTutorial.init(),
-    xssTutorial.init(),sqlInjectionTutorial.init()).block();
 
+    Mono.when(
+            csrfTutorial.init(),
+            flagTutorial.init(),
+            xssTutorial.init(),
+            sqlInjectionTutorial.init())
+        .block();
   }
 }

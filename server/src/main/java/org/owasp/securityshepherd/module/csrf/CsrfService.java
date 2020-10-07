@@ -28,27 +28,27 @@ public class CsrfService {
 
   private final FlagHandler flagHandler;
 
-  public Mono<Void> attack(final String pseudonym, final String moduleId) {
+  public Mono<Void> attack(final String pseudonym, final String moduleName) {
     return csrfAttackRepository
-        .findByPseudonymAndModuleId(pseudonym, moduleId)
+        .findByPseudonymAndModuleName(pseudonym, moduleName)
         .map(attack -> attack.withFinished(LocalDateTime.now()))
         .flatMap(csrfAttackRepository::save)
         .then(Mono.empty());
   }
 
-  public Mono<String> getPseudonym(final long userId, final String moduleId) {
-    return flagHandler.getSaltedHmac(userId, moduleId, "csrfPseudonym");
+  public Mono<String> getPseudonym(final long userId, final String moduleName) {
+    return flagHandler.getSaltedHmac(userId, moduleName, "csrfPseudonym");
   }
 
-  public Mono<Boolean> validatePseudonym(final String pseudonym, final String moduleId) {
+  public Mono<Boolean> validatePseudonym(final String pseudonym, final String moduleName) {
     return csrfAttackRepository
-        .countByPseudonymAndModuleId(pseudonym, moduleId)
+        .countByPseudonymAndModuleName(pseudonym, moduleName)
         .map(count -> count > 0);
   }
 
-  public Mono<Boolean> validate(final String pseudonym, final String moduleId) {
+  public Mono<Boolean> validate(final String pseudonym, final String moduleName) {
     return csrfAttackRepository
-        .findByPseudonymAndModuleId(pseudonym, moduleId)
+        .findByPseudonymAndModuleName(pseudonym, moduleName)
         .map(attack -> attack.getFinished() != null)
         .switchIfEmpty(
             csrfAttackRepository
@@ -56,7 +56,7 @@ public class CsrfService {
                     CsrfAttack.builder()
                         .pseudonym(pseudonym)
                         .started(LocalDateTime.now())
-                        .moduleId(moduleId)
+                        .moduleName(moduleName)
                         .build())
                 .then(Mono.just(false)));
   }

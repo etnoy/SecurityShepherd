@@ -28,10 +28,10 @@ import org.owasp.securityshepherd.test.util.TestUtils;
 class SubmissionDtoTest {
   @Test
   void buildComment_ValidComment_Builds() {
-    for (final long moduleId : TestUtils.LONGS) {
+    for (final long moduleName : TestUtils.LONGS) {
       for (final String flag : TestUtils.STRINGS) {
-        final SubmissionDto submissionDto = new SubmissionDto(moduleId, flag);
-        assertThat(submissionDto.getModuleId()).isEqualTo(moduleId);
+        final SubmissionDto submissionDto = new SubmissionDto(moduleName, flag);
+        assertThat(submissionDto.getModuleName()).isEqualTo(moduleName);
         assertThat(submissionDto.getFlag()).isEqualTo(flag);
       }
     }
@@ -45,6 +45,6 @@ class SubmissionDtoTest {
   @Test
   void toString_ValidData_AsExpected() {
     final SubmissionDto submissionDto = new SubmissionDto(16L, "flag");
-    assertThat(submissionDto).hasToString("SubmissionDto(moduleId=16, flag=flag)");
+    assertThat(submissionDto).hasToString("SubmissionDto(moduleName=16, flag=flag)");
   }
 }

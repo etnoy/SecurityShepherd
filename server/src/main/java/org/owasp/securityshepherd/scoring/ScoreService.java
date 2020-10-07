@@ -31,12 +31,14 @@ public final class ScoreService {
 
   private final ScoreboardRepository scoreboardRepository;
 
-  public Mono<ModulePoint> setModuleScore(final String moduleId, final int rank, final int points) {
+  public Mono<ModulePoint> setModuleScore(
+      final String moduleName, final int rank, final int points) {
 
     if (rank < 0) {
       return Mono.error(new InvalidRankException("Rank must be zero or a positive integer"));
     }
-    ModulePointBuilder builder = ModulePoint.builder().moduleId(moduleId).rank(rank).points(points);
+    ModulePointBuilder builder =
+        ModulePoint.builder().moduleName(moduleName).rank(rank).points(points);
     return modulePointRepository.save(builder.build());
   }
 
