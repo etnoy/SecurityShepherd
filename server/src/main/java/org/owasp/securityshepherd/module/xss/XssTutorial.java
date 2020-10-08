@@ -16,6 +16,7 @@
 package org.owasp.securityshepherd.module.xss;
 
 import java.util.List;
+import lombok.EqualsAndHashCode;
 import org.owasp.securityshepherd.module.BaseModule;
 import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.ModuleService;
@@ -24,7 +25,8 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 @Component
-public final class XssTutorial extends BaseModule {
+@EqualsAndHashCode(callSuper = true)
+public class XssTutorial extends BaseModule {
   private static final String MODULE_NAME = "xss-tutorial";
 
   private final XssService xssService;

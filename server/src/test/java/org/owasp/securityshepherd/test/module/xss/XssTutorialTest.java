@@ -22,6 +22,8 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import lombok.NonNull;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -63,6 +65,28 @@ class XssTutorialTest {
     when(moduleService.create("xss-tutorial")).thenReturn(Mono.just(mockModule));
 
     xssTutorial = new XssTutorial(xssService, moduleService, flagHandler);
+  }
+
+  @Test
+  void equals_EqualsVerifier_AsExpected() {
+
+    class XssTutorialChild extends XssTutorial {
+      public XssTutorialChild(
+          XssService xssService, ModuleService moduleService, FlagHandler flagHandler) {
+        super(xssService, moduleService, flagHandler);
+      }
+
+      @Override
+      public boolean canEqual(Object o) {
+        return false;
+      }
+    }
+
+    EqualsVerifier.forClass(XssTutorial.class)
+        .withRedefinedSuperclass()
+        .withRedefinedSubclass(XssTutorialChild.class)
+        .withIgnoredAnnotations(NonNull.class)
+        .verify();
   }
 
   @Test
