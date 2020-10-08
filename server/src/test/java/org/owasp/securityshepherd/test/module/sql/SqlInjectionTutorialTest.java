@@ -22,6 +22,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import io.r2dbc.spi.R2dbcBadGrammarException;
+import lombok.NonNull;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,6 +47,9 @@ import reactor.test.StepVerifier;
 @ExtendWith(MockitoExtension.class)
 @DisplayName("SqlInjectionTutorial unit test")
 class SqlInjectionTutorialTest {
+  
+  private static final String MODULE_NAME = "sql-injection-tutorial";
+  
   @BeforeAll
   private static void reactorVerbose() {
     // Tell Reactor to print verbose error messages
@@ -71,6 +76,30 @@ class SqlInjectionTutorialTest {
         .thenReturn(rows);
     return mockDatabaseClient;
   }
+  
+  @Test
+  void equals_EqualsVerifier_AsExpected() {
+
+    class SqlInjectionTutorialChild extends SqlInjectionTutorial {
+
+      public SqlInjectionTutorialChild(ModuleService moduleService, FlagHandler flagHandler,
+          SqlInjectionDatabaseClientFactory sqlInjectionDatabaseClientFactory,
+          KeyService keyService) {
+        super(moduleService, flagHandler, sqlInjectionDatabaseClientFactory, keyService);
+      }
+
+      @Override
+      public boolean canEqual(Object o) {
+        return false;
+      }
+    }
+
+    EqualsVerifier.forClass(SqlInjectionTutorial.class)
+        .withRedefinedSuperclass()
+        .withRedefinedSubclass(SqlInjectionTutorialChild.class)
+        .withIgnoredAnnotations(NonNull.class)
+        .verify();
+  }
 
   @Test
   void submitQuery_BadSqlGrammarException_ReturnsErrorToUser() {
@@ -79,9 +108,7 @@ class SqlInjectionTutorialTest {
     final String mockFlag = "mockedflag";
     final String query = "username";
 
-    final String moduleName = "sql-injection-tutorial";
-
-    when(moduleService.create(moduleName)).thenReturn(Mono.just(mockModule));
+    when(moduleService.create(MODULE_NAME)).thenReturn(Mono.just(mockModule));
 
     sqlInjectionTutorial =
         new SqlInjectionTutorial(
@@ -90,8 +117,8 @@ class SqlInjectionTutorialTest {
     final byte[] randomBytes = {120, 56, 111};
     when(keyService.generateRandomBytes(16)).thenReturn(randomBytes);
 
-    when(mockModule.getName()).thenReturn(moduleName);
-    when(flagHandler.getDynamicFlag(mockUserId, moduleName)).thenReturn(Mono.just(mockFlag));
+    when(mockModule.getName()).thenReturn(MODULE_NAME);
+    when(flagHandler.getDynamicFlag(mockUserId, MODULE_NAME)).thenReturn(Mono.just(mockFlag));
 
     final DatabaseClient mockDatabaseClient = mock(DatabaseClient.class, RETURNS_DEEP_STUBS);
     when(sqlInjectionDatabaseClientFactory.create(any())).thenReturn(mockDatabaseClient);
@@ -123,16 +150,15 @@ class SqlInjectionTutorialTest {
     final Module mockModule = mock(Module.class);
     final String mockFlag = "mockedflag";
     final String query = "username";
-    final String moduleName = "sql-injection-tutorial";
 
-    when(moduleService.create(moduleName)).thenReturn(Mono.just(mockModule));
+    when(moduleService.create(MODULE_NAME)).thenReturn(Mono.just(mockModule));
 
     sqlInjectionTutorial =
         new SqlInjectionTutorial(
             moduleService, flagHandler, sqlInjectionDatabaseClientFactory, keyService);
 
-    when(mockModule.getName()).thenReturn(moduleName);
-    when(flagHandler.getDynamicFlag(mockUserId, moduleName)).thenReturn(Mono.just(mockFlag));
+    when(mockModule.getName()).thenReturn(MODULE_NAME);
+    when(flagHandler.getDynamicFlag(mockUserId, MODULE_NAME)).thenReturn(Mono.just(mockFlag));
 
     final byte[] randomBytes = {120, 56, 111, 95, 6, 3};
     when(keyService.generateRandomBytes(16)).thenReturn(randomBytes);
@@ -161,12 +187,11 @@ class SqlInjectionTutorialTest {
     final long mockUserId = 810L;
     final Module mockModule = mock(Module.class);
     final String query = "username";
-    final String moduleName = "sql-injection-tutorial";
 
     final byte[] randomBytes = {120, 56, 111};
     when(keyService.generateRandomBytes(16)).thenReturn(randomBytes);
 
-    when(moduleService.create(moduleName)).thenReturn(Mono.just(mockModule));
+    when(moduleService.create(MODULE_NAME)).thenReturn(Mono.just(mockModule));
 
     sqlInjectionTutorial =
         new SqlInjectionTutorial(
