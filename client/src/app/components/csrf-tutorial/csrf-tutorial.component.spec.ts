@@ -25,11 +25,8 @@ describe('CsrfTutorialComponent', () => {
     fixture = TestBed.createComponent(CsrfTutorialComponent);
     component = fixture.componentInstance;
     const module: Module = {
-      id: 'test',
-      name: null,
-      shortName: null,
+      name: 'test',
       parameters: [],
-      description: null,
       isSolved: null,
     };
     component.module = module;
