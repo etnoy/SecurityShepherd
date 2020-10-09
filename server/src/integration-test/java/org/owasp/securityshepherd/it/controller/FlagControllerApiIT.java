@@ -25,6 +25,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.owasp.securityshepherd.authentication.PasswordRegistrationDto;
+import org.owasp.securityshepherd.module.FlagHandler;
 import org.owasp.securityshepherd.module.ModuleController;
 import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.scoring.Submission;
@@ -36,6 +37,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
 import org.springframework.http.ReactiveHttpOutputMessage;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserter;
@@ -69,7 +71,11 @@ class FlagControllerApiIT {
 
   @Autowired ObjectMapper objectMapper;
 
+  @Autowired FlagHandler flagHandler;
+
   @Autowired ModuleController moduleController;
+
+  @Autowired PasswordEncoder passwordEncoder;
 
   @BeforeEach
   private void setUp() {
@@ -83,9 +89,12 @@ class FlagControllerApiIT {
     final String password = "paLswOrdha17£@£sh";
     final String moduleName = "test-module";
 
-    final String flag = "thisisaflag";
+    final String staticFlag = "thisisaflag";
+    final byte[] byteFlag = {1, 2, 3, 4, 5};
+    final String[] invalidStaticFlags = {"", "wrongflag", byteFlag.toString()};
 
     moduleService.create(moduleName).block();
+    moduleService.setStaticFlag(moduleName, staticFlag).block();
 
     webTestClient
         .post()
@@ -122,23 +131,25 @@ class FlagControllerApiIT {
                         .getResponseBody()))
             .read("$.token");
 
-    StepVerifier.create(
-            webTestClient
-                .post()
-                .uri(String.format("/api/v1/flag/submit/%s", moduleName))
-                .header("Authorization", "Bearer " + token)
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(flag + "invalid"))
-                .exchange()
-                .expectStatus()
-                .isOk()
-                .returnResult(Submission.class)
-                .getResponseBody()
-                .map(Submission::isValid))
-        .expectNext(false)
-        .expectComplete()
-        .verify();
+    for (String invalidFlag : invalidStaticFlags) {
+      StepVerifier.create(
+              webTestClient
+                  .post()
+                  .uri(String.format("/api/v1/flag/submit/%s", moduleName))
+                  .header("Authorization", "Bearer " + token)
+                  .accept(MediaType.APPLICATION_JSON)
+                  .contentType(MediaType.APPLICATION_JSON)
+                  .body(BodyInserters.fromValue(invalidFlag))
+                  .exchange()
+                  .expectStatus()
+                  .isOk()
+                  .returnResult(Submission.class)
+                  .getResponseBody()
+                  .map(Submission::isValid))
+          .expectNext(false)
+          .expectComplete()
+          .verify();
+    }
   }
 
   @Test
@@ -176,7 +187,6 @@ class FlagControllerApiIT {
     final String flag = "thisisaflag";
 
     moduleService.create(moduleName).block().getId();
-
     moduleService.setStaticFlag(moduleName, flag).block();
 
     webTestClient
@@ -237,6 +247,134 @@ class FlagControllerApiIT {
         // We expect the submission to be valid
         .expectNext(true)
         // We're done
+        .expectComplete()
+        .verify();
+  }
+
+  @Test
+  @DisplayName("Submitting a valid dynamic flag should return true")
+  void submitFlag_ValidDynamicFlag_Success() throws Exception {
+    final String loginName = "testUser";
+    final String password = "password";
+    final String moduleName = "test-module";
+
+    final String hashedPassword = passwordEncoder.encode(password);
+    moduleService.create(moduleName).block();
+    final long userId =
+        userService.createPasswordUser("Test User", loginName, hashedPassword).block();
+
+    String token =
+        JsonPath.parse(
+                new String(
+                    webTestClient
+                        .post()
+                        .uri("/api/v1/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(
+                            BodyInserters.fromPublisher(
+                                Mono.just(
+                                    "{\"userName\": \""
+                                        + loginName
+                                        + "\", \"password\": \""
+                                        + password
+                                        + "\"}"),
+                                String.class))
+                        .exchange()
+                        .expectStatus()
+                        .isOk()
+                        .expectBody()
+                        .returnResult()
+                        .getResponseBody()))
+            .read("$.token");
+
+    final String flag = flagHandler.getDynamicFlag(userId, moduleName).block();
+
+    final String endpoint = String.format("/api/v1/flag/submit/%s", moduleName);
+
+    final BodyInserter<String, ReactiveHttpOutputMessage> submissionBody =
+        BodyInserters.fromValue(flag);
+
+    final Flux<Submission> moduleSubmissionFlux =
+        webTestClient
+            .post()
+            .uri(endpoint)
+            .header("Authorization", "Bearer " + token)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(submissionBody)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .returnResult(Submission.class)
+            .getResponseBody();
+
+    StepVerifier.create(moduleSubmissionFlux.map(Submission::isValid))
+        // We expect the submission to be valid
+        .expectNext(true)
+        .expectComplete()
+        .verify();
+  }
+
+  @Test
+  @DisplayName("Submitting an invalid dynamic flag should return false")
+  void submitFlag_InvalidDynamicFlag_Success() throws Exception {
+    final String loginName = "testUser";
+    final String password = "password";
+    final String moduleName = "test-module";
+
+    final String hashedPassword = passwordEncoder.encode(password);
+    moduleService.create(moduleName).block();
+    final long userId =
+        userService.createPasswordUser("Test User", loginName, hashedPassword).block();
+
+    String token =
+        JsonPath.parse(
+                new String(
+                    webTestClient
+                        .post()
+                        .uri("/api/v1/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(
+                            BodyInserters.fromPublisher(
+                                Mono.just(
+                                    "{\"userName\": \""
+                                        + loginName
+                                        + "\", \"password\": \""
+                                        + password
+                                        + "\"}"),
+                                String.class))
+                        .exchange()
+                        .expectStatus()
+                        .isOk()
+                        .expectBody()
+                        .returnResult()
+                        .getResponseBody()))
+            .read("$.token");
+
+    final String flag = flagHandler.getDynamicFlag(userId, moduleName).block() + "invalid";
+
+    final String endpoint = String.format("/api/v1/flag/submit/%s", moduleName);
+
+    final BodyInserter<String, ReactiveHttpOutputMessage> submissionBody =
+        BodyInserters.fromValue(flag);
+
+    final Flux<Submission> moduleSubmissionFlux =
+        webTestClient
+            .post()
+            .uri(endpoint)
+            .header("Authorization", "Bearer " + token)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(submissionBody)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .returnResult(Submission.class)
+            .getResponseBody();
+
+    StepVerifier.create(moduleSubmissionFlux.map(Submission::isValid))
+        // We expect the submission to be invalid
+        .expectNext(false)
         .expectComplete()
         .verify();
   }

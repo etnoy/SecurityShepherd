@@ -120,7 +120,7 @@ public final class UserService {
   }
 
   public Mono<Long> createPasswordUser(
-      final String displayName, final String loginName, final String hashedPassword) {
+      final String displayName, final String loginName, final String passwordHash) {
     if (displayName == null) {
       return Mono.error(new NullPointerException("Display name cannot be null"));
     }
@@ -129,11 +129,11 @@ public final class UserService {
       return Mono.error(new NullPointerException("Login name cannot be null"));
     }
 
-    if (hashedPassword == null) {
+    if (passwordHash == null) {
       return Mono.error(new NullPointerException("Password hash cannot be null"));
     }
 
-    if (displayName.isEmpty() || loginName.isEmpty() || hashedPassword.isEmpty()) {
+    if (displayName.isEmpty() || loginName.isEmpty() || passwordHash.isEmpty()) {
       return Mono.error(new IllegalArgumentException());
     }
 
@@ -167,7 +167,7 @@ public final class UserService {
 
               final PasswordAuthBuilder passwordAuthBuilder = PasswordAuth.builder();
               passwordAuthBuilder.loginName(tuple.getT2());
-              passwordAuthBuilder.hashedPassword(hashedPassword);
+              passwordAuthBuilder.hashedPassword(passwordHash);
 
               return userIdMono.delayUntil(
                   userId -> {
