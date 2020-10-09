@@ -47,9 +47,9 @@ import reactor.test.StepVerifier;
 @ExtendWith(MockitoExtension.class)
 @DisplayName("SqlInjectionTutorial unit test")
 class SqlInjectionTutorialTest {
-  
+
   private static final String MODULE_NAME = "sql-injection-tutorial";
-  
+
   @BeforeAll
   private static void reactorVerbose() {
     // Tell Reactor to print verbose error messages
@@ -76,13 +76,15 @@ class SqlInjectionTutorialTest {
         .thenReturn(rows);
     return mockDatabaseClient;
   }
-  
+
   @Test
   void equals_EqualsVerifier_AsExpected() {
 
     class SqlInjectionTutorialChild extends SqlInjectionTutorial {
 
-      public SqlInjectionTutorialChild(ModuleService moduleService, FlagHandler flagHandler,
+      public SqlInjectionTutorialChild(
+          ModuleService moduleService,
+          FlagHandler flagHandler,
           SqlInjectionDatabaseClientFactory sqlInjectionDatabaseClientFactory,
           KeyService keyService) {
         super(moduleService, flagHandler, sqlInjectionDatabaseClientFactory, keyService);

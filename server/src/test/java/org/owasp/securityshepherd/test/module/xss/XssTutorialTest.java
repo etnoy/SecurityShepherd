@@ -43,6 +43,8 @@ import reactor.test.StepVerifier;
 @ExtendWith(MockitoExtension.class)
 @DisplayName("XssTutorial unit test")
 class XssTutorialTest {
+  private static final String MODULE_NAME = "xss-tutorial";
+
   @BeforeAll
   private static void reactorVerbose() {
     // Tell Reactor to print verbose error messages
@@ -62,7 +64,7 @@ class XssTutorialTest {
   @BeforeEach
   private void setUp() {
     // Set up the system under test
-    when(moduleService.create("xss-tutorial")).thenReturn(Mono.just(mockModule));
+    when(moduleService.create(MODULE_NAME)).thenReturn(Mono.just(mockModule));
 
     xssTutorial = new XssTutorial(xssService, moduleService, flagHandler);
   }
