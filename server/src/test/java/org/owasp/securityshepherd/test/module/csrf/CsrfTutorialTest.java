@@ -15,7 +15,9 @@
  */
 package org.owasp.securityshepherd.test.module.csrf;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
 import lombok.NonNull;
@@ -34,6 +36,7 @@ import org.owasp.securityshepherd.module.csrf.CsrfService;
 import org.owasp.securityshepherd.module.csrf.CsrfTutorial;
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("CsrfTutorial unit test")
@@ -59,6 +62,7 @@ class CsrfTutorialTest {
   @BeforeEach
   private void setUp() {
     // Set up the system under test
+    reset(mockModule);
     when(moduleService.create(MODULE_NAME)).thenReturn(Mono.just(mockModule));
 
     csrfTutorial = new CsrfTutorial(csrfService, moduleService, flagHandler);
@@ -84,6 +88,123 @@ class CsrfTutorialTest {
         .withRedefinedSuperclass()
         .withRedefinedSubclass(CsrfTutorialChild.class)
         .withIgnoredAnnotations(NonNull.class)
+        .verify();
+  }
+
+  @Test
+  void attack_InvalidTarget_ReturnsError() {
+    final long attackerUserId = 90L;
+
+    final String mockTarget = "abcd123";
+
+    when(csrfService.validatePseudonym(mockTarget, MODULE_NAME)).thenReturn(Mono.just(false));
+    when(mockModule.isFlagStatic()).thenReturn(false);
+    when(mockModule.getName()).thenReturn(MODULE_NAME);
+
+    StepVerifier.create(csrfTutorial.attack(attackerUserId, mockTarget))
+        .assertNext(
+            result -> {
+              assertThat(result.getPseudonym()).isNull();
+              assertThat(result.getFlag()).isNull();
+              assertThat(result.getError()).isNotNull();
+              assertThat(result.getMessage()).isNull();
+            })
+        .expectComplete()
+        .verify();
+  }
+
+  @Test
+  void attack_ValidTarget_Activates() {
+    final long attackerUserId = 90L;
+
+    final String mockTarget = "abcd123";
+    final String mockAttacker = "xyz789";
+
+    when(csrfService.getPseudonym(attackerUserId, MODULE_NAME)).thenReturn(Mono.just(mockAttacker));
+
+    when(csrfService.validatePseudonym(mockTarget, MODULE_NAME)).thenReturn(Mono.just(true));
+    when(mockModule.isFlagStatic()).thenReturn(false);
+    when(mockModule.getName()).thenReturn(MODULE_NAME);
+    when(csrfService.attack(mockTarget, MODULE_NAME)).thenReturn(Mono.empty());
+
+    StepVerifier.create(csrfTutorial.attack(attackerUserId, mockTarget))
+        .assertNext(
+            result -> {
+              assertThat(result.getPseudonym()).isNull();
+              assertThat(result.getFlag()).isNull();
+              assertThat(result.getError()).isNull();
+              assertThat(result.getMessage()).isNotNull();
+            })
+        .expectComplete()
+        .verify();
+  }
+
+  @Test
+  void attack_TargetsSelf_DoesNotActivate() {
+    final long userId = 90L;
+
+    final String pseudonym = "xyz789";
+
+    when(csrfService.getPseudonym(userId, MODULE_NAME)).thenReturn(Mono.just(pseudonym));
+
+    when(csrfService.validatePseudonym(pseudonym, MODULE_NAME)).thenReturn(Mono.just(true));
+    when(mockModule.isFlagStatic()).thenReturn(false);
+    when(mockModule.getName()).thenReturn(MODULE_NAME);
+
+    StepVerifier.create(csrfTutorial.attack(userId, pseudonym))
+        .assertNext(
+            result -> {
+              assertThat(result.getPseudonym()).isNull();
+              assertThat(result.getFlag()).isNull();
+              assertThat(result.getError()).isNotNull();
+              assertThat(result.getMessage()).isNull();
+            })
+        .expectComplete()
+        .verify();
+  }
+
+  @Test
+  void getTutorial_Activated_ReturnsFlag() {
+    final long mockUserId = 45L;
+    final String mockPseudonym = "abcd123";
+    final String flag = "flag";
+
+    when(csrfService.getPseudonym(mockUserId, MODULE_NAME)).thenReturn(Mono.just(mockPseudonym));
+
+    when(mockModule.isFlagStatic()).thenReturn(false);
+    when(mockModule.getName()).thenReturn(MODULE_NAME);
+
+    when(flagHandler.getDynamicFlag(mockUserId, MODULE_NAME)).thenReturn(Mono.just(flag));
+    when(csrfService.validate(mockPseudonym, MODULE_NAME)).thenReturn(Mono.just(true));
+
+    StepVerifier.create(csrfTutorial.getTutorial(mockUserId))
+        .assertNext(
+            result -> {
+              assertThat(result.getPseudonym()).isEqualTo(mockPseudonym);
+              assertThat(result.getFlag()).isEqualTo(flag);
+            })
+        .expectComplete()
+        .verify();
+  }
+
+  @Test
+  void getTutorial_NotActivated_ReturnsActivationLink() {
+    final long mockUserId = 45L;
+    final String mockPseudonym = "abcd123";
+
+    when(csrfService.getPseudonym(mockUserId, MODULE_NAME)).thenReturn(Mono.just(mockPseudonym));
+
+    when(mockModule.isFlagStatic()).thenReturn(false);
+
+    when(csrfService.validate(mockPseudonym, MODULE_NAME)).thenReturn(Mono.just(false));
+
+    StepVerifier.create(csrfTutorial.getTutorial(mockUserId))
+        .assertNext(
+            result -> {
+              assertThat(result.getPseudonym()).isEqualTo(mockPseudonym);
+              assertThat(result.getFlag()).isNull();
+            })
+        .expectComplete()
         .verify();
   }
 }
