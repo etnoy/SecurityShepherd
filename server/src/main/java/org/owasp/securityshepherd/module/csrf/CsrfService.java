@@ -15,23 +15,39 @@
  */
 package org.owasp.securityshepherd.module.csrf;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
-import lombok.RequiredArgsConstructor;
 import org.owasp.securityshepherd.module.FlagHandler;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 @Component
-@RequiredArgsConstructor
 public class CsrfService {
   private final CsrfAttackRepository csrfAttackRepository;
 
   private final FlagHandler flagHandler;
 
+  private Clock clock;
+
+  public CsrfService(
+      final CsrfAttackRepository csrfAttackRepository, final FlagHandler flagHandler) {
+    this.csrfAttackRepository = csrfAttackRepository;
+    this.flagHandler = flagHandler;
+    resetClock();
+  }
+
+  public void resetClock() {
+    this.clock = Clock.systemDefaultZone();
+  }
+
+  public void setClock(Clock clock) {
+    this.clock = clock;
+  }
+
   public Mono<Void> attack(final String pseudonym, final String moduleName) {
     return csrfAttackRepository
         .findByPseudonymAndModuleName(pseudonym, moduleName)
-        .map(attack -> attack.withFinished(LocalDateTime.now()))
+        .map(attack -> attack.withFinished(LocalDateTime.now(clock)))
         .flatMap(csrfAttackRepository::save)
         .then(Mono.empty());
   }
@@ -55,7 +71,7 @@ public class CsrfService {
                 .save(
                     CsrfAttack.builder()
                         .pseudonym(pseudonym)
-                        .started(LocalDateTime.now())
+                        .started(LocalDateTime.now(clock))
                         .moduleName(moduleName)
                         .build())
                 .then(Mono.just(false)));
