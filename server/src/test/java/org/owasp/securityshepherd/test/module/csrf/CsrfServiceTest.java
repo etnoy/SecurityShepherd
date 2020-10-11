@@ -51,8 +51,6 @@ class CsrfServiceTest {
     Hooks.onOperatorDebug();
   }
 
-  private static final String MODULE_NAME = "csrf-tutorial";
-
   CsrfService csrfService;
 
   @Mock CsrfAttackRepository csrfAttackRepository;
