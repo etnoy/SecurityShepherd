@@ -16,11 +16,10 @@
 package org.owasp.securityshepherd.test.module.csrf;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.any;
-
 
 import java.io.IOException;
 import java.time.Clock;
@@ -56,11 +55,9 @@ class CsrfServiceTest {
 
   CsrfService csrfService;
 
-  @Mock
-  CsrfAttackRepository csrfAttackRepository;
+  @Mock CsrfAttackRepository csrfAttackRepository;
 
-  @Mock
-  FlagHandler flagHandler;
+  @Mock FlagHandler flagHandler;
 
   @BeforeEach
   private void setUp() {
@@ -77,7 +74,8 @@ class CsrfServiceTest {
         .thenReturn(Mono.error(new IOException()));
 
     StepVerifier.create(csrfService.attack(mockTarget, mockModuleName))
-        .expectError(IOException.class).verify();
+        .expectError(IOException.class)
+        .verify();
   }
 
   private void setClock(final Clock clock) {
@@ -127,12 +125,13 @@ class CsrfServiceTest {
     final String mockModuleName = "csrf-module";
     final String mockFlag = "flag";
 
-
     when(flagHandler.getSaltedHmac(mockUserId, mockModuleName, "csrfPseudonym"))
         .thenReturn(Mono.just(mockFlag));
 
-    StepVerifier.create(csrfService.getPseudonym(mockUserId, mockModuleName)).expectNext(mockFlag)
-        .expectComplete().verify();
+    StepVerifier.create(csrfService.getPseudonym(mockUserId, mockModuleName))
+        .expectNext(mockFlag)
+        .expectComplete()
+        .verify();
   }
 
   @Test
@@ -145,9 +144,11 @@ class CsrfServiceTest {
         .thenReturn(Mono.just(1L));
 
     StepVerifier.create(csrfService.validatePseudonym(mockPseudonym, mockModuleName))
-        .expectNext(true).expectComplete().verify();
+        .expectNext(true)
+        .expectComplete()
+        .verify();
   }
-  
+
   @Test
   void validatePseudonym_InvalidPseudonym_ReturnsTrue() {
     // TODO: check what happens with bad arguments
@@ -158,7 +159,9 @@ class CsrfServiceTest {
         .thenReturn(Mono.just(0L));
 
     StepVerifier.create(csrfService.validatePseudonym(mockPseudonym, mockModuleName))
-        .expectNext(false).expectComplete().verify();
+        .expectNext(false)
+        .expectComplete()
+        .verify();
   }
 
   @Test
@@ -172,12 +175,14 @@ class CsrfServiceTest {
         .thenReturn(Mono.just(mockCsrfAttack));
 
     when(mockCsrfAttack.getFinished()).thenReturn(null);
-    
+
     when(csrfAttackRepository.save(any(CsrfAttack.class))).thenReturn(Mono.just(mockCsrfAttack));
-    StepVerifier.create(csrfService.validate(mockPseudonym, mockModuleName)).expectNext(false)
-        .expectComplete().verify();
+    StepVerifier.create(csrfService.validate(mockPseudonym, mockModuleName))
+        .expectNext(false)
+        .expectComplete()
+        .verify();
   }
-  
+
   @Test
   void validate_AssignmentCompleted_ReturnsTrue() {
     // TODO: check what happens with bad arguments
@@ -189,9 +194,11 @@ class CsrfServiceTest {
         .thenReturn(Mono.just(mockCsrfAttack));
 
     when(mockCsrfAttack.getFinished()).thenReturn(LocalDateTime.MAX);
-    
+
     when(csrfAttackRepository.save(any(CsrfAttack.class))).thenReturn(Mono.just(mockCsrfAttack));
-    StepVerifier.create(csrfService.validate(mockPseudonym, mockModuleName)).expectNext(true)
-        .expectComplete().verify();
+    StepVerifier.create(csrfService.validate(mockPseudonym, mockModuleName))
+        .expectNext(true)
+        .expectComplete()
+        .verify();
   }
 }

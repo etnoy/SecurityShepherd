@@ -60,7 +60,7 @@ public class CsrfService {
     return csrfAttackRepository
         .countByPseudonymAndModuleName(pseudonym, moduleName)
         .map(count -> count > 0);
-  } 
+  }
 
   public Mono<Boolean> validate(final String pseudonym, final String moduleName) {
     return csrfAttackRepository
