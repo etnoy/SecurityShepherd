@@ -18,6 +18,7 @@ package org.owasp.securityshepherd.configuration;
 import dev.miku.r2dbc.mysql.MySqlConnectionConfiguration;
 import dev.miku.r2dbc.mysql.MySqlConnectionFactory;
 import io.r2dbc.spi.ConnectionFactory;
+import lombok.Generated;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -26,6 +27,7 @@ import org.springframework.data.r2dbc.connectionfactory.init.CompositeDatabasePo
 import org.springframework.data.r2dbc.connectionfactory.init.ConnectionFactoryInitializer;
 import org.springframework.data.r2dbc.connectionfactory.init.ResourceDatabasePopulator;
 
+@Generated
 @Configuration
 public class R2dbcMysqlConfiguration {
   @Bean

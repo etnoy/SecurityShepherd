@@ -17,10 +17,12 @@ package org.owasp.securityshepherd.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import lombok.Generated;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
+@Generated
 @Configuration
 public class ObjectMapperConfiguration {
   @Bean
