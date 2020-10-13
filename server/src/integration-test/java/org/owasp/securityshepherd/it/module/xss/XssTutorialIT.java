@@ -16,7 +16,7 @@
 package org.owasp.securityshepherd.it.module.xss;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -69,11 +69,17 @@ class XssTutorialIT {
   @Autowired FlagHandler flagHandler;
 
   @BeforeEach
-  private void clear() {
+  private void setUp() {
     testUtils.deleteAll().block();
     xssTutorial = new XssTutorial(xssService, moduleService, flagHandler);
     xssTutorial.getInit().block();
   }
+  
+  @AfterEach
+  private void clear() {
+    xssTutorial = null;
+  }
+
 
   private String extractFlagFromResponse(final XssTutorialResponse response) {
     assertThat(response.getResult()).startsWith("Congratulations, flag is");

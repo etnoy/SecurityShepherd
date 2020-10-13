@@ -38,7 +38,7 @@ public abstract class BaseModule {
 
   @NonNull Mono<Module> module;
 
-  @Getter private Mono<Void> init;
+  @Getter @NonNull Mono<Void> init;
 
   protected BaseModule(
       String moduleName, ModuleService moduleService, FlagHandler flagHandler, String staticFlag) {
