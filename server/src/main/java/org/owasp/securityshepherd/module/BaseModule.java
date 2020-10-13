@@ -15,13 +15,20 @@
  */
 package org.owasp.securityshepherd.module;
 
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.ToString;
+import lombok.experimental.FieldDefaults;
 import org.owasp.securityshepherd.exception.InvalidFlagStateException;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 @Component
+@ToString
+@EqualsAndHashCode
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public abstract class BaseModule {
   @Getter @NonNull String moduleName;
 

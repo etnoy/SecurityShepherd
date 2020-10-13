@@ -154,11 +154,13 @@ class SqlInjectionTutorialTest {
 
     when(moduleService.create(MODULE_NAME)).thenReturn(Mono.just(mockModule));
 
+    when(flagHandler.getDynamicFlag(mockUserId, MODULE_NAME)).thenReturn(Mono.just(mockFlag));
+
     sqlInjectionTutorial =
         new SqlInjectionTutorial(
             moduleService, flagHandler, sqlInjectionDatabaseClientFactory, keyService);
 
-    when(mockModule.getName()).thenReturn(MODULE_NAME);
+    sqlInjectionTutorial.getInit().block();
 
     final byte[] randomBytes = {120, 56, 111, 95, 6, 3};
     when(keyService.generateRandomBytes(16)).thenReturn(randomBytes);
