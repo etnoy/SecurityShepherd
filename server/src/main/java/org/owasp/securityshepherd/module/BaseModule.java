@@ -51,7 +51,6 @@ public abstract class BaseModule {
     } else {
       this.init = Mono.when(this.module);
     }
-    this.init.subscribe();
   }
 
   public Mono<String> getFlag() {
