@@ -16,10 +16,10 @@
 package org.owasp.securityshepherd;
 
 import java.time.Clock;
+import lombok.Generated;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import lombok.Generated;
 
 @SpringBootApplication(scanBasePackages = {"org.owasp.securityshepherd"})
 @Generated

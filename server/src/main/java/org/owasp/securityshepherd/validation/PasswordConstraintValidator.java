@@ -19,15 +19,12 @@ import java.util.Arrays;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import org.passay.AlphabeticalSequenceRule;
-import org.passay.DigitCharacterRule;
 import org.passay.LengthRule;
 import org.passay.NumericalSequenceRule;
 import org.passay.PasswordData;
 import org.passay.PasswordValidator;
 import org.passay.QwertySequenceRule;
 import org.passay.RuleResult;
-import org.passay.SpecialCharacterRule;
-import org.passay.UppercaseCharacterRule;
 import org.passay.WhitespaceRule;
 
 public class PasswordConstraintValidator implements ConstraintValidator<ValidPassword, String> {
