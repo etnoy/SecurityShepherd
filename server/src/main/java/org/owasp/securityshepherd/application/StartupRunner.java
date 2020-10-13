@@ -58,10 +58,10 @@ public class StartupRunner implements ApplicationRunner {
         .block();
 
     Mono.when(
-            csrfTutorial.init(),
-            flagTutorial.init(),
-            xssTutorial.init(),
-            sqlInjectionTutorial.init())
+            csrfTutorial.getInit(),
+            flagTutorial.getInit(),
+            xssTutorial.getInit(),
+            sqlInjectionTutorial.getInit())
         .block();
   }
 }

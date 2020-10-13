@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -67,7 +66,20 @@ class ModuleServiceTest {
         .expectNext(mockedModuleCount)
         .expectComplete()
         .verify();
-    verify(moduleRepository, times(1)).count();
+    verify(moduleRepository).count();
+  }
+
+  @Test
+  void create_NullModuleName_ThrowsException() {
+    final String moduleName = null;
+
+    when(moduleRepository.findByName(moduleName)).thenReturn(Mono.empty());
+
+    StepVerifier.create(moduleService.create(moduleName))
+        .expectError(NullPointerException.class)
+        .verify();
+
+    verify(moduleRepository).findByName(null);
   }
 
   @Test
@@ -89,8 +101,8 @@ class ModuleServiceTest {
 
     ArgumentCaptor<Module> argument = ArgumentCaptor.forClass(Module.class);
 
-    verify(moduleRepository, times(1)).save(argument.capture());
-    verify(moduleRepository, times(1)).save(any(Module.class));
+    verify(moduleRepository).save(argument.capture());
+    verify(moduleRepository).save(any(Module.class));
     assertThat(argument.getValue().getName()).isEqualTo(moduleName);
   }
 
@@ -122,21 +134,21 @@ class ModuleServiceTest {
         .expectComplete()
         .verify();
 
-    verify(moduleRepository, times(1)).findAll();
+    verify(moduleRepository).findAll();
   }
 
   @Test
   void findAll_NoModulesExist_ReturnsEmpty() {
     when(moduleRepository.findAll()).thenReturn(Flux.empty());
     StepVerifier.create(moduleService.findAll()).expectComplete().verify();
-    verify(moduleRepository, times(1)).findAll();
+    verify(moduleRepository).findAll();
   }
 
   @Test
   void findAllOpen_NoModulesExist_ReturnsEmpty() {
     when(moduleRepository.findAllOpen()).thenReturn(Flux.empty());
     StepVerifier.create(moduleService.findAllOpen()).expectComplete().verify();
-    verify(moduleRepository, times(1)).findAllOpen();
+    verify(moduleRepository).findAllOpen();
   }
 
   @Test
@@ -155,7 +167,7 @@ class ModuleServiceTest {
         .expectComplete()
         .verify();
 
-    verify(moduleRepository, times(1)).findAllOpen();
+    verify(moduleRepository).findAllOpen();
   }
 
   @Test
@@ -168,7 +180,7 @@ class ModuleServiceTest {
         .expectNext(mockModule)
         .expectComplete()
         .verify();
-    verify(moduleRepository, times(1)).findByName(mockModuleName);
+    verify(moduleRepository).findByName(mockModuleName);
   }
 
   @Test
@@ -176,7 +188,7 @@ class ModuleServiceTest {
     final String mockModuleName = "mock-module";
     when(moduleRepository.findByName(mockModuleName)).thenReturn(Mono.empty());
     StepVerifier.create(moduleService.findByName(mockModuleName)).expectComplete().verify();
-    verify(moduleRepository, times(1)).findByName(mockModuleName);
+    verify(moduleRepository).findByName(mockModuleName);
   }
 
   @Test
@@ -206,11 +218,11 @@ class ModuleServiceTest {
         .expectComplete()
         .verify();
 
-    verify(moduleRepository, times(1)).save(any(Module.class));
+    verify(moduleRepository).save(any(Module.class));
     verify(keyService, never()).generateRandomString(any(Integer.class));
 
     ArgumentCaptor<Module> argument = ArgumentCaptor.forClass(Module.class);
-    verify(moduleRepository, times(1)).save(argument.capture());
+    verify(moduleRepository).save(argument.capture());
     assertThat(argument.getValue().getKey()).isEqualTo(newFlag);
   }
 
@@ -239,8 +251,8 @@ class ModuleServiceTest {
         .expectComplete()
         .verify();
 
-    verify(mockModuleWithStaticFlag, times(1)).withFlagStatic(false);
-    verify(moduleRepository, times(1)).save(any(Module.class));
+    verify(mockModuleWithStaticFlag).withFlagStatic(false);
+    verify(moduleRepository).save(any(Module.class));
   }
 
   @Test
@@ -291,11 +303,11 @@ class ModuleServiceTest {
         .verify();
 
     ArgumentCaptor<String> findArgument = ArgumentCaptor.forClass(String.class);
-    verify(moduleRepository, times(1)).findByName(findArgument.capture());
+    verify(moduleRepository).findByName(findArgument.capture());
     assertThat(findArgument.getValue()).isEqualTo(mockModuleName);
 
     ArgumentCaptor<Module> saveArgument = ArgumentCaptor.forClass(Module.class);
-    verify(moduleRepository, times(1)).save(saveArgument.capture());
+    verify(moduleRepository).save(saveArgument.capture());
     assertThat(saveArgument.getValue().getStaticFlag()).isEqualTo(staticFlag);
   }
 

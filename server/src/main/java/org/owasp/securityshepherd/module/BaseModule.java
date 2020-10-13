@@ -15,25 +15,23 @@
  */
 package org.owasp.securityshepherd.module;
 
+import lombok.Getter;
 import lombok.NonNull;
-import lombok.Value;
-import lombok.experimental.NonFinal;
+import org.owasp.securityshepherd.exception.InvalidFlagStateException;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 @Component
-@Value
-@NonFinal
 public abstract class BaseModule {
-  @NonNull protected String moduleName;
+  @Getter @NonNull String moduleName;
 
-  @NonNull protected ModuleService moduleService;
+  @Getter @NonNull ModuleService moduleService;
 
-  @NonNull protected FlagHandler flagHandler;
+  @Getter @NonNull FlagHandler flagHandler;
 
-  @NonNull protected Mono<Module> module;
+  @NonNull Mono<Module> module;
 
-  private Mono<Void> waitSignal;
+  @Getter private Mono<Void> init;
 
   protected BaseModule(
       String moduleName, ModuleService moduleService, FlagHandler flagHandler, String staticFlag) {
@@ -42,15 +40,23 @@ public abstract class BaseModule {
     this.flagHandler = flagHandler;
     this.module = moduleService.create(moduleName);
     if (staticFlag != null) {
-      this.waitSignal =
-          Mono.when(this.module.and(moduleService.setStaticFlag(moduleName, staticFlag)));
+      this.init = Mono.when(this.module, moduleService.setStaticFlag(moduleName, staticFlag));
     } else {
-      this.waitSignal = Mono.when(this.module);
+      this.init = Mono.when(this.module);
     }
+    this.init.subscribe();
   }
 
-  public Mono<Void> init() {
-    return Mono.when(this.module);
+  public Mono<String> getFlag() {
+    return module.flatMap(
+        m -> {
+          if (m.isFlagStatic()) {
+            return Mono.just(m.getStaticFlag());
+          } else {
+            return Mono.error(
+                new InvalidFlagStateException("Cannot get dynamic flag without providing user id"));
+          }
+        });
   }
 
   public Mono<String> getFlag(final long userId) {
@@ -59,7 +65,7 @@ public abstract class BaseModule {
           if (m.isFlagStatic()) {
             return Mono.just(m.getStaticFlag());
           } else {
-            return flagHandler.getDynamicFlag(userId, m.getName());
+            return flagHandler.getDynamicFlag(userId, moduleName);
           }
         });
   }

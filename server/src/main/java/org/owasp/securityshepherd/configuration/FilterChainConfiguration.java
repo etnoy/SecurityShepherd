@@ -15,6 +15,7 @@
  */
 package org.owasp.securityshepherd.configuration;
 
+import lombok.Generated;
 import org.owasp.securityshepherd.authentication.AuthenticationManager;
 import org.owasp.securityshepherd.authentication.SecurityContextRepository;
 import org.springframework.context.annotation.Bean;
@@ -25,7 +26,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
-import lombok.Generated;
 import reactor.core.publisher.Mono;
 
 @Generated

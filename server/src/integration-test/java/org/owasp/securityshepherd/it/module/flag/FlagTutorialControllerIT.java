@@ -80,7 +80,7 @@ class FlagTutorialControllerIT {
   private void clear() {
     testUtils.deleteAll().block();
     flagTutorial = new FlagTutorial(moduleService, flagHandler);
-    flagTutorial.init().block();
+    flagTutorial.getInit().block();
   }
 
   @Test

@@ -69,10 +69,10 @@ class StartupRunnerTest {
             "Admin", "admin", "$2y$08$WpfUVZLcXNNpmM2VwSWlbe25dae.eEC99AOAVUiU5RaJmfFsE9B5G"))
         .thenReturn(Mono.just(1L));
 
-    when(csrfTutorial.init()).thenReturn(Mono.empty());
-    when(xssTutorial.init()).thenReturn(Mono.empty());
-    when(flagTutorial.init()).thenReturn(Mono.empty());
-    when(sqlInjectionTutorial.init()).thenReturn(Mono.empty());
+    when(csrfTutorial.getInit()).thenReturn(Mono.empty());
+    when(xssTutorial.getInit()).thenReturn(Mono.empty());
+    when(flagTutorial.getInit()).thenReturn(Mono.empty());
+    when(sqlInjectionTutorial.getInit()).thenReturn(Mono.empty());
 
     assertDoesNotThrow(() -> startupRunner.run(null));
   }

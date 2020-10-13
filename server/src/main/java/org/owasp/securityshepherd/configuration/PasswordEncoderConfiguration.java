@@ -15,11 +15,11 @@
  */
 package org.owasp.securityshepherd.configuration;
 
+import lombok.Generated;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import lombok.Generated;
 
 @Generated
 @Configuration

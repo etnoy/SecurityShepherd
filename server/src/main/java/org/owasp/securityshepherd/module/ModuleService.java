@@ -50,7 +50,7 @@ public final class ModuleService {
     log.info("Creating new module in database with id " + moduleName);
 
     return Mono.just(moduleName)
-        .filterWhen(this::doesNotExistById)
+        .filterWhen(this::doesNotExistByName)
         .switchIfEmpty(
             Mono.error(
                 new DuplicateModuleNameException(
@@ -79,7 +79,7 @@ public final class ModuleService {
     return moduleRepository.findByName(moduleName);
   }
 
-  private Mono<Boolean> doesNotExistById(final String moduleName) {
+  private Mono<Boolean> doesNotExistByName(final String moduleName) {
     return findByName(moduleName).map(u -> false).defaultIfEmpty(true);
   }
 

@@ -72,7 +72,7 @@ class XssTutorialIT {
   private void clear() {
     testUtils.deleteAll().block();
     xssTutorial = new XssTutorial(xssService, moduleService, flagHandler);
-    xssTutorial.init().block();
+    xssTutorial.getInit().block();
   }
 
   private String extractFlagFromResponse(final XssTutorialResponse response) {

@@ -19,7 +19,6 @@ import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.owasp.securityshepherd.module.BaseModule;
 import org.owasp.securityshepherd.module.FlagHandler;
-import org.owasp.securityshepherd.module.Module;
 import org.owasp.securityshepherd.module.ModuleService;
 import org.owasp.securityshepherd.module.csrf.CsrfTutorialResult.CsrfTutorialResultBuilder;
 import org.springframework.stereotype.Component;
@@ -65,14 +64,13 @@ public class CsrfTutorial extends BaseModule {
 
     log.debug(String.format("User %d is attacking csrf target %s", userId, target));
 
-    return module
-        .map(Module::getName)
-        .flatMap(moduleName -> csrfService.validatePseudonym(target, moduleName))
+    return csrfService
+        .validatePseudonym(target, getModuleName())
         .flatMap(
             valid -> {
               if (Boolean.TRUE.equals(valid)) {
                 return csrfService
-                    .getPseudonym(userId, moduleName)
+                    .getPseudonym(userId, getModuleName())
                     .flatMap(
                         pseudonym -> {
                           if (pseudonym.equals(target)) {
@@ -82,7 +80,7 @@ public class CsrfTutorial extends BaseModule {
                                     .build());
                           } else {
                             return csrfService
-                                .attack(target, moduleName)
+                                .attack(target, getModuleName())
                                 .then(
                                     Mono.just(
                                         csrfTutorialResultBuilder

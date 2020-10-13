@@ -119,7 +119,6 @@ class SqlInjectionTutorialTest {
     final byte[] randomBytes = {120, 56, 111};
     when(keyService.generateRandomBytes(16)).thenReturn(randomBytes);
 
-    when(mockModule.getName()).thenReturn(MODULE_NAME);
     when(flagHandler.getDynamicFlag(mockUserId, MODULE_NAME)).thenReturn(Mono.just(mockFlag));
 
     final DatabaseClient mockDatabaseClient = mock(DatabaseClient.class, RETURNS_DEEP_STUBS);
@@ -160,7 +159,6 @@ class SqlInjectionTutorialTest {
             moduleService, flagHandler, sqlInjectionDatabaseClientFactory, keyService);
 
     when(mockModule.getName()).thenReturn(MODULE_NAME);
-    when(flagHandler.getDynamicFlag(mockUserId, MODULE_NAME)).thenReturn(Mono.just(mockFlag));
 
     final byte[] randomBytes = {120, 56, 111, 95, 6, 3};
     when(keyService.generateRandomBytes(16)).thenReturn(randomBytes);

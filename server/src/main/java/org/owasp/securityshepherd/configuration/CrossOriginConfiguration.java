@@ -15,12 +15,12 @@
  */
 package org.owasp.securityshepherd.configuration;
 
+import lombok.Generated;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
-import lombok.Generated;
 
 @Generated
 @Configuration

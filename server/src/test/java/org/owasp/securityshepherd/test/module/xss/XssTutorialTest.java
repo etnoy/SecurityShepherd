@@ -96,10 +96,9 @@ class XssTutorialTest {
     final long mockUserId = 606L;
     final String mockFlag = "mockedflag";
     final String query = "username";
-    final String mockModuleName = "id";
 
-    when(mockModule.getName()).thenReturn(mockModuleName);
-    when(flagHandler.getDynamicFlag(mockUserId, mockModuleName)).thenReturn(Mono.just(mockFlag));
+    when(mockModule.getName()).thenReturn(MODULE_NAME);
+    when(flagHandler.getDynamicFlag(mockUserId, MODULE_NAME)).thenReturn(Mono.just(mockFlag));
     when(mockModule.isFlagStatic()).thenReturn(false);
 
     final String mockTarget =

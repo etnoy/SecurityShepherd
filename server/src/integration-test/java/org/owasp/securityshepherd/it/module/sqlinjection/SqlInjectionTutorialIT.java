@@ -121,8 +121,10 @@ class SqlInjectionTutorialIT {
     // Submit the flag we got from the sql injection and make sure it validates
     StepVerifier.create(
             flagMono
-                .zipWith(sqlInjectionTutorial.getModule().map(m -> m.getName()))
-                .flatMap(tuple -> submissionService.submit(userId, tuple.getT2(), tuple.getT1()))
+                .flatMap(
+                    flag ->
+                        submissionService.submit(
+                            userId, sqlInjectionTutorial.getModuleName(), flag))
                 .map(Submission::isValid))
         .expectNext(true)
         .expectComplete()
@@ -163,6 +165,6 @@ class SqlInjectionTutorialIT {
     sqlInjectionTutorial =
         new SqlInjectionTutorial(
             moduleService, flagHandler, sqlInjectionDatabaseClientFactory, keyService);
-    sqlInjectionTutorial.init().block();
+    sqlInjectionTutorial.getInit().block();
   }
 }
